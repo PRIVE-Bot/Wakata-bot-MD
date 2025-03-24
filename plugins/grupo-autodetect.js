@@ -35,10 +35,10 @@ END:VCARD`
 ╚═════════════════════╝`
   
   let foto = `
-╔═【 🪐ASTRO-BOT OBSERVA】═╗
+╔═【🪐ASTRO-BOT OBSERVA】═╗
 ║ *${usuario}* ha reprogramado la imagen del universo.
 ║ 📸 Nueva imagen aplicada al grupo.
-╚═════════════════════╝`
+╚════════════════════╝`
   
   let edit = `
 ╔═【 💫ASTRO-BOT CONFIG 】═╗
