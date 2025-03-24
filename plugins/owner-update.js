@@ -9,7 +9,7 @@ let handler = async (m, { conn, usedPrefix, command, args }) => {
     const stdout = execSync('git pull' + (m.fromMe && args.length ? ' ' + args.join(' ') : ''));
     let messager = stdout.toString();
 
-    if (messager.includes('⚡ Ya estoy actualizado.')) messager = '⚡ Ya estoy actualizado a la última versión.';
+    if (messager.includes('⚡ 𝐀𝐬𝐭𝐫𝐨-𝐁𝐨𝐭 𝐲𝐚 𝐞𝐬𝐭𝐚 𝐚𝐜𝐭𝐮𝐚𝐥𝐢𝐳𝐚𝐝𝐨.')) messager = '⚡ Ya estoy actualizado a la última versión.';
     if (messager.includes('👑 Actualizando.')) messager = '⚡ Procesando, espere un momento mientras me actualizo.\n\n' + stdout.toString();
 
     await conn.reply(m.chat, messager, m); // Eliminado fake
