@@ -2,7 +2,7 @@ import { execSync } from 'child_process';
 
 let handler = async (m, { conn, usedPrefix, command, args }) => {
 
-  await conn.reply(m.chat, '⚡ Procesando solicitud de actualización...', m); // Eliminado fake
+  await conn.reply(m.chat, '🌪️ 𝐩𝐫𝐨𝐜𝐞𝐬𝐚𝐧𝐝𝐨 𝐬𝐨𝐥𝐢𝐜𝐢𝐭𝐮𝐝 𝐝𝐞 𝐚𝐜𝐭𝐮𝐚𝐥𝐢𝐳𝐚𝐜𝐢𝐨𝐧...', m); // Eliminado fake
 
   m.react('🚀'); 
   try {
