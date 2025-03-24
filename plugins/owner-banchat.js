@@ -1,6 +1,8 @@
 let handler = async (m, { conn, usedPrefix, command, args }) => {
-  if (!(m.chat in global.db.data.chats)) 
+
+  if (!(m.chat in global.db.data.chats)) {
     return conn.reply(m.chat, '🔴 *¡ESTE CHAT NO ESTÁ REGISTRADO!*', m, fake);
+  }
 
   let chat = global.db.data.chats[m.chat];
 
