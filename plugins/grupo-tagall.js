@@ -57,7 +57,7 @@ const handler = async (m, { isOwner, isAdmin, conn, text, participants, args, co
 
     const mensaje = args.join` `;
     const info = mensaje ? `📡 *Mensaje:* ${mensaje}` : "🚀 *Invocación general*";
-    let texto = `☄️ *LLAMADO A TODOS LOS MIEMBROS (${participants.length})* ☄️\n\n${info}\n\n`;
+    let texto = `☄️ *𝐋𝐋𝐀𝐌𝐀𝐃𝐀 𝐀 𝐓𝐎𝐃𝐎𝐒 𝐋𝐎𝐒 𝐌𝐈𝐄𝐌𝐁𝐑𝐎𝐒⚡ (${participants.length})* ☄️\n\n${info}\n\n`;
 
     for (const miembro of participants) {
         const number = miembro.id.split('@')[0];
