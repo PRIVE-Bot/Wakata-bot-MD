@@ -107,7 +107,7 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
     let text = menuText.replace(new RegExp(`%(${Object.keys(replace).sort((a, b) => b.length - a.length).join`|`})`, 'g'), (_, name) => '' + replace[name]);
 
     // Lista de imágenes para usar en el menú
-    const imageUrls = ['https://files.catbox.moe/ngz0ng.jpg', 'https://files.catbox.moe/5olr3c.jpg', 'https://files.catbox.moe/9g3348.jpg', 'https://files.catbox.moe/91wohc.jpg'];
+    const imageUrls = ['https://files.catbox.moe/yqxg6l.jpg', 'https://files.catbox.moe/yqxg6l.jpg'];
     let selectedImage = imageUrls[Math.floor(Math.random() * imageUrls.length)];
 
     await m.react('🚀');
