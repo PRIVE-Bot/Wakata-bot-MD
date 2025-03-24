@@ -1,6 +1,6 @@
 var handler = async (m, { conn, participants, usedPrefix, command }) => {
     if (!m.mentionedJid[0] && !m.quoted) {
-        return conn.reply(m.chat, `🚀 *Astro-Bot Alert:* Debes mencionar a un usuario para expulsarlo de este cuartel galáctico.`, m);
+        return conn.reply(m.chat, `🚀 *𝐀𝐬𝐭𝐫𝐨-𝐁𝐨𝐭 Alert:* Debes mencionar a un usuario para expulsarlo de este cuartel galáctico.`, m);
     }
 
     let user = m.mentionedJid[0] ? m.mentionedJid[0] : m.quoted.sender;
