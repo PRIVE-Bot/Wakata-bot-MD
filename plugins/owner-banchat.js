@@ -4,7 +4,7 @@ let handler = async (m, { conn, usedPrefix, command, args }) => {
 
   let chat = global.db.data.chats[m.chat];
 
-  if (command === 'kirito') {
+  if (command === 'astro') {
     if (args.length === 0) {
       const estado = chat.isBanned ? '⚠️ *DESACTIVADO*' : '✅ *ACTIVADO*';
       const info = `👑 *ASTRO-BOT CONTROL*  
