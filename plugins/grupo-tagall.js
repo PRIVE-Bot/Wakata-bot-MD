@@ -66,7 +66,7 @@ const handler = async (m, { isOwner, isAdmin, conn, text, participants, args, co
         texto += `💫 ${flag} @${number}\n`;
     }
 
-    texto += `\n🌌 *Powered by Astro-Bot* 🚀`;
+    texto += `\n🌌 *Powered by 𝑨𝒔𝒕𝒓𝒐-𝑩𝒐𝒕* 🚀`;
 
     conn.sendMessage(m.chat, { text: texto, mentions: participants.map(p => p.id) }, { quoted: m });
 };
