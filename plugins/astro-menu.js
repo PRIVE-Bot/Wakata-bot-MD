@@ -32,7 +32,7 @@ Hola *@${userId.split('@')[0]}* soy *${botname}*
 ➤ /Ping
 ➤ /serbot
 ➤ /restart
-> © kirito-Bot by Deylin
+> © 𝑨𝒔𝒕𝒓𝒐-𝑩𝒐𝒕 by ᴀsᴛʀᴏ-ʙᴏᴛ
   `.trim();
 
     await conn.sendMessage(m.chat, { 
