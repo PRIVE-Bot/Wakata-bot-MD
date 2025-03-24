@@ -7,7 +7,7 @@ let handler = async (m, { conn, usedPrefix, command, args }) => {
   if (command === 'kirito') {
     if (args.length === 0) {
       const estado = chat.isBanned ? '⚠️ *DESACTIVADO*' : '✅ *ACTIVADO*';
-      const info = `👑 *KIRITO-BOT CONTROL*  
+      const info = `👑 *ASTRO-BOT CONTROL*  
 ╭━━━━━━━━━━━━━╮  
 ┃ *🔥 COMANDOS DISPONIBLES:*  
 ┃ ✦ *${usedPrefix} astro on* – ⚡ 𝗔𝗰𝘁𝗶𝘃𝗮𝗿  
@@ -20,16 +20,16 @@ let handler = async (m, { conn, usedPrefix, command, args }) => {
 
     if (args[0] === 'off') {
       if (chat.isBanned) 
-        return conn.reply(m.chat, '⭕ *¡KIRITO-BOT YA ESTABA DESACTIVADO!*', m, fake);
+        return conn.reply(m.chat, '⭕ *¡ASTRO-BOT-BOT YA ESTABA DESACTIVADO!*', m, fake);
 
       chat.isBanned = true;
-      return conn.reply(m.chat, '⚠️ *¡KIRITO-BOT HA SIDO DESACTIVADO EN ESTE CHAT!*', m, fake);
+      return conn.reply(m.chat, '⚠️ *¡ASTRO-BOT HA SIDO DESACTIVADO EN ESTE CHAT!*', m, fake);
     } else if (args[0] === 'on') {
       if (!chat.isBanned) 
-        return conn.reply(m.chat, '⭕ *¡KIRITO-BOT YA ESTABA ACTIVADO!*', m, fake);
+        return conn.reply(m.chat, '⭕ *¡ASTRO-BOT YA ESTABA ACTIVADO!*', m, fake);
 
       chat.isBanned = false;
-      return conn.reply(m.chat, '✅ *¡KIRITO-BOT HA SIDO ACTIVADO EN ESTE CHAT!*', m, fake);
+      return conn.reply(m.chat, '✅ *¡ASTRO-BOT HA SIDO ACTIVADO EN ESTE CHAT!*', m, fake);
     }
   }
 };
