@@ -1,4 +1,4 @@
-export async function before(m) {
+/*export async function before(m) {
   if (!m.text || !global.prefix.test(m.text)) {
     return;
   }
@@ -39,4 +39,4 @@ export async function before(m) {
     const comando = m.text.trim().split(' ')[0];
     await m.reply(`🔴 *𝑬𝒍 𝒄𝒐𝒎𝒂𝒏𝒅𝒐* 《 *${comando}* 》*𝒏𝒐 𝒆𝒙𝒊𝒔𝒕𝒆* 𝒊𝒏 𝑨𝒔𝒕𝒓𝒐-𝑩𝒐𝒕.\n\n*🌐 𝑴𝒂𝒔 𝒊𝒏𝒇𝒐𝒓𝒎𝒂𝒄𝒊𝒐́𝒏 𝒅𝒆𝒍 𝒃𝒐𝒕 𝒂𝒗𝒊𝒍𝒂 𝒑𝒐𝒓 𝒄𝒐𝒎𝒂𝒏𝒅𝒐* *${usedPrefix}𝑴𝑬𝑵𝑼* 𝑒𝑛 𝑒𝑙 𝑔𝑟𝑢𝑝𝑜.`);
   }
-}
+}*/
