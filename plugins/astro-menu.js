@@ -28,6 +28,8 @@ Hola *@${userId.split('@')[0]}* soy *${botname}*
 ➤ /menu
 ➤ /kick
 ➤ /todos
+➤ /tourl2
+
 > © kirito-Bot by Deylin
   `.trim();
 
