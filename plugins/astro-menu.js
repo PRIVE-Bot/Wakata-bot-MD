@@ -19,7 +19,7 @@ Hola *@${userId.split('@')[0]}* soy *${botname}*
 ║ ✎ *Bot:* ${(conn.user.jid == global.conn.user.jid ? 'Principal 🅥' : 'Prem Bot 🅑')}
 ║ ✎ *Modo:* Público
 ║ ✎ *Usuarios »* ${totalreg}
-║ ✎ *Tiempo* ${uptime}
+║ ✎ *Tiempo Activo:* ${uptime}
 ║ ✎ *Comandos »* ${totalCommands}
 ╚══════ ♢.💥.♢ ══════➤
 
