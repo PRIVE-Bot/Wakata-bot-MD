@@ -47,7 +47,7 @@ const formatoMenu = {
 ╚══════════════════☾
 `.trimStart(),
   header: '╔═══ %category ═══╗',
-  body: '➤ %emoji » %cmd',
+  body: '➤ %cmd',
   footer: '╚══════════════════╝',
   after: `🌌 *Astro-Bot* te acompaña en cada aventura interestelar.`,
 };
@@ -111,7 +111,7 @@ let handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
           ...help.filter(menu => menu.tags && menu.tags.includes(tag) && menu.help).map(menu => {
             return menu.help.map(help => {
               return body.replace(/%cmd/g, menu.prefix ? help : '%p' + help)
-                .replace(/%emoji/g, emojisCategorias[tag] || '❓') // Aquí se corrige %emoji
+                
                 .replace(/%isdiamond/g, menu.diamond ? '(ⓓ)' : '')
                 .replace(/%isPremium/g, menu.premium ? '(Ⓟ)' : '')
                 .trim();
