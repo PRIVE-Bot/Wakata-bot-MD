@@ -61,13 +61,13 @@ END:VCARD`
   
   let admingp = `
 ╔═【 👑 ASTRO-BOT ADMIN 】═╗
-║ *${m.messageStubParameters[0].split`@`[0]}* ha sido ascendido al Olimpo de los administradores.
+║ *@${m.messageStubParameters[0].split`@`[0]}* ha sido ascendido al Olimpo de los administradores.
 ║ Operación ejecutada por: *${usuario}*
 ╚═════════════════════╝`
   
   let noadmingp = `
 ╔═【⚠️ASTRO-BOT REMOCIÓN】═╗
-║ *${m.messageStubParameters[0].split`@`[0]}* ha descendido de su trono de administrador.
+║ *@${m.messageStubParameters[0].split`@`[0]}* ha descendido de su trono de administrador.
 ║ Acción realizada por: *${usuario}*
 ╚═════════════════════╝`
 
