@@ -28,48 +28,48 @@ END:VCARD`
 
   // Diseños con estilo Astro-Bot
   let nombre = `
-╔══【 🚀 ASTRO-BOT ALERTA 】══╗
+╔═【 🚀 ASTRO-BOT ALERTA】═╗
 ║ *${usuario}* ha reconfigurado el cosmos del grupo.
 ║ ✨ Nuevo nombre detectado:
 ║   » *<${m.messageStubParameters[0]}>*
-╚════════════════════════╝`
+╚═════════════════════╝`
   
   let foto = `
-╔══【 🪐 ASTRO-BOT OBSERVA 】═╗
+╔═【 🪐ASTRO-BOT OBSERVA】═╗
 ║ *${usuario}* ha reprogramado la imagen del universo.
 ║ 📸 Nueva imagen aplicada al grupo.
-╚════════════════════════╝`
+╚═════════════════════╝`
   
   let edit = `
-╔══【 💫 ASTRO-BOT CONFIG 】══╗
+╔═【 💫ASTRO-BOT CONFIG 】═╗
 ║ *${usuario}* ha modificado los protocolos.
 ║ Configuración actual: ${m.messageStubParameters[0] == 'on' ? 'Solo administradores' : 'Todos'}
-╚═════════════════════════╝`
+╚═════════════════════╝`
   
   let newlink = `
-╔═【🔗 ASTRO-BOT LINK RESET 】═╗
+╔【🔗ASTRO-BOT LINK RESET】╗
 ║ El portal ha sido reiniciado por:
 ║   » *${usuario}*
-╚═════════════════════════╝`
+╚═════════════════════╝`
   
   let status = `
-╔══【 /🔓 ASTRO-BOT STATUS 】══╗
+╔═【🔓 ASTRO-BOT STATUS 】═╗
 ║ El grupo se encuentra ahora ${m.messageStubParameters[0] == 'on' ? '*cerrado 🔒*' : '*abierto 🔓*'}.
 ║ Acción realizada por: *${usuario}*
 ║ Configuración: ${m.messageStubParameters[0] == 'on' ? 'Solo administradores' : 'Todos'}
-╚═════════════════════════╝`
+╚═════════════════════╝`
   
   let admingp = `
-╔═══【 👑 ASTRO-BOT ADMIN 】═══╗
+╔═【 👑 ASTRO-BOT ADMIN 】═╗
 ║ *${m.messageStubParameters[0].split`@`[0]}* ha sido ascendido al Olimpo de los administradores.
 ║ Operación ejecutada por: *${usuario}*
-╚══════════════════════════╝`
+╚═════════════════════╝`
   
   let noadmingp = `
-╔══【 ⚠️ ASTRO-BOT REMOCIÓN 】══╗
+╔═【⚠️ASTRO-BOT REMOCIÓN】═╗
 ║ *${m.messageStubParameters[0].split`@`[0]}* ha descendido de su trono de administrador.
 ║ Acción realizada por: *${usuario}*
-╚══════════════════════════╝`
+╚═════════════════════╝`
 
   if (chat.detect && m.messageStubType == 21) {
     await conn.sendMessage(m.chat, { text: nombre, mentions: [m.sender] }, { quoted: fkontak })
