@@ -34,9 +34,9 @@ let handler = async (m, { conn, usedPrefix, command, args }) => {
   }
 };
 
-handler.help = ['kirito'];
+handler.help = ['astro'];
 handler.tags = ['grupo'];
-handler.command = ['kirito'];
+handler.command = ['astro'];
 handler.admin = true;
 
 export default handler;
