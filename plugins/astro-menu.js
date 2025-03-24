@@ -1,179 +1,174 @@
-import { promises as fs } from 'fs';
-import { join } from 'path';
-import fetch from 'node-fetch';
-import { xpRange } from '../lib/levelling.js';
+import { promises } from 'fs'
+import { join } from 'path'
+import { xpRange } from '../lib/levelling.js'
 
-const categorias = {
-  'anime': '🌸 ANIME',
-  'main': '📌 INFO',
-  'search': '🔍 BÚSQUEDA',
-  'game': '🎮 JUEGOS',
-  'serbot': '🤖 SUB BOTS',
-  'rpg': '⚔️ RPG',
-  'sticker': '🎭 STICKERS',
-  'group': '👥 GRUPOS',
-  'premium': '💎 PREMIUM',
-  'downloader': '📥 DESCARGAS',
-  'tools': '🛠️ HERRAMIENTAS',
-  'fun': '🎉 DIVERSIÓN',
-  'nsfw': '🔞 NSFW',
-  'cmd': '📂 BASE DE DATOS',
-  'owner': '👑 ADMIN',
-  'audio': '🎵 AUDIOS',
-  'advanced': '🚀 AVANZADO',
-  'rcanal': '📺 R-CANAL',
-  'ia': '🌟 IA',
+let tags = {
+  'anime': 'ANIME',
+  'main': 'INFO',
+  'search': 'SEARCH',
+  'game': 'GAME',
+  'serbot': 'SUB BOTS',
+  'rpg': 'RPG',
+  'sticker': 'STICKER',
+  'group': 'GROUPS',
+  'nable': 'ON / OFF',
+  'premium': 'PREMIUM',
+  'downloader': 'DOWNLOAD',
+  'tools': 'TOOLS',
+  'fun': 'FUN',
+  'nsfw': 'NSFW',
+  'cmd': 'DATABASE',
+  'owner': 'OWNER',
+  'audio': 'AUDIOS',
+  'advanced': 'ADVANCED',
+  'weather': 'WEATHER',
+  'news': 'NEWS',
+  'finance': 'FINANCE',
+  'education': 'EDUCATION',
+  'health': 'HEALTH',
+  'entertainment': 'ENTERTAINMENT',
+  'sports': 'SPORTS',
+  'travel': 'TRAVEL',
+  'food': 'FOOD',
+  'shopping': 'SHOPPING',
+  'productivity': 'PRODUCTIVITY',
+  'social': 'SOCIAL',
+  'security': 'SECURITY',
+  'custom': 'CUSTOM'
 };
 
-const generarSaludo = () => {
-  const hora = new Date().getHours();
-  if (hora >= 5 && hora < 12) return '☀️ ¡Buenos días, astronauta!';
-  if (hora >= 12 && hora < 18) return '🌎 ¡Buenas tardes, viajero del espacio!';
-  return '🌌 ¡Buenas noches, explorador interestelar!';
-};
+const defaultMenu = {
+  before: `*⌬━━━━━▣━━◤⌬◢━━▣━━━━━━⌬*
 
-const formatoMenu = {
-  antes: `╔══════════════════╗
-   🚀 Bienvenido a *Astro-Bot* 🚀
-╚══════════════════╝
-✦ %greeting, %name.
-╔═══════🌠═══════☾ 
-║┏🚀━━━ *DATOS* ━━━🚀
-║┃ 🪐 *Nombre:* Astro-Bot
-║┃ 🎮 *Nivel:* %level
-║┃ 🌟 *Rango:* %role
-║┃ 🔥 *llamas:* %estrellas
-║┗🚀━━━━━━━━━━━━🚀
-╚══════════════════☾
+Hola *%name* soy *kirito*
+
+╔══════⌬『 𝑰𝑵𝑭𝑶-𝑼𝑺𝑬𝑹 』
+║ ✎ Cliente: %name
+║ ✎ Exp: %exp
+║ ✎ Nivel: %level %levelprogress
+╚══════ ♢.✰.♢ ══════
+
+╔═══════⌬『 𝑰𝑵𝑭𝑶-𝑩𝑶𝑻 』
+║ ✎ Bot: Kirito-Bot MD 
+║ ✎ Modo: %mode
+║ ✎ Tiempo Activo: %muptime
+║ ✎ Usuarios: %totalreg 
+╚══════ ♢.✰.♢ ══════
+
+*◤━━━━━ ☆. ⌬ .☆ ━━━━━◥*
+ %readmore
+⚙_*𝑳𝑰𝑺𝑻𝑨 𝑫𝑬 𝑪𝑶𝑴𝑨𝑵𝑫𝑶𝑺*_
 `.trimStart(),
-  header: '╔═══ %category ═══╗',
-  body: '➤ %cmd',
-  footer: '╚══════════════════╝',
-  after: `🌌 *Astro-Bot* te acompaña en cada aventura interestelar.`,
-};
+  header: '*┏━━━━▣━━⌬〘 %category %emoji 〙*',
+  body: '┃〘  %emoji %cmd %islimit %isPremium\n',
+  footer: '*┗━━━▣━━⌬⌨⌬━━▣━━━━⌬*',
+  after: `> © kirito-Bot by Deylin`,
+}
 
-let handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
+let handler = async (m, { conn, usedPrefix: _p }) => {
   try {
-    let _package = JSON.parse(await fs.readFile(join(__dirname, '../package.json')).catch(_ => ({}))) || {};
-    let { exp, estrellas, level, role } = global.db.data.users[m.sender];
-    let { min, xp, max } = xpRange(level, global.multiplier);
-    let name = await conn.getName(m.sender);
-    exp = exp || 'Desconocida';
-    role = role || 'Aldeano';
+    let name = await conn.getName(m.sender)
+    let mode = global.opts["self"] ? "Privado" : "Público"
 
-    const d = new Date(new Date() + 3600000);
-    const locale = 'es';
-    let time = d.toLocaleTimeString(locale, {
-      hour: 'numeric',
-      minute: 'numeric',
-      second: 'numeric',
-    });
-    let _uptime = process.uptime() * 1000;
-    let _muptime;
-    if (process.send) {
-      process.send('uptime');
-      _muptime = await new Promise(resolve => {
-        process.once('message', resolve);
-        setTimeout(resolve, 1000);
-      }) * 1000;
+    if (!global.db.data.users[m.sender]) {
+      global.db.data.users[m.sender] = { exp: 0, level: 1 }
     }
-    let muptime = clockString(_muptime);
-    let uptime = clockString(_uptime);
-    let totalreg = Object.keys(global.db.data.users).length;
 
-    let help = Object.values(global.plugins).filter(plugin => !plugin.disabled).map(plugin => {
-      return {
-        help: Array.isArray(plugin.tags) ? plugin.help : [plugin.help],
-        tags: Array.isArray(plugin.tags) ? plugin.tags : [plugin.tags],
-        prefix: 'customPrefix' in plugin,
-        estrellas: plugin.estrellas,
-        premium: plugin.premium,
-        enabled: !plugin.disabled,
-      };
-    });
+    let { exp, level } = global.db.data.users[m.sender]
+    let { min, xp, max } = xpRange(level, global.multiplier)
+    let totalreg = Object.keys(global.db.data.users).length
+    let muptime = clockString(process.uptime() * 1000)
 
-    for (let plugin of help)
-      if (plugin && 'tags' in plugin)
-        for (let tag of plugin.tags)
-          if (!(tag in categorias) && tag) categorias[tag] = tag;
+    let help = Object.values(global.plugins).filter(plugin => !plugin.disabled).map(plugin => ({
+      help: Array.isArray(plugin.help) ? plugin.help : (plugin.help ? [plugin.help] : []),
+      tags: Array.isArray(plugin.tags) ? plugin.tags : (plugin.tags ? [plugin.tags] : []),
+      limit: plugin.limit,
+      premium: plugin.premium,
+    }));
 
-    conn.menu = conn.menu ? conn.menu : {};
-    let before = conn.menu.before || formatoMenu.antes;
-    let header = conn.menu.header || formatoMenu.header;
-    let body = conn.menu.body || formatoMenu.body;
-    let footer = conn.menu.footer || formatoMenu.footer;
-    let after = conn.menu.after || formatoMenu.after;
+    let menuText = [
+      defaultMenu.before,
+      ...Object.keys(tags).map(tag => {
 
-    let _text = [
-      before,
-      ...Object.keys(categorias).map(tag => {
-        return header.replace(/%category/g, categorias[tag]) + '\n' + [
-          ...help.filter(menu => menu.tags && menu.tags.includes(tag) && menu.help).map(menu => {
-            return menu.help.map(help => {
-              return body.replace(/%cmd/g, menu.prefix ? help : '%p' + help)
-                
-                .replace(/%isdiamond/g, menu.diamond ? '(ⓓ)' : '')
-                .replace(/%isPremium/g, menu.premium ? '(Ⓟ)' : '')
-                .trim();
-            }).join('\n');
-          }),
-          footer,
-        ].join('\n');
-      }),
-      after,
-    ].join('\n');
+        const commandsForTag = help.filter(menu => menu.tags.includes(tag));
 
-    let text = typeof conn.menu == 'string' ? conn.menu : typeof conn.menu == 'object' ? _text : '';
+        if (commandsForTag.length === 0) return ''; 
 
-    let replace = {
-      '%': '%',
-      p: _p,
-      uptime,
-      muptime,
-      me: conn.getName(conn.user.jid),
-      taguser: '@' + m.sender.split('@s.whatsapp.net')[0],
-      npmname: _package.name,
-      npmdesc: _package.description,
-      version: _package.version,
-      exp: exp - min,
-      maxexp: xp,
-      botofc: `💛 Bot Oficial`,
-      totalexp: exp,
+        return defaultMenu.header
+          .replace(/%category/g, tags[tag])
+          .replace(/%emoji/g, getRandomEmoji()) + '\n' + [
+            ...commandsForTag.map(menu =>
+              menu.help.map(help => defaultMenu.body
+                .replace(/%emoji/g, getRandomEmoji()) 
+                .replace(/%cmd/g, _p + help)
+                .replace(/%islimit/g, menu.limit ? '◜⭐◞' : '')
+                .replace(/%isPremium/g, menu.premium ? '◜🪪◞' : '')
+                .trim()
+              ).join('\n')
+            ),
+            defaultMenu.footer
+          ].join('\n')
+      }).filter(text => text !== ''), 
+      defaultMenu.after
+    ].join('\n')
+
+    let replace = { 
+      "%": "%", p: _p, mode, muptime, name, 
+      exp: exp,
+      level, 
+      levelprogress: getLevelProgress(exp, min, max),
+      maxexp: xp, 
+      totalexp: exp, 
       xp4levelup: max - exp,
-      github: _package.homepage ? _package.homepage.url || _package.homepage : '[unknown github url]',
-      greeting: generarSaludo(),
-      level,
-      estrellas,
-      name,
-      time,
-      totalreg,
+      totalreg, 
+      readmore: readMore, 
     };
 
-    text = text.replace(new RegExp(`%(${Object.keys(replace).sort((a, b) => b.length - a.length).join('|')})`, 'g'), (_, name) => '' + replace[name]);
+    let text = menuText.replace(new RegExp(`%(${Object.keys(replace).sort((a, b) => b.length - a.length).join`|`})`, 'g'), (_, name) => '' + replace[name])
 
-    await m.react('👑');
+    // Usamos las imágenes proporcionadas
+    const imageUrls = ['https://files.catbox.moe/ngz0ng.jpg', 'https://files.catbox.moe/5olr3c.jpg', 'https://files.catbox.moe/9g3348.jpg', 'https://files.catbox.moe/91wohc.jpg']
+    let selectedImage = imageUrls[Math.floor(Math.random() * imageUrls.length)]
 
+    await m.react('🚀')
     await conn.sendMessage(m.chat, { 
-      video: { url: 'https://qu.ax/FBjYO.mp4' }, 
+      image: { url: selectedImage }, 
       caption: text.trim(), 
-      gifPlayback: true 
-    }, { quoted: m });
-
+      mentions: [m.sender] 
+    }, { quoted: m, fake })
   } catch (e) {
-    conn.reply(m.chat, `❌️ Lo sentimos, el menú tiene un error: ${e.message}`, m);
-    throw e;
+    conn.reply(m.chat, '❎ Lo sentimos, el menú tiene un error.', m)
+    throw e
   }
-};
+}
 
-handler.help = ['menu'];
-handler.tags = ['main'];
-handler.command = ['menu', 'help', 'menú', 'Menú', 'Menu', 'menucompleto'];
+handler.help = ['allmenu']
+handler.tags = ['main']
+handler.command = ['allmenu', 'menucompleto', 'menúcompleto', 'menú', 'menu', 'help'] 
+handler.group = true;
 
-export default handler;
+export default handler
+
+const more = String.fromCharCode(8206)
+const readMore = more.repeat(4001)
 
 function clockString(ms) {
-  let h = Math.floor(ms / 3600000);
-  let m = Math.floor(ms / 60000) % 60;
-  let s = Math.floor(ms / 1000) % 60;
-  return [h, m, s].map(v => v.toString().padStart(2, 0)).join(':');
+  let h = Math.floor(ms / 3600000)
+  let m = Math.floor(ms / 60000) % 60
+  let s = Math.floor(ms / 1000) % 60
+  return [h, m, s].map(v => v.toString().padStart(2, 0)).join(':')
+}
+
+function getRandomEmoji() {
+  const emojis = ['👑', '🔥', '🌟', '⚡']
+  return emojis[Math.floor(Math.random() * emojis.length)]
+}
+
+function getLevelProgress(exp, min, max, length = 10) {
+  if (exp < min) exp = min;
+  if (exp > max) exp = max;
+  let progress = Math.floor(((exp - min) / (max - min)) * length);
+  progress = Math.max(0, Math.min(progress, length)); 
+  let bar = '█'.repeat(progress) + '░'.repeat(length - progress);
+  return `[${bar}]`;
 }
