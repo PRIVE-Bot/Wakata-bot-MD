@@ -48,7 +48,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
   let fraseRandomBienvenida = frasesBienvenida[Math.floor(Math.random() * frasesBienvenida.length)]
   let fraseRandomDespedida = frasesDespedida[Math.floor(Math.random() * frasesDespedida.length)]
 
-  let videoUrl = 'https://files.catbox.moe/jlgz1s.mp4'
+  let imageUrl = 'https://files.catbox.moe/yqxg6l.jpg'
 
   if (chat.welcome) {
     if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_ADD) {
@@ -59,11 +59,11 @@ export async function before(m, { conn, participants, groupMetadata }) {
 │  🌎 *Grupo:* ${groupMetadata.subject}  
 │  🪐 *Miembros:* ${totalMembers + 1}  
 │  📅 *Fecha:* ${date}  
-│  
-│  💬 *Mensaje:*  
-│  ${fraseRandomBienvenida}  
-╰───────────⟢` 
-      await conn.sendMessage(m.chat, { video: { url: videoUrl }, gifPlayback: true, caption: bienvenida, mentions: [who] })
+│    
+╰───────────⟢
+> 💬 *Mensaje:*  
+  ${fraseRandomBienvenida}` 
+      await conn.sendMessage(m.chat, { image: { url: imageUrl }, caption: bienvenida, mentions: [who] })
     }
 
     if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_LEAVE ||
@@ -76,10 +76,10 @@ export async function before(m, { conn, participants, groupMetadata }) {
 │  🪐 *Miembros:* ${totalMembers - 1}  
 │  📅 *Fecha:* ${date}  
 │  
-│  💬 *Mensaje:*  
-│  ${fraseRandomDespedida}  
-╰───────────⟢` 
-      await conn.sendMessage(m.chat, { video: { url: videoUrl }, gifPlayback: true, caption: despedida, mentions: [who] })
+╰───────────⟢
+> 💬 *Mensaje:*  
+ ${fraseRandomDespedida}` 
+      await conn.sendMessage(m.chat, { image: { url: imageUrl }, caption: despedida, mentions: [who] })
     }
   }
 }
