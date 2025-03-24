@@ -32,7 +32,7 @@ let handler = async (m, { conn, usedPrefix, command, args }) => {
       }
     } catch (error) {
       console.error(error);
-      let errorMessage2 = '⚠️ Ocurrió un error inesperado.';
+      let errorMessage2 = '⚠️ Ocurrió un error inesperado..';
       if (error.message) {
         errorMessage2 += '\n⚠️ Mensaje de error: ' + error.message;
       }
@@ -41,9 +41,9 @@ let handler = async (m, { conn, usedPrefix, command, args }) => {
   }
 };
 
-handler.help = ['update', 'actualizar'];
+handler.help = ['update', 'actualizar', 'fix'];
 handler.tags = ['owner'];
-handler.command = ['update', 'actualizar'];
+handler.command = ['update', 'actualizar', 'fix'];
 handler.rowner = true;
 
 export default handler;
