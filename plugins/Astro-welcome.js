@@ -1,4 +1,4 @@
-import { WAMessageStubType } from '@whiskeysockets/baileys'
+/*import { WAMessageStubType } from '@whiskeysockets/baileys'
 
 export async function before(m, { conn, participants, groupMetadata }) {
   if (!m.messageStubType || !m.isGroup) return !0;
@@ -82,4 +82,4 @@ export async function before(m, { conn, participants, groupMetadata }) {
       await conn.sendMessage(m.chat, { video: { url: videoUrl }, gifPlayback: true, caption: despedida, mentions: [who] })
     }
   }
-}
+}*/
