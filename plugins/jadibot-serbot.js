@@ -2,7 +2,7 @@
 // https://github.com/deylinqff
 // No quites créditos
 
-global.dfail = async (type, m, usedPrefix, command, conn, fake) => {
+global.dfail = async (type, m, command, conn, fake) => {
   const creadores = [
     { numero: '50488198573', nombre: 'Deylin' },
     { numero: '526633900512', nombre: 'Brayan' }
