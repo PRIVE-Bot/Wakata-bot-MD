@@ -18,7 +18,6 @@ con disponibilidad *24/7*
 📞 Contacto para más información:  
 ${contactos}`;
 
-  // Usamos conn.reply() para enviar el mensaje
   await conn.reply(m.chat, mensaje, m, fake);
 }
 
