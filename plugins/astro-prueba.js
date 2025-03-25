@@ -4,18 +4,18 @@ let suscripciones = global.suscripciones || (global.suscripciones = {})
 
 let handler = async (m, { conn, args, usedPrefix, command }) => {
   if (!args[0] || !args[1]) {
-    return m.reply(`✘ Uso incorrecto del comando\n\n📌 Ejemplo: *${usedPrefix + command} <enlace del grupo> <tiempo en minutos>*\n\n📌 Ejemplo: *${usedPrefix + command} https://chat.whatsapp.com/ABCDEFGHIJK 60*`)
+    return m.reply(`✘ Uso incorrecto del comando\n\n🚀 Ejemplo: *${usedPrefix + command} <enlace del grupo> <días>*\n\n🔥 Ejemplo: *${usedPrefix + command} https://chat.whatsapp.com/ABCDEFGHIJK 1*`)
   }
 
   let enlace = args[0]
-  let tiempo = parseInt(args[1])
+  let dias = parseInt(args[1])
 
   if (!enlace.startsWith('https://chat.whatsapp.com/')) {
     return m.reply('✘ El enlace proporcionado no es válido.')
   }
 
-  if (isNaN(tiempo) || tiempo <= 0) {
-    return m.reply('✘ El tiempo debe ser un número válido en minutos.')
+  if (isNaN(dias) || dias < 1 || dias > 7) {
+    return m.reply('✘ Debes ingresar un número válido entre 1 y 7 para los días.')
   }
 
   try {
@@ -24,20 +24,22 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
     let groupId = groupMetadata.id
     let groupName = groupMetadata.subject
 
-    m.reply(`✅ El bot se ha unido al grupo *${groupName}* por ${tiempo} minutos.`)
+    m.reply(`✅ El bot se ha unido al grupo *${groupName}* por ${dias} ${dias === 1 ? 'día' : 'días'}.`)
 
     suscripciones[groupId] = setTimeout(async () => {
       await conn.sendMessage(groupId, { text: '⏳ Tu tiempo de suscripción ha finalizado. El bot procederá a salir del grupo.' })
       await conn.groupLeave(groupId)
       delete suscripciones[groupId]
-    }, tiempo * 60000)
+    }, dias * 86400000) // 1 día = 86,400,000 milisegundos
 
   } catch (e) {
     m.reply(`✘ Error al unirse al grupo: ${e.message}`)
   }
 }
 
-handler.help = ['suscripción <enlace> <tiempo>']
+handler.help = ['suscripción <enlace> <días>']
 handler.tags = ['bot']
 handler.command = ['suscripción']
+handler.rowner = true;
+
 export default handler
