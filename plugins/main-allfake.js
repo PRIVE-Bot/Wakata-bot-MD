@@ -31,16 +31,16 @@ console.log(`Error : ${e}`)
 global.creador = 'Wa.me/50488198573'
 global.ofcbot = `${conn.user.jid.split('@')[0]}`
 global.asistencia = 'Wa.me/50488198573'
-global.namechannel = '𝑲𝒊𝒓𝒊𝒕𝒐-𝑴𝑫 - 𝒖𝒑𝒅𝒂𝒕𝒆𝒔☆'
-global.namechannel2 = '𝑲𝒊𝒓𝒊𝒕𝒐-𝑴𝑫 - 𝒂𝒗𝒊𝒔𝒐𝒔☆'
-global.namegrupo = '✦ 𝐤𝐢𝐫𝐢𝐭𝐨-𝐁𝐨𝐭 𝐌𝐃 ☆'
-global.namecomu = '✭𝐊𝐢𝐫𝐢𝐭𝐨 𝐌𝐃 𝐂𝐨𝐦𝐮𝐧𝐢𝐭𝐲 ✪'
-global.listo = '⚡ *Aquí tienes o(^▽^)o*'
+global.namechannel = '𝑨𝒔𝒕𝒓𝒐-𝑩𝒐𝒕 - 𝒖𝒑𝒅𝒂𝒕𝒆𝒔☆'
+global.namechannel2 = '𝑨𝒔𝒕𝒓𝒐-𝑩𝒐𝒕 - 𝒂𝒗𝒊𝒔𝒐𝒔☆'
+global.namegrupo = '✦ 𝐀𝐒𝐓𝐑𝐎 - 𝐁𝐎𝐓 ☆'
+global.namecomu = '✭𝐀𝐒𝐓𝐑𝐎 𝐂𝐨𝐦𝐮𝐧𝐢𝐭𝐲 ✪'
+global.listo = '⚡ *Aquí tienes ❛‿˂̵✧*'
 global.fotoperfil = await conn.profilePictureUrl(m.sender, 'image').catch(_ => 'https://files.catbox.moe/56el7x.jpg')
 
 //Ids channel
 global.canalIdM = ["120363365444927738@newsletter", "120363365444927738@newsletter"]
-global.canalNombreM = ["☆ 𝒌𝒊𝒓𝒊𝒕𝒐 - 𝑩𝒐𝒕 𝑴𝑫 • 𝒖𝒑𝒅𝒂𝒕𝒆𝒔 ☆", "☆ 𝒌𝒊𝒓𝒊𝒕𝒐 - 𝑩𝒐𝒕 𝑴𝑫 • 𝒂𝒗𝒊𝒔𝒐𝒔 ☆"]
+global.canalNombreM = ["☆ 𝑨𝒔𝒕𝒓𝒐 - 𝑩𝒐𝒕 𝑴𝑫 • 𝒖𝒑𝒅𝒂𝒕𝒆𝒔 ☆", "☆ 𝑨𝒔𝒕𝒓𝒐 - 𝑩𝒐𝒕 𝑴𝑫 • 𝒂𝒗𝒊𝒔𝒐𝒔 ☆"]
 global.channelRD = await getRandomChannel()
 
 //fechas
@@ -58,13 +58,13 @@ global.done = '✅'
 global.error = '✖️'
 global.msm = '⚠︎'
 
-//Emojis determinado de kirito Bot
-global.emoji = '『✧』'
-global.emoji2 = '《⌬》'
-global.emoji3 = '〖✪〗'
-global.emoji4 = '⦓✰⦔'
-global.emoji5 = '☾۝☽'
-global.emoji6 = '〘߷︎〙'
+//Emojis determinado de astro Bot
+global.emoji = '✧'
+global.emoji2 = '⌬'
+global.emoji3 = '➤'
+global.emoji4 = '۝'
+global.emoji5 = '☾'
+global.emoji6 = '✰'
 global.emojis = [emoji, emoji2, emoji3, emoji4].getRandom()
 
 //mensaje en espera
@@ -77,7 +77,7 @@ global.waitttt = '✯ Espera un momento, soy lento...';
 var canal = 'https://whatsapp.com/channel/0029VawF8fBBvvsktcInIz3m'  
 let canal2 = 'https://whatsapp.com/channel/0029VayQwPsFnSzESZJ9Us3z'
 var git = 'https://github.com/deylinqff'
-var github = 'https://github.com/deylinqff/Kirito-Bot-MD' 
+var github = 'https://github.com/deylinqff/astro-bot' 
 let correo = 'deylibaquedano801@gmail.com'
 
 global.redes = [canal, canal2, git, github, correo].getRandom()
