@@ -1,3 +1,32 @@
+// Código creado por Deylin
+// https://github.com/deylinqff
+// No quites créditos
+
+async function handler(m, { conn }) {
+  const creadores = [
+    { numero: '50488198573', nombre: 'Deylin' },
+    { numero: '526633900512', nombre: 'Brayan' }
+  ];
+
+  const contactos = creadores.map(c => ` wa.me/${c.numero} (${c.nombre})`).join('\n');
+
+  const mensaje = `Hola @${m.sender.split('@')[0]}, soy un bot privado 🤖, por lo que no puedo tener subbots.  
+Si deseas agregarme a tu grupo, puedes adquirir una suscripción por **$2 por semana**, con disponibilidad **24/7**.  
+
+📞 Contacto para más información:  
+${contactos}`;
+
+  await conn.sendMessage(m.chat, { text: mensaje, mentions: [m.sender] }, { quoted: m });
+}
+
+handler.command = ['serbot', 'code', 'qr'];
+export default handler;
+
+
+
+
+
+
 /*const { useMultiFileAuthState, DisconnectReason, makeCacheableSignalKeyStore, fetchLatestBaileysVersion} = (await import("@whiskeysockets/baileys"));
 import qrcode from "qrcode"
 import NodeCache from "node-cache"
