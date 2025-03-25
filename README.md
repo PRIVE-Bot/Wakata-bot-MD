@@ -1,1 +1,1 @@
-<h1>Astro Bot en desarrollo...<\h1>
+<h1>Astro Bot en desarrollo...</h1>
