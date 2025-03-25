@@ -1,4 +1,4 @@
-let handler = async (m, { conn, usedPrefix, command, args }) => {
+/*let handler = async (m, { conn, usedPrefix, command, args }) => {
   if (!(m.chat in global.db.data.chats)) 
     return conn.reply(m.chat, '🔴 *¡ESTE CHAT NO ESTÁ REGISTRADO!*', m, fake);
 
@@ -39,4 +39,4 @@ handler.tags = ['grupo'];
 handler.command = ['kirito'];
 handler.admin = true;
 
-export default handler;
+export default handler;*/
