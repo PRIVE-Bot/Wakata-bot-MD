@@ -62,7 +62,7 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
     let menuText = `
 *⌬━━━━▣━━◤🚀◢━━▣━━━━━⌬*
 
-Hola *@${userId.split('@')[0]}* soy *${botname}*
+Hola *@${userId.split('@')[0]}* soy *𝐀𝐬𝐭𝐫𝐨-𝐁𝐨𝐭 ☆*
 
 ╔══════⌬『 🌌 𝑰 𝑵 𝑭 𝑶 🌌』
 ║ ✎ *Cliente:* @${userId.split('@')[0]}
@@ -80,7 +80,7 @@ ${Object.keys(tags).map(tag => {
   const commandsForTag = help.filter(menu => menu.tags.includes(tag));
   if (commandsForTag.length === 0) return ''; 
   return `*┏━━━━▣━━⌬〘 ${tags[tag]} ${getRandomEmoji()} 〙*
-${commandsForTag.map(menu => menu.help.map(help => `┃〘 ${getRandomEmoji()} ${_p}${help} ${menu.limit ? '◜⭐◞' : ''} ${menu.premium ? '◜🪪◞' : ''}`).join('\n')).join('\n')}
+${commandsForTag.map(menu => menu.help.map(help => `➤ ${_p}${help} ${menu.limit ? '◜⭐◞' : ''} ${menu.premium ? '◜🪪◞' : ''}`).join('\n')).join('\n')}
 *┗━━━▣━━⌬⌨⌬━━▣━━━━⌬*`
 }).filter(text => text !== '').join('\n')}
 
