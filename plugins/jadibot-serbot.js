@@ -8,7 +8,7 @@ async function handler(m, { conn }) {
     { numero: '526633900512', nombre: 'Brayan' }
   ];
 
-  const contactos = creadores.map(c => ` wa.me/${c.numero} `${c.nombre})``.join('\n');
+  const contactos = creadores.map(c => ` wa.me/${c.numero} *${c.nombre})*`.join('\n');
 
   const mensaje = `Hola @${m.sender.split('@')[0]}, soy un bot privado 🤖, por lo que no puedo tener subbots.  
 Si deseas agregarme a tu grupo, puedes adquirir una suscripción por 
