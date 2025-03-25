@@ -10,14 +10,20 @@ global.dfail = (type, m, usedPrefix, command, conn) => {
 
   const contactos = creadores.map(c => ` wa.me/${c.numero} (${c.nombre})`).join('\n');
 
-        return conn.reply(m.chat, `Hola @${m.sender.split('@')[0]}, soy un bot privado 🤖, por lo que no puedo tener subbots.  
+  return conn.reply(m.chat, `Hola @${m.sender.split('@')[0]}, soy un bot privado 🤖, por lo que no puedo tener subbots.  
 Si deseas agregarme a tu grupo, puedes adquirir una suscripción por **$2 por semana**, con disponibilidad **24/7**.  
 
 📞 Contacto para más información:  
-${contactos}`, m, fake);
+${contactos}`, m);
+};
 
+const handler = {
+  command: ['serbot', 'code', 'qr'],
+  handler: (m, conn) => {
+    global.dfail(null, m, null, null, conn); // Llamada a la función dfail
+  }
+};
 
-handler.command = ['serbot', 'code', 'qr'];
 export default handler;
 
 
