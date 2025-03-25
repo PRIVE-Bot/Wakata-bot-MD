@@ -89,10 +89,9 @@ ${commandsForTag.map(menu => menu.help.map(help => `┃〘 ${getRandomEmoji()} $
 
     // Usamos las imágenes proporcionadas
     const imageUrls = [
-      'https://files.catbox.moe/ngz0ng.jpg',
-      'https://files.catbox.moe/5olr3c.jpg',
-      'https://files.catbox.moe/9g3348.jpg',
-      'https://files.catbox.moe/91wohc.jpg'
+      'https://files.catbox.moe/3k9jom.jpg',
+      'https://files.catbox.moe/apuobz.jpg',
+      'https://files.catbox.moe/yqxg6l.jpg'
     ];
     let selectedImage = imageUrls[Math.floor(Math.random() * imageUrls.length)];
 
