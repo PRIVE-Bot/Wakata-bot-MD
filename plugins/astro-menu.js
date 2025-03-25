@@ -80,7 +80,7 @@ ${Object.keys(tags).map(tag => {
   const commandsForTag = help.filter(menu => menu.tags.includes(tag));
   if (commandsForTag.length === 0) return ''; 
   return `*┏━━━━▣━━⌬〘 ${tags[tag]} ${getRandomEmoji()} 〙*
-${commandsForTag.map(menu => menu.help.map(help => `➤ ${_p}${help} ${menu.limit ? '◜⭐◞' : ''} ${menu.premium ? '◜🪪◞' : ''}`).join('\n')).join('\n')}
+${commandsForTag.map(menu => menu.help.map(help => `∫➤ ${_p}${help} ${menu.limit ? '◜⭐◞' : ''} ${menu.premium ? '◜🪪◞' : ''}`).join('\n')).join('\n')}
 *┗━━━▣━━⌬⌨⌬━━▣━━━━⌬*`
 }).filter(text => text !== '').join('\n')}
 
