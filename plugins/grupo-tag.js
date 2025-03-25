@@ -1,75 +1,62 @@
-import { generateWAMessageFromContent } from '@whiskeysockets/baileys';
+//code traído por Xi_Crew
+import { generateWAMessageFromContent } from '@whiskeysockets/baileys'
+import * as fs from 'fs'
 
-const handler = async (m, { conn, text, participants }) => {
-  try {
-    const users = participants.map((u) => conn.decodeJid(u.id));
-    const quotedMessage = m.quoted ? m.quoted : m;
-    const quotedText = m.quoted ? await m.getQuotedObj() : m.text || '';
+var handler = async (m, { conn, text, participants, isOwner, isAdmin }) => {
 
-    // Crear mensaje con mención a todos
-    const msg = generateWAMessageFromContent(
-      m.chat,
-      {
-        extendedTextMessage: {
-          text: text || quotedText,
-          contextInfo: { mentionedJid: users },
-        },
-      },
-      { quoted: m, userJid: conn.user.id }
-    );
+  if (!m.quoted && !text) return conn.reply(m.chat, `${emoji} Debes enviar un texto para hacer un tag.`, m)
 
-    // Enviar mensaje con menciones
-    await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id });
-  } catch (err) {
-    console.error('[Error en Hidetag]:', err);
+  try { 
+    let users = participants.map(u => conn.decodeJid(u.id))
+    
+    if (!users.includes(m.sender)) users.push(m.sender)
+    
+    let q = m.quoted ? m.quoted : m || m.text || m.sender
+    let c = m.quoted ? await m.getQuotedObj() : m.msg || m.text || m.sender
 
-    const users = participants.map((u) => conn.decodeJid(u.id));
-    const quoted = m.quoted ? m.quoted : m;
-    const mime = (quoted.msg || quoted).mimetype || '';
-    const isMedia = /image|video|sticker|audio/.test(mime);
-    const messageText = text ? text : '✨ ¡Hola, soy *ASTRO-BOT 🚀*! Estoy aquí para iluminar el grupo. 🌟';
+    
+    let newText = `> ASTRO-BOT TAG\n${text ? text : "*Hola!!*"}\n@${m.sender.split('@')[0]}`
 
-    if (isMedia) {
-      const media = await quoted.download?.();
-      const messageType =
-        mime.includes('image')
-          ? 'image'
-          : mime.includes('video')
-          ? 'video'
-          : mime.includes('audio')
-          ? 'audio'
-          : 'sticker';
+    let msg = conn.cMod(m.chat, generateWAMessageFromContent(m.chat, { [m.quoted ? q.mtype : 'extendedTextMessage']: m.quoted ? c.message[q.mtype] : { text: '' || c }}, { quoted: null, userJid: conn.user.id }), newText, conn.user.jid, { mentions: users })
+    await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
 
-      await conn.sendMessage(
-        m.chat,
-        { [messageType]: media, mentions: users, caption: messageType === 'sticker' ? '' : messageText },
-        { quoted: m }
-      );
+  } catch {  
+    /**
+     [ By @NeKosmic || https://github.com/NeKosmic/ ]
+     **/  
+    let users = participants.map(u => conn.decodeJid(u.id))
+    if (!users.includes(m.sender)) users.push(m.sender)
+    
+    let quoted = m.quoted ? m.quoted : m
+    let mime = (quoted.msg || quoted).mimetype || ''
+    let isMedia = /image|video|sticker|audio/.test(mime)
+    let more = String.fromCharCode(8206)
+    let masss = more.repeat(850)
+    
+    let htextos = `> ASTRO-BOT TAG\n${text ? text : "*Hola!!*"}\n@${m.sender.split('@')[0]}`
+    
+    if ((isMedia && quoted.mtype === 'imageMessage') && htextos) {
+      var mediax = await quoted.download?.()
+      conn.sendMessage(m.chat, { image: mediax, mentions: users, caption: htextos, mentions: users }, { quoted: null })
+    } else if ((isMedia && quoted.mtype === 'videoMessage') && htextos) {
+      var mediax = await quoted.download?.()
+      conn.sendMessage(m.chat, { video: mediax, mentions: users, mimetype: 'video/mp4', caption: htextos }, { quoted: null })
+    } else if ((isMedia && quoted.mtype === 'audioMessage') && htextos) {
+      var mediax = await quoted.download?.()
+      conn.sendMessage(m.chat, { audio: mediax, mentions: users, mimetype: 'audio/mp4', fileName: `Hidetag.mp3` }, { quoted: null })
+    } else if ((isMedia && quoted.mtype === 'stickerMessage') && htextos) {
+      var mediax = await quoted.download?.()
+      conn.sendMessage(m.chat, { sticker: mediax, mentions: users }, { quoted: null })
     } else {
-      const hiddenText = '\u200E'.repeat(850) + `\n🚀 ${messageText} 🚀\n`;
-
-      await conn.sendMessage(
-        m.chat,
-        {
-          text: hiddenText,
-          mentions: users,
-          contextInfo: {
-            externalAdReply: {
-              title: 'ASTRO-BOT 🚀',
-              thumbnailUrl: 'https://whatsapp.com/channel/0029Vb1AFK6HbFV9kaB3b13W',
-              sourceUrl: 'https://whatsapp.com/channel/0029Vb1AFK6HbFV9kaB3b13W',
-            },
-          },
-        },
-        { quoted: m }
-      );
+      await conn.relayMessage(m.chat, { extendedTextMessage: { text: `${masss}\n${htextos}\n`, ...{ contextInfo: { mentionedJid: users, externalAdReply: { thumbnail: icons, sourceUrl: redes } } } } }, {})
     }
   }
-};
+}
+handler.help = ['hidetag']
+handler.tags = ['grupo']
+handler.command = ['hidetag', 'notificar', 'notify', 'tag']
+handler.group = true
+handler.admin = true
+handler.register = true
 
-// **Comando activador**
-handler.command = /^(hidetag|notify|notificar|noti|n|hidetah|hidet)$/i;
-handler.group = true;
-handler.admin = true;
-
-export default handler;
+export default handler
