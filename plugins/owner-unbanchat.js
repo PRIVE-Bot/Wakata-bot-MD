@@ -1,10 +1,42 @@
-    rowner: `*👑 〘 ${comando} 〙 es solo para los creadores, no insistas.*`,
-    owner: `*⚡ 〘 ${comando} 〙 es exclusivo para los desarrolladores. Nivel insuficiente.*`,
-    mods: `*👑 〘 ${comando} 〙 solo para moderadores. ¿Eres uno? No lo creo.*`,
-    premium: `*👑 〘 ${comando} 〙 es un lujo de usuarios premium. Tú aún no estás en ese nivel.*`,
-    group: `*👑 〘 ${comando} 〙 solo funciona en grupos. No intentes engañar al sistema.*`,
-    private: `*⚡ 〘 ${comando} 〙 solo en chat privado. Aquí no, amigo.*`,
-    admin: `*👑 〘 ${comando} 〙 es un poder reservado para administradores.*`,
-    botAdmin: `*⚡ Necesito ser admin para ejecutar 〘 ${comando} 〙 Dame el rango y hablamos.*`,
-    unreg: `*👑 Para usar 〘 ${comando} 〙 primero debes registrarte.*\n\n *⚡ Usa: #${verifyaleatorio} ${user2}.${edadaleatoria}*`,
-    restrict: `*⚡ Esta función está bloqueada. Fin de la historia.*`
+let handler = async (m, { conn, usedPrefix, command, args }) => {
+  if (!(m.chat in global.db.data.chats)) 
+    return conn.reply(m.chat, '🔴 *¡ESTE CHAT NO ESTÁ REGISTRADO!*', m, fake);
+
+  let chat = global.db.data.chats[m.chat];
+
+  if (command === 'kirito') {
+    if (args.length === 0) {
+      const estado = chat.isBanned ? '⚠️ *DESACTIVADO*' : '✅ *ACTIVADO*';
+      const info = `👑 *KIRITO-BOT CONTROL*  
+╭━━━━━━━━━━━━━╮  
+┃ *🔥 COMANDOS DISPONIBLES:*  
+┃ ✦ *${usedPrefix}kirito on* – ⚡ 𝗔𝗰𝘁𝗶𝘃𝗮𝗿  
+┃ ✦ *${usedPrefix}kirito off* – ⚡ 𝗗𝗲𝘀𝗮𝗰𝘁𝗶𝘃𝗮𝗿  
+╰━━━━━━━━━━━━━╯  
+🌟 *Estado actual:* ${estado}`;
+
+      return conn.reply(m.chat, info, m, fake);
+    }
+
+    if (args[0] === 'off') {
+      if (chat.isBanned) 
+        return conn.reply(m.chat, '⭕ *¡KIRITO-BOT YA ESTABA DESACTIVADO!*', m, fake);
+
+      chat.isBanned = true;
+      return conn.reply(m.chat, '⚠️ *¡KIRITO-BOT HA SIDO DESACTIVADO EN ESTE CHAT!*', m, fake);
+    } else if (args[0] === 'on') {
+      if (!chat.isBanned) 
+        return conn.reply(m.chat, '⭕ *¡KIRITO-BOT YA ESTABA ACTIVADO!*', m, fake);
+
+      chat.isBanned = false;
+      return conn.reply(m.chat, '✅ *¡KIRITO-BOT HA SIDO ACTIVADO EN ESTE CHAT!*', m, fake);
+    }
+  }
+};
+
+handler.help = ['kirito'];
+handler.tags = ['grupo'];
+handler.command = ['kirito'];
+handler.admin = true;
+
+export default handler;
