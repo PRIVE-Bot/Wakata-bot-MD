@@ -1,8 +1,12 @@
-const { exec } = require("child_process");
-const fs = require("fs");
+import fetch from "node-fetch";
+import crypto from "crypto";
+import { FormData, Blob } from "formdata-node";
+import { fileTypeFromBuffer } from "file-type";
+import { exec } from "child_process";
+import fs from "fs";
 
 const defaultLang = "es";
-const tempFile = "./tts.mp3"; // Ruta del archivo temporal
+const tempFile = "./stickers/tts.mp3"; // Guarda el audio temporalmente
 
 async function generarTTS(text, lang = defaultLang) {
   return new Promise((resolve, reject) => {
@@ -10,40 +14,37 @@ async function generarTTS(text, lang = defaultLang) {
     const command = `curl -s -o ${tempFile} "${url}"`;
 
     exec(command, (error) => {
-      if (error) return reject("🚫 Error al generar el TTS.");
+      if (error) return reject("Error al generar el TTS.");
       resolve(tempFile);
     });
   });
 }
 
-async function obtenerTTS(text, lang = defaultLang) {
-  if (!text) return null;
-  try {
-    const audioPath = await generarTTS(text, lang);
-    return audioPath;
-  } catch (error) {
-    return null;
-  }
-}
+let handler = async (m, { conn, text, args }) => {
+  if (!text) return conn.reply(m.chat, "⚠️ Por favor, ingresa un texto para convertirlo a voz.", m);
 
-// 📌 Manejador del comando
-async function handler(m, { conn, text }) {
-  if (!text) return conn.reply(m.chat, "🔊 *Uso:* `!tts <texto>`", m);
+  await m.react("⏳");
 
   try {
-    let audioPath = await obtenerTTS(text);
-    if (!audioPath) return conn.reply(m.chat, "🚫 No se pudo generar el audio.", m);
+    let lang = args[0] || defaultLang;
+    let audioPath = await generarTTS(text, lang);
 
-    await conn.sendMessage(m.chat, { audio: { url: audioPath }, mimetype: 'audio/mpeg', ptt: true }, { quoted: m });
+    let txt = `*乂 T E X T - T O - S P E E C H 乂*\n\n`;
+    txt += `*» Texto:* ${text}\n`;
+    txt += `*» Idioma:* ${lang}\n`;
+    txt += `*» Generado por:* ${dev}\n\n`;
 
-    fs.unlinkSync(audioPath); // Eliminar archivo temporal para ahorrar espacio
-  } catch (error) {
-    conn.reply(m.chat, "⚠️ Error al procesar la solicitud.", m);
+    await conn.sendFile(m.chat, fs.readFileSync(audioPath), "tts.mp3", "", m);
+    fs.unlinkSync(audioPath);
+
+    await m.react("✅");
+  } catch {
+    await m.react("❌");
   }
-}
+};
 
 handler.help = ["tts"];
-handler.tags = ["tools"];
+handler.tags = ["herramientas"];
 handler.command = ["tts"];
 
-module.exports = handler;
+export default handler;
