@@ -2,30 +2,32 @@
 // https://github.com/deylinqff
 // No quites créditos
 
-global.dfail = (type, m, usedPrefix, command, conn) => {
+global.dfail = async (type, m, usedPrefix, command, conn, fake) => {
   const creadores = [
     { numero: '50488198573', nombre: 'Deylin' },
     { numero: '526633900512', nombre: 'Brayan' }
   ];
 
-  const contactos = creadores.map(c => ` wa.me/${c.numero} (${c.nombre})`).join('\n');
+  const contactos = creadores.map(c => `wa.me/${c.numero} (${c.nombre})`).join('\n');
 
-  return conn.reply(m.chat, `Hola @${m.sender.split('@')[0]}, soy un bot privado 🤖, por lo que no puedo tener subbots.  
+  const mensaje = `Hola @${m.sender.split('@')[0]}, soy un bot privado 🤖, por lo que no puedo tener subbots.  
 Si deseas agregarme a tu grupo, puedes adquirir una suscripción por **$2 por semana**, con disponibilidad **24/7**.  
 
 📞 Contacto para más información:  
-${contactos}`, m);
+${contactos}`;
+
+  // Enviamos la respuesta con el 'fake' para citar el mensaje si es necesario
+  await conn.reply(m.chat, mensaje, m, fake);
 };
 
-const handler = {
-  command: ['serbot', 'code', 'qr'],
-  handler: (m, conn) => {
-    global.dfail(null, m, null, null, conn); // Llamada a la función dfail
-  }
+// Definimos los comandos para ejecutar la función dfail
+const handler = async (m, { conn }) => {
+  const fake = m; // Definimos 'fake' como el mensaje original para citarlo si es necesario
+  return global.dfail('command', m, usedPrefix, m.command, conn, fake);
 };
 
+handler.command = ['serbot', 'code', 'qr'];
 export default handler;
-
 
 
 
