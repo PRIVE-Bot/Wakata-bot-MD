@@ -1,5 +1,3 @@
-import { promises } from 'fs'
-import { join } from 'path'
 import { xpRange } from '../lib/levelling.js'
 
 let tags = {
@@ -37,43 +35,22 @@ let tags = {
   'custom': 'CUSTOM'
 };
 
-const defaultMenu = {
-  before: `*⌬━━━━━▣━━◤💎◢━━▣━━━━━━⌬*
-
-Hola *@${userId.split('@')[0]}* soy *${botname}*
-
-╔══════⌬『 🌌 𝑰 𝑵 𝑭 𝑶 🌌』
-║ ✎ *Cliente:* @${userId.split('@')[0]}
-║ ✎ *Bot:* ${(conn.user.jid == global.conn.user.jid ? 'Principal 🅥' : 'Prem Bot 🅑')}
-║ ✎ *Modo:* Público
-║ ✎ *Usuarios »* ${totalreg}
-║ ✎ *Tiempo Activo:* ${uptime}
-║ ✎ *Comandos »* ${totalCommands}
-╚══════ ♢.💥.♢ ══════➤
-
-*◤━━━━━ ☆. 🚀 .☆ ━━━━━◥*
- %readmore
-⚙_*𝑳𝑰𝑺𝑻𝑨 𝑫𝑬 𝑪𝑶𝑴𝑨𝑵𝑫𝑶𝑺*_
-`.trimStart(),
-  header: '*┏━━━━▣━━⌬〘 %category %emoji 〙*',
-  body: '┃〘  %emoji %cmd %islimit %isPremium\n',
-  footer: '*┗━━━▣━━⌬⌨⌬━━▣━━━━⌬*',
-  after: `> © kirito-Bot by Deylin`,
-}
-
 let handler = async (m, { conn, usedPrefix: _p }) => {
   try {
-    let name = await conn.getName(m.sender)
-    let mode = global.opts["self"] ? "Privado" : "Público"
+    let userId = m.sender;
+    let botname = conn.user.name || "Kirito-Bot";
+    let mode = global.opts["self"] ? "Privado" : "Público";
+    let totalCommands = Object.keys(global.plugins).length;
+    let totalreg = Object.keys(global.db.data.users).length;
+    let uptime = clockString(process.uptime() * 1000);
 
-    if (!global.db.data.users[m.sender]) {
-      global.db.data.users[m.sender] = { exp: 0, level: 1 }
+    if (!global.db.data.users[userId]) {
+      global.db.data.users[userId] = { exp: 0, level: 1 };
     }
 
-    let { exp, level } = global.db.data.users[m.sender]
-    let { min, xp, max } = xpRange(level, global.multiplier)
-    let totalreg = Object.keys(global.db.data.users).length
-    let muptime = clockString(process.uptime() * 1000)
+    let name = await conn.getName(userId);
+    let { exp, level } = global.db.data.users[userId];
+    let { min, xp, max } = xpRange(level, global.multiplier);
 
     let help = Object.values(global.plugins).filter(plugin => !plugin.disabled).map(plugin => ({
       help: Array.isArray(plugin.help) ? plugin.help : (plugin.help ? [plugin.help] : []),
@@ -82,82 +59,75 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
       premium: plugin.premium,
     }));
 
-    let menuText = [
-      defaultMenu.before,
-      ...Object.keys(tags).map(tag => {
+    let menuText = `
+*⌬━━━━━▣━━◤💎◢━━▣━━━━━━⌬*
 
-        const commandsForTag = help.filter(menu => menu.tags.includes(tag));
+Hola *@${userId.split('@')[0]}* soy *${botname}*
 
-        if (commandsForTag.length === 0) return ''; 
+╔══════⌬『 🌌 𝑰 𝑵 𝑭 𝑶 🌌』
+║ ✎ *Cliente:* @${userId.split('@')[0]}
+║ ✎ *Bot:* ${(conn.user.jid == global.conn.user.jid ? 'Principal 🅥' : 'Prem Bot 🅑')}
+║ ✎ *Modo:* ${mode}
+║ ✎ *Usuarios »* ${totalreg}
+║ ✎ *Tiempo Activo:* ${uptime}
+║ ✎ *Comandos »* ${totalCommands}
+╚══════ ♢.💥.♢ ══════➤
 
-        return defaultMenu.header
-          .replace(/%category/g, tags[tag])
-          .replace(/%emoji/g, getRandomEmoji()) + '\n' + [
-            ...commandsForTag.map(menu =>
-              menu.help.map(help => defaultMenu.body
-                .replace(/%emoji/g, getRandomEmoji()) 
-                .replace(/%cmd/g, _p + help)
-                .replace(/%islimit/g, menu.limit ? '◜⭐◞' : '')
-                .replace(/%isPremium/g, menu.premium ? '◜🪪◞' : '')
-                .trim()
-              ).join('\n')
-            ),
-            defaultMenu.footer
-          ].join('\n')
-      }).filter(text => text !== ''), 
-      defaultMenu.after
-    ].join('\n')
+*◤━━━━━ ☆. 🚀 .☆ ━━━━━◥*
+⚙_*𝑳𝑰𝑺𝑻𝑨 𝑫𝑬 𝑪𝑶𝑴𝑨𝑵𝑫𝑶𝑺*_
 
-    let replace = { 
-      "%": "%", p: _p, mode, muptime, name, 
-      exp: exp,
-      level, 
-      levelprogress: getLevelProgress(exp, min, max),
-      maxexp: xp, 
-      totalexp: exp, 
-      xp4levelup: max - exp,
-      totalreg, 
-      readmore: readMore, 
-    };
+${Object.keys(tags).map(tag => {
+  const commandsForTag = help.filter(menu => menu.tags.includes(tag));
+  if (commandsForTag.length === 0) return ''; 
+  return `*┏━━━━▣━━⌬〘 ${tags[tag]} ${getRandomEmoji()} 〙*
+${commandsForTag.map(menu => menu.help.map(help => `┃〘 ${getRandomEmoji()} ${_p}${help} ${menu.limit ? '◜⭐◞' : ''} ${menu.premium ? '◜🪪◞' : ''}`).join('\n')).join('\n')}
+*┗━━━▣━━⌬⌨⌬━━▣━━━━⌬*`
+}).filter(text => text !== '').join('\n')}
 
-    let text = menuText.replace(new RegExp(`%(${Object.keys(replace).sort((a, b) => b.length - a.length).join`|`})`, 'g'), (_, name) => '' + replace[name])
+> © Kirito-Bot by Deylin
+`;
 
     // Usamos las imágenes proporcionadas
-    const imageUrls = ['https://files.catbox.moe/ngz0ng.jpg', 'https://files.catbox.moe/5olr3c.jpg', 'https://files.catbox.moe/9g3348.jpg', 'https://files.catbox.moe/91wohc.jpg']
-    let selectedImage = imageUrls[Math.floor(Math.random() * imageUrls.length)]
+    const imageUrls = [
+      'https://files.catbox.moe/ngz0ng.jpg',
+      'https://files.catbox.moe/5olr3c.jpg',
+      'https://files.catbox.moe/9g3348.jpg',
+      'https://files.catbox.moe/91wohc.jpg'
+    ];
+    let selectedImage = imageUrls[Math.floor(Math.random() * imageUrls.length)];
 
-    await m.react('🚀')
+    await m.react('🚀');
     await conn.sendMessage(m.chat, { 
       image: { url: selectedImage }, 
-      caption: text.trim(), 
+      caption: menuText.trim(), 
       mentions: [m.sender] 
-    }, { quoted: m, fake })
+    }, { quoted: m });
   } catch (e) {
-    conn.reply(m.chat, '❎ Lo sentimos, el menú tiene un error.', m)
-    throw e
+    conn.reply(m.chat, '❎ Lo sentimos, el menú tiene un error.', m);
+    throw e;
   }
-}
+};
 
-handler.help = ['allmenu']
-handler.tags = ['main']
-handler.command = ['allmenu', 'menucompleto', 'menúcompleto', 'menú', 'menu', 'help'] 
+handler.help = ['allmenu'];
+handler.tags = ['main'];
+handler.command = ['allmenu', 'menucompleto', 'menúcompleto', 'menú', 'menu', 'help']; 
 handler.group = true;
 
-export default handler
+export default handler;
 
-const more = String.fromCharCode(8206)
-const readMore = more.repeat(4001)
+const more = String.fromCharCode(8206);
+const readMore = more.repeat(4001);
 
 function clockString(ms) {
-  let h = Math.floor(ms / 3600000)
-  let m = Math.floor(ms / 60000) % 60
-  let s = Math.floor(ms / 1000) % 60
-  return [h, m, s].map(v => v.toString().padStart(2, 0)).join(':')
+  let h = Math.floor(ms / 3600000);
+  let m = Math.floor(ms / 60000) % 60;
+  let s = Math.floor(ms / 1000) % 60;
+  return [h, m, s].map(v => v.toString().padStart(2, 0)).join(':');
 }
 
 function getRandomEmoji() {
-  const emojis = ['👑', '🔥', '🌟', '⚡']
-  return emojis[Math.floor(Math.random() * emojis.length)]
+  const emojis = ['👑', '🔥', '🌟', '⚡'];
+  return emojis[Math.floor(Math.random() * emojis.length)];
 }
 
 function getLevelProgress(exp, min, max, length = 10) {
