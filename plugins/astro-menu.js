@@ -38,24 +38,20 @@ let tags = {
 };
 
 const defaultMenu = {
-  before: `*⌬━━━━━▣━━◤⌬◢━━▣━━━━━━⌬*
+  before: `*⌬━━━━━▣━━◤💎◢━━▣━━━━━━⌬*
 
-Hola *%name* soy *kirito*
+Hola *@${userId.split('@')[0]}* soy *${botname}*
 
-╔══════⌬『 𝑰𝑵𝑭𝑶-𝑼𝑺𝑬𝑹 』
-║ ✎ Cliente: %name
-║ ✎ Exp: %exp
-║ ✎ Nivel: %level %levelprogress
-╚══════ ♢.✰.♢ ══════
+╔══════⌬『 🌌 𝑰 𝑵 𝑭 𝑶 🌌』
+║ ✎ *Cliente:* @${userId.split('@')[0]}
+║ ✎ *Bot:* ${(conn.user.jid == global.conn.user.jid ? 'Principal 🅥' : 'Prem Bot 🅑')}
+║ ✎ *Modo:* Público
+║ ✎ *Usuarios »* ${totalreg}
+║ ✎ *Tiempo Activo:* ${uptime}
+║ ✎ *Comandos »* ${totalCommands}
+╚══════ ♢.💥.♢ ══════➤
 
-╔═══════⌬『 𝑰𝑵𝑭𝑶-𝑩𝑶𝑻 』
-║ ✎ Bot: Kirito-Bot MD 
-║ ✎ Modo: %mode
-║ ✎ Tiempo Activo: %muptime
-║ ✎ Usuarios: %totalreg 
-╚══════ ♢.✰.♢ ══════
-
-*◤━━━━━ ☆. ⌬ .☆ ━━━━━◥*
+*◤━━━━━ ☆. 🚀 .☆ ━━━━━◥*
  %readmore
 ⚙_*𝑳𝑰𝑺𝑻𝑨 𝑫𝑬 𝑪𝑶𝑴𝑨𝑵𝑫𝑶𝑺*_
 `.trimStart(),
