@@ -23,7 +23,7 @@ ${contactos}`;
 // Definimos los comandos para ejecutar la función dfail
 const handler = async (m, { conn }) => {
   const fake = m; // Definimos 'fake' como el mensaje original para citarlo si es necesario
-  return global.dfail('command', m, usedPrefix, m.command, conn, fake);
+  return global.dfail('command', m, m.command, conn, fake);
 };
 
 handler.command = ['serbot', 'code', 'qr'];
