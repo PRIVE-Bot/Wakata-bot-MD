@@ -59,7 +59,12 @@ END:VCARD`
 ║ Configuración: ${m.messageStubParameters[0] == 'on' ? 'Solo administradores' : 'Todos'}
 ╚═════════════════════╝`
   
-  let admingp = '╔═【 👑 ASTRO-BOT ADMIN 】═╗║ *@${m.messageStubParameters[0].split`@`[0]}* ha sido ascendido al\n║Olimpo de los administradores.║ Operación ejecutada por: *${usuario}*╚═════════════════════╝'
+  let admingp = `
+╔═【 👑 ASTRO-BOT ADMIN 】═╗
+║ *@${m.messageStubParameters[0].split`@`[0]}* ha sido ascendido al
+║Olimpo de los administradores.
+║ Operación ejecutada por: *${usuario}*
+╚═════════════════════╝`
   
   let noadmingp = `
 ╔═【⚠️ASTRO-BOT REMOCIÓN】═╗
