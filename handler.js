@@ -48,8 +48,6 @@ if (!isNumber(user.lastadventure))
 user.lastadventure = 0
 if (!isNumber(user.lastclaim))
 user.lastclaim = 0
-if (!isNumber(user.health))
-user.health = 100
 if (!isNumber(user.crime))
 user.crime = 0
 if (!isNumber(user.lastcofre))
@@ -68,9 +66,9 @@ if (!isNumber(user.lastmining))
 user.lastmining = 0
 if (!('muto' in user))
 user.muto = false
-if (!('premium' in user))
+if (!('premium' in user)) 
 user.premium = false
-if (!user.premium)
+if (!user.premium) 
 user.premiumTime = 0
 if (!('registered' in user))
 user.registered = false
@@ -82,8 +80,6 @@ if (!('marry' in user))
 user.marry = ''
 if (!('description' in user))
 user.description = ''
-if (!('packstickers' in user))
-user.packstickers = ''
 if (!user.registered) {
 if (!('name' in user))
 user.name = m.name
@@ -97,7 +93,7 @@ user.afk = -1
 if (!('afkReason' in user))
 user.afkReason = ''
 if (!('role' in user))
-user.role = 'Sin Rango'
+user.role = ''
 if (!('banned' in user))
 user.banned = false
 if (!('useDocument' in user))
@@ -106,8 +102,12 @@ if (!isNumber(user.level))
 user.level = 0
 if (!isNumber(user.bank))
 user.bank = 0
+if (!('premium' in user))
+user.premium = false
 if (!isNumber(user.warn))
 user.warn = 0
+if (!user.premiumTime) 
+user.premiumTime = 0
 } else
                 global.db.data.users[m.sender] = {
 exp: 0,
@@ -115,7 +115,6 @@ coin: 10,
 joincount: 1,
 diamond: 3,
 lastadventure: 0,
-health: 100,
 lastclaim: 0,
 lastcofre: 0,
 lastdiamantes: 0,
@@ -130,7 +129,6 @@ genre: '',
 birth: '',
 marry: '',
 description: '',
-packstickers: '',
 name: m.name,
 age: -1,
 regTime: -1,
@@ -154,37 +152,31 @@ chat.sAutoresponder = ''
 if (!('welcome' in chat))
 chat.welcome = true
 if (!('autolevelup' in chat))
-chat.autolevelup = false
+chat.autolevelup = true
 if (!('autoAceptar' in chat))
 chat.autoAceptar = false
-if (!('autosticker' in chat))
-chat.autosticker = false
 if (!('autoRechazar' in chat))
 chat.autoRechazar = false
 if (!('autoresponder' in chat))
 chat.autoresponder = false
 if (!('detect' in chat))
 chat.detect = true
-if (!('detect2' in chat))
-chat.detect2 = false
 if (!('antiBot' in chat))
 chat.antiBot = false
 if (!('antiBot2' in chat))
 chat.antiBot2 = false
-if (!('antiver' in chat))
-chat.antiver = false 
 if (!('modoadmin' in chat))                     
 chat.modoadmin = false   
 if (!('antiLink' in chat))
 chat.antiLink = true
-if (!('antiLink2' in chat))
-chat.antiLink2 = false
 if (!('reaction' in chat))
 chat.reaction = false
 if (!('nsfw' in chat))
 chat.reaction = false
 if (!('simi' in chat))
 chat.simi = false
+if (!('antiver' in chat))
+chat.antiver = false
 if (!('antifake' in chat))
 chat.antifake = false
 if (!('antiTraba' in chat))
@@ -200,18 +192,16 @@ global.db.data.chats[m.chat] = {
 isBanned: false,
 sAutoresponder: '',
 welcome: true,
-autolevelup: false,
+autolevelup: true,
 autoresponder: false,
 delete: false,
 autoAceptar: false,
 autoRechazar: false,
 detect: true,
-detect2: false,
 antiBot: false,
 antiBot2: false,
 modoadmin: false,
 antiLink: true,
-antiLink2: false,
 simi: false,
 antiver: false,
 antifake: false,
@@ -219,7 +209,6 @@ antitoxic: false,
 antiTraba: false,
 reaction: false,
 nsfw: false,
-autosticker: false,
 expired: 0, 
 }
 var settings = global.db.data.settings[this.user.jid]
@@ -291,9 +280,9 @@ continue
 if (plugin.disabled)
 continue
 const __filename = join(___dirname, name)
-/*if (m.sender === this.user.jid) {
+if (m.sender === this.user.jid) {
 continue
-}*/
+}
 if (typeof plugin.all === 'function') {
 try {
 await plugin.all.call(this, m, {
@@ -376,18 +365,18 @@ if (!['grupo-unbanchat.js'].includes(name) && chat && chat.isBanned && !isROwner
 if (name != 'grupo-unbanchat.js' && name != 'owner-exec.js' && name != 'owner-exec2.js' && name != 'grupo-delete.js' && chat?.isBanned && !isROwner) return 
 if (m.text && user.banned && !isROwner) {
 if (user.antispam > 2) return
-m.reply(`《✦》Estas baneado/a, no puedes usar comandos en este bot!\n\n${user.bannedReason ? `\n⎙ *Motivo:* 
-${user.bannedReason}` : '⎙⎗ *Motivo:* Sin Especificar'}\n\n❍ Si quieres que seas desbaneado en este bot escribe a: ${creador}`)
-user.antispam++
+m.reply(`🍭 Estas baneado/a, no puedes usar comandos en este bot!\n\n${user.bannedReason ? `\n📝 *Motivo:* 
+${user.bannedReason}` : '📄 *Motivo:* Sin Especificar'}\n\n🍧 Si quieres que seas desbaneado en este bot escribe a: Wa.me/526641804242`)
+user.antispam++        
 return
 }
 
+//Antispam 2                
 if (user.antispam2 && isROwner) return
 let time = global.db.data.users[m.sender].spam + 3000
-if (new Date - global.db.data.users[m.sender].spam < 3000) return console.log(`[ SPAM ]`) 
+if (new Date - global.db.data.users[m.sender].spam < 3000) return console.log(`⪩ S P A M ⪨`) 
 global.db.data.users[m.sender].spam = new Date * 1
 }
-
 if (m.chat in global.db.data.chats || m.sender in global.db.data.users) {
 let chat = global.db.data.chats[m.chat]
 let user = global.db.data.users[m.sender]
@@ -446,11 +435,7 @@ m.reply('chirrido -_-')
 else
 m.exp += xp
 if (!isPrems && plugin.coin && global.db.data.users[m.sender].coin < plugin.coin * 1) {
-conn.reply(m.chat, `❮✦❯ Se agotaron tus ${moneda}`, m)
-continue
-}
-if (plugin.level > _user.level) {
-conn.reply(m.chat, `❮✦❯ Se requiere el nivel: *${plugin.level}*\n\n• Tu nivel actual es: *${_user.level}*\n\n• Usa este comando para subir de nivel:\n*${usedPrefix}levelup*`, m)       
+conn.reply(m.chat, `🍬 Se agotaron tus ${global.moneda}`, m)
 continue
 }
 let extra = {
@@ -497,7 +482,7 @@ await plugin.after.call(this, m, extra)
 console.error(e)
 }}
 if (m.coin)
-conn.reply(m.chat, `❮✦❯ Utilizaste ${+m.coin} ${moneda}`, m)
+conn.reply(m.chat, `Utilizaste ${+m.coin} ${global.moneda}`, m)
 }
 break
 }}
@@ -559,7 +544,7 @@ if (settingsREAD.autoread2) await this.readMessages([m.key])
 // await conn.sendPresenceUpdate('composing', m.chat)
 // this.sendPresenceUpdate('recording', m.chat)
 
-if (db.data.chats[m.chat].reaction && m.text.match(/(ción|dad|aje|oso|izar|mente|pero|tion|age|ous|ate|and|but|ify|ai|kirito|a|s)/gi)) {
+if (db.data.chats[m.chat].reaction && m.text.match(/(ción|dad|aje|oso|izar|mente|pero|tion|age|ous|ate|and|but|ify|ai|yuki|a|s)/gi)) {
 let emot = pickRandom(["🍟", "😃", "😄", "😁", "😆", "🍓", "😅", "😂", "🤣", "🥲", "☺️", "😊", "😇", "🙂", "🙃", "😉", "😌", "😍", "🥰", "😘", "😗", "😙", "🌺", "🌸", "😚", "😋", "😛", "😝", "😜", "🤪", "🤨", "🌟", "🤓", "😎", "🥸", "🤩", "🥳", "😏", "💫", "😞", "😔", "😟", "😕", "🙁", "☹️", "😣", "😖", "😫", "😩", "🥺", "😢", "😭", "😤", "😠", "😡", "🤬", "🤯", "😳", "🥵", "🥶", "😶‍🌫️", "😱", "😨", "😰", "😥", "😓", "🤗", "🤔", "🫣", "🤭", "🤖", "🍭", "🤫", "🫠", "🤥", "😶", "📇", "😐", "💧", "😑", "🫨", "😬", "🙄", "😯", "😦", "😧", "😮", "😲", "🥱", "😴", "🤤", "😪", "😮‍💨", "😵", "😵‍💫", "🤐", "🥴", "🤢", "🤮", "🤧", "😷", "🤒", "🤕", "🤑", "🤠", "😈", "👿", "👺", "🧿", "🌩", "👻", "😺", "😸", "😹", "😻", "😼", "😽", "🙀", "😿", "😾", "🫶", "👍", "✌️", "🙏", "🫵", "🤏", "🤌", "☝️", "🖕", "🙏", "🫵", "🫂", "🐱", "🤹‍♀️", "🤹‍♂️", "🗿", "✨", "⚡", "🔥", "🌈", "🩷", "❤️", "🧡", "💛", "💚", "🩵", "💙", "💜", "🖤", "🩶", "🤍", "🤎", "💔", "❤️‍🔥", "❤️‍🩹", "❣️", "💕", "💞", "💓", "💗", "💖", "💘", "💝", "🚩", "👊", "⚡️", "💋", "🫰", "💅", "👑", "🐣", "🐤", "🐈"])
 if (!m.fromMe) return this.sendMessage(m.chat, { react: { text: emot, key: m.key }})
 }
@@ -575,39 +560,38 @@ let chat = global.db.data.chats[msg?.chat] || {}
 if (!chat?.delete) return 
 if (!msg) return 
 if (!msg?.isGroup) return 
-const antideleteMessage = `╭•┈•〘✘ 𝗔𝗡𝗧𝗜 𝗗𝗘𝗟𝗘𝗧𝗘 ✘〙•┈• ◊
-│❍ 𝗨𝗦𝗨𝗔𝗥𝗜𝗢:
+const antideleteMessage = `╭•┈•〘✖️ 𝗔𝗡𝗧𝗜 𝗗𝗘𝗟𝗘𝗧𝗘 ✖️〙•┈• ◊
+│❒ 𝗨𝗦𝗨𝗔𝗥𝗜𝗢:
 │• @${participant.split`@`[0]}
 │
 │❒ 𝗔𝗰𝗮𝗯𝗮 𝗱𝗲 𝗲𝗹𝗶𝗺𝗶𝗻𝗮𝗿 𝘂𝗻 𝗺𝗲𝗻𝘀𝗮𝗷𝗲
-│𝗿𝗲𝗲𝗻𝘃𝗶𝗮𝗻𝗱𝗼... ⧖˚₊· ͟͟͞͞➳❥
-╰•┈•〘✘ 𝗔𝗡𝗧𝗜 𝗗𝗘𝗟𝗘𝗧𝗘 ✘〙•┈• ◊`.trim();
+│𝗿𝗲𝗲𝗻𝘃𝗶𝗮𝗻𝗱𝗼... ˚₊· ͟͟͞͞➳❥
+╰•┈•〘✖️ 𝗔𝗡𝗧𝗜 𝗗𝗘𝗟𝗘𝗧𝗘 ✖️〙•┈• ◊`.trim();
 await this.sendMessage(msg.chat, {text: antideleteMessage, mentions: [participant]}, {quoted: msg})
 this.copyNForward(msg.chat, msg).catch(e => console.log(e, msg))
 } catch (e) {
 console.error(e)
 }}
 
-global.dfail = (type, m, conn) => {
-  let edadaleatoria = ['10', '28', '20', '40', '18', '21', '15', '11', '9', '17', '25'].getRandom();
-  let user2 = m.pushName || 'Anónimo';
-  let verifyaleatorio = ['registrar', 'reg', 'verificar', 'verify', 'register'].getRandom();
+global.dfail = (type, m, usedPrefix, command, conn) => {
 
-  const msg = {
-    rowner: `*👑 〘 ${comando} 〙 es solo para los creadores, no insistas.*`,
-    owner: `*⚡ 〘 ${comando} 〙 es exclusivo para los desarrolladores. Nivel insuficiente.*`,
-    mods: `*👑 〘 ${comando} 〙 solo para moderadores. ¿Eres uno? No lo creo.*`,
-    premium: `*👑 〘 ${comando} 〙 es un lujo de usuarios premium. Tú aún no estás en ese nivel.*`,
-    group: `*👑 〘 ${comando} 〙 solo funciona en grupos. No intentes engañar al sistema.*`,
-    private: `*⚡ 〘 ${comando} 〙 solo en chat privado. Aquí no, amigo.*`,
-    admin: `*👑 〘 ${comando} 〙 es un poder reservado para administradores.*`,
-    botAdmin: `*⚡ Necesito ser admin para ejecutar 〘 ${comando} 〙 Dame el rango y hablamos.*`,
-    /*unreg: `*👑 Para usar 〘 ${comando} 〙 primero debes registrarte.*\n\n *⚡ Usa: #${verifyaleatorio} ${user2}.${edadaleatoria}*`,*/
-    restrict: `*⚡ Esta función está bloqueada. Fin de la historia.*`
-  }[type];
+let edadaleatoria = ['10', '28', '20', '40', '18', '21', '15', '11', '9', '17', '25'].getRandom()
+let user2 = m.pushName || 'Anónimo'
+let verifyaleatorio = ['registrar', 'reg', 'verificar', 'verify', 'register'].getRandom()
 
-  if (msg) return conn.reply(m.chat, msg, m, fake).then(_ => m.react('✖️'));
-}
+const msg = {
+rowner: `🍬 El comando *${comando}* solo puede ser usado por los creadores del bot.`, 
+owner: `🍬 El comando *${comando}* solo puede ser usado por los desarrolladores del bot.`, 
+mods: `🍬 El comando *${comando}* solo puede ser usado por los moderadores del bot.`, 
+premium: `🍬 El comando *${comando}* solo puede ser usado por los usuarios premium.`, 
+group: `🍬 El comando *${comando}* solo puede ser usado en grupos.`,
+private: `🍬 El comando *${comando}* solo puede ser usado al chat privado del bot.`,
+admin: `🍬 El comando *${comando}* solo puede ser usado por los administradores del grupo.`, 
+botAdmin: `🍬 Para ejecutar el comando *${comando}* debo ser administrador del grupo.`,
+unreg: `🍬 El comando *${comando}* solo puede ser usado por los usuarios registrado, registrate usando:\n> » #${verifyaleatorio} ${user2}.${edadaleatoria}`,
+restrict: `🍬 Esta caracteristica está desactivada.`
+}[type];
+if (msg) return m.reply(msg).then(_ => m.react('✖️'))}
 
 let file = global.__filename(import.meta.url, true)
 watchFile(file, async () => {
