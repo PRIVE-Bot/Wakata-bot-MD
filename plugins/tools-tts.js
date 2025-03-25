@@ -1,12 +1,8 @@
-import fetch from "node-fetch";
-import crypto from "crypto";
-import { FormData, Blob } from "formdata-node";
-import { fileTypeFromBuffer } from "file-type";
-import { exec } from "child_process";
-import fs from "fs";
+const { exec } = require("child_process");
+const fs = require("fs");
 
 const defaultLang = "es";
-const tempFile = "./tts.mp3"; // Guarda el audio temporalmente
+const tempFile = "./tts.mp3"; // Ruta del archivo temporal
 
 async function generarTTS(text, lang = defaultLang) {
   return new Promise((resolve, reject) => {
@@ -14,37 +10,40 @@ async function generarTTS(text, lang = defaultLang) {
     const command = `curl -s -o ${tempFile} "${url}"`;
 
     exec(command, (error) => {
-      if (error) return reject("Error al generar el TTS.");
+      if (error) return reject("🚫 Error al generar el TTS.");
       resolve(tempFile);
     });
   });
 }
 
-let handler = async (m, { conn, text, args }) => {
-  if (!text) return conn.reply(m.chat, "⚠️ Por favor, ingresa un texto para convertirlo a voz.", m);
+async function obtenerTTS(text, lang = defaultLang) {
+  if (!text) return null;
+  try {
+    const audioPath = await generarTTS(text, lang);
+    return audioPath;
+  } catch (error) {
+    return null;
+  }
+}
 
-  await m.react("⏳");
+// 📌 Manejador del comando
+async function handler(m, { conn, text }) {
+  if (!text) return conn.reply(m.chat, "🔊 *Uso:* `!tts <texto>`", m);
 
   try {
-    let lang = args[0] || defaultLang;
-    let audioPath = await generarTTS(text, lang);
+    let audioPath = await obtenerTTS(text);
+    if (!audioPath) return conn.reply(m.chat, "🚫 No se pudo generar el audio.", m);
 
-    let txt = `*乂 T E X T - T O - S P E E C H 乂*\n\n`;
-    txt += `*» Texto:* ${text}\n`;
-    txt += `*» Idioma:* ${lang}\n`;
-    txt += `*» Generado por:* ${dev}\n\n`;
+    await conn.sendMessage(m.chat, { audio: { url: audioPath }, mimetype: 'audio/mpeg', ptt: true }, { quoted: m });
 
-    await conn.sendFile(m.chat, fs.readFileSync(audioPath), "tts.mp3", "", m);
-    fs.unlinkSync(audioPath);
-
-    await m.react("✅");
-  } catch {
-    await m.react("❌");
+    fs.unlinkSync(audioPath); // Eliminar archivo temporal para ahorrar espacio
+  } catch (error) {
+    conn.reply(m.chat, "⚠️ Error al procesar la solicitud.", m);
   }
-};
+}
 
 handler.help = ["tts"];
-handler.tags = ["herramientas"];
+handler.tags = ["tools"];
 handler.command = ["tts"];
 
-export default handler;
+module.exports = handler;
