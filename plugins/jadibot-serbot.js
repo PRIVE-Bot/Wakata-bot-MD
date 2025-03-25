@@ -16,8 +16,6 @@ Si deseas agregarme a tu grupo, puedes adquirir una suscripción por **$2 por se
 📞 Contacto para más información:  
 ${contactos}`;
 
-  await conn.sendMessage(m.chat, { text: mensaje, mentions: [m.sender] }, { quoted: m });
-}
 
 handler.command = ['serbot', 'code', 'qr'];
 export default handler;
