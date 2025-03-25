@@ -9,24 +9,27 @@ var handler = async (m, { conn, text, participants, isOwner, isAdmin }) => {
   try { 
     let users = participants.map(u => conn.decodeJid(u.id))
     
-    if (!users.includes(m.sender)) users.push(m.sender)
-    
+    let newText = `> ASTRO-BOT TAG\n${text ? text : "*Hola!!*"}\n@${m.sender.split('@')[0]}`
     let q = m.quoted ? m.quoted : m || m.text || m.sender
     let c = m.quoted ? await m.getQuotedObj() : m.msg || m.text || m.sender
-
-    
-    let newText = `> ASTRO-BOT TAG\n${text ? text : "*Hola!!*"}\n@${m.sender.split('@')[0]}`
-
-    let msg = conn.cMod(m.chat, generateWAMessageFromContent(m.chat, { [m.quoted ? q.mtype : 'extendedTextMessage']: m.quoted ? c.message[q.mtype] : { text: '' || c }}, { quoted: null, userJid: conn.user.id }), newText, conn.user.jid, { mentions: users })
+    let msg = conn.cMod(
+      m.chat, 
+      generateWAMessageFromContent(
+        m.chat, 
+        { [m.quoted ? q.mtype : 'extendedTextMessage']: m.quoted ? c.message[q.mtype] : { text: '' || c }}, 
+        { quoted: null, userJid: conn.user.id }
+      ), 
+      newText, 
+      conn.user.jid, 
+      { mentions: users }
+    )
     await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
 
   } catch {  
     /**
-     [ By @NeKosmic || https://github.com/NeKosmic/ ]
-     **/  
+    [ By @NeKosmic || https://github.com/NeKosmic/ ]
+    **/  
     let users = participants.map(u => conn.decodeJid(u.id))
-    if (!users.includes(m.sender)) users.push(m.sender)
-    
     let quoted = m.quoted ? m.quoted : m
     let mime = (quoted.msg || quoted).mimetype || ''
     let isMedia = /image|video|sticker|audio/.test(mime)
@@ -37,7 +40,7 @@ var handler = async (m, { conn, text, participants, isOwner, isAdmin }) => {
     
     if ((isMedia && quoted.mtype === 'imageMessage') && htextos) {
       var mediax = await quoted.download?.()
-      conn.sendMessage(m.chat, { image: mediax, mentions: users, caption: htextos, mentions: users }, { quoted: null })
+      conn.sendMessage(m.chat, { image: mediax, mentions: users, caption: htextos }, { quoted: null })
     } else if ((isMedia && quoted.mtype === 'videoMessage') && htextos) {
       var mediax = await quoted.download?.()
       conn.sendMessage(m.chat, { video: mediax, mentions: users, mimetype: 'video/mp4', caption: htextos }, { quoted: null })
@@ -48,7 +51,11 @@ var handler = async (m, { conn, text, participants, isOwner, isAdmin }) => {
       var mediax = await quoted.download?.()
       conn.sendMessage(m.chat, { sticker: mediax, mentions: users }, { quoted: null })
     } else {
-      await conn.relayMessage(m.chat, { extendedTextMessage: { text: `${masss}\n${htextos}\n`, ...{ contextInfo: { mentionedJid: users, externalAdReply: { thumbnail: icons, sourceUrl: redes } } } } }, {})
+      await conn.relayMessage(
+        m.chat, 
+        { extendedTextMessage: { text: `${masss}\n${htextos}\n`, contextInfo: { mentionedJid: users, externalAdReply: { thumbnail: icons, sourceUrl: redes } } } }, 
+        {}
+      )
     }
   }
 }
