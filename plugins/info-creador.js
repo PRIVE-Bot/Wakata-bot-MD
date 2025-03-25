@@ -9,15 +9,19 @@ async function handler(m, { conn }) {
 
   const creadores = [
     { numero: '50488198573', nombre: 'Deylin', empresa: 'Deylin - creador de bots' },
-    { numero: '526633900512', nombre: 'Brayan', empresa: 'creador de bots'' }
+    { numero: '526633900512', nombre: 'Brayan', empresa: 'Creador de bots' }
   ];
 
   const contactos = [];
 
   for (const creador of creadores) {
     const ownerJid = creador.numero + '@s.whatsapp.net';
-    const name = (await conn.getName(ownerJid)) || creador.nombre;
-    const about = (await conn.fetchStatus(ownerJid).catch(() => {}))?.status || 'Sin descripción';
+    
+    
+    const name = (await conn.getName(ownerJid).catch(() => null)) || creador.nombre;
+    
+    
+    const about = (await conn.fetchStatus(ownerJid).catch(() => null))?.status || 'Sin descripción';
 
     const vcard = `
 BEGIN:VCARD
