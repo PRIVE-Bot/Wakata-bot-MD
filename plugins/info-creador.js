@@ -17,11 +17,23 @@ async function handler(m, { conn }) {
   for (const creador of creadores) {
     const ownerJid = creador.numero + '@s.whatsapp.net';
     
-    
-    const name = (await conn.getName(ownerJid).catch(() => null)) || creador.nombre;
-    
-    
-    const about = (await conn.fetchStatus(ownerJid).catch(() => null))?.status || 'Sin descripción';
+    let name = creador.nombre;
+    let about = 'Sin descripción';
+
+    try {
+      name = await conn.getName(ownerJid) || creador.nombre;
+    } catch (e) {
+      console.error(`Error al obtener el nombre de ${creador.numero}:`, e);
+    }
+
+    try {
+      const status = await conn.fetchStatus(ownerJid);
+      if (status?.status) {
+        about = status.status;
+      }
+    } catch (e) {
+      console.error(`Error al obtener la descripción de ${creador.numero}:`, e);
+    }
 
     const vcard = `
 BEGIN:VCARD
