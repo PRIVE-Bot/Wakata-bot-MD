@@ -67,8 +67,9 @@ END:VCARD`
 ╚═════════════════════╝`
   
   let noadmingp = `
-╔═【⚠️ASTRO-BOT REMOCIÓN】═╗
-║ *@${m.messageStubParameters[0].split`@`[0]}* ha descendido de su trono de administrador.
+╔═【ASTRO-BOT REMOCIÓN】═╗
+║ *@${m.messageStubParameters[0].split`@`[0]}* ha descendido
+║de su trono de administrador.
 ║ Acción realizada por: *${usuario}*
 ╚═════════════════════╝`
 
