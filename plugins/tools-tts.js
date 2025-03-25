@@ -6,7 +6,7 @@ import { exec } from "child_process";
 import fs from "fs";
 
 const defaultLang = "es";
-const tempFile = "./stickers/tts.mp3"; // Guarda el audio temporalmente
+const tempFile = "./tts.mp3"; // Guarda el audio temporalmente
 
 async function generarTTS(text, lang = defaultLang) {
   return new Promise((resolve, reject) => {
