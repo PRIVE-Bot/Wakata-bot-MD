@@ -511,18 +511,18 @@ console.error(e)
 
 global.dfail = (type, m, conn) => {
 const msg = {
-rowner: '《★》Esta función solo puede ser usada por mi creador', 
-owner: '《★》Esta función solo puede ser usada por mi desarrollador.', 
-mods: '《★》Esta función solo puede ser usada por los moderadores del bot', 
-premium: '《★》Esta función solo es para usuarios Premium.', 
-group: '《★》Esta funcion solo puede ser ejecutada en grupos.', 
-private: '《★》Esta función solo puede ser usada en chat privado.', 
-admin: '《★》Este comando solo puede ser usado por admins.', 
-botAdmin: '《★》Para usar esta función debo ser admin.',
-unreg: `《★》No te encuentras registrado, registrese para usar esta función\n*/reg nombre.edad*\n\n*Ejemplo* : */reg Crow.18*`,
-restrict: '《★》Esta característica esta desactivada.'
+    rowner: `*👑 〘 ${comando} 〙 es solo para los creadores, no insistas.*`,
+    owner: `*⚡ 〘 ${comando} 〙 es exclusivo para los desarrolladores. Nivel insuficiente.*`,
+    mods: `*👑 〘 ${comando} 〙 solo para moderadores. ¿Eres uno? No lo creo.*`,
+    premium: `*👑 〘 ${comando} 〙 es un lujo de usuarios premium. Tú aún no estás en ese nivel.*`,
+    group: `*👑 〘 ${comando} 〙 solo funciona en grupos. No intentes engañar al sistema.*`,
+    private: `*⚡ 〘 ${comando} 〙 solo en chat privado. Aquí no, amigo.*`,
+    admin: `*👑 〘 ${comando} 〙 es un poder reservado para administradores.*`,
+    botAdmin: `*⚡ Necesito ser admin para ejecutar 〘 ${comando} 〙 Dame el rango y hablamos.*`,
+    //unreg: `*👑 Para usar 〘 ${comando} 〙 primero debes registrarte.*\n\n *⚡ Usa: #${verifyaleatorio} ${user2}.${edadaleatoria}*`,
+    restrict: `*⚡ Esta función está bloqueada. Fin de la historia.*`
 }[type];
-if (msg) return conn.reply(m.chat, msg, m, rcanal).then(_ => m.react('✖️'))}
+if (msg) return conn.reply(m.chat, msg, m, fake).then(_ => m.react('✖️'))}
 
 let file = global.__filename(import.meta.url, true)
 watchFile(file, async () => {
