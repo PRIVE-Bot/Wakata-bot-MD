@@ -9,7 +9,7 @@ async function handler(m, { conn }) {
 
   const creadores = [
     { numero: '50488198573', nombre: 'Deylin', descripcion: 'Creador de bots y desarrollador' },
-    { numero: '526633900512', nombre: 'Brayan', descripcion: 'Experto en tecnología y automatización' }
+    { numero: '+52 663 390 0512', nombre: 'Brayan', descripcion: 'Experto en tecnología y automatización' }
   ];
 
   const contactos = creadores.map(creador => ({
