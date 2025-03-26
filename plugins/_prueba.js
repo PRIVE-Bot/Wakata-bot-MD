@@ -1,6 +1,6 @@
 let recordatorios = {};
 
-async function handler(m, { args, command, isAdmin, isBotAdmin, groupMetadata }) {
+async function handler(m, { args, command, isAdmin }) {
     if (!isAdmin) return m.reply('Solo los administradores pueden usar este comando.');
 
     if (command === 'recordatorio') {
@@ -12,19 +12,27 @@ async function handler(m, { args, command, isAdmin, isBotAdmin, groupMetadata })
         let mensaje = args.slice(1).join(' ');
         let chatId = m.chat;
 
-        if (recordatorios[chatId]) clearInterval(recordatorios[chatId]);
+        if (recordatorios[chatId]) clearTimeout(recordatorios[chatId].timeout);
 
-        recordatorios[chatId] = setInterval(() => {
-            conn.sendMessage(chatId, { text: `🔔 *Recordatorio:* ${mensaje}` });
-        }, tiempo * 60000);
+        let contador = 0;
+        function enviarRecordatorio() {
+            if (contador < 2) {
+                conn.sendMessage(chatId, { text: `> 🔔 *Recordatorio:*\n\n ${mensaje}` });
+                contador++;
+                recordatorios[chatId].timeout = setTimeout(enviarRecordatorio, tiempo * 60000);
+            } else {
+                delete recordatorios[chatId];
+            }
+        }
 
-        m.reply(`✅ Recordatorio activado: *"${mensaje}"* cada ${tiempo} minuto(s).`);
+        recordatorios[chatId] = { timeout: setTimeout(enviarRecordatorio, tiempo * 60000) };
+        m.reply(`✅ Recordatorio activado: *"${mensaje}"* cada ${tiempo} minuto(s), se enviará 2 veces.`);
     }
 
     if (command === 'cancelarrecordatorio') {
         let chatId = m.chat;
         if (recordatorios[chatId]) {
-            clearInterval(recordatorios[chatId]);
+            clearTimeout(recordatorios[chatId].timeout);
             delete recordatorios[chatId];
             m.reply('❌ Recordatorio cancelado.');
         } else {
@@ -36,6 +44,7 @@ async function handler(m, { args, command, isAdmin, isBotAdmin, groupMetadata })
 handler.help = ['recordatorio', 'cancelarrecordatorio'];
 handler.tags = ['grupo'];
 handler.command = ['recordatorio', 'cancelarrecordatorio'];
+handler.register = true;
 handler.group = true;
 
 export default handler;
