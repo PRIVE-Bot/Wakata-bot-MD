@@ -1,42 +1,15 @@
-let handler = async (m, { conn, usedPrefix, command, args }) => {
-  if (!(m.chat in global.db.data.chats)) 
-    return conn.reply(m.chat, '🔴 *¡ESTE CHAT NO ESTÁ REGISTRADO!*', m, fake);
+let handler = async (m, { conn }) => {
+if (!(m.chat in global.db.data.chats)) return conn.reply(m.chat, '🎌 *¡Este chat no está registrado!*', m, fake)
+let chat = global.db.data.chats[m.chat]
+if (!chat.isBanned) return conn.reply(m.chat, '《★》El bot no está baneado en este chat', m, fake)
+chat.isBanned = false
+await conn.reply(m.chat, `《★》el bot ya fué desbaneado en este chat.`, m, fake)
+}
+handler.help = ['unbanchat'];
+handler.tags = ['owner'];
+handler.command = ['unbanchat','desbanearchat','desbanchat']
+handler.prems = true 
+handler.botAdmin = false
+handler.group = false
 
-  let chat = global.db.data.chats[m.chat];
-
-  if (command === 'kirito') {
-    if (args.length === 0) {
-      const estado = chat.isBanned ? '⚠️ *DESACTIVADO*' : '✅ *ACTIVADO*';
-      const info = `👑 *KIRITO-BOT CONTROL*  
-╭━━━━━━━━━━━━━╮  
-┃ *🔥 COMANDOS DISPONIBLES:*  
-┃ ✦ *${usedPrefix}kirito on* – ⚡ 𝗔𝗰𝘁𝗶𝘃𝗮𝗿  
-┃ ✦ *${usedPrefix}kirito off* – ⚡ 𝗗𝗲𝘀𝗮𝗰𝘁𝗶𝘃𝗮𝗿  
-╰━━━━━━━━━━━━━╯  
-🌟 *Estado actual:* ${estado}`;
-
-      return conn.reply(m.chat, info, m, fake);
-    }
-
-    if (args[0] === 'off') {
-      if (chat.isBanned) 
-        return conn.reply(m.chat, '⭕ *¡KIRITO-BOT YA ESTABA DESACTIVADO!*', m, fake);
-
-      chat.isBanned = true;
-      return conn.reply(m.chat, '⚠️ *¡KIRITO-BOT HA SIDO DESACTIVADO EN ESTE CHAT!*', m, fake);
-    } else if (args[0] === 'on') {
-      if (!chat.isBanned) 
-        return conn.reply(m.chat, '⭕ *¡KIRITO-BOT YA ESTABA ACTIVADO!*', m, fake);
-
-      chat.isBanned = false;
-      return conn.reply(m.chat, '✅ *¡KIRITO-BOT HA SIDO ACTIVADO EN ESTE CHAT!*', m, fake);
-    }
-  }
-};
-
-handler.help = ['kirito'];
-handler.tags = ['grupo'];
-handler.command = ['kirito'];
-handler.admin = true;
-
-export default handler;
+export default handler
