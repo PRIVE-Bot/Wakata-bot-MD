@@ -8,7 +8,7 @@ async function handler(m, { conn }) {
   m.react('👑');
 
   const creadores = [
-    { numero: '526641804242', nombre: 'Brayan', descripcion: 'Creador de bots y desarrollador' },
+    { numero: '+526641804242', nombre: 'Brayan', descripcion: 'Creador de bots y desarrollador' },
     { numero: '50488198573', nombre: 'Deylin', descripcion: 'Experto en tecnología y automatización' }
   ];
 
@@ -18,7 +18,7 @@ BEGIN:VCARD
 VERSION:3.0
 N:;${creador.nombre};;;
 FN:${creador.nombre}
-TEL;waid=${creador.numero}:${creador.numero}
+TEL;waid=${creador.numero}:${new PhoneNumber('+' + creador.numero).getNumber('international')}
 NOTE:${creador.descripcion}
 END:VCARD
     `.trim();
