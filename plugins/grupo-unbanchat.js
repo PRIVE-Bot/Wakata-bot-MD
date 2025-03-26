@@ -3,7 +3,7 @@ if (!(m.chat in global.db.data.chats)) return conn.reply(m.chat, '〽️l🔥 *�
 let chat = global.db.data.chats[m.chat]
 if (!chat.isBanned) return conn.reply(m.chat, '👑 *¡ᴀsᴛʀᴏ-ʙᴏᴛ ɴᴏ ᴇsᴛᴀ ʙᴀɴᴇᴀᴅᴏ ᴇɴ ᴇsᴛᴇ ᴄʜᴀᴛ!*', m, fake)
 chat.isBanned = false
-await conn.reply(m.chat, '⚡ *¡ᴀsᴛʀᴏ-ʙᴏᴛ ʏᴀ ғᴜᴇ ʙᴀɴᴇᴀᴅᴏ ᴇɴ ᴇsᴛᴇ ᴄʜᴀᴛ!*', m, fake)
+await conn.reply(m.chat, '⚡ *¡ᴀsᴛʀᴏ-ʙᴏᴛ ʏᴀ ғᴜᴇ ᴅᴇsʙᴀɴᴇᴀᴅᴏ ᴇɴ ᴇsᴛᴇ ᴄʜᴀᴛ!*', m, fake)
 }
 handler.help = ['unbanchat'];
 handler.tags = ['grupo'];
