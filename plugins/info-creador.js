@@ -12,7 +12,7 @@ async function handler(m, { conn }) {
     { numero: '50488198573', nombre: 'Deylin', descripcion: 'Experto en tecnología y automatización' }
   ];
 
-  const contactos = creadores.map(creadores => ({
+  const contactos = creadores.map(creador => ({
     vcard: `
 BEGIN:VCARD
 VERSION:3.0
