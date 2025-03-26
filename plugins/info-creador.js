@@ -8,7 +8,7 @@ async function handler(m, { conn }) {
   m.react('👑');
 
   const creadores = [
-    { numero: '526633900512', nombre: 'Brayan', descripcion: 'Creador de bots y desarrollador' },
+    { numero: '526641804242', nombre: 'Brayan', descripcion: 'Creador de bots y desarrollador' },
     { numero: '50488198573', nombre: 'Deylin', descripcion: 'Experto en tecnología y automatización' }
   ];
 
