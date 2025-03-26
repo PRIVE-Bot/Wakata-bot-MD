@@ -1,3 +1,5 @@
+// no tocar 
+
 import { xpRange } from '../lib/levelling.js'
 
 let tags = {
@@ -34,7 +36,7 @@ let tags = {
   'security': 'SECURITY',
   'custom': 'CUSTOM'
 };
-
+// no tocar 
 let handler = async (m, { conn, usedPrefix: _p }) => {
   try {
     let userId = m.sender;
@@ -51,7 +53,7 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
     let name = await conn.getName(userId);
     let { exp, level } = global.db.data.users[userId];
     let { min, xp, max } = xpRange(level, global.multiplier);
-
+// no tocar 
     let help = Object.values(global.plugins).filter(plugin => !plugin.disabled).map(plugin => ({
       help: Array.isArray(plugin.help) ? plugin.help : (plugin.help ? [plugin.help] : []),
       tags: Array.isArray(plugin.tags) ? plugin.tags : (plugin.tags ? [plugin.tags] : []),
@@ -87,7 +89,7 @@ ${commandsForTag.map(menu => menu.help.map(help => `∫➤ ${_p}${help} ${menu.l
 > © Kirito-Bot by Deylin
 `;
 
-    // Usamos las imágenes proporcionadas
+    // no tocar 
     const imageUrls = [
       'https://files.catbox.moe/3k9jom.jpg',
       'https://files.catbox.moe/apuobz.jpg',
