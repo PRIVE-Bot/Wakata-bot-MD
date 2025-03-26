@@ -10,10 +10,10 @@ async function sendAlbumMessage(jid, medias, options = {}) {
 
   for (const media of medias) {
     if (!media.type || (media.type !== "image" && media.type !== "video")) {
-      throw new TypeError(`media.type must be "image" or "video", received: ${media.type} (${media.type?.constructor?.name})`);
+      throw new TypeError(`media.type must be "image" or "video", received: ${media.type}`);
     }
     if (!media.data || (!media.data.url && !Buffer.isBuffer(media.data))) {
-      throw new TypeError(`media.data must be object with url or buffer, received: ${media.data} (${media.data?.constructor?.name})`);
+      throw new TypeError(`media.data must have a url or buffer, received: ${media.data}`);
     }
   }
 
@@ -23,6 +23,8 @@ async function sendAlbumMessage(jid, medias, options = {}) {
 
   const caption = options.text || options.caption || "";
   const delay = !isNaN(options.delay) ? options.delay : 500;
+
+  // Eliminamos las props que no necesitemos en el objeto "options"
   delete options.text;
   delete options.caption;
   delete options.delay;
@@ -50,8 +52,10 @@ async function sendAlbumMessage(jid, medias, options = {}) {
     {}
   );
 
+  // Enviamos el "álbum" vacío primero
   await conn.relayMessage(album.key.remoteJid, album.message, { messageId: album.key.id });
 
+  // Luego, enviamos cada imagen en el "álbum"
   for (let i = 0; i < medias.length; i++) {
     const { type, data } = medias[i];
     const img = await baileys.generateWAMessage(
@@ -97,17 +101,24 @@ const pins = async (judul) => {
 
   try {
     const res = await axios.get(link, { headers });
-    if (res.data && res.data.resource_response && res.data.resource_response.data && res.data.resource_response.data.results) {
-      return res.data.resource_response.data.results.map(item => {
-        if (item.images) {
-          return {
-            image_large_url: item.images.orig?.url || null,
-            image_medium_url: item.images['564x']?.url || null,
-            image_small_url: item.images['236x']?.url || null
-          };
-        }
-        return null;
-      }).filter(img => img !== null);
+    if (
+      res.data &&
+      res.data.resource_response &&
+      res.data.resource_response.data &&
+      res.data.resource_response.data.results
+    ) {
+      return res.data.resource_response.data.results
+        .map(item => {
+          if (item.images) {
+            return {
+              image_large_url: item.images.orig?.url || null,
+              image_medium_url: item.images['564x']?.url || null,
+              image_small_url: item.images['236x']?.url || null
+            };
+          }
+          return null;
+        })
+        .filter(img => img !== null);
     }
     return [];
   } catch (error) {
@@ -117,12 +128,16 @@ const pins = async (judul) => {
 };
 
 let handler = async (m, { conn, text }) => {
-  if (!text) return m.reply(`🍫 Ingresa un texto. Ejemplo: .pinterest Crow`);
+  if (!text) {
+    return m.reply(`🍫 Ingresa un texto. Ejemplo: .pinterest Crow`);
+  }
 
   try {
     m.react('🕒');
     const results = await pins(text);
-    if (!results || results.length === 0) return conn.reply(m.chat, `No se encontraron resultados para "${text}".`, m);
+    if (!results || results.length === 0) {
+      return conn.reply(m.chat, `No se encontraron resultados para "${text}".`, m);
+    }
 
     const maxImages = Math.min(results.length, 10);
     const medias = [];
@@ -130,18 +145,35 @@ let handler = async (m, { conn, text }) => {
     for (let i = 0; i < maxImages; i++) {
       medias.push({
         type: 'image',
-        data: { url: results[i].image_large_url || results[i].image_medium_url || results[i].image_small_url }
+        data: {
+          url: results[i].image_large_url ||
+               results[i].image_medium_url ||
+               results[i].image_small_url
+        }
       });
     }
 
+    // 1) Enviamos primero el mensaje de cabecera (texto) como en la captura
+    await conn.sendMessage(m.chat, {
+      text: `*Pinterest Search Image*\n\n` +
+            `• *Búsqueda:* "${text}"\n` +
+            `• *Tipo:* Imágenes\n` +
+            `• *Resultados:* ${maxImages}\n` +
+            `• *Fuente:* Pinterest\n\n` +
+            `_BUILD WITH TYLARZ © 2019-2025_`
+    }, { quoted: m });
+
+    // 2) Enviamos el álbum de imágenes
     await sendAlbumMessage(m.chat, medias, {
-      caption: `◜ Pinterest Search ◞\n\n≡ 🔎 \`Búsqueda :\` "${text}"\n≡ 📄 \`Resultados :\` ${maxImages}`,
+      caption: `◜ Pinterest Search ◞\n≡ 🔎 Búsqueda: "${text}"\n≡ 📄 Resultados: ${maxImages}`,
       quoted: m
     });
 
+    // Reaccionamos con un check
     await conn.sendMessage(m.chat, { react: { text: '✅', key: m.key } });
 
   } catch (error) {
+    console.error(error);
     conn.reply(m.chat, 'Error al obtener imágenes de Pinterest.', m);
   }
 };
