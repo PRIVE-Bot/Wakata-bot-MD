@@ -10,7 +10,7 @@ const handler = async (m, { conn, text }) => {
 
   m.react('✨');
   await conn.sendMessage(m.chat, { 
-    text: `*🚀Estoy generando tu imagen en la galaxia *` 
+    text: `*🚀Estoy generando tu imagen en la galaxia*` 
   }, { quoted: m });
 
   try {
