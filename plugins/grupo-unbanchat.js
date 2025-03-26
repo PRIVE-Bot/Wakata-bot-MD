@@ -1,0 +1,1 @@
+if (name != 'grupo-unbanchat.js' && chat?.isBanned)
