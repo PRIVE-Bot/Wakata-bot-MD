@@ -154,7 +154,7 @@ let handler = async (m, { conn, text }) => {
     }
 
     // 1) Enviamos primero el mensaje de cabecera (texto) como en la captura
-    await conn.sendMessage(m.chat, {
+    //await conn.sendMessage(m.chat, {
       text: `*Pinterest Search Image*\n\n` +
             `• *Búsqueda:* "${text}"\n` +
             `• *Tipo:* Imágenes\n` +
