@@ -36,7 +36,6 @@ async function handler(m, { args, command, isAdmin, isBotAdmin, groupMetadata })
 handler.help = ['recordatorio', 'cancelarrecordatorio'];
 handler.tags = ['grupo'];
 handler.command = ['recordatorio', 'cancelarrecordatorio'];
-handler.register = true;
 handler.group = true;
 
 export default handler;
