@@ -1,4 +1,4 @@
-import axios from 'axios'
+/*import axios from 'axios'
 import { sticker } from '../lib/sticker.js'
 
 let handler = m => m
@@ -84,4 +84,4 @@ await this.reply(m.chat, result, m)
 }}}
 return true
 }
-export default handler
+export default handler*/
