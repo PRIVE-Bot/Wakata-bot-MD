@@ -97,7 +97,6 @@ handler.help = ["pinterest"];
 handler.tags = ["descargas"];
 handler.coin = 1;
 handler.group = true;
-handler.register = true
 handler.command = ['pinterest', 'pin'];
 
 export default handler;
