@@ -24,7 +24,7 @@ async function sendAlbumMessage(jid, medias, options = {}) {
   const caption = options.text || options.caption || "";
   const delay = !isNaN(options.delay) ? options.delay : 500;
 
-  // Eliminamos las props que no necesitemos en el objeto "options"
+  
   delete options.text;
   delete options.caption;
   delete options.delay;
@@ -55,7 +55,7 @@ async function sendAlbumMessage(jid, medias, options = {}) {
   // Enviamos el "álbum" vacío primero
   await conn.relayMessage(album.key.remoteJid, album.message, { messageId: album.key.id });
 
-  // Luego, enviamos cada imagen en el "álbum"
+  
   for (let i = 0; i < medias.length; i++) {
     const { type, data } = medias[i];
     const img = await baileys.generateWAMessage(
@@ -153,23 +153,23 @@ let handler = async (m, { conn, text }) => {
       });
     }
 
-    // 1) Enviamos primero el mensaje de cabecera (texto) como en la captura
-    //await conn.sendMessage(m.chat, {
+    
+    /*await conn.sendMessage(m.chat, {
       text: `*Pinterest Search Image*\n\n` +
             `• *Búsqueda:* "${text}"\n` +
             `• *Tipo:* Imágenes\n` +
             `• *Resultados:* ${maxImages}\n` +
             `• *Fuente:* Pinterest\n\n` +
             `_BUILD WITH TYLARZ © 2019-2025_`
-    }, { quoted: m });
+    }, { quoted: m });*/
 
-    // 2) Enviamos el álbum de imágenes
+    
     await sendAlbumMessage(m.chat, medias, {
       caption: `◜ Pinterest Search ◞\n≡ 🔎 Búsqueda: "${text}"\n≡ 📄 Resultados: ${maxImages}`,
       quoted: m
     });
 
-    // Reaccionamos con un check
+    
     await conn.sendMessage(m.chat, { react: { text: '✅', key: m.key } });
 
   } catch (error) {
