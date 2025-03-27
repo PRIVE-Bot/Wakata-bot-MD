@@ -16,7 +16,7 @@ let handler = async (m, { conn, isRowner }) => {
     const chats = Object.entries(conn.chats).filter(([id, data]) => id && data.isChats);
     const groupsIn = chats.filter(([id]) => id.endsWith('@g.us'));
     const used = process.memoryUsage();
-    let Sisked = `╭─⬣「 *Estado De Bot Astro Bot* 」⬣\n`;
+    let Astro = `╭─⬣「 *Estado De Bot Astro Bot* 」⬣\n`;
     Astro += `│ 👤 *Creador ∙* Astro Bot\n`;
     Astro += `│ 💎 *Grupos Unidos ∙* ${groupsIn.length}\n`;
     Astro += `│ 💨 *Chats Privados ∙* ${chats.length - groupsIn.length}\n`;
