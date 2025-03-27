@@ -17,7 +17,7 @@ let sugerirHandler = async (m, { conn, text, usedPrefix }) => {
   let teks = `*✳️ S U G E R E N C I A   D E   C O M A N D O S ✳️*\n\n📌 Comando propuesto:\n• ${nuevoComando}\n\n📋 Descripción:\n• ${descripcion}\n\n👤 Usuario:\n• ${m.pushName || 'Anónimo'}\n• Número: wa.me/${m.sender.split`@`[0]}\n\n_Para aprobar o rechazar la sugerencia, el staff debe responder a este mensaje con .aceptar o .noaceptar seguido de una razón (opcional)._`
   
   
-  await conn.reply('CREADOR_ID@s.whatsapp.net', teks, m, { mentions: conn.parseMention(teks) })
+  await conn.reply('50488198573@s.whatsapp.net', teks, m, { mentions: conn.parseMention(teks) })
   await conn.reply('120363416199047560@g.us', teks, m, { mentions: conn.parseMention(teks) })
   
   conn.reply(m.chat, `✅ Tu sugerencia se ha enviado al staff. Recibirás una notificación cuando se revise.`, m)
