@@ -1,38 +1,32 @@
-
 let sugerirHandler = async (m, { conn, text, usedPrefix }) => {
   if (!text) {
     return conn.reply(m.chat, `❗️ Por favor, ingrese su sugerencia en el siguiente formato:\n\ncomando | descripción\n\nEjemplo:\n!saludo | Envía un mensaje de bienvenida al usuario.`, m)
   }
+
   let parts = text.split("|").map(p => p.trim())
   if (parts.length < 2) {
     return conn.reply(m.chat, `❗️ Formato incorrecto. Use:\ncomando | descripción`, m)
   }
+
   let [nuevoComando, descripcion] = parts
   if (nuevoComando.length < 3) return conn.reply(m.chat, `❗️ El nombre del comando es muy corto.`, m)
   if (descripcion.length < 10) return conn.reply(m.chat, `❗️ La descripción debe tener al menos 10 caracteres.`, m)
   if (descripcion.length > 1000) return conn.reply(m.chat, `❗️ La descripción debe tener máximo 1000 caracteres.`, m)
-  
-  let teks = `*✳️ S U G E R E N C I A   D E   C O M A N D O S ✳️*
 
-📌 Comando propuesto:
-• ${nuevoComando}
+  let teks = `*✳️ SUGERENCIA DE COMANDOS ✳️*\n\n📌 *Comando propuesto:*\n• ${nuevoComando}\n\n📋 *Descripción:*\n• ${descripcion}\n\n👤 *Usuario:*\n• ${m.pushName || 'Anónimo'}\n• Número: wa.me/${m.sender.split`@`[0]}\n\n_Para aprobar o rechazar la sugerencia, el staff debe responder a este mensaje con .aceptar o .noaceptar seguido de una razón (opcional)._`
 
-📋 Descripción:
-• ${descripcion}
+  // Enviar al dueño del bot
+  let ownerJid = '50488198573@s.whatsapp.net' // Asegúrate de que este número sea el correcto
+  await conn.sendMessage(ownerJid, { text: teks, mentions: [m.sender] })
 
-👤 Usuario:
-• ${m.pushName || 'Anónimo'}
-• Número: wa.me/${m.sender.split`@`[0]}
+  // Enviar al grupo del staff
+  let staffGroup = '120363416199047560@g.us' // Asegúrate de que este ID de grupo sea correcto
+  await conn.sendMessage(staffGroup, { text: teks, mentions: [m.sender] })
 
-_Para aprobar o rechazar la sugerencia, el staff debe responder a este mensaje con .aceptar o .noaceptar seguido de una razón (opcional)._`
-
-  
- correspondientes.
-  await conn.reply('50488198573@s.whatsapp.net', m.quoted ? teks + '\n\n' + m.quoted.text : teks, m, { mentions: conn.parseMention(teks) })
-  await conn.reply('120363416199047560@g.us', m.quoted ? teks + '\n\n' + m.quoted.text : teks, m, { mentions: conn.parseMention(teks) })
-
-  conn.reply(m.chat, `✅ Tu sugerencia se ha enviado al staff. Recibirás una notificación cuando se revise.`, m)
+  // Confirmación al usuario
+  await conn.reply(m.chat, `✅ *Tu sugerencia se ha enviado al staff.*\nRecibirás una notificación cuando sea revisada.`, m)
 }
+
 sugerirHandler.help = ['sugerir']
 sugerirHandler.tags = ['info']
 sugerirHandler.command = ['sugerir', 'suggest']
