@@ -1,8 +1,8 @@
 let noAceptarHandler = async (m, { conn, text, usedPrefix, command }) => {
-  // Asegurar que global.staffs esté definido como un array
+  
   if (!global.staffs || !Array.isArray(global.staffs)) global.staffs = []
 
-  // Verifica que se esté usando en el grupo del staff y que el usuario tenga permisos
+  
   if (!m.isGroup) return m.reply(`Este comando solo se puede usar en el grupo del staff.`)
   if (!global.staffs.includes(m.sender)) return m.reply(`❌ No tienes permisos para usar este comando.`)
 
@@ -16,7 +16,7 @@ let noAceptarHandler = async (m, { conn, text, usedPrefix, command }) => {
   }
   let userId = match[1] + "@s.whatsapp.net"
   
-  // Notifica al usuario que su sugerencia fue rechazada
+  
   await conn.reply(userId, `❌ *Tu sugerencia fue RECHAZADA*\n\n_El staff ha revisado tu propuesta y decidió no implementarla._\nRazón: ${razon}`, m)
   m.reply(`❌ Sugerencia rechazada y notificada al usuario.`)
 }
