@@ -66,7 +66,6 @@ let syms1 = chat.sAutoresponder ? chat.sAutoresponder : txtDefault
 
 if (chat.autoresponder) { 
 if (m.fromMe) return
-if (!user.registered) return
 await this.sendPresenceUpdate('composing', m.chat)
 
 let result
