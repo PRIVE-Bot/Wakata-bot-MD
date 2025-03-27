@@ -20,7 +20,7 @@ let handler = async (m, { conn, isRowner }) => {
     Astro += `│ 👤 *Creador ∙* Astro Bot\n`;
     Astro += `│ 💎 *Grupos Unidos ∙* ${groupsIn.length}\n`;
     Astro += `│ 💨 *Chats Privados ∙* ${chats.length - groupsIn.length}\n`;
-    ASTRO += `│ 🪙 *Total De Chats ∙* ${chats.length}\n`;
+    Astro += `│ 🪙 *Total De Chats ∙* ${chats.length}\n`;
     Astro += `│ 💰 *Usuarios Registrados ∙* ${totalreg}\n`;
     Astro += `│ 🪄 *Grupos Registrados ∙* ${totalchats}\n`;
     Astro += `│ 💸 *Actividad ∙* ${muptime}\n`;
