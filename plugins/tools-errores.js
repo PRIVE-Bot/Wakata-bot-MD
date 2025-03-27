@@ -1,5 +1,3 @@
-// Alex-X >> https://github.com/OfcKing
-
 import fs from 'fs';
 import path from 'path';
 
@@ -8,21 +6,35 @@ var handler = async (m, { usedPrefix, command }) => {
         await m.react('🕒'); 
         conn.sendPresenceUpdate('composing', m.chat);
 
-        const pluginsDir = './plugins';
-
-        const files = fs.readdirSync(pluginsDir).filter(file => file.endsWith('.js'));
-
+        const rootDir = './';  // Puedes cambiar esto si quieres que se empiece desde otra carpeta
         let response = `📂 *Revisión de Syntax Errors:*\n\n`;
         let hasErrors = false;
 
-        for (const file of files) {
-            try {
-                await import(path.resolve(pluginsDir, file));
-            } catch (error) {
-                hasErrors = true;
-                response += `🚩 *Error en:* ${file}\n${error.message}\n\n`;
+        // Función para recorrer carpetas y archivos recursivamente
+        const checkErrorsInDir = (dir) => {
+            const files = fs.readdirSync(dir);
+
+            for (const file of files) {
+                const filePath = path.join(dir, file);
+                const stat = fs.statSync(filePath);
+
+                if (stat.isDirectory()) {
+                    // Si es un directorio, hacer la llamada recursiva
+                    checkErrorsInDir(filePath);
+                } else if (file.endsWith('.js')) {
+                    // Si es un archivo .js, revisar errores
+                    try {
+                        await import(filePath);
+                    } catch (error) {
+                        hasErrors = true;
+                        response += `🚩 *Error en:* ${filePath}\n${error.message}\n\n`;
+                    }
+                }
             }
-        }
+        };
+
+        // Comienza a revisar desde el directorio raíz o el especificado
+        checkErrorsInDir(rootDir);
 
         if (!hasErrors) {
             response += '✅ ¡Todo está en orden! No se detectaron errores de sintaxis.';
