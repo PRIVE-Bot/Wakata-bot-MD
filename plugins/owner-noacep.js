@@ -1,5 +1,7 @@
-// Comando para que el staff rechace la sugerencia: .noaceptar [razón opcional]
 let noAceptarHandler = async (m, { conn, text, usedPrefix, command }) => {
+  // Asegurar que global.staffs esté definido como un array
+  if (!global.staffs || !Array.isArray(global.staffs)) global.staffs = []
+
   // Verifica que se esté usando en el grupo del staff y que el usuario tenga permisos
   if (!m.isGroup) return m.reply(`Este comando solo se puede usar en el grupo del staff.`)
   if (!global.staffs.includes(m.sender)) return m.reply(`❌ No tienes permisos para usar este comando.`)
