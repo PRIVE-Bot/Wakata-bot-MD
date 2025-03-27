@@ -29,7 +29,7 @@ _Para aprobar o rechazar la sugerencia, el staff debe responder a este mensaje c
   
  correspondientes.
   await conn.reply('50488198573@s.whatsapp.net', m.quoted ? teks + '\n\n' + m.quoted.text : teks, m, { mentions: conn.parseMention(teks) })
-  await conn.reply('', m.quoted ? teks + '\n\n' + m.quoted.text : teks, m, { mentions: conn.parseMention(teks) })
+  await conn.reply('120363416199047560@g.us', m.quoted ? teks + '\n\n' + m.quoted.text : teks, m, { mentions: conn.parseMention(teks) })
 
   conn.reply(m.chat, `✅ Tu sugerencia se ha enviado al staff. Recibirás una notificación cuando se revise.`, m)
 }
