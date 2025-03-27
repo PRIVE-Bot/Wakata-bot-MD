@@ -1,47 +1,45 @@
-import fs from 'fs';  
-import path from 'path';  
+// Brayan>> https://github.com/BrayanOFC
 
-var handler = async (m, { usedPrefix, command }) => {  
-    try {  
-        await m.react('🕒');   
-        conn.sendPresenceUpdate('composing', m.chat);  
+import fs from 'fs';
+import path from 'path';
 
-        const pluginsDir = './plugins';  
-        const files = fs.readdirSync(pluginsDir).filter(file => file.endsWith('.js'));  
+var handler = async (m, { usedPrefix, command }) => {
+    try {
+        await m.react('🕒'); 
+        conn.sendPresenceUpdate('composing', m.chat);
 
-        let response = `📂 *Revisión de Errores en los Archivos:*\n\n`;  
-        let hasErrors = false;  
+        const pluginsDir = './plugins';
 
-        for (const file of files) {  
-            try {  
-                const filePath = path.resolve(pluginsDir, file);
-                const plugin = await import(filePath);  // Intentar cargar el archivo
-                
-                // Intentar ejecutar el plugin si tiene una función principal
-                if (plugin.default && typeof plugin.default === 'function') {
-                    await plugin.default();
-                }
-            } catch (error) {  
-                hasErrors = true;  
-                response += `🚩 *Error en:* ${file}\n${error.stack}\n\n`;  
-            }  
-        }  
+        const files = fs.readdirSync(pluginsDir).filter(file => file.endsWith('.js'));
 
-        if (!hasErrors) {  
-            response += '✅ ¡Todo está en orden! No se detectaron errores en el código.';  
-        }  
+        let response = `📂 *Revisión de Syntax Errors:*\n\n`;
+        let hasErrors = false;
 
-        await conn.reply(m.chat, response, m);  
-        await m.react('✅');  
-    } catch (err) {  
-        await m.react('✖️');   
-        console.error(err);  
-        conn.reply(m.chat, '🚩 *Ocurrió un fallo al verificar los plugins.*', m);  
-    }  
-};  
+        for (const file of files) {
+            try {
+                await import(path.resolve(pluginsDir, file));
+            } catch (error) {
+                hasErrors = true;
+                response += `🚩 *Error en:* ${file}\n${error.message}\n\n`;
+            }
+        }
 
-handler.command = ['errores'];  
-handler.help = ['errores'];  
-handler.tags = ['tools'];  
+        if (!hasErrors) {
+            response += '✅ ¡Todo está en orden! No se detectaron errores de sintaxis.';
+        }
+
+        await conn.reply(m.chat, response, m);
+        await m.react('✅');
+    } catch (err) {
+        await m.react('✖️'); 
+        console.error(err);
+        conn.reply(m.chat, '🚩 *Ocurrió un fallo al verificar los plugins.*', m);
+    }
+};
+
+handler.command = ['errores'];
+handler.help = ['rev'];
+handler.tags = ['tools'];
+handler.register = true;
 
 export default handler;
