@@ -28,8 +28,8 @@ _Para aprobar o rechazar la sugerencia, el staff debe responder a este mensaje c
 
   // Envía la sugerencia al grupo de staff y/o al creador
   // Reemplaza 'STAFF_GROUP_ID' y 'CREADOR_ID@s.whatsapp.net' por los IDs correspondientes.
-  await conn.reply('CREADOR_ID@s.whatsapp.net', m.quoted ? teks + '\n\n' + m.quoted.text : teks, m, { mentions: conn.parseMention(teks) })
-  await conn.reply('STAFF_GROUP_ID', m.quoted ? teks + '\n\n' + m.quoted.text : teks, m, { mentions: conn.parseMention(teks) })
+  await conn.reply('50488198573@s.whatsapp.net', m.quoted ? teks + '\n\n' + m.quoted.text : teks, m, { mentions: conn.parseMention(teks) })
+  await conn.reply('120363416199047560@g.us', m.quoted ? teks + '\n\n' + m.quoted.text : teks, m, { mentions: conn.parseMention(teks) })
 
   conn.reply(m.chat, `✅ Tu sugerencia se ha enviado al staff. Recibirás una notificación cuando se revise.`, m)
 }
