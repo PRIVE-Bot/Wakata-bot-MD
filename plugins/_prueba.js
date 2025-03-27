@@ -1,39 +1,26 @@
-// Comando para sugerir nuevos comandos
-let sugerirHandler = async (m, { conn, text, usedPrefix }) => {
-  if (!text) {
-    return conn.reply(m.chat, `❗️ Por favor, ingrese su sugerencia en el siguiente formato:\n\ncomando | descripción\n\nEjemplo:\n!saludo | Envía un mensaje de bienvenida al usuario.`, m)
-  }
-  let parts = text.split("|").map(p => p.trim())
-  if (parts.length < 2) {
-    return conn.reply(m.chat, `❗️ Formato incorrecto. Use:\ncomando | descripción`, m)
-  }
-  let [nuevoComando, descripcion] = parts
-  if (nuevoComando.length < 3) return conn.reply(m.chat, `❗️ El nombre del comando es muy corto.`, m)
-  if (descripcion.length < 10) return conn.reply(m.chat, `❗️ La descripción debe tener al menos 10 caracteres.`, m)
-  if (descripcion.length > 1000) return conn.reply(m.chat, `❗️ La descripción debe tener máximo 1000 caracteres.`, m)
+// Comando para que el staff acepte la sugerencia: .aceptar [razón opcional]
+let aceptarHandler = async (m, { conn, text, usedPrefix, command }) => {
+  // Verifica que se esté usando en el grupo de staff y que el usuario tenga permisos
+  if (!m.isGroup) return m.reply(`Este comando solo se puede usar en el grupo del staff.`)
+  // Aquí puedes agregar una función o lógica para validar que m.sender es staff.
+  if (!global.staffs.includes(m.sender)) return m.reply(`❌ No tienes permisos para usar este comando.`)
+
+  if (!m.quoted) return m.reply(`❗️ Responde al mensaje de sugerencia para aprobarlo.`)
+  let razon = text.trim() || 'Sin razón especificada.'
   
-  let teks = `*✳️ S U G E R E N C I A   D E   C O M A N D O S ✳️*
-
-📌 Comando propuesto:
-• ${nuevoComando}
-
-📋 Descripción:
-• ${descripcion}
-
-👤 Usuario:
-• ${m.pushName || 'Anónimo'}
-• Número: wa.me/${m.sender.split`@`[0]}
-
-_Para aprobar o rechazar la sugerencia, el staff debe responder a este mensaje con .aceptar o .noaceptar seguido de una razón (opcional)._`
-
-  // Envía la sugerencia al grupo de staff y/o al creador
-  // Reemplaza 'STAFF_GROUP_ID' y 'CREADOR_ID@s.whatsapp.net' por los IDs correspondientes.
-  await conn.reply('50488198573@s.whatsapp.net', m.quoted ? teks + '\n\n' + m.quoted.text : teks, m, { mentions: conn.parseMention(teks) })
-  await conn.reply('120363416199047560@g.us', m.quoted ? teks + '\n\n' + m.quoted.text : teks, m, { mentions: conn.parseMention(teks) })
-
-  conn.reply(m.chat, `✅ Tu sugerencia se ha enviado al staff. Recibirás una notificación cuando se revise.`, m)
+  // Se asume que en la sugerencia se incluyó la línea con "Número: wa.me/XXXXXXXXXXX"
+  let regex = /wa\.me\/(\d+)/i
+  let match = m.quoted.text.match(regex)
+  if (!match) {
+    return m.reply(`❗️ No se pudo extraer el número del usuario de la sugerencia.`)
+  }
+  let userId = match[1] + "@s.whatsapp.net"
+  
+  // Notifica al usuario que su sugerencia fue aceptada
+  await conn.reply(userId, `✅ *¡Tu sugerencia fue ACEPTADA!*\n\n_El staff ha revisado tu propuesta y la ha aprobado._\nRazón: ${razon}`, m)
+  m.reply(`✅ Sugerencia aceptada y notificada al usuario.`)
 }
-sugerirHandler.help = ['sugerir']
-sugerirHandler.tags = ['info']
-sugerirHandler.command = ['sugerir', 'suggest']
-export default sugerirHandler
+aceptarHandler.help = ['aceptar']
+aceptarHandler.tags = ['staff']
+aceptarHandler.command = ['aceptar']
+export default aceptarHandler
