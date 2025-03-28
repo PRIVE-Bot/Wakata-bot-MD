@@ -1,3 +1,6 @@
+// © Deylin 
+
+
 let aceptarHandler = async (m, { conn, text, usedPrefix, command, isOwner }) => {
   
   if (!m.isGroup) return m.reply(`❌ Este comando solo se puede usar en el grupo del staff.`)
