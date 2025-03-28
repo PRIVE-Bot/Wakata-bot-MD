@@ -1,3 +1,8 @@
+// © Deylin 
+
+
+
+
 let sugerirHandler = async (m, { conn, text, usedPrefix }) => {
   if (!text) {
     return conn.reply(m.chat, `❗️ Por favor, ingrese su sugerencia en el siguiente formato:\n\ncomando / descripción\n\nEjemplo:\n!saludo | Envía un mensaje de bienvenida al usuario.`, m, fake);
