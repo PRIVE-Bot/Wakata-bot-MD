@@ -1,9 +1,9 @@
 let sugerirHandler = async (m, { conn, text, usedPrefix }) => {
   if (!text) {
-    return conn.reply(m.chat, `❗️ Por favor, ingrese su sugerencia en el siguiente formato:\n\ncomando | descripción\n\nEjemplo:\n!saludo | Envía un mensaje de bienvenida al usuario.`, m, fake);
+    return conn.reply(m.chat, `❗️ Por favor, ingrese su sugerencia en el siguiente formato:\n\ncomando / descripción\n\nEjemplo:\n!saludo | Envía un mensaje de bienvenida al usuario.`, m, fake);
   }
 
-  let parts = text.split("").map(p => p.trim())
+  let parts = text.split("/").map(p => p.trim())
   if (parts.length < 2) {
     return conn.reply(m.chat, `❗️ Formato incorrecto. Use:\ncomando | descripción`, m, fake);
   }
