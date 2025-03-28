@@ -1,3 +1,5 @@
+// © Deylin 
+
 let noAceptarHandler = async (m, { conn, text, usedPrefix, command }) => {
   
   if (!global.staffs || !Array.isArray(global.staffs)) global.staffs = []
