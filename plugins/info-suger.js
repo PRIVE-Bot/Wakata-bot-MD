@@ -15,15 +15,15 @@ let sugerirHandler = async (m, { conn, text, usedPrefix }) => {
 
   let teks = `*✳️ SUGERENCIA DE COMANDOS ✳️*\n\n📌 *Comando propuesto:*\n• ${nuevoComando}\n\n📋 *Descripción:*\n• ${descripcion}\n\n👤 *Usuario:*\n• ${m.pushName || 'Anónimo'}\n• Número: wa.me/${m.sender.split`@`[0]}\n\n_Para aprobar o rechazar la sugerencia, el staff debe responder a este mensaje con .aceptar o .noaceptar seguido de una razón (opcional)._`
 
-  // Enviar al dueño del bot
-  let ownerJid = '50488198573@s.whatsapp.net' // Asegúrate de que este número sea el correcto
+  
+  let ownerJid = '50488198573@s.whatsapp.net' 
   await conn.sendMessage(ownerJid, { text: teks, mentions: [m.sender] })
 
-  // Enviar al grupo del staff
-  let staffGroup = '120363416199047560@g.us' // Asegúrate de que este ID de grupo sea correcto
+  
+  let staffGroup = '120363416199047560@g.us' 
   await conn.sendMessage(staffGroup, { text: teks, mentions: [m.sender] })
 
-  // Confirmación al usuario
+  
   await conn.reply(m.chat, `✅ *Tu sugerencia se ha enviado al staff.*\nRecibirás una notificación cuando sea revisada.`, m, fake);
 }
 
