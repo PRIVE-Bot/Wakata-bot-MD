@@ -14,6 +14,10 @@ let handler = async (m, { conn, usedPrefix, command }) => {
 handler.help = ['restart']
 handler.tags = ['owner']
 handler.command = ['restart', 'reiniciar'] 
+handler.customPrefix = /^(ping|p)$/i
+handler.command = new RegExp
+
+export default handler
 handler.rowner = true
 
 export default handler
