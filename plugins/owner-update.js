@@ -2,8 +2,7 @@ import { execSync } from 'child_process';
 
 let handler = async (m, { conn, usedPrefix, command, args }) => {
 
-  await conn.reply(m.chat, '🌪️ 𝐩𝐫𝐨𝐜𝐞𝐬𝐚𝐧𝐝𝐨 𝐬𝐨𝐥𝐢𝐜𝐢𝐭𝐮𝐝 𝐝𝐞 𝐚𝐜𝐭𝐮𝐚𝐥𝐢𝐳𝐚𝐜𝐢𝐨𝐧...', m); // Eliminado fake
-
+  await conn.reply(m.chat, '🌪️ 𝐩𝐫𝐨𝐜𝐞𝐬𝐚𝐧𝐝𝐨 𝐬𝐨𝐥𝐢𝐜𝐢𝐭𝐮𝐝 𝐝𝐞 𝐚𝐜𝐭𝐮𝐚𝐥𝐢𝐳𝐚𝐜𝐢𝐨𝐧...', m, fake); 
   m.react('🚀'); 
   try {
     const stdout = execSync('git pull' + (m.fromMe && args.length ? ' ' + args.join(' ') : ''));
@@ -12,8 +11,8 @@ let handler = async (m, { conn, usedPrefix, command, args }) => {
     if (messager.includes('⚡ 𝐀𝐬𝐭𝐫𝐨-𝐁𝐨𝐭 𝐲𝐚 𝐞𝐬𝐭𝐚 𝐚𝐜𝐭𝐮𝐚𝐥𝐢𝐳𝐚𝐝𝐨.')) messager = '⚡ Ya estoy actualizado a la última versión.';
     if (messager.includes('👑 Actualizando.')) messager = '⚡ Procesando, espere un momento mientras me actualizo.\n\n' + stdout.toString();
 
-    await conn.reply(m.chat, messager, m); // Eliminado fake
-  } catch (error) { // Agregado error
+    await conn.reply(m.chat, messager, m, fake); 
+  } catch (error) { 
     try {
       const status = execSync('git status --porcelain');
 
@@ -27,7 +26,7 @@ let handler = async (m, { conn, usedPrefix, command, args }) => {
 
         if (conflictedFiles.length > 0) {
           const errorMessage = `⚡ Se han hecho cambios locales que entran en conflicto con las actualizaciones del repositorio. Para actualizar, reinstala el bot o realiza las actualizaciones manualmente.\n\n✰ *ARCHIVOS EN CONFLICTO*\n\n${conflictedFiles.join('\n')}`;
-          await conn.reply(m.chat, errorMessage, m); // Eliminado fake
+          await conn.reply(m.chat, errorMessage, m, fake); 
         }
       }
     } catch (error) {
@@ -36,15 +35,19 @@ let handler = async (m, { conn, usedPrefix, command, args }) => {
       if (error.message) {
         errorMessage2 += '\n⚠️ Mensaje de error: ' + error.message;
       }
-      await conn.reply(m.chat, errorMessage2, m); // Eliminado fake
+      await conn.reply(m.chat, errorMessage2, m, fake); 
     }
   }
 };
 
-handler.help = ['update', 'actualizar', 'fix'];
-handler.tags = ['owner'];
-handler.customPrefix = /^(update|fix|actualizar|.update)$/i
-handler.command = new RegExp
+handler.help = ['update', 'actualizar']
+handler.command = ['update', 'actualizar']
+handler.before = async (m, { conn }) => {
+    let text = m.text?.toLowerCase()?.trim();
+    if (text === 'actualizar' || text === 'update') {
+        return handler(m, { conn });
 handler.rowner = true;
+    }
+}
 
 export default handler;
