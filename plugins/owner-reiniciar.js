@@ -11,11 +11,15 @@ let handler = async (m, { conn, usedPrefix, command }) => {
     }
 }
 
-handler.help = ['restart']
-handler.tags = ['owner']
-handler.command = ['restart', 'reiniciar'] 
-handler.customPrefix = /^(ping|p)$/i
-handler.command = new RegExp
+handler.command = ['restart', 'autulizar']
+handler.before = async (m, { conn }) => {
+    let text = m.text?.toLowerCase()?.trim();
+    if (text === 'restart' || text === 'sutualizar') {
+        return handler(m, { conn });
+    }
+}
+
+export default handler
 handler.rowner = true
 
 export default handler
