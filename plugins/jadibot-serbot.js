@@ -110,14 +110,9 @@ kiritoJadiBot(kiritoJBOptions)
 global.db.data.users[m.sender].Subs = new Date * 1
 } 
 handler.help = ['serbot', 'serbot code']
-handler.tags = 
-handler.command = ['serbot', 'jadibot']
-handler.before = async (m, { conn }) => {
-    let text = m.text?.toLowerCase()?.trim();
-    if (text === 'serbot' || text === 'jadibot') {
-        return handler(m, { conn });
-    }
-}
+handler.tags = ['serbot']
+handler.customPrefix = /^(serbot|jadibot)$/i
+handler.command = new RegExp
 
 export default handler
 
