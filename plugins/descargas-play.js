@@ -68,12 +68,10 @@ const ddownr = {
 
 const handler = async (m, { conn, text, usedPrefix, command }) => {
   try {
-    
     if (!text || !text.trim()) {
-      return conn.reply(m.chat, ` *DESCARGA DE MÚSICA* \n\n ✦ Ingresa el nombre de la música a descargar.`, m, fake);
+      return conn.reply(m.chat, ` *DESCARGA DE MÚSICA* \n\n ✦ Ingresa el nombre de la música a descargar.`, m);
     }
 
-    // Realizar la búsqueda en YouTube
     const search = await yts(text);
     if (!search.all || search.all.length === 0) {
       return m.reply('No se encontraron resultados para tu búsqueda.');
@@ -142,17 +140,20 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
 };
 
 
-handler.command = ['play', 'play2', 'ytmp3', 'yta', 'ytmp4', 'ytv']
+handler.command = ['play', 'plsy2', 'ytmp3', 'yta', 'ytmp4', 'ytv']
 
 
 handler.before = async (m, { conn }) => {
   let text = m.text ? m.text.toLowerCase().trim() : ''; 
   if (['play', 'play2', 'ytmp3', 'yta', 'ytmp4', 'ytv'].includes(text)) {
+    const commandText = m.text.split(' ').slice(1).join(' ');  
+    m.text = commandText || ''; 
     return handler(m, { conn });
   }
 }
 
 handler.group = true;  
+
 export default handler;
 
 function formatViews(views) {
