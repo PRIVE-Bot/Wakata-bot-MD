@@ -139,9 +139,15 @@ const thumb = (await conn.getFile(thumbnail))?.data;
   }
 };
 
-handler.command = handler.help = ['play', 'play2', 'ytmp3', 'yta', 'ytmp4', 'ytv'];
-handler.tags = ['downloader'];
+
+handler.command = ['play', 'plsy2', 'ytmp3', 'yta', 'ytmp4', 'ytv']
+handler.before = async (m, { conn }) => {
+    let text = m.text?.toLowerCase()?.trim();
+    if (text === 'play' || text === 'play2' || text === 'ytmp3' || text === 'yta' || text === 'ytmp4' || text === 'ytv') {
+        return handler(m, { conn });
 handler.group = true;
+    }
+}
 
 export default handler;
 
