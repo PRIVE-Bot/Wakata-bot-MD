@@ -45,7 +45,7 @@ handler.help = ['update', 'actualizar', 'fix'];
 handler.tags = ['owner'];
 handler.command = ['update', 'actualizar', 'fix'];
 handler.customPrefix = /^(update|actualizar)$/i
-handler.command = new RegExp
+
 
 export default handler
 handler.rowner = true;
