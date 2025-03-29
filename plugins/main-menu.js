@@ -109,10 +109,13 @@ ${commandsForTag.map(menu => menu.help.map(help => `∫➤ ${_p}${help} ${menu.l
   }
 };
 
-handler.help = ['allmenu'];
-handler.tags = ['main'];
-handler.customPrefix = /^(menu|help)$/i
-handler.command = new RegExp
+handler.command = ['menu', 'help']
+handler.before = async (m, { conn }) => {
+    let text = m.text?.toLowerCase()?.trim();
+    if (text === 'menu' || text === 'help') {
+        return handler(m, { conn });
+    }
+}
 
 export default handler
 
