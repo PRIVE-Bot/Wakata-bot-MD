@@ -2,7 +2,7 @@
 // https://github.com/deylinqff
 // No quites créditos
 
-async function handler(m, { conn }) {
+/*async function handler(m, { conn }) {
   const creadores = [
     { numero: '50488198573', nombre: 'Deylin' },
     { numero: '526633900512', nombre: 'Brayan' }
@@ -22,7 +22,7 @@ ${contactos}`;
 }
 
 handler.command = ['serbot', 'code', 'qr'];
-export default handler;
+export default handler;*/
 
 
 
