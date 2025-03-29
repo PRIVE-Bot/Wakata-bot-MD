@@ -74,6 +74,7 @@ Hola *@${userId.split('@')[0]}* soy *𝐀𝐬𝐭𝐫𝐨-𝐁𝐨𝐭 ☆*
 ║ ✎ *Tiempo Activo:* ${uptime}
 ║ ✎ *Comandos »* ${totalCommands}
 ╚══════ ♢.💥.♢ ══════➤
+> El *Bot* ya dispone de algunas funciones sin prefijo gracias a *Deylin* creador y fundador de *Astro-Bot* y *Kirito-Bot MD* 
 
 *◤━━━━━ ☆. 🚀 .☆ ━━━━━◥*
 ⚙_*𝑳𝑰𝑺𝑻𝑨 𝑫𝑬 𝑪𝑶𝑴𝑨𝑵𝑫𝑶𝑺*_
