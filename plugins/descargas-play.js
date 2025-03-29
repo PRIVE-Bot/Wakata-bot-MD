@@ -68,20 +68,22 @@ const ddownr = {
 
 const handler = async (m, { conn, text, usedPrefix, command }) => {
   try {
-    if (!text.trim()) {
+    
+    if (!text || !text.trim()) {
       return conn.reply(m.chat, ` *DESCARGA DE MÚSICA* \n\n ✦ Ingresa el nombre de la música a descargar.`, m, fake);
     }
 
+    // Realizar la búsqueda en YouTube
     const search = await yts(text);
     if (!search.all || search.all.length === 0) {
       return m.reply('No se encontraron resultados para tu búsqueda.');
     }
 
-const videoInfo = search.all[0];
-const { title, thumbnail, timestamp, views, ago, url } = videoInfo;
-const vistas = formatViews(views);
+    const videoInfo = search.all[0];
+    const { title, thumbnail, timestamp, views, ago, url } = videoInfo;
+    const vistas = formatViews(views);
 
-const infoMessage = `★ 𝑨𝑺𝑻𝑹𝑶-𝑩𝑶𝑻 𝑷𝑳𝑨𝒀 ★
+    const infoMessage = `★ 𝑨𝑺𝑻𝑹𝑶-𝑩𝑶𝑻 𝑷𝑳𝑨𝒀 ★
 
 🚀 *Archivo Encontrado:* 「 ${title} 」
 🌌 *Canal:* ${videoInfo.author.name || 'Desconocido'}
@@ -89,8 +91,8 @@ const infoMessage = `★ 𝑨𝑺𝑻𝑹𝑶-𝑩𝑶𝑻 𝑷𝑳𝑨𝒀 ★
 ⏱ *Duración:* ${timestamp}
 📅 *Publicado:* ${ago}
 🔗 *Enlace:* ${url}
-`;
-const thumb = (await conn.getFile(thumbnail))?.data;
+    `;
+    const thumb = (await conn.getFile(thumbnail))?.data;
 
     const JT = {
       contextInfo: {
@@ -141,14 +143,16 @@ const thumb = (await conn.getFile(thumbnail))?.data;
 
 
 handler.command = ['play', 'plsy2', 'ytmp3', 'yta', 'ytmp4', 'ytv']
+
+
 handler.before = async (m, { conn }) => {
-    let text = m.text?.toLowerCase()?.trim();
-    if (text === 'play' || text === 'play2' || text === 'ytmp3' || text === 'yta' || text === 'ytmp4' || text === 'ytv') {
-        return handler(m, { conn });
-handler.group = true;
-    }
+  let text = m.text ? m.text.toLowerCase().trim() : ''; 
+  if (['play', 'play2', 'ytmp3', 'yta', 'ytmp4', 'ytv'].includes(text)) {
+    return handler(m, { conn });
+  }
 }
 
+handler.group = true;  
 export default handler;
 
 function formatViews(views) {
