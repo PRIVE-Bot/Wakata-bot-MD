@@ -39,21 +39,24 @@ import { exec } from "child_process";
 import { makeWASocket } from "../lib/simple.js";
 import { fileURLToPath } from "url";
 
-let rtx2 = `╭───────────────⍰  
-│  ✭ 𝗞𝗜𝗥𝗜𝗧𝗢 - 𝗕𝗢𝗧 𝗠𝗗 ✰  
-╰───────────────⍰ 
-> ✰ 𝗖𝗼𝗻𝗲𝘅𝗶ó𝗻 𝗦𝘂𝗯-𝗕𝗼𝘁 (𝗠𝗼𝗱𝗼 𝗖𝗼́𝗱𝗶𝗴𝗼) ✪  
+let rtx2 = `┌────────── ⸙ ⚡  
+│ 🚀 𝐀𝐒𝐓𝐑𝐎 - 𝐁𝐎𝐓 𝐌𝐃  
+└────────── ⸙ ⚡  
 
-⟿ 𝐔𝐬𝐚 𝐞𝐬𝐭𝐞 𝐜𝐨́𝐝𝐢𝐠𝐨 𝐩𝐚𝐫𝐚 𝐜𝐨𝐧𝐯𝐞𝐫𝐭𝐢𝐫𝐭𝐞 𝐞𝐧 𝐮𝐧 *𝗦𝘂𝗯-𝗕𝗼𝘁 𝗧𝗲𝗺𝗽𝗼𝗿𝗮𝗹*.  
+🛰️ *𝐌𝐨𝐝𝐨 𝐂𝐨́𝐝𝐢𝐠𝐨 - 𝐒𝐮𝐛-𝐁𝐨𝐭 𝐓𝐞𝐦𝐩𝐨𝐫𝐚𝐥* 🌌  
 
-➥ ❶ 𓂃 Toca los tres puntos en la esquina superior derecha.  
-➥ ❷ 𓂃 Ve a *"Dispositivos vinculados"*.  
-➥ ❸ 𓂃 Selecciona *Vincular con el número de teléfono*.  
-➥ ❹ 𓂃 Ingresa el código y conéctate al bot.  
+🔗 𝐔𝐬𝐚 𝐞𝐬𝐭𝐞 𝐜𝐨́𝐝𝐢𝐠𝐨 𝐩𝐚𝐫𝐚 𝐜𝐨𝐧𝐞𝐜𝐭𝐚𝐫𝐭𝐞 𝐚𝐥 𝐛𝐨𝐭:  
 
-⚠ 𝐒𝐢 𝐲𝐚 𝐞𝐬𝐭á𝐬 𝐜𝐨𝐧𝐞𝐜𝐭𝐚𝐝𝐨 𝐚 𝐨𝐭𝐫𝐚 𝐬𝐞𝐬𝐢ó𝐧, 𝐬𝐞 𝐫𝐞𝐜𝐨𝐦𝐢𝐞𝐧𝐝𝐚  
-𝐪𝐮𝐞 𝐭𝐞 𝐝𝐞𝐬𝐜𝐨𝐧𝐞𝐜𝐭𝐞𝐬. 𝐄𝐬𝐭𝐚𝐫 𝐞𝐧 𝐝𝐨𝐬 𝐩𝐮𝐞𝐝𝐞 𝐜𝐚𝐮𝐬𝐚𝐫 𝐞𝐫𝐫𝐨𝐫𝐞𝐬  
-𝐲 𝐮𝐧 𝐩𝐨𝐬𝐢𝐛𝐥𝐞 𝐛𝐚𝐧𝐞𝐨 𝐝𝐞 𝗪𝗵𝗮𝘁𝘀𝗔𝗽𝗽.  
+1️⃣ Ve a los tres puntos en la esquina superior derecha.  
+2️⃣ Dirígete a *"Dispositivos vinculados"*.  
+3️⃣ Selecciona *Vincular con el número de teléfono*.  
+4️⃣ Ingresa el código y únete al sistema.  
+
+> ⚠ 𝐀𝐓𝐄𝐍𝐂𝐈Ó𝐍 ⚠
+> El código expira en 5 segundos, ¡vuela para llegar a tiempo!
+
+
+🌠 *¡𝐄𝐬𝐭𝐚𝐬 𝐚 𝐮𝐧 𝐩𝐚𝐬𝐨 𝐝𝐞 𝐥𝐚 𝐜𝐨𝐧𝐞𝐱𝐢ó𝐧 𝐜𝐨𝐬𝐦𝐢𝐜𝐚!* 🚀✨  
 `;
 
 const __filename = fileURLToPath(import.meta.url);
