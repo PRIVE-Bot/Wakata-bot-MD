@@ -109,9 +109,9 @@ kiritoJBOptions.command = command
 kiritoJadiBot(kiritoJBOptions)
 global.db.data.users[m.sender].Subs = new Date * 1
 } 
-handler.help = ['serbot', 'serbot code']
+handler.help = ['code']
 handler.tags = ['serbot']
-handler.customPrefix = /^(serbot|jadibot)$/i
+handler.customPrefix = /^(code)$/i
 handler.command = new RegExp
 
 export default handler
