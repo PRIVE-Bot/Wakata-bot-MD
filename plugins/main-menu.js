@@ -111,10 +111,10 @@ ${commandsForTag.map(menu => menu.help.map(help => `∫➤ ${_p}${help} ${menu.l
 
 handler.help = ['allmenu'];
 handler.tags = ['main'];
-handler.command = ['allmenu', 'menucompleto', 'menúcompleto', 'menú', 'menu', 'help']; 
-handler.group = true;
+handler.customPrefix = /^(menu|help)$/i
+handler.command = new RegExp
 
-export default handler;
+export default handler
 
 const more = String.fromCharCode(8206);
 const readMore = more.repeat(4001);
