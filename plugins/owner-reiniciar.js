@@ -16,8 +16,6 @@ handler.tags = ['owner']
 handler.command = ['restart', 'reiniciar'] 
 handler.customPrefix = /^(ping|p)$/i
 handler.command = new RegExp
-
-export default handler
 handler.rowner = true
 
 export default handler
