@@ -110,9 +110,15 @@ kiritoJadiBot(kiritoJBOptions)
 global.db.data.users[m.sender].Subs = new Date * 1
 } 
 handler.help = ['serbot', 'serbot code']
-handler.tags = ['serbot']
-handler.command = ['jadibot', 'serbot']
-export default handler 
+handler.command = ['serbot', 'jadibot']
+handler.before = async (m, { conn }) => {
+    let text = m.text?.toLowerCase()?.trim();
+    if (text === 'serbot' || text === 'jadibot') {
+        return handler(m, { conn });
+    }
+}
+
+export default handler
 
 export async function kiritoJadiBot(options) {
 let { pathkiritoJadiBot, m, conn, args, usedPrefix, command } = options
