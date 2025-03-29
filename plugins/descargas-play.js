@@ -41,6 +41,7 @@ const ddownr = {
       throw error;
     }
   },
+
   cekProgress: async (id) => {
     const config = {
       method: 'GET',
@@ -68,8 +69,8 @@ const ddownr = {
 
 const handler = async (m, { conn, text, usedPrefix, command }) => {
   try {
-    if (!text || !text.trim()) {
-      return conn.reply(m.chat, ` *DESCARGA DE MÚSICA* \n\n ✦ Ingresa el nombre de la música a descargar.`, m);
+    if (!text.trim()) {
+      return conn.reply(m.chat, '*DESCARGA DE MÚSICA* \n\n ✦ Ingresa el nombre de la música a descargar.', m, fake);
     }
 
     const search = await yts(text);
@@ -83,13 +84,8 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
 
     const infoMessage = `★ 𝑨𝑺𝑻𝑹𝑶-𝑩𝑶𝑻 𝑷𝑳𝑨𝒀 ★
 
-🚀 *Archivo Encontrado:* 「 ${title} 」
-🌌 *Canal:* ${videoInfo.author.name || 'Desconocido'}
-✨ *Vistas:* ${vistas}
-⏱ *Duración:* ${timestamp}
-📅 *Publicado:* ${ago}
-🔗 *Enlace:* ${url}
-    `;
+🚀 Archivo Encontrado: 「 ${title} 」 🌌 Canal: ${videoInfo.author.name || 'Desconocido'} ✨ Vistas: ${vistas} ⏱ Duración: ${timestamp} 📅 Publicado: ${ago} 🔗 Enlace: ${url}`;
+
     const thumb = (await conn.getFile(thumbnail))?.data;
 
     const JT = {
@@ -108,16 +104,15 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
     };
 
     await conn.reply(m.chat, infoMessage, m, JT);
+    await m.react('🌌');
 
     if (command === 'play' || command === 'yta' || command === 'ytmp3') {
-      const api = await (await fetch(`https://api.neoxr.eu/api/youtube?url=${url}&type=audio&quality=128kbps&apikey=GataDios`)).json()
-      const result = api.data.url
+      const api = await (await fetch(`https://api.neoxr.eu/api/youtube?url=${url}&type=audio&quality=128kbps&apikey=GataDios`)).json();
+      const result = api.data.url;
       await conn.sendMessage(m.chat, { audio: { url: result }, mimetype: "audio/mpeg" }, { quoted: m });
-
     } else if (command === 'play2' || command === 'ytv' || command === 'ytmp4') {
-
-      const response = await fetch(`https://api.neoxr.eu/api/youtube?url=${url}&type=video&quality=480p&apikey=GataDios`)
-      const json = await response.json()
+      const response = await fetch(`https://api.neoxr.eu/api/youtube?url=${url}&type=video&quality=480p&apikey=GataDios`);
+      const json = await response.json();
 
       try {
         await conn.sendMessage(m.chat, {
@@ -130,29 +125,23 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
       } catch (e) {
         console.error(`Error con la fuente de descarga:`, e.message);
       }
-
     } else {
       throw "Comando no reconocido.";
     }
+
   } catch (error) {
     return m.reply(`⚠︎ Ocurrió un error: ${error.message}`);
   }
 };
 
-
-handler.command = ['play', 'plsy2', 'ytmp3', 'yta', 'ytmp4', 'ytv']
-
-
+handler.command = ['play', 'plsy2', 'ytmp3', 'yta', 'ytmp4', 'ytv'];
 handler.before = async (m, { conn }) => {
-  let text = m.text ? m.text.toLowerCase().trim() : ''; 
-  if (['play', 'play2', 'ytmp3', 'yta', 'ytmp4', 'ytv'].includes(text)) {
-    const commandText = m.text.split(' ').slice(1).join(' ');  
-    m.text = commandText || ''; 
+  let text = m.text?.toLowerCase()?.trim();
+  if (text === 'play' || text === 'play2' || text === 'ytmp3' || text === 'yta' || text === 'ytmp4' || text === 'ytv') {
     return handler(m, { conn });
+    handler.group = true;
   }
-}
-
-handler.group = true;  
+};
 
 export default handler;
 
