@@ -18,8 +18,6 @@ handler.before = async (m, { conn }) => {
         return handler(m, { conn });
     }
 }
-
-export default handler
-handler.rowner = true
+handler.rowner = true;
 
 export default handler
