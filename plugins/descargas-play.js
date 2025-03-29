@@ -142,7 +142,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
 };
 
 
-handler.command = ['play', 'plsy2', 'ytmp3', 'yta', 'ytmp4', 'ytv']
+handler.command = ['play', 'play2', 'ytmp3', 'yta', 'ytmp4', 'ytv']
 
 
 handler.before = async (m, { conn }) => {
