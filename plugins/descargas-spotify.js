@@ -20,7 +20,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 
         if (!data || !data.result || !data.result.data || !data.result.data.download) throw "No se pudo obtener el enlace de descarga."
 
-        const info = `Descargando: ${data.result.data.title}\n\n> *Artista:* ${data.result.data.artis}\n> *Album:* ${song.album}\n> *Duración:* ${timestamp(data.result.data.durasi)}\n> *Enlace:* ${song.url}`
+        const info = `「✦」Descargando: ${data.result.data.title}\n\n> ✦*Artista:* ${data.result.data.artis}\n> ✰*Album:* ${song.album}\n> ⴵ*Duración:* ${timestamp(data.result.data.durasi)}\n> 🜸*Enlace:* ${song.url}`
 
         await conn.sendMessage(m.chat, { text: info, contextInfo: { forwardingScore: 9999999, isForwarded: false, 
         externalAdReply: {
