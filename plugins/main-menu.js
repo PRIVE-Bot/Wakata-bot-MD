@@ -87,7 +87,7 @@ ${commandsForTag.map(menu => menu.help.map(help => `∫➤ ${_p}${help} ${menu.l
 *┗━━━▣━━⌬⌨⌬━━▣━━━━⌬*`
 }).filter(text => text !== '').join('\n')}
 
-> © Kirito-Bot by Deylin
+> © astro-Bot by Deylin
 `;
 
     // no tocar 
