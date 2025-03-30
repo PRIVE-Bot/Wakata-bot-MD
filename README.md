@@ -1,4 +1,4 @@
-<h2>.        🚀 Astro-Bot ☄️</h2>
+<h1 align="center">🚀 ASTRO-BOT ☄️</h1>
 
 ---
 <p align="center">
