@@ -1,4 +1,4 @@
-> versión: Beta 
+> ##**versión: Beta**
 
 <h1 align="center">🚀 ASTRO-BOT ☄️</h1>
 
