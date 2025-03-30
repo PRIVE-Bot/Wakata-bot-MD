@@ -8,3 +8,8 @@
 </p>  
 
 ---
+
+### **`🌟 Colaboradores`**
+<a href="https://github.com/deylinqff/astro-bot/graphs/contributors">
+<img src="https://contrib.rocks/image?repo=deylinqff/astro-bot" /> 
+</a>
