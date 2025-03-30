@@ -17,7 +17,7 @@ export async function before(m, { participants, conn }) {
 
           if (isBotPresent) {
                 setTimeout(async () => {
-                    await conn.reply(m.chat, '> ✦ 𝐊𝐈𝐑𝐈𝐓𝐎-𝐁𝐎𝐓 ✦\n 
+                    await conn.reply(m.chat, '\n> ✦ 𝐊𝐈𝐑𝐈𝐓𝐎-𝐁𝐎𝐓 ✦\n 
 🚀 En esta nave ya está el capitán. La tripulación debe embarcarse en nuevas misiones y explorar universos desconocidos.', m, fake);
                     await this.groupLeave(m.chat)
                 }, 5000)// 5 segundos
