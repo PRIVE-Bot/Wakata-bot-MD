@@ -107,7 +107,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
     await m.react('🌌');
 
     if (command === 'play' || command === 'yta' || command === 'ytmp3') {
-      const api = await (await fetch(`https://api.neoxr.eu/api/youtube?url=${url}&type=audio&quality=128kbps&apikey=GataDios`)).json();
+            const api = await (await fetch(`https://api.neoxr.eu/api/youtube?url=${url}&type=audio&quality=128kbps&apikey=GataDios`)).json()
       const result = api.data.url;
       await conn.sendMessage(m.chat, { audio: { url: result }, mimetype: "audio/mpeg" }, { quoted: m });
     } else if (command === 'play2' || command === 'ytv' || command === 'ytmp4') {
