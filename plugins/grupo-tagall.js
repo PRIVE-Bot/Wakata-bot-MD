@@ -55,16 +55,19 @@ const handler = async (m, { isOwner, isAdmin, conn, text, participants, args, co
         return "🌎";
     }
 
-    const mensaje = args.join` `;
-    const info = mensaje ? ` *Mensaje:* ${mensaje}` : " *Invocación general*";
-    let texto = `*𝐋𝐋𝐀𝐌𝐀𝐃𝐀 𝐀 𝐓𝐎𝐃𝐎𝐒 𝐋𝐎𝐒 𝐌𝐈𝐄𝐌𝐁𝐑𝐎𝐒⚡ (${participants.length})* ☄️\n\n${info}\n\n`;
+    const mensaje = args.join(' ');
+const info = mensaje ? `📢 *Mensaje:* ${mensaje}` : '📢 *Invocación general*';
+let texto = '╔════════════════════════════╗\n';
+texto += `║  *LLAMADO A TODOS LOS MIEMBROS* ⚡️ \n║ (${participants.length})  ║\n`;
+texto += '╚════════════════════════════╝\n\n';
+texto += `${info}\n\n`;
 
-    for (const miembro of participants) {
-        const number = miembro.id.split('@')[0];
-        const prefix = getPrefix(number);
-        const flag = countryFlags[prefix] || "🛸";
-        texto += `💫 ${flag} @${number}\n`;
-    }
+for (const miembro of participants) {
+  const number = miembro.id.split('@')[0];
+  const prefix = getPrefix(number);
+  const flag = countryFlags[prefix] || '🛸';
+  texto += `• ${flag} @${number}\n`;
+}
 
     texto += `\n*${dev}*`;
 
