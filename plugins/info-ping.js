@@ -8,7 +8,13 @@ let handler = async (m, { conn, usedPrefix, text }) => {
     exec(`neofetch --stdout`, (error, stdout, stderr) => {
         let child = stdout.toString("utf-8");
 
-        conn.reply(m.chat, `*¡Pong!*\n> ╭─────────────╮\n> │ *Tiempo:* ${latensi.toFixed(4)}ms\n> ╰─────────────╯`, m, fake);
+        conn.reply(m.chat, `
+┏╍╍╍╍╍╍╍╍╍╍╍╍⚃
+┃   *¡Pong!*
+┗╍╍╍╍╍╍╍╍╍╍╍╍⚃
+> ┏╍╍╍╍╍╍╍╍╍╍╍╍╍⚃
+> ┃ *Tiempo:* ${latensi.toFixed(4)}ms
+> ┗╍╍╍╍╍╍╍╍╍╍╍╍╍⚃`, m, fake);
     });
 }
 
