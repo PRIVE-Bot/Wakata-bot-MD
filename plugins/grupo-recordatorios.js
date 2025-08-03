@@ -40,7 +40,7 @@ async function handler(m, { args, command, conn, participants }) {
             if (contador < 2) {
                 let mencionados = participants.map(u => u.id);
                 conn.sendMessage(chatId, {
-                    text: `🔔 *Recordatorio:*\n\n${mensaje}`,
+                    text: `${mensaje}`,
                     mentions: mencionados
                 }, { quoted: fkontak });
                 contador++;
