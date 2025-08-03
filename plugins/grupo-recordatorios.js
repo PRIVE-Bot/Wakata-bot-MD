@@ -1,7 +1,7 @@
 let recordatorios = {};
 
-async function handler(m, { args, command, isAdmin }) {
-    if (!isAdmin) return m.reply('Solo los administradores pueden usar este comando.');
+async function handler(m, { args, command }) {
+    
 
     if (command === 'recordatorio') {
         if (args.length < 2) return m.reply('Uso: *!recordatorio [minutos] [mensaje]*');
