@@ -73,8 +73,8 @@ p.emit('message', line.trim());
 }
 process.on('warning', (warning) => {
 if (warning.name === 'MaxListenersExceededWarning') {
-console.warn('🚀 Se excedió el límite de Listeners en:');
+console.warn('💥 Se excedió el límite de Listeners en:');
 console.warn(warning.stack);
 }
 });
-start('astro.js');
+start('main.js');
