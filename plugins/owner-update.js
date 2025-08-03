@@ -2,7 +2,7 @@ import { execSync } from 'child_process';
 
 let handler = async (m, { conn, args }) => { 
     try { 
-        await conn.reply(m.chat, '⏳ Actualizando el bot, por favor espere...', m);
+      //  await conn.reply(m.chat, '⏳ Actualizando el bot, por favor espere...', m);
 
         const output = execSync('git pull' + (args.length ? ' ' + args.join(' ') : '')).toString();
         let response = output.includes('Already up to date') 
@@ -38,8 +38,8 @@ let handler = async (m, { conn, args }) => {
 };
 
 handler.help = ['update', 'actualizar'];
-handler.customPrefix = /^(update|actualizar)$/i
-handler.command = new RegExp
+handler.command = ['update', 'actualizar']
+handler.tags = ['main']
 handler.rowner = true;
 
 export default handler;
