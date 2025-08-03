@@ -30,7 +30,7 @@
       return;
     }*/
 
-    if (!user.commands) {
+   /* if (!user.commands) {
       user.commands = 0;
     }
     user.commands += 1;
