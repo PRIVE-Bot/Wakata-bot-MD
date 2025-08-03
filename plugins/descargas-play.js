@@ -82,14 +82,13 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
     const { title, thumbnail, timestamp, views, ago, url } = videoInfo;
     const vistas = formatViews(views);
 
-    const infoMessage = `★ 𝑨𝑺𝑻𝑹𝑶-𝑩𝑶𝑻 𝑷𝑳𝑨𝒀 ★
+    const infoMessage = `★ ${botname} ★
 
-🚀 Archivo Encontrado: 「 ${title} 」 
-🌌 Canal: ${videoInfo.author.name || 'Desconocido'} 
-✨ Vistas: ${vistas} 
-⏱ Duración: ${timestamp}
-📅 Publicado: ${ago}
-🔗 Enlace: ${url}`;
+╭ ⍰ *Resultado:* 「 ${title} 」 
+⍰ *Canal:* ${videoInfo.author.name || 'Desconocido'} 
+⍰ *Vistas:* ${vistas} 
+⍰ *Duración:* ${timestamp}
+⍰ *Publicado:* ${ago}`;
 
     const thumb = (await conn.getFile(thumbnail))?.data;
 
