@@ -58,15 +58,15 @@ global.done = '✅'
 global.error = '✖️'
 global.msm = '⚠︎'
 
-//Emojis determinado
-global.emoji1 = '✧'
-global.emoji2 = '⌬'
-global.emoji3 = '➤'
-global.emoji4 = '۝'
-global.emoji5 = '☾'
-global.emoji6 = '✰'
-global.emojis = [emoji, emoji2, emoji3, emoji4].getRandom()
-global.emoji = global.emojis
+global.emoji0 = '*🦊🍥「 ¡Modo Sabio Activado! 」*\n'
+global.emoji1 = '*🔥👊「 ¡Dattebayo! Naruto está listo 」*\n'
+global.emoji2 = '*⚡🌀「 ¡Rasengan del Hokage! 」*\n'
+global.emoji3 = '*🍃👀「 ¡Oculto entre las hojas! 」*\n'
+global.emoji4 = '*💥🦅「 ¡El espíritu ninja no muere! 」*\n'
+global.emoji5 = '*🌌🔱「 ¡El destino del shinobi continúa! 」*\n'
+
+global.emojis = [emoji0, emoji1, emoji2, emoji3, emoji4, emoji5].getRandom()
+global.emoji = [emoji0, emoji1, emoji2, emoji3, emoji4, emoji5].getRandom()
 
 //mensaje en espera
 global.wait = '✪ Espera un momento, soy lento...';
