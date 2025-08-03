@@ -44,7 +44,7 @@ _“No soy un héroe... solo soy un ninja que sigue su camino.”_
       externalAdReply: {
         title: "👑 Naruto-Bot Oficial",
         body: "Contacto directo con el creador",
-        thumbnailUrl: icono,
+        thumbnailUrl: https://d.uguu.se/fYzeJFuN.jpg,
         sourceUrl: redes,
         mediaType: 1,
         renderLargerThumbnail: true,
