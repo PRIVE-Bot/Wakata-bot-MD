@@ -1,4 +1,4 @@
-export async function before(m) {
+/*export async function before(m) {
   if (!m.text || !global.prefix.test(m.text)) {
     return;
   }
@@ -32,4 +32,4 @@ export async function before(m) {
     const comando = m.text.trim().split(' ')[0];
     await conn.reply(m.chat, `⚠️ ¡𝘌𝘴𝘱𝘦𝘳𝘢, 𝘦𝘴𝘦 𝘫𝘶𝘵𝘴𝘶 《 *${comando}* 》 𝘯𝘰 𝘦𝘹𝘪𝘴𝘵𝘦!\n\n🍜 Usa el comando:\n» *#menu* 𝘱𝘢𝘳𝘢 𝘷𝘦𝘳 𝘭𝘰𝘴 𝘥𝘪𝘴𝘱𝘰𝘯𝘪𝘣𝘭𝘦𝘴.`, m, fake);
   }
-}
+}*/
