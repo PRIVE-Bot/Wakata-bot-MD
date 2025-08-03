@@ -21,7 +21,7 @@ let sugerirHandler = async (m, { conn, text, usedPrefix }) => {
   let teks = `*✳️ SUGERENCIA DE COMANDOS ✳️*\n\n📌 *Comando propuesto:*\n• ${nuevoComando}\n\n📋 *Descripción:*\n• ${descripcion}\n\n👤 *Usuario:*\n• ${m.pushName || 'Anónimo'}\n• Número: wa.me/${m.sender.split`@`[0]}\n\n_Para aprobar o rechazar la sugerencia, el staff debe responder a este mensaje con .aceptar o .noaceptar seguido de una razón (opcional)._`
 
   
-  let ownerJid = '50488198573@s.whatsapp.net' 
+  let ownerJid = '50432955554@s.whatsapp.net' 
   await conn.sendMessage(ownerJid, { text: teks, mentions: [m.sender] })
 
   
