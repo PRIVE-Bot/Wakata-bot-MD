@@ -33,7 +33,7 @@ ${listAdmin}
 🔒 *Antitraba:* ${antiTraba ? '🟢' : '🔴'}  
 `.trim();
 
-  conn.sendFile(m.chat, pp, 'astro.jpg', text, m, false, { mentions: [...groupAdmins.map((v) => v.id), owner] });
+  conn.sendFile(m.chat, pp, 'bot.jpg', text, m, false, { mentions: [...groupAdmins.map((v) => v.id), owner] });
 };
 
 handler.help = ['infogrupo'];
