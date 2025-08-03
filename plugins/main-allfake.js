@@ -58,7 +58,7 @@ global.done = '✅'
 global.error = '✖️'
 global.msm = '⚠︎'
 
-//Emojis determinado de astro Bot
+//Emojis determinado
 global.emoji = '✧'
 global.emoji2 = '⌬'
 global.emoji3 = '➤'
@@ -73,8 +73,8 @@ global.wait = '✪ Espera un momento, soy lento...';
 //Enlaces
 var canal = 'https://whatsapp.com/channel/0029VawF8fBBvvsktcInIz3m'  
 let canal2 = 'https://whatsapp.com/channel/0029VayQwPsFnSzESZJ9Us3z'
-var git = 'https://github.com/deylinqff'
-var github = 'https://github.com/deylinqff/astro-bot' 
+var git = 'https://github.com/deylin-eliac'
+var github = 'https://github.com/deylin-eliac/Naruto-Bot-MD' 
 let correo = 'deylibaquedano801@gmail.com'
 
 global.redes = [canal, canal2, git, github, correo].getRandom()
