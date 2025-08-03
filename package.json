@@ -1,7 +1,7 @@
 {
-"name": "ASTRO-BOT",
+"name": "NARUTO-BOT",
 "version": "2.2.0",
-"description": "Super WhatsApp Bot Multi Device",
+"description": "WhatsApp Bot...",
 "main": "index.js",
 "type": "module",
 "directories": {
@@ -18,16 +18,16 @@
 "eslint": "eslint .",
 "eslintfix": "eslint --fix ."
 },
-"homepage": "https://github.com/deylinqff/astro-bot",
+"homepage": "https://github.com/deylin-eliac/Naruto-Bot-MD",
 "author": {
 "name": "DEYLIN"
 },
 "repository": {
 "type": "git",
-"url": "git+https://github.com/deylinqff/astro-bot.git"
+"url": "git+https://github.com/deylin-eliac/Naruto-Bot-MD.git"
 },
 "bugs": {
-"url": "https://github.com/deylinqff/astro-bot/issues"
+"url": "https://github.com/deylin-eliac/Naruto-Bot-MD/issues"
 },
 "license": "GPL-3.0-or-later",
 "dependencies": {
