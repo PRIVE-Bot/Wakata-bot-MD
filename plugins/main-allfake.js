@@ -28,9 +28,9 @@ console.log(`Error : ${e}`)
 }}
 
 //creador y otros
-global.creador = 'Wa.me/50488198573'
+global.creador = 'Wa.me/50432955554'
 global.ofcbot = `${conn.user.jid.split('@')[0]}`
-global.asistencia = 'Wa.me/50488198573'
+global.asistencia = 'Wa.me/50432955554'
 global.namechannel = '𝑨𝒔𝒕𝒓𝒐-𝑩𝒐𝒕 - 𝒖𝒑𝒅𝒂𝒕𝒆𝒔☆'
 global.namechannel2 = '𝑨𝒔𝒕𝒓𝒐-𝑩𝒐𝒕 - 𝒂𝒗𝒊𝒔𝒐𝒔☆'
 global.namegrupo = '✦ 𝐀𝐒𝐓𝐑𝐎 - 𝐁𝐎𝐓 ☆'
@@ -69,9 +69,6 @@ global.emojis = [emoji, emoji2, emoji3, emoji4].getRandom()
 
 //mensaje en espera
 global.wait = '✪ Espera un momento, soy lento...';
-global.waitt = '★ Espera un momento, soy lento...';
-global.waittt = '✭ Espera un momento, soy lento...';
-global.waitttt = '✯ Espera un momento, soy lento...';
 
 //Enlaces
 var canal = 'https://whatsapp.com/channel/0029VawF8fBBvvsktcInIz3m'  
@@ -112,7 +109,7 @@ global.fake = { contextInfo: { isForwarded: true, forwardedNewsletterMessageInfo
 }}, { quoted: m }
 
 global.icono = [
-'https://tinyurl.com/285a5ejf',
+'https://files.catbox.moe/nv87us.jpg',
 ].getRandom()
 
 global.rcanal = { contextInfo: { isForwarded: true, forwardedNewsletterMessageInfo: { newsletterJid: channelRD.id, serverMessageId: 100, newsletterName: channelRD.name, }, externalAdReply: { showAdAttribution: true, title: packname, body: dev, mediaUrl: null, description: null, previewType: "PHOTO", thumbnailUrl: icono, sourceUrl: redes, mediaType: 1, renderLargerThumbnail: false }, }, }}
