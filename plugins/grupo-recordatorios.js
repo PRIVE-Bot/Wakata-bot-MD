@@ -5,7 +5,7 @@ async function handler(m, { args, command, conn, participants }) {
     const chatId = m.chat;
 
     
-    const res = await fetch('https://files.catbox.moe/cduhlw.jpg');
+    const res = await fetch('https://files.catbox.moe/nwgsz3.jpg');
     const thumb2 = Buffer.from(await res.arrayBuffer());
 
     
