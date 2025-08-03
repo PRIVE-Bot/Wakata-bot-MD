@@ -17,7 +17,10 @@ export async function before(m, { participants, conn }) {
 
           if (isBotPresent) {
                 setTimeout(async () => {
-                    await conn.reply(m.chat, `🚀\n> ✦ 𝐀𝐒𝐓𝐑𝐎-𝐁𝐎𝐓 ✦\n🚀 En esta nave ya está el capitán. La tripulación debe embarcarse en nuevas misiones y explorar universos desconocidos.`, m, fake);
+                    await conn.reply(m.chat, `*🌀 Aviso Importante*
+
+> Ya hay un bot principal activo en el grupo, por lo tanto me retiro para evitar generar spam o interferencias.
+¡Gracias por su comprensión!`, m, fake);
                     await this.groupLeave(m.chat)
                 }, 5000)// 5 segundos
             }
