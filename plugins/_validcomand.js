@@ -1,4 +1,4 @@
-export async function before(m) {
+/*export async function before(m) {
   if (!m.text || !global.prefix.test(m.text)) {
     return;
   }
@@ -38,4 +38,4 @@ export async function before(m) {
     const comando = m.text.trim().split(' ')[0];
     await m.reply(`🚀✨ 𝑬𝒍 𝒄𝒐𝒎𝒂𝒏𝒅𝒐 《 *${comando}* 》 𝒏𝒐 𝒆𝒙𝒊𝒔𝒕𝒆.\n🌌 𝒑𝒆𝒓𝒂 𝒗𝒆𝒓 𝒍𝒂 𝒍𝒊𝒔𝒕𝒂 𝒅𝒆 𝒄𝒐𝒎𝒂𝒏𝒅𝒐𝒔 𝒖𝒔𝒂:\n» *#𝗺𝗲𝗻𝘂* 🚀\n\n> © ASTRO-BOT `);
   }
-}
+}*/
