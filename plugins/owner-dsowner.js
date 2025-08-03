@@ -1,24 +1,46 @@
-let noAceptarHandler = async (m, { conn, text, usedPrefix, command, isOwner }) => {
-  // Verifica que se esté usando en el grupo del staff y que el usuario tenga permisos
-  if (!m.isGroup) return m.reply(`❌ Este comando solo se puede usar en el grupo del staff.`)
-  if (!isOwner) return m.reply(`❌ No tienes permisos para usar este comando.`)
+import { readdirSync, unlinkSync, existsSync, promises as fs, rmSync } from 'fs'
+import path from 'path'
 
-  if (!m.quoted) return m.reply(`❗️ Responde al mensaje de sugerencia para rechazarla.`)
-  let razon = text.trim() || 'Sin razón especificada.'
+var handler = async (m, { conn, usedPrefix }) => {
 
-  let regex = /wa\.me\/(\d+)/i
-  let match = m.quoted.text.match(regex)
-  if (!match) {
-    return m.reply(`❗️ No se pudo extraer el número del usuario de la sugerencia.`)
-  }
-  let userId = match[1] + "@s.whatsapp.net"
+if (global.conn.user.jid !== conn.user.jid) {
+return conn.reply(m.chat, `${emojis} Utiliza este comando directamente en el número principal del Bot.`, m, fake);
+}
+//await conn.reply(m.chat, `${emoji2} Iniciando proceso de eliminación de todos los archivos de sesión, excepto el archivo creds.json...`, m, fake);
+m.react(rwait)
 
-  // Notifica al usuario que su sugerencia fue rechazada
-  await conn.reply(userId, `❌ *Tu sugerencia fue RECHAZADA*\n\n_El staff ha revisado tu propuesta y decidió no implementarla._\nRazón: ${razon}`, m)
-  m.reply(`❌ Sugerencia rechazada y notificada al usuario.`)
+let sessionPath = `./${sessions}/`
+
+try {
+
+if (!existsSync(sessionPath)) {
+return await conn.reply(m.chat, `${emojis} La carpeta está vacía.`, m, fake);
+}
+let files = await fs.readdir(sessionPath)
+let filesDeleted = 0
+for (const file of files) {
+if (file !== 'creds.json') {
+await fs.unlink(path.join(sessionPath, file))
+filesDeleted++;
+}
+}
+if (filesDeleted === 0) {
+await conn.reply(m.chat, `${emoji2} La carpeta esta vacía.`, m, fake);
+} else {
+m.react(done)
+await conn.reply(m.chat, `${emojis} Se eliminaron ${filesDeleted} archivos de sesión, excepto el archivo creds.json.`, m, rcanal);
+conn.reply(m.chat, `${emojis} *¡Hola! ¿logras verme?*`, m, fake);
+
+}
+} catch (err) {
+console.error('Error al leer la carpeta o los archivos de sesión:', err);
+await conn.reply(m.chat, `${msm} Ocurrió un fallo.`, m, fake);
 }
 
-noAceptarHandler.help = ['noaceptar']
-noAceptarHandler.tags = ['staff']
-noAceptarHandler.command = ['noaceptar']
-export default noAceptarHandler
+}
+handler.help = ['dsowner']
+handler.tags = ['owner']
+handler.command = ['delai', 'dsowner', 'clearallsession']
+handler.rowner = true;
+
+export default handler
