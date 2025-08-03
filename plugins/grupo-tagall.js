@@ -77,8 +77,6 @@ for (const miembro of participants) {
 handler.help = ['todos *<mensaje opcional>*'];
 handler.tags = ['grupo'];
 handler.command = ['tagall', 'todos']
-handler.customPrefix = /^(tagall|todos)$/i
-handler.command = new RegExp
 handler.group = true;
 
 export default handler;
