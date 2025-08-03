@@ -12,7 +12,7 @@ var handler = async (m, { conn, text, participants, isOwner, isAdmin }) => {
     
     let tagText = text ? text : (m.quoted && m.quoted.text ? m.quoted.text : "*Hola!!*")
     
-    let newText = `${tagText}\n\n> ASTRO-BOT TAG`
+    let newText = `${tagText}`
     
     let q = m.quoted ? m.quoted : m || m.text || m.sender
     let c = m.quoted ? await m.getQuotedObj() : m.msg || m.text || m.sender
@@ -41,7 +41,7 @@ var handler = async (m, { conn, text, participants, isOwner, isAdmin }) => {
     let masss = more.repeat(850)
     let tagText = text ? text : (m.quoted && m.quoted.text ? m.quoted.text : "*Hola!!*")
     
-    let htextos = `${tagText}\n\n> ASTRO-BOT TAG`
+    let htextos = `${tagText}`
     
     if ((isMedia && quoted.mtype === 'imageMessage') && htextos) {
       var mediax = await quoted.download?.()
