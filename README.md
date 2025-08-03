@@ -25,7 +25,7 @@
 
 > [!TIP]
 > 🍜 ¿Quieres personalizar el nombre del bot?
-> Edita `global.namabot` en el archivo de configuración principal.
+> Edita `config.js` y `main-allfake.js`en el archivo de configuración principal.
 
 > [!TIP]
 > 🔧 Puedes usar MongoDB o LowDB como base de datos.
