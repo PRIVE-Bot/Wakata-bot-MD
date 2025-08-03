@@ -60,26 +60,24 @@ let crm3 = "SBpbmZvLWRvbmFyLmpz"
 let crm4 = "IF9hdXRvcmVzcG9uZGVyLmpzIGluZm8tYm90Lmpz"
 let drm1 = ""
 let drm2 = ""
-//let rtx = "*⪛✰ ↫ Yυƙι  -  Sυσυ  -  Bσƚ ↬ ✰⪜*\n\n✐ Cσɳҽxισɳ SυႦ-Bσƚ Mσԃҽ QR\n\n✰ Con otro celular o en la PC escanea este QR para convertirte en un *Sub-Bot* Temporal.\n\n\`1\` » Haga clic en los tres puntos en la esquina superior derecha\n\n\`2\` » Toque dispositivos vinculados\n\n\`3\` » Escanee este codigo QR para iniciar sesion con el bot\n\n✧ ¡Este código QR expira en 45 segundos!."
-let rtx2 = `┌────────── ⸙ ⚡  
-│ 🚀 𝐀𝐒𝐓𝐑𝐎 - 𝐁𝐎𝐓 𝐌𝐃  
-└────────── ⸙ ⚡  
+let rtx = "*⛩️✦ ↫ 𝐍𝐚𝐫𝐮𝐭𝐨 - 𝐁𝐨𝐭 - 𝐌𝐃 ↬ ✦⛩️*\n\n🍥 𝐌𝐨𝐝𝐨 𝐐𝐑 - 𝐒𝐮𝐛-𝐁𝐨𝐭 𝐓𝐞𝐦𝐩𝐨𝐫𝐚𝐥 🍥\n\n🔥 Escanea este código con otro celular o en tu PC para convertirte en un *Shinobi Sub-Bot* temporal.\n\n\`1\` » Haz clic en los tres puntos (⋮) arriba a la derecha\n\`2\` » Toca *Dispositivos vinculados*\n\`3\` » Escanea este código QR para iniciar sesión con el bot\n\n⚠️ ¡Este QR se autodestruirá en 45 segundos!"
+let rtx2 = `┌─────────────── ⛩️🍃
+│ 🍜 𝐍𝐚𝐫𝐮𝐭𝐨 - 𝐁𝐨𝐭 - 𝐌𝐃 🍥
+└─────────────── ⛩️🍃
 
-🛰️ *𝐌𝐨𝐝𝐨 𝐂𝐨́𝐝𝐢𝐠𝐨 - 𝐒𝐮𝐛-𝐁𝐨𝐭 𝐓𝐞𝐦𝐩𝐨𝐫𝐚𝐥* 🌌  
+🎌 *𝐌𝐨𝐝𝐨 𝐂ó𝐝𝐢𝐠𝐨 - 𝐒𝐮𝐛-𝐁𝐨𝐭 𝐓𝐞𝐦𝐩𝐨𝐫𝐚𝐥* 🎯
 
-🔗 𝐔𝐬𝐚 𝐞𝐬𝐭𝐞 𝐜𝐨́𝐝𝐢𝐠𝐨 𝐩𝐚𝐫𝐚 𝐜𝐨𝐧𝐞𝐜𝐭𝐚𝐫𝐭𝐞 𝐚𝐥 𝐛𝐨𝐭:  
+📲 Usa este código ninja secreto para vincularte al sistema del Hokage:
 
-1️⃣ Ve a los tres puntos en la esquina superior derecha.  
-2️⃣ Dirígete a *"Dispositivos vinculados"*.  
-3️⃣ Selecciona *Vincular con el número de teléfono*.  
-4️⃣ Ingresa el código y únete al sistema.  
+➊ Ve a los tres puntos ⋮ en la esquina superior derecha  
+➋ Toca *"Dispositivos vinculados"*  
+➌ Elige *"Vincular con número de teléfono"*  
+➍ Ingresa el código de conexión y prepárate para la acción
 
-> ⚠ 𝐀𝐓𝐄𝐍𝐂𝐈Ó𝐍 ⚠
-> El código expira en 5 segundos, ¡vuela para llegar a tiempo!
+⚠️ *¡Alerta Shinobi!*  
+Este código se desvanece como un clon de sombra en *5 segundos* ⏱️
 
-
-🌠 *¡𝐄𝐬𝐭𝐚𝐬 𝐚 𝐮𝐧 𝐩𝐚𝐬𝐨 𝐝𝐞 𝐥𝐚 𝐜𝐨𝐧𝐞𝐱𝐢ó𝐧 𝐜𝐨𝐬𝐦𝐢𝐜𝐚!* 🚀✨  
-`;
+🍃 *¡El camino del ninja comienza aquí, joven genin!* 💥`
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
