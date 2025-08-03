@@ -84,7 +84,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
 
     const infoMessage = `★ ${botname} ★
 
-╭ ⍰ *Resultado:* 「 ${title} 」 
+╭ ⍰ *Título:* 「 ${title} 」 
 ⍰ *Canal:* ${videoInfo.author.name || 'Desconocido'} 
 ⍰ *Vistas:* ${vistas} 
 ⍰ *Duración:* ${timestamp}
@@ -150,9 +150,8 @@ handler.before = async (m, { conn }) => {
 export default handler;
 
 function formatViews(views) {
-  if (views >= 1000) {
-    return (views / 1000).toFixed(1) + 'k (' + views.toLocaleString() + ')';
-  } else {
-    return views.toString();
-  }
+  if (typeof views !== "number" || isNaN(views)) return "Desconocido";
+  return views >= 1000
+    ? (views / 1000).toFixed(1) + "k (" + views.toLocaleString() + ")"
+    : views.toString();
 }
