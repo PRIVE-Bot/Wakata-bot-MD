@@ -31,16 +31,16 @@ console.log(`Error : ${e}`)
 global.creador = 'Wa.me/50432955554'
 global.ofcbot = `${conn.user.jid.split('@')[0]}`
 global.asistencia = 'Wa.me/50432955554'
-global.namechannel = '𝑨𝒔𝒕𝒓𝒐-𝑩𝒐𝒕 - 𝒖𝒑𝒅𝒂𝒕𝒆𝒔☆'
-global.namechannel2 = '𝑨𝒔𝒕𝒓𝒐-𝑩𝒐𝒕 - 𝒂𝒗𝒊𝒔𝒐𝒔☆'
-global.namegrupo = '✦ 𝐀𝐒𝐓𝐑𝐎 - 𝐁𝐎𝐓 ☆'
-global.namecomu = '✭𝐀𝐒𝐓𝐑𝐎 𝐂𝐨𝐦𝐮𝐧𝐢𝐭𝐲 ✪'
-global.listo = '⚡ *Aquí tienes ❛‿˂̵✧*'
-global.fotoperfil = await conn.profilePictureUrl(m.sender, 'image').catch(_ => 'https://files.catbox.moe/56el7x.jpg')
+global.namechannel = '𖤐 𝐍𝐚𝐫𝐮𝐭𝐨-𝐁𝐨𝐭 - 𝐮𝐩𝐝𝐚𝐭𝐞𝐬 ⚡'
+global.namechannel2 = '𖤐 𝐍𝐚𝐫𝐮𝐭𝐨-𝐁𝐨𝐭 - 𝐚𝐯𝐢𝐬𝐨𝐬 ☀️'
+global.namegrupo = '✦ 𝐍𝐀𝐑𝐔𝐓𝐎 - 𝐁𝐎𝐓 𝐌𝐃 🍥'
+global.namecomu = '✭ 𝐍𝐀𝐑𝐔𝐓𝐎 𝐂𝐨𝐦𝐮𝐧𝐢𝐭𝐲 ✪'
+global.listo = '🍥 *Aquí tienes, shinobi ❛‿˂̵✧*'
+global.fotoperfil = await conn.profilePictureUrl(m.sender, 'image').catch(_ => 'https://files.catbox.moe/nv87us.jpg')
 
-//Ids channel
+// Ids channel
 global.canalIdM = ["120363365444927738@newsletter", "120363365444927738@newsletter"]
-global.canalNombreM = ["☆ 𝑨𝒔𝒕𝒓𝒐 - 𝑩𝒐𝒕 𝑴𝑫 • 𝒖𝒑𝒅𝒂𝒕𝒆𝒔 ☆", "☆ 𝑨𝒔𝒕𝒓𝒐 - 𝑩𝒐𝒕 𝑴𝑫 • 𝒂𝒗𝒊𝒔𝒐𝒔 ☆"]
+global.canalNombreM = ["𖤐 𝐍𝐚𝐫𝐮𝐭𝐨-𝐁𝐨𝐭 - 𝐮𝐩𝐝𝐚𝐭𝐞𝐬 ⚡", "𖤐 𝐍𝐚𝐫𝐮𝐭𝐨-𝐁𝐨𝐭 - 𝐚𝐯𝐢𝐬𝐨𝐬 ☀️"]
 global.channelRD = await getRandomChannel()
 
 //fechas
