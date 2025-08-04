@@ -1,54 +1,78 @@
-import { exec } from "child_process";
+/*codigo y API desarrollo por Deylin 
+https://github.com/deylin-eliac
+no quites créditos y no modifiques el código*/
 
-let handler = async (m, { conn, text }) => {
-  if (!text) return conn.reply(m.chat, "⚠️ Por favor, ingresa un mensaje para enviar a Gemini.", m);
 
-  await m.react("⏳");
+
+import fetch from 'node-fetch'
+import { downloadContentFromMessage } from '@whiskeysockets/baileys'
+
+let handler = async (m, { text, usedPrefix, command, conn }) => {
+  let q = m.quoted || m
+  let mime = (q.msg || q).mimetype || ''
+  let hasImage = /^image\/(jpe?g|png)$/.test(mime)
+
+  if (!text && !hasImage) {
+    return conn.reply(m.chat, `${emojis} Envía o responde a una imagen con una pregunta, o escribe un prompt para generar una imagen.\n\nEjemplo:\n${usedPrefix + command} ¿Qué ves en esta imagen?\n${usedPrefix + command} Genera una imagen de un zorro en la luna`, m, fake)
+  }
 
   try {
-    let respuesta = await chat(text);
+    await m.react('✨')
+    conn.sendPresenceUpdate('composing', m.chat)
 
-    let txt = `*乂 G E M I N I - C H A T 乂*\n\n`;
-    txt += `*» Pregunta:* ${text}\n`;
-    txt += `*» Respuesta:* ${respuesta}\n\n`;
-    txt += `> *${dev}*`;
+    let base64Image = null
+    let mimeType = null
 
-    await conn.reply(m.chat, txt, m);
-    await m.react("✅");
-  } catch (error) {
-    await m.react("❌");
-    conn.reply(m.chat, "⚠️ Error al procesar la solicitud.", m);
-  }
-};
-
-handler.help = ["gemini"];
-handler.tags = ["ai"];
-handler.command = ["gemini", "chatgemini"];
-
-export default handler;
-
-async function chat(prompt) {
-  return new Promise((resolve, reject) => {
-    const command = `curl -s "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyCYWNbM2ZgdDSp9NlFxTgp0Wtwaaw7dyRc" \
-      -H "Content-Type: application/json" \
-      -X POST \
-      -d '{
-        "contents": [{
-          "parts": [{"text": "${prompt}"}]
-        }]
-      }'`;
-
-    exec(command, (error, stdout, stderr) => {
-      if (error) return reject(`Error: ${error.message}`);
-      if (stderr) return reject(`Stderr: ${stderr}`);
-
-      try {
-        const response = JSON.parse(stdout);
-        const reply = response.candidates?.[0]?.content?.parts?.[0]?.text || "No response from AI.";
-        resolve(reply);
-      } catch (err) {
-        reject(`JSON Parse Error: ${err.message}`);
+    if (hasImage) {
+      const stream = await downloadContentFromMessage(q, 'image')
+      let buffer = Buffer.from([])
+      for await (const chunk of stream) {
+        buffer = Buffer.concat([buffer, chunk])
       }
-    });
-  });
+
+      base64Image = `data:${mime};base64,${buffer.toString('base64')}`
+      mimeType = mime
+    }
+
+    const body = {
+      prompts: text ? [text] : [],
+      imageBase64List: base64Image ? [base64Image] : [],
+      mimeTypes: mimeType ? [mimeType] : [],
+      temperature: 0.7
+    }
+
+    const res = await fetch('https://g-mini-ia.vercel.app/api/gemini', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    })
+
+    const data = await res.json()
+
+
+    if (data?.image && data?.from === 'image-generator') {
+      return await conn.sendFile(m.chat, data.image, 'imagen.jpg', ` Claro aquí tienes tu imagen espero te guste 😸 \n\n\n> Gemini (IA) ✨`, m, fake)
+    }
+await m.react('🪄')
+
+
+    const respuesta = data?.candidates?.[0]?.content?.parts?.[0]?.text
+    if (!respuesta) throw '❌ No se recibió respuesta válida de la IA.'
+
+    await m.reply(respuesta.trim())
+    await m.react('🌟')
+
+  } catch (e) {
+    console.error('[ERROR GEMINI]', e)
+    await m.react('⚠️')
+    await conn.reply(m.chat, '⚠️ Ocurrió un error procesando la imagen o pregunta.', m, fake)
+  }
 }
+
+handler.command = ['gemini', 'geminis'];
+handler.tags = ['ia'];
+handler.help = ['gemini <pregunta>'];
+handler.register = true
+handler.group = false
+
+export default handler
