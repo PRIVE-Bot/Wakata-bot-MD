@@ -37,7 +37,7 @@ global.nameqr = 'ɴᴀʀᴜᴛᴏ-ʙᴏᴛ ᴍᴅ'
 global.namebot = '𝕹𝖆𝖗𝖚𝖙𝖔 - 𝕭𝖔𝖙 𝕸𝕯'
 global.sessions = 'Sessions'
 global.jadi = 'JadiBots' 
-global.astroJadibts = true
+global.Jadibts = true
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
 
