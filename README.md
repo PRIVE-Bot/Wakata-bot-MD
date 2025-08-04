@@ -38,3 +38,25 @@
 > [!WARNING]
 > 🛑 Nunca compartas tu archivo de sesión (auth file) públicamente.
 > Contiene acceso completo a tu cuenta de WhatsApp.
+
+<div id="paypal-button-container-P-8683919343236382TNCIB6UI"></div>
+<script src="https://www.paypal.com/sdk/js?client-id=AWJzpGhWX1FeUWD7PwEGNktnpLCINbZlbA5gngPA5_d2R7eGe2CDU-xUagSs3h69HgWi0uJ748URcCMG&vault=true&intent=subscription" data-sdk-integration-source="button-factory"></script>
+<script>
+  paypal.Buttons({
+      style: {
+          shape: 'rect',
+          color: 'blue',
+          layout: 'vertical',
+          label: 'subscribe'
+      },
+      createSubscription: function(data, actions) {
+        return actions.subscription.create({
+          /* Creates the subscription */
+          plan_id: 'P-8683919343236382TNCIB6UI'
+        });
+      },
+      onApprove: function(data, actions) {
+        alert(data.subscriptionID); // You can add optional success message for the subscriber here
+      }
+  }).render('#paypal-button-container-P-8683919343236382TNCIB6UI'); // Renders the PayPal button
+</script>
