@@ -1,27 +1,71 @@
-import fetch from 'node-fetch'
-import axios from 'axios'
+import { igdl } from 'ruhend-scraper';
 
-let handler = async (m, { conn, text }) => {
-if (!text)  return conn.reply(m.chat, `❀ Ingresa un link de facebook`, m)
+const handler = async (m, { text, conn, args }) => {
+  if (!args[0]) {
+    return conn.reply(m.chat, `${emojis} Necesitas enviar un enlace de Facebook para descargar.`, m, rcanal);
+  }
 
-try {
-let api = await fetch(`https://vapis.my.id/api/fbdl?url=${text}`)
-let json = await api.json()
-let { title, durasi, hd_url } = json.data
-let VidBuffer = await getBuffer(hd_url)
-let HS = `- *Título :* ${title}
-- *Duracion :* ${durasi}`
+  let res;
+  try {
+    await m.react(rwait);
+    res = await igdl(args[0]);
+  } catch (e) {
+    return conn.reply(m.chat, `${emojis} hubo un error al obtener los datos. ¿Seguro que el enlace es válido?`, m, rcanal);
+  }
 
-await conn.sendMessage(m.chat, { video: VidBuffer, mimetype: "video/mp4", caption: handler }, { quoted: m });
-} catch (error) {
-console.error(error)
-}}
+  let result = res?.data;
+  if (!result || result.length === 0) {
+    return conn.reply(m.chat, `${emojis} No se encontró nada... prueba con otro link.`, m, rcanal);
+  }
 
-handler.command = ['fbdl', 'fb', 'facebook', 'facebookdl']
+  let data;
+  try {
+    data = result.find(i => i.resolution === "720p (HD)") || result.find(i => i.resolution === "360p (SD)");
+  } catch (e) {
+    return conn.reply(m.chat, `${emojis} no se pudo procesar el video.`, m, rcanal);
+  }
 
-export default handler
+  if (!data) {
+    return conn.reply(m.chat, `${emojis} No hay resolución compatible disponible.`, m, rcanal);
+  }
 
-const getBuffer = async (url, options = {}) => {
-const res = await axios({ method: 'get', url, headers: {'DNT': 1, 'Upgrade-Insecure-Request': 1}, ...options, responseType: 'arraybuffer'})
-return res.data
-}
+  let video = data.url;
+
+
+  let {
+    title = "Desconocido",
+    duration = "No disponible",
+    size = "Desconocido",
+    resolution = data.resolution || "Sin datos",
+    thumbnail
+  } = data;
+
+  let infoMsg = `
+
+🎞️ *Resolución:* ${resolution}
+🌐 *Origen:* Facebook
+🔗 *Enlace:* ${args[0]}
+`.trim();
+
+  try {
+    await conn.sendMessage(m.chat, {
+      video: { url: video },
+      caption: infoMsg,
+      fileName: 'facebook_video.mp4',
+      mimetype: 'video/mp4'
+    }, { quoted: m });
+
+    await m.react(done);
+  } catch (e) {
+    await m.react(error);
+    return conn.reply(m.chat, `${emojis} no se pudo obtener el vídeo...`, m, rcanal);
+  }
+};
+
+handler.help = ['facebook', 'fb'];
+handler.tags = ['descargas'];
+handler.command = ['facebook', 'fb'];
+
+handler.group = true;
+
+export default handler;
