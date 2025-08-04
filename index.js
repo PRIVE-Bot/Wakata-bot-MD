@@ -373,7 +373,7 @@ mkdirSync(rtU, { recursive: true })
 }
 
 global.rutaJadiBot = join(__dirname, `./${jadi}`)
-if (global.yukiJadibts) {
+if (global.Jadibts) {
 if (!existsSync(global.rutaJadiBot)) {
 mkdirSync(global.rutaJadiBot, { recursive: true }) 
 console.log(chalk.bold.cyan(`⍰ La carpeta: ${jadi} se creó correctamente.`))
