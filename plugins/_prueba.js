@@ -19,10 +19,8 @@ function parseTiempo(entrada) {
     return null;
 }
 
-let handler = async (m, { conn, args, command, isAdmin, isBotAdmin }) => {
-    if (!m.isGroup) return m.reply('⛔ Este comando solo se usa en grupos.');
-    if (!isAdmin) return m.reply('⛔ Solo los administradores pueden usar este comando.');
-    if (!isBotAdmin) return m.reply('⛔ El bot debe ser administrador para cerrar el grupo.');
+let handler = async (m, { conn, args, command }) => {
+    
 
     if (!args[0]) return m.reply('⏰ Uso correcto:\n.cerrargrupo 07:00\n.cerrargrupo 1h\n.cerrargrupo 30m');
 
