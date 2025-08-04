@@ -39,7 +39,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
 ┃ 
 ┃  ✎ *Usuario:* ${taguser}  
 ┃  ✎ *Grupo:* ${groupMetadata.subject}  
-┃  ✎ *Miembros:* ${totalMembers + 1}  
+┃  ✎ *Miembros:* ${totalMembers - 1}  
 ┃  ✎ *Fecha:* ${date}  
 ┃    
 ┗╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍⚁` 
