@@ -1,39 +1,36 @@
-import fetch from 'node-fetch';
+/* Código creado por Deylin y API también
+https://github.com/deylin-eliac 
+  no quites créditos 
+ Atte: Deylin-eliac*/
 
-const handler = async (m, { conn, text }) => {
+let handler = async (m, { text, conn }) => {
   if (!text) {
-    await conn.sendMessage(m.chat, { 
-      text: '*🚀 falta el texto para generar la imagen*' 
-    }, { quoted: m });
-    return;
+    return await conn.reply(m.chat, `${emojis} Escribe el prompt de la imagen. Ejemplo:\n.imagina un dragón azul volando en el espacio`, m, fake)
   }
 
-  m.react('✨');
-  await conn.sendMessage(m.chat, { 
-    text: `*🚀Estoy generando tu imagen en la galaxia*` 
-  }, { quoted: m });
+  await conn.reply(m.chat, `${emojis} Generando imagen de: "${text}", espera un momento...`, m, fake)
 
   try {
-    const res = await fetch(`https://api.agungny.my.id/api/text2img?prompt=${encodeURIComponent(text)}`);
-    if (!res.ok) throw new Error();
+    const prompt = encodeURIComponent(text.trim())
+    const imageUrl = `https://anime-xi-wheat.vercel.app/api/ia-img?prompt=${prompt}`
 
-    const buffer = await res.buffer();
-    m.react('🪄');
 
-    await conn.sendMessage(m.chat, { 
-      image: buffer, 
-      caption: '*🚀 se generó tu imagen galáctica ✅*'
-    }, { quoted: m });
-
+    await conn.sendFile(
+      m.chat,
+      imageUrl,
+      'imagen.jpg',
+      `\n${emoji} Imagen generada:\n${imageUrl}`,
+      m
+    )
   } catch (e) {
-    await conn.sendMessage(m.chat, { 
-      text: '*🚨 𝑯𝒂 𝒐𝒄𝒖𝒓𝒓𝒊𝒅𝒐 𝒖𝒏 𝒆𝒓𝒓𝒐𝒓 😔*' 
-    }, { quoted: m });
+    console.error(e)
+    m.reply(`❌ Ocurrió un error al generar la imagen:\n${e.message}`)
   }
-};
+}
 
-handler.tags = ['tools'];
-handler.help = ['genearimg'];
-handler.command = ['imgIA', 'imgg', 'Imgia'];
+handler.help = ['imagina <prompt>']
+handler.tags = ['ia']
+handler.command = ['imgia', 'imagina']
+handler.register = true
 
-export default handler;
+export default handler
