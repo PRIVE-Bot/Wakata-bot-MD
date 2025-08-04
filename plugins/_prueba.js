@@ -45,7 +45,7 @@ let handler = async (m, { conn, args, command }) => {
 
 handler.help = ['cerrargrupo <hora | 1h | 30m>'];
 handler.tags = ['grupo'];
-handler.command = /^cerrargrupo$/i;
+handler.command = ['cerrargrupo']
 handler.admin = true;
 handler.group = true;
 
