@@ -11,7 +11,7 @@ const formatVideo = ["360", "480", "720", "1080", "1440", "4k"];
 const ddownr = {
   download: async (url, format) => {
     if (!formatAudio.includes(format) && !formatVideo.includes(format)) {
-      throw new Error("⚠️ Pika Pika~ Ese formato no es compatible.");
+      throw new Error("⚠️ Ese formato no es compatible.");
     }
 
     const config = {
@@ -29,7 +29,7 @@ const ddownr = {
         const downloadUrl = await ddownr.cekProgress(id);
         return { id, title, image: info.image, downloadUrl };
       } else {
-        throw new Error("⛔ Pikachu no pudo encontrar los detalles del video.");
+        throw new Error("⛔ No pudo encontrar los detalles del video.");
       }
     } catch (error) {
       console.error("❌ Error:", error);
@@ -65,13 +65,13 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
   await m.react('⚡️');
 
   if (!text.trim()) {
-    return conn.reply(m.chat, "*Ｏ(≧∇≦)Ｏ🧃\nDime el nombre de la canción que estás buscando", m, fake);
+    return conn.reply(m.chat, `${emoji}\nDime el nombre de la canción que estás buscando`, m, fake);
   }
 
   try {
     const search = await yts(text);
     if (!search.all.length) {
-      return m.reply("*(>_<)🧃*\n No se encontró nada con ese nombre...");
+      return m.reply(`${emoji}\n No se encontró nada con ese nombre...`);
     }
 
     const videoInfo = search.all[0];
@@ -160,13 +160,13 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
 }
 
       if (!success) {
-        return m.reply("❌ Pikachu no pudo encontrar un enlace válido para descargar.");
+        return m.reply("❌ No pudo encontrar un enlace válido para descargar.");
       }
     }
 
   } catch (error) {
     console.error("❌ Error:", error);
-    return m.reply(`⚠️ Ocurrió un error eléctrico: ${error.message}`);
+    return m.reply(`⚠️ Ocurrió un error: ${error.message}`);
   }
 };
 
