@@ -69,9 +69,9 @@ return m.reply(`${emoji2} No se han encontrado espacios para *Sub-Bots* disponib
 }*/
 let who = m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.fromMe ? conn.user.jid : m.sender
 let id = `${who.split`@`[0]}`  //conn.getName(who)
-let pathastroJadiBot = path.join(`./${jadi}/`, id)
-if (!fs.existsSync(pathastroJadiBot)){
-fs.mkdirSync(pathastroJadiBot, { recursive: true })
+let pathJadiBot = path.join(`./${jadi}/`, id)
+if (!fs.existsSync(pathJadiBot)){
+fs.mkdirSync(pathJadiBot, { recursive: true })
 }
 JBOptions.pathJadiBot = pathJadiBot
 JBOptions.m = m
@@ -220,7 +220,7 @@ if (options.fromCommand) m?.chat ? await conn.sendMessage(`${path.basename(pathJ
 } catch (error) {
 console.error(chalk.bold.yellow(`Error 405 no se pudo enviar mensaje a: +${path.basename(pathJadiBot)}`))
 }
-fs.rmdirSync(pathastroJadiBot, { recursive: true })
+fs.rmdirSync(pathJadiBot, { recursive: true })
 }
 if (reason === 500) {
 console.log(chalk.bold.magentaBright(`\n╭┄┄┄┄┄┄┄┄┄┄┄┄┄┄ • • • ┄┄┄┄┄┄┄┄┄┄┄┄┄┄⟡\n┆ Conexión perdida en la sesión (+${path.basename(pathJadiBot)}). Borrando datos...\n╰┄┄┄┄┄┄┄┄┄┄┄┄┄┄ • • • ┄┄┄┄┄┄┄┄┄┄┄┄┄┄⟡`))
