@@ -1,7 +1,7 @@
 import fetch from 'node-fetch'
 import axios from 'axios'
 
-let HS = async (m, { conn, text }) => {
+let handler = async (m, { conn, text }) => {
 if (!text)  return conn.reply(m.chat, `❀ Ingresa un link de facebook`, m)
 
 try {
@@ -12,14 +12,14 @@ let VidBuffer = await getBuffer(hd_url)
 let HS = `- *Título :* ${title}
 - *Duracion :* ${durasi}`
 
-await conn.sendMessage(m.chat, { video: VidBuffer, mimetype: "video/mp4", caption: HS }, { quoted: m });
+await conn.sendMessage(m.chat, { video: VidBuffer, mimetype: "video/mp4", caption: handler }, { quoted: m });
 } catch (error) {
 console.error(error)
 }}
 
-HS.command = ['fbdl', 'fb', 'facebook', 'facebookdl']
+handler.command = ['fbdl', 'fb', 'facebook', 'facebookdl']
 
-export default HS
+export default handler
 
 const getBuffer = async (url, options = {}) => {
 const res = await axios({ method: 'get', url, headers: {'DNT': 1, 'Upgrade-Insecure-Request': 1}, ...options, responseType: 'arraybuffer'})
