@@ -1,37 +1,37 @@
 import { chatUpdate } from '../lib/events.js'
 
 let handler = async (m, { conn, args, command, usedPrefix }) => {
-    let isAdd = /true$/i.test(args[1])
-    let who
+  if (!args[1]) {
+    return m.reply(`✘ Uso incorrecto del comando.\n\n📌 Ejemplo:\n*${usedPrefix + command} @usuario true*`)
+  }
 
-    // Identificar al usuario en grupos
-    if (m.isGroup) {
-        who = m.mentionedJid[0] 
-            ? m.mentionedJid[0] 
-            : m.quoted 
-            ? m.quoted.sender 
-            : false
-    } else {
-        who = m.chat
-    }
+  let isAdd = /true$/i.test(args[1])
+  let who
 
-    // Validaciones
-    if (!who) throw `*[🚀] Ingresa el @tag del usuario que deseas agregar o eliminar.*`
-    if (!args[1]) throw `*[⚙️] Usa la función true o false al final del comando.*`
-    if (!(who in global.db.data.users)) throw `*[⚙️] El usuario no se encuentra en la base de datos del bot.*`
+  if (m.isGroup) {
+    who = m.mentionedJid && m.mentionedJid.length
+      ? m.mentionedJid[0]
+      : m.quoted?.sender
+  } else {
+    who = m.chat
+  }
 
-    // Mensaje de confirmación
-    await m.reply(
-        `${isAdd ? '*[🚀] Usuario agregado a la lista con éxito.*' : '*[🚀] Usuario eliminado de la lista con éxito.*'}`
-    )
+  if (!who) return m.reply(`🚫 Debes mencionar al usuario o responder a su mensaje.`)
+  if (!(who in global.db.data.users)) return m.reply(`⚠️ El usuario no está registrado en la base de datos.`)
 
-    // Actualizar datos en la base de datos
-    global.db.data.users[who].akinator = { sesi: isAdd }
+  global.db.data.users[who].akinator = { sesi: isAdd }
+
+  return m.reply(
+    isAdd
+      ? `✅ *Usuario añadido a la lista de Akinator.*`
+      : `🗑️ *Usuario eliminado de la lista de Akinator.*`
+  )
 }
-handler.command = ['death', 'callar', 'mute', 'silenciar'] // Comandos activadores
-handler.group = true // Solo en grupos
-handler.admin = true // Solo para admins
-handler.rowner = true // Solo para el dueño del bot
-handler.botAdmin = true // El bot necesita ser admin
+
+handler.command = ['death', 'callar', 'mute', 'silenciar']
+handler.group = true
+handler.admin = true
+handler.botAdmin = true
+handler.rowner = true
 
 export default handler
