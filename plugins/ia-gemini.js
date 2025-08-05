@@ -13,7 +13,7 @@ let handler = async (m, { text, usedPrefix, command, conn }) => {
   let hasImage = /^image\/(jpe?g|png)$/.test(mime)
 
   if (!text && !hasImage) {
-    return conn.reply(m.chat, `${emojis} Envía o responde a una imagen con una pregunta, o escribe un prompt para generar una imagen.\n\nEjemplo:\n${usedPrefix + command} ¿Qué ves en esta imagen?\n${usedPrefix + command} Genera una imagen de un zorro en la luna`, m, fake)
+    return conn.reply(m.chat, `${emojis} Envía o responde a una imagen con una pregunta, o escribe un prompt para generar una imagen.\n\nEjemplo:\n${usedPrefix + command} ¿Qué ves en esta imagen?\n${usedPrefix + command} Genera una imagen de un zorro en la luna`, m, rcanal)
   }
 
   try {
@@ -59,13 +59,13 @@ await m.react('🪄')
     const respuesta = data?.candidates?.[0]?.content?.parts?.[0]?.text
     if (!respuesta) throw '❌ No se recibió respuesta válida de la IA.'
 
-    await m.reply(respuesta.trim())
+    conn.reply(m.chat, respuesta.trim(), m, rcanal)
     await m.react('🌟')
 
   } catch (e) {
     console.error('[ERROR GEMINI]', e)
     await m.react('⚠️')
-    await conn.reply(m.chat, '⚠️ Ocurrió un error procesando la imagen o pregunta.', m, fake)
+    await conn.reply(m.chat, '⚠️ Ocurrió un error procesando la imagen o pregunta.', m, rcanal)
   }
 }
 
