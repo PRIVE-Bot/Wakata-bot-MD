@@ -1,17 +1,18 @@
 var handler = async (m, { conn, participants, usedPrefix, command, args }) => {
 
+    
     const groupInfo = await conn.groupMetadata(m.chat);
     const ownerGroup = groupInfo.owner || m.chat.split`-`[0] + '@s.whatsapp.net';
     const ownerBot = global.owner[0][0] + '@s.whatsapp.net';
 
     let usersToKick = m.mentionedJid || [];
 
-    
+ 
     if (m.quoted && !usersToKick.includes(m.quoted.sender)) {
         usersToKick.push(m.quoted.sender);
     }
 
-
+    
     const prefix = args[0]?.startsWith('+') ? args[0].replace(/\D/g, '') : null;
     if (prefix) {
         for (let user of participants) {
@@ -22,8 +23,9 @@ var handler = async (m, { conn, participants, usedPrefix, command, args }) => {
         }
     }
 
+    
     if (!usersToKick.length) {
-        return conn.reply(m.chat, `${emoji} Debes mencionar a alguien, responder un mensaje o usar un prefijo numérico para expulsar.`, m);
+        return conn.reply(m.chat, `⚠️ Debes mencionar a alguien, responder un mensaje o usar un prefijo como *${usedPrefix + command} +504* para expulsar a números que empiecen con ese código.`, m);
     }
 
     let kicked = [];
@@ -51,13 +53,13 @@ var handler = async (m, { conn, participants, usedPrefix, command, args }) => {
         }
     }
 
-    let text = `${emoji} Expulsión completada.\n\n`;
+    let text = `${emoji} *Expulsión completada*\n\n`;
 
     if (kicked.length) {
-        text += `🧨 Expulsados:\n` + kicked.map(u => `@${u.split('@')[0]}`).join('\n') + '\n\n';
+        text += `✅ *Expulsados:*\n` + kicked.map(u => `@${u.split('@')[0]}`).join('\n') + '\n\n';
     }
     if (notAllowed.length) {
-        text += `❌ No expulsados:\n` + notAllowed.join('\n');
+        text += `❌ *No expulsados:*\n` + notAllowed.join('\n');
     }
 
     conn.reply(m.chat, text, m, { mentions: usersToKick });
