@@ -65,7 +65,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
   await m.react('⚡️');
 
   if (!text.trim()) {
-    return conn.reply(m.chat, `${emoji}\nDime el nombre de la canción que estás buscando`, m, fake);
+    return conn.reply(m.chat, `${emoji}\nDime el nombre de la canción que estás buscando`, m, rcanal);
   }
 
   try {
