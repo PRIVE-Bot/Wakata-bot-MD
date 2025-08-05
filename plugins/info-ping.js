@@ -17,10 +17,6 @@ let handler = async (m, { conn }) => {
 ┃ 💻 *RESPUESTA: PONG!*
 ┃ ⚙️ *LATENCIA:* ${latensi.toFixed(4)} ms
 ┗━━━━━━━━━━━━━━━━━━━━━━⬣
-
-┌─〔 *INFO DEL SISTEMA* 〕
-${sysInfo.trim().split('\n').map(line => `│ ${line}`).join('\n')}
-└───────⬣
         `.trim();
 
         conn.reply(m.chat, respuesta, m);
