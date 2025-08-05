@@ -14,7 +14,7 @@ let handler = async (m, { conn, usedPrefix, text }) => {
 ┗╍╍╍╍╍╍╍╍╍╍╍╍⚃
 > ┏╍╍╍╍╍╍╍╍╍╍╍╍╍⚃
 > ┃ *Tiempo:* ${latensi.toFixed(4)}ms
-> ┗╍╍╍╍╍╍╍╍╍╍╍╍╍⚃`, m, fake);
+> ┗╍╍╍╍╍╍╍╍╍╍╍╍╍⚃`, m, rcanal);
     });
 }
 
