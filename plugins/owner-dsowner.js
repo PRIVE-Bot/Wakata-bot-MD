@@ -4,9 +4,9 @@ import path from 'path'
 var handler = async (m, { conn, usedPrefix }) => {
 
 if (global.conn.user.jid !== conn.user.jid) {
-return conn.reply(m.chat, `${emojis} Utiliza este comando directamente en el número principal del Bot.`, m, fake);
+return conn.reply(m.chat, `${emojis} Utiliza este comando directamente en el número principal del Bot.`, m, rcanal);
 }
-//await conn.reply(m.chat, `${emoji2} Iniciando proceso de eliminación de todos los archivos de sesión, excepto el archivo creds.json...`, m, fake);
+//await conn.reply(m.chat, `${emoji2} Iniciando proceso de eliminación de todos los archivos de sesión, excepto el archivo creds.json...`, m, rcanal);
 m.react(rwait)
 
 let sessionPath = `./${sessions}/`
@@ -14,7 +14,7 @@ let sessionPath = `./${sessions}/`
 try {
 
 if (!existsSync(sessionPath)) {
-return await conn.reply(m.chat, `${emojis} La carpeta está vacía.`, m, fake);
+return await conn.reply(m.chat, `${emojis} La carpeta está vacía.`, m, rcanal);
 }
 let files = await fs.readdir(sessionPath)
 let filesDeleted = 0
@@ -29,12 +29,12 @@ await conn.reply(m.chat, `${emoji2} La carpeta esta vacía.`, m, fake);
 } else {
 m.react(done)
 await conn.reply(m.chat, `${emojis} Se eliminaron ${filesDeleted} archivos de sesión, excepto el archivo creds.json.`, m, rcanal);
-conn.reply(m.chat, `${emojis} *¡Hola! ¿logras verme?*`, m, fake);
+conn.reply(m.chat, `${emojis} *¡Hola! ¿logras verme?*`, m, rcanal);
 
 }
 } catch (err) {
 console.error('Error al leer la carpeta o los archivos de sesión:', err);
-await conn.reply(m.chat, `${msm} Ocurrió un fallo.`, m, fake);
+await conn.reply(m.chat, `${msm} Ocurrió un fallo.`, m, rcanal);
 }
 
 }
