@@ -2,16 +2,16 @@ import fetch from 'node-fetch';
 
 var handler = async (m, { conn, args }) => {
     if (!args[0]) {
-        return conn.reply(m.chat, `Por favor, envía un enlace de TikTok para descargar el video.`, m, fake);
+        return conn.reply(m.chat, `Por favor, envía un enlace de TikTok para descargar el video.`, m, rcanal);
     }
 
     try {
-        await conn.reply(m.chat, `Descargando el video, por favor espera...`, m, fake);
+        await conn.reply(m.chat, `Descargando el video, por favor espera...`, m, rcanal);
 
         const tiktokData = await tiktokdl(args[0]);
 
         if (!tiktokData || !tiktokData.video_url) {
-            return conn.reply(m.chat, "No se pudo obtener el video de TikTok.", m, fake);
+            return conn.reply(m.chat, "No se pudo obtener el video de TikTok.", m, rcanal);
         }
 
         const videoURL = tiktokData.video_url;
@@ -22,10 +22,10 @@ var handler = async (m, { conn, args }) => {
 👤 *Autor:* ${author || 'Desconocido'}
         `.trim();
 
-        await conn.sendFile(m.chat, videoURL, "tiktok.mp4", `${info}\n\n✅ Video descargado correctamente.`, m, fake);
+        await conn.sendFile(m.chat, videoURL, "tiktok.mp4", `${info}\n\n✅ Video descargado correctamente.`, m);
     } catch (error1) {
         console.error(error1);
-        return conn.reply(m.chat, `Ocurrió un error al descargar el video: ${error1.message}`, m, fake);
+        return conn.reply(m.chat, `Ocurrió un error al descargar el video: ${error1.message}`, m, rcanal);
     }
 };
 
