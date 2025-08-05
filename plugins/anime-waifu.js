@@ -9,7 +9,7 @@ title: packname,
 body: dev,
 previewType: 0, thumbnail: icons,
 sourceUrl: channel }}})
-let res = await fetch('https://api.waifu.pics/sfw/waifu')
+let res = await fetch('https://g-mini-ia.vercel.app/api/nsfw')
 if (!res.ok) return
 let json = await res.json()
 if (!json.url) return 
