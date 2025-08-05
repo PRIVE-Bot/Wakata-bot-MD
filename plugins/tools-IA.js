@@ -31,6 +31,12 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
 handler.help = ['ia *<texto>*']
 handler.tags = ['ia']
 handler.command = ['ia']
+handler.before = async (m, { conn }) => {
+    let text = m.text?.toLowerCase()?.trim();
+    if (text === 'is' || text === '@ia') {
+        return handler(m, { conn });
+    }
+}
 handler.group = true
 
 export default handler
