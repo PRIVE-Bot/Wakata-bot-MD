@@ -32,7 +32,7 @@ var handler = async (m, { conn, args }) => {
 handler.help = ['tiktok'].map(v => v + ' <link>');
 handler.tags = ['descargas'];
 handler.command = ['tiktok', 'tt'];
-handler.register = true;
+
 handler.group = true;
 
 export default handler;
