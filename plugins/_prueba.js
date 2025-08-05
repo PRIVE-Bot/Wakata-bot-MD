@@ -1,16 +1,16 @@
 import { esperarReaccion } from '../lib/reaction.js';
 
 let handler = async (m, { conn }) => {
-    const emojiEsperado = '✅';
-    const mensajeTexto = `🧠 Reacciona con *${emojiEsperado}* a este mensaje para confirmar la acción.`;
+    const emoji = '✅';
+    const mensaje = `👆 Reacciona con *${emoji}* a este mensaje para confirmar. Tienes 30 segundos.`;
 
-    const confirmado = await esperarReaccion(conn, m.chat, m.sender, emojiEsperado, mensajeTexto);
+    const confirmado = await esperarReaccion(conn, m.chat, m.sender, emoji, mensaje);
 
     if (confirmado) {
-        m.reply('✅ ¡Reacción confirmada! Ejecutando acción...');
-        // Tu acción aquí...
+        m.reply('✅ ¡Confirmado! Acción ejecutada.');
+        // Aquí tu acción
     } else {
-        m.reply('⏱️ No reaccionaste a tiempo o con el emoji correcto.');
+        m.reply('❌ No reaccionaste a tiempo o usaste otro emoji.');
     }
 };
 
