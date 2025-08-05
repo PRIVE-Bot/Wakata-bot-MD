@@ -51,7 +51,7 @@ let handler = async (m, { text, usedPrefix, command, conn }) => {
 
 
     if (data?.image && data?.from === 'image-generator') {
-      return await conn.sendFile(m.chat, data.image, 'imagen.jpg', ` Claro aquí tienes tu imagen espero te guste 😸 \n\n\n> Gemini (IA) ✨`, m, fake)
+      return await conn.sendFile(m.chat, data.image, 'imagen.jpg', ` Claro aquí tienes tu imagen espero te guste 😸 \n\n\n> Gemini (IA) ✨`, m, rcanal)
     }
 await m.react('🪄')
 
