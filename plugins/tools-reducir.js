@@ -3,7 +3,7 @@ import Jimp from 'jimp'
 let handler = async (m, { conn, text }) => {
 
   if (!text || !m.quoted || !/image|sticker/.test(m.quoted.mtype)) {
-    return conn.reply(m.chat, `🖼️ Responde a una imagen o sticker para reducirlo.\n\n📌 Ejemplo: *.reduce 300×300*`, m, fake);
+    return conn.reply(m.chat, `🖼️ Responde a una imagen o sticker para reducirlo.\n\n📌 Ejemplo: *.reduce 300×300*`, m, rcanal);
   }
 
 
@@ -22,7 +22,7 @@ let handler = async (m, { conn, text }) => {
     image.resize(width, height);
 
     let buffer = await image.getBufferAsync(Jimp.MIME_JPEG);
-    await conn.sendFile(m.chat, buffer, 'reducida.jpg', `✅ Imagen reducida a *${width}×${height}*`, m, fake);
+    await conn.sendFile(m.chat, buffer, 'reducida.jpg', `✅ Imagen reducida a *${width}×${height}*`, m, rcanal);
   } catch (e) {
     console.error(e);
     m.reply('⚠️ Ocurrió un error al procesar la imagen.');
