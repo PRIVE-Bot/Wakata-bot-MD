@@ -20,7 +20,7 @@ export async function before(m, { participants, conn }) {
                     await conn.reply(m.chat, `*🌀 Aviso Importante*
 
 > Ya hay un bot principal activo en el grupo, por lo tanto me retiro para evitar generar spam o interferencias.
-¡Gracias por su comprensión!`, m, fake);
+¡Gracias por su comprensión!`, m, rcanal);
                     await this.groupLeave(m.chat)
                 }, 5000)// 5 segundos
             }
