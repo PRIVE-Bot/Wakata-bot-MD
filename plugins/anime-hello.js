@@ -28,7 +28,7 @@ let handler = async (m, { conn, usedPrefix }) => {
 
     if (m.isGroup) {
         const videos = [
-            'https://qu.ax/EcRBE.mp4',
+            'https://files.catbox.moe/v05c03.mp4',
             'https://qu.ax/oARle.mp4'
         ];
 
