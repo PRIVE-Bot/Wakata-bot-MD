@@ -19,12 +19,12 @@ let handler = async (m, { conn, usedPrefix }) => {
 
     let str;
     if (m.mentionedJid.length > 0) {
-        str = `🏳️‍🌈 *${name2}* le da un beso a *${name}*\n\n viva el amor gay...`;
-    } else if (m.quoted) {
-        str = `🏳️‍🌈 *${name2}* besa suavemente a *${name}*\n\n`;
-    } else {
-        str = `🏳️‍🌈 *${name2}* lanza un beso para todos los del grupo 😘`;
-    }
+    str = `🏳️‍🌈 *${name2}* le da un tierno beso a *${name}* 🏳️‍🌈\n\n¡El amor no tiene límites! 🌈✨`;
+} else if (m.quoted) {
+    str = `🏳️‍🌈 *${name2}* besa suavemente a *${name}* 💞\n\nQué momento tan especial 😳💕`;
+} else {
+    str = `🏳️‍🌈 *${name2}* lanza un beso para todos en el grupo 😘💫\n\n¡Mucho amor para todos ustedes! ❤️`;
+}
 
     if (m.isGroup) {
         const videos = [
