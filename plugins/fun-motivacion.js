@@ -23,7 +23,7 @@ let handler = async (m, { conn }) => {
 
     mensajesUsados.push(mensaje)
 
-    await conn.reply(m.chat, `🌟 *Mensaje para ti:*\n\n"${mensaje}", m, fake)
+    await conn.reply(m.chat, `🌟 *Mensaje para ti:*\n\n"${mensaje}"`, m, fake)
       
 
   } catch (e) {
