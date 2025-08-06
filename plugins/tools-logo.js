@@ -2,7 +2,7 @@
 
 import _0x1a3c5e from'axios';
 
-const _0x2b4d71=['3D','Winner','smurfs','wrooom','fabulous','fire','Fluffy','Glow','neon','summer','flaming','Retro'];
+const _0x2b4d71=['3D','Winner','smurfs','wrooom','fabulous','fire','Fluffy','Glow','neon','summer','flaming','Retro', 'popsicle'];
 
 async function _0x5c2a6d(_0x3d9e6d,_0x5c9fd5,_0x2d26ff,_0x1e26c8){try{await _0x1e26c8.sendMessage(_0x2d26ff.chat,{text:'🚀 Generando tu logo, espera un momento...'}, {quoted:_0x2d26ff});const _0x21a3f9=`https://flamingtext.com/net-fu/proxy_form.cgi?imageoutput=true&script=${_0x3d9e6d}-logo&text=${encodeURIComponent(_0x5c9fd5)}`;await _0x1e26c8.sendMessage(_0x2d26ff.chat,{image:{url:_0x21a3f9},caption:`${emoji} Resultado de *${_0x5c9fd5}*`}, {quoted:_0x2d26ff})}catch(_0x42bc5e){console.error('Error al generar el logo:',_0x42bc5e);await _0x1e26c8.sendMessage(_0x2d26ff.chat,{text:'${emoji6} Error al generar el logo. Prueba con otro estilo.'},{quoted:_0x2d26ff})}}
 
