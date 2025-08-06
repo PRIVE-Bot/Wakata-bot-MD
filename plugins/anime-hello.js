@@ -29,7 +29,9 @@ let handler = async (m, { conn, usedPrefix }) => {
     if (m.isGroup) {
         const videos = [
             'https://files.catbox.moe/v05c03.mp4',
-            'https://h.uguu.se/ohgkrYFc.mp4'
+            'https://h.uguu.se/ohgkrYFc.mp4',
+            'https://files.catbox.moe/s6vqf2.mp4',
+            'https://files.catbox.moe/til83t.mp4'
         ];
 
         const video = videos[Math.floor(Math.random() * videos.length)];
