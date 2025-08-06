@@ -1,16 +1,83 @@
-//© Código hecho por Deylin  
+//© Código hecho por Deylin
 
-import _0x1a3c5e from'axios';
+import axios from 'axios';
 
-const _0x2b4d71=['3D','Winner','smurfs','wrooom','fabulous','fire','Fluffy','Glow','neon','summer','flaming','Retro', 'popsicle', 'amped', 'harry', 'water'];
+const estilosDisponibles = [
+  '3d', '3d-logo',
+  'alien-glow', 'amped', 'angel', 'anonymous', 'army',
+  'aqua-logo', 'baby-logo', 'balloon-logo', 'bevel-logo',
+  'birthday-logo', 'blue-metal', 'blue-logo', 'brick-logo',
+  'burn-logo', 'candy-logo', 'cartoon-logo', 'chrome-logo',
+  'comic-logo', 'cool-logo', 'crisp-logo', 'cutout-logo',
+  'dance-logo', 'dark-logo', 'decor-logo', 'deep-logo',
+  'deluxe-logo', 'dinamic-logo', 'distressed-logo',
+  'electric-logo', 'emboss-logo', 'engraved-logo',
+  'fire-logo', 'flaming-logo', 'fluffy-logo', 'funky-logo',
+  'furry-logo', 'glossy-logo', 'glow-logo', 'gradient-logo',
+  'graffiti-logo', 'gray-logo', 'green-logo', 'harry-logo',
+  'ice-logo', 'jewelry-logo', 'lava-logo', 'liquid-logo',
+  'love-logo', 'magnet-logo', 'metal-logo', 'neon-logo',
+  'outline-logo', 'pencil-logo', 'pink-logo', 'plasma-logo',
+  'pop-logo', 'popsicle-logo', 'purple-logo', 'rainbow-logo',
+  'realistic-logo', 'retro-logo', 'sci-fi-logo', 'shiny-logo',
+  'sketch-logo', 'slime-logo', 'smurfs-logo', 'snow-logo',
+  'space-logo', 'stamp-logo', 'stone-logo', 'sticker-logo',
+  'summer-logo', 'superhero-logo', 'swamp-logo',
+  'urban-logo', 'vintage-logo', 'war-logo', 'water-logo',
+  'winner-logo', 'wrooom-logo'
+];
 
-async function _0x5c2a6d(_0x3d9e6d,_0x5c9fd5,_0x2d26ff,_0x1e26c8){try{await _0x1e26c8.sendMessage(_0x2d26ff.chat,{text:'🚀 Generando tu logo, espera un momento...'}, {quoted:_0x2d26ff});const _0x21a3f9=`https://flamingtext.com/net-fu/proxy_form.cgi?imageoutput=true&script=${_0x3d9e6d}-logo&text=${encodeURIComponent(_0x5c9fd5)}`;await _0x1e26c8.sendMessage(_0x2d26ff.chat,{image:{url:_0x21a3f9},caption:`${emoji} Resultado de *${_0x5c9fd5}*`}, {quoted:_0x2d26ff})}catch(_0x42bc5e){console.error('Error al generar el logo:',_0x42bc5e);await _0x1e26c8.sendMessage(_0x2d26ff.chat,{text:'${emoji6} Error al generar el logo. Prueba con otro estilo.'},{quoted:_0x2d26ff})}}
+async function generarLogo(estilo, texto, m, conn) {
+  try {
+    await conn.sendMessage(m.chat, {
+      text: '🚀 Generando tu logo, espera un momento...'
+    }, { quoted: m });
 
-const _0x4e1b7e=async(_0x52c167,{conn:_0x282374,args:_0x17df43,command:_0x3f1c56})=>{if(_0x3f1c56!=='logo'){return _0x282374.sendMessage(_0x52c167.chat,{text:'${emoji} El comando no existe.'},{quoted:_0x52c167})}if(!_0x17df43||_0x17df43.length<2){const _0x3cfa48=`${emoji} Ejemplo: /logo neon Kirito-Bot\n\nEstilos disponibles:\n- 3D\n- Winner\n- smurfs\n- wrooom\n- fabulous\n- fire\n- Fluffy\n- Glow\n- neon\n- summer\n- flaming\n- Retro`;return _0x282374.sendMessage(_0x52c167.chat,{text:`${emoji} Uso incorrecto.\n\n${_0x3cfa48}`},{quoted:_0x52c167})}const _0x51421a=_0x17df43[0].toLowerCase(),_0x410eb7=_0x17df43.slice(1).join(' ');if(!_0x2b4d71.map(_0x3b752e=>_0x3b752e.toLowerCase()).includes(_0x51421a)){return _0x282374.sendMessage(_0x52c167.chat,{text:`${emoji6} El estilo *${_0x51421a}* no está disponible.\n\nEstilos disponibles:\n- ${_0x2b4d71.join('\n- ')}`},{quoted:_0x52c167})}await _0x5c2a6d(_0x51421a,_0x410eb7,_0x52c167,_0x282374)};
+    const url = `https://flamingtext.com/net-fu/proxy_form.cgi?imageoutput=true&script=${estilo}&text=${encodeURIComponent(texto)}`;
 
-_0x4e1b7e.help=['logo'];
-_0x4e1b7e.tags=['fun'];
-_0x4e1b7e.command=['logo'];
-_0x4e1b7e.group=true;
+    await conn.sendMessage(m.chat, {
+      image: { url },
+      caption: `✨ Resultado de *${texto}* con estilo *${estilo}*`
+    }, { quoted: m });
 
-export default _0x4e1b7e;
+  } catch (e) {
+    console.error('❌ Error al generar el logo:', e);
+    await conn.sendMessage(m.chat, {
+      text: '❌ Error al generar el logo. Prueba con otro estilo.'
+    }, { quoted: m });
+  }
+}
+
+const handler = async (m, { conn, args, command }) => {
+  if (command !== 'logo') {
+    return conn.sendMessage(m.chat, {
+      text: '❌ El comando no existe.'
+    }, { quoted: m });
+  }
+
+  if (!args || args.length < 2) {
+    const lista = estilosDisponibles.slice(0, 20).map(e => `- ${e}`).join('\n') + '\n...';
+    return conn.sendMessage(m.chat, {
+      text: `✏️ Uso incorrecto.\n\nEjemplo:\n/logo neon-logo Kirito-Bot\n\nEstilos disponibles:\n${lista}`
+    }, { quoted: m });
+  }
+
+  const estilo = args[0].toLowerCase();
+  const texto = args.slice(1).join(' ');
+
+  if (!estilosDisponibles.includes(estilo)) {
+    const lista = estilosDisponibles.slice(0, 20).map(e => `- ${e}`).join('\n') + '\n...';
+    return conn.sendMessage(m.chat, {
+      text: `❌ El estilo *${estilo}* no está disponible.\n\nEstilos disponibles:\n${lista}`
+    }, { quoted: m });
+  }
+
+  await generarLogo(estilo, texto, m, conn);
+};
+
+handler.help = ['logo'];
+handler.tags = ['fun'];
+handler.command = ['logo'];
+handler.group = false; // o true si deseas que solo funcione en grupos
+
+export default handler;
