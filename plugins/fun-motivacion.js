@@ -23,10 +23,8 @@ let handler = async (m, { conn }) => {
 
     mensajesUsados.push(mensaje)
 
-    await conn.sendMessage(m.chat, {
-      text: `🌟 *Mensaje para ti:*\n\n"${mensaje}"`,
-      footer: 'Toca el botón para otro consejo',
-    }, { quoted: m })
+    await conn.reply(m.chat, `🌟 *Mensaje para ti:*\n\n"${mensaje}", m, fake)
+      
 
   } catch (e) {
     await conn.reply(m.chat, '⚠️ Ocurrió un error al leer los mensajes.', m)
