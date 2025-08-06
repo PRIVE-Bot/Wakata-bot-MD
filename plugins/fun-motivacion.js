@@ -7,7 +7,7 @@ const __dirname = path.dirname(__filename)
 
 let handler = async (m, { conn }) => {
   try {
-    const mensajesPath = path.join(__dirname, '..motivacion.js')
+    const mensajesPath = path.join(__dirname, '.motivacion.js')
     const rawData = fs.readFileSync(mensajesPath, 'utf-8')
     const data = JSON.parse(rawData)
     const mensajes = data.mensajes
