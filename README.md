@@ -1,6 +1,6 @@
 > ## **` En desarrollo.. ↻`**
 
-> [!BOT]
+> [!TIP]
 > <h1 align="center"> Naruto-Bot-MD</h1>
 
 ---
@@ -41,3 +41,72 @@
 > [!WARNING]
 > 🛑 Nunca compartas tu archivo de sesión (auth file) públicamente.
 > Contiene acceso completo a tu cuenta de WhatsApp.
+
+
+> [!INFO]
+5
+
+
+
+> [!QUESTION]
+6
+
+
+
+> [!SUCCESS]
+7
+
+
+
+> [!FAILURE]
+8
+
+
+
+> [!BUG]
+9
+
+
+
+> [!ERROR]
+10
+
+
+
+> [!QUOTE]
+11
+
+
+
+> [!CAUTION]
+12
+
+
+
+> [!DANGER]
+13
+
+
+
+> [!EXAMPLE]
+14
+
+
+
+> [!ABSTRACT]
+15
+
+
+
+> [!SUMMARY]
+16
+
+
+
+> [!TODO]
+17
+
+
+
+> [!WARNING|label:Advertencia personalizada]
+18
