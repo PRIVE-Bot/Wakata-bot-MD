@@ -63,10 +63,13 @@ let handler = async (m, { conn: _envio, command, usedPrefix, args, text, isOwner
             }
 
             const message = users.map((v, index) => 
-                `• 「 ${index + 1} 」\n📎 [Conectar](https://wa.me/${v.user.jid.replace(/[^0-9]/g, '')}?text=${usedPrefix}serbot%20--code)\n👤 Usuario: ${v.user.name || 'Sub-Bot'}\n🕑 Online: ${v.uptime ? formatUptime(Date.now() - v.uptime) : 'Desconocido'}`
-            ).join('\n\n__________________________\n\n');
+                `• 「 ${index + 1} 」
+🔗 https://wa.me/${v.user.jid.replace(/[^0-9]/g, '')}?text=${usedPrefix}serbot%20--code
+👤 Usuario: ${v.user.name || 'Sub-Bot'}
+🕑 Online: ${v.uptime ? formatUptime(Date.now() - v.uptime) : 'Desconocido'}`
+            ).join('\n\n\n\n');
 
-            const responseMessage = `⚡ *LISTA DE SUBBOTS*\n\n👑 Puedes pedir permiso para agregar un SubBot a tu grupo.\n\n\`\`\`Si quieres convertirte en un SubBot, da clic en uno de los enlaces activos.\`\`\`\n\n👑 *SubBots Conectados*: ${users.length || '0'}\n\n${message || 'No hay SubBots disponibles por el momento, verifica más tarde.'}`;
+            const responseMessage = `⚡ *LISTA DE SUBBOTS*\n\n> ${botname}\n\n👑 *SubBots Conectados*: ${users.length || '0'}\n\n${message || 'No hay SubBots disponibles por el momento, verifica más tarde.'}`;
 
             await _envio.sendMessage(m.chat, { text: responseMessage, mentions: _envio.parseMention(responseMessage) }, { quoted: m });
             break;
