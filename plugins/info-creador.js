@@ -43,25 +43,6 @@ END:VCARD`.trim();
         displayName: name,
         contacts: [{ vcard }]
       },
-      contextInfo: {
-        mentionedJid: [m.sender],
-        isForwarded: true,
-        forwardingScore: 999,
-        forwardedNewsletterMessageInfo: {
-          newsletterJid: channelRD.id,
-          newsletterName: channelRD.name,
-          serverMessageId: -1,
-        },
-        externalAdReply: {
-          title: textbot,
-          body: dev,
-          thumbnailUrl: imageUrl,
-          sourceUrl: redes,
-          mediaType: 1,
-          showAdAttribution: true,
-          renderLargerThumbnail: true,
-        },
-      }
     },
     { quoted: m }
   );
