@@ -20,7 +20,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
   m.reply(`${emoji} Sugerencia rechazada y notificada al usuario.`)
 }
 handler.help = ['noaceptar']
-handler.tags = ['staff']
+handler.tags = ['owner']
 handler.command = ['noaceptar']
 handler.owner = true;
 
