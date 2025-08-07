@@ -1,6 +1,6 @@
 > ## **` En desarrollo.. ↻`**
-
-<h1 align="center"> Naruto-Bot-MD</h1>
+> [!TIP]
+> <h1 align="center"> Naruto-Bot-MD</h1>
 
 ---
 <p align="center">
