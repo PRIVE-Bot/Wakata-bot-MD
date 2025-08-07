@@ -1,11 +1,11 @@
+> [!TIP]
 > ## **` En desarrollo.. ↻`**
 
-> [!TIP]
-> <h1 align="center"> Naruto-Bot-MD</h1>
+
+ <h1 align="center"> Naruto-Bot-MD</h1>
 
 ---
 
-> [!TIP]
 > <p align="center">
 >  <img src="https://files.catbox.moe/0183v7.png" alt="Menú Principal">
 </p>  
