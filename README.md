@@ -1,4 +1,4 @@
-> ## **`versión: Beta`**
+> ## **` En desarrollo.. ↻`**
 
 <h1 align="center"> Naruto-Bot-MD</h1>
 
