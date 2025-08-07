@@ -23,4 +23,6 @@ let handler = async (m, { conn, text, usedPrefix, command, isOwner }) => {
 handler.help = ['aceptar']
 handler.tags = ['owner']
 handler.command = ['aceptar']
+handler.owner = true;
+
 export default handler
