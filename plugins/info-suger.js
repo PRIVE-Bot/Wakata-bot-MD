@@ -14,9 +14,9 @@ let sugerirHandler = async (m, { conn, text, usedPrefix }) => {
   }
 
   let [nuevoComando, descripcion] = parts
-  if (nuevoComando.length < 3) return conn.reply(m.chat, `❗️ El nombre del comando es muy corto.`, m, rcanal);
-  if (descripcion.length < 10) return conn.reply(m.chat, `❗️ La descripción debe tener al menos 10 caracteres.`, m, rcanal);
-  if (descripcion.length > 1000) return conn.reply(m.chat, `❗️ La descripción debe tener máximo 1000 caracteres.`, m, rcanal);
+  if (nuevoComando.length < 1) return conn.reply(m.chat, `❗️ El nombre del comando es muy corto.`, m, rcanal);
+  if (descripcion.length < 0) return conn.reply(m.chat, `❗️ La descripción debe tener al menos 10 caracteres.`, m, rcanal);
+  if (descripcion.length > 5) return conn.reply(m.chat, `❗️ La descripción debe tener máximo 1000 caracteres.`, m, rcanal);
 
   let teks = `*✳️ SUGERENCIA DE COMANDOS ✳️*\n\n📌 *Comando propuesto:*\n• ${nuevoComando}\n\n📋 *Descripción:*\n• ${descripcion}\n\n👤 *Usuario:*\n• ${m.pushName || 'Anónimo'}\n• Número: wa.me/${m.sender.split`@`[0]}\n\n_Para aprobar o rechazar la sugerencia, el staff debe responder a este mensaje con .aceptar o .noaceptar seguido de una razón (opcional)._`
 
