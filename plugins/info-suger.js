@@ -1,7 +1,7 @@
 // © Deylin 
 // © Deylin
 
-let sugerirHandler = async (m, { conn, text, usedPrefix }) => {
+let handler = async (m, { conn, text, usedPrefix }) => {
   if (!text) {
     return conn.reply(m.chat, `${emoji} Por favor, ingrese su sugerencia en el siguiente formato:\n\ncomando | descripción\n\nEjemplo:\n${usedPrefix}saludo | Envía un mensaje de bienvenida al usuario.`, m, rcanal);
   }
@@ -35,7 +35,8 @@ if (descripcion.length > 1000) {
   await conn.reply(m.chat, `${emoji} *Tu sugerencia se ha enviado al staff.*\nRecibirás una notificación cuando sea revisada.`, m, rcanal);
 }
 
-sugerirHandler.help = ['sugerir']
-sugerirHandler.tags = ['info']
-sugerirHandler.command = ['sugerir', 'suggest']
-export default sugerirHandler
+handler.help = ['sugerir']
+handler.tags = ['main']
+handler.command = ['sugerir', 'suggest']
+
+export default handler
