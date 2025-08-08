@@ -12,4 +12,4 @@
 </p>  
 
 > [!CAUTION]
-> 📄 Este repositorio está protegido por una (licencia)[LICENS] propietaria. No se permite copiar, modificar ni redistribuir el código.
+> 📄 Este repositorio está protegido por una [licencia](LICENSE) propietaria. No se permite copiar, modificar ni redistribuir el código.
