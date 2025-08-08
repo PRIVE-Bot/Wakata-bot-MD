@@ -12,5 +12,5 @@
 </p>  
 
 > [!CAUTION]  
-> 📄 **Este repositorio está protegido por una [licencia propietaria](LICENSE).**  
+> **Este repositorio está protegido por una [licencia propietaria](LICENSE).**  
 > Queda estrictamente prohibido clonar, copiar, modificar, distribuir o reutilizar el código sin autorización expresa del autor.
