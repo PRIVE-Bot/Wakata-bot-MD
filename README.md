@@ -11,5 +11,6 @@
 >  <img src="https://files.catbox.moe/0183v7.png" alt="Menú Principal">
 </p>  
 
-> [!CAUTION]
-> 📄 Este repositorio está protegido por una [licencia](LICENSE) propietaria. No se permite copiar, modificar ni redistribuir el código.
+> [!CAUTION]  
+> 📄 **Este repositorio está protegido por una [licencia propietaria](LICENSE).**  
+> Queda estrictamente prohibido clonar, copiar, modificar, distribuir o reutilizar el código sin autorización expresa del autor.
