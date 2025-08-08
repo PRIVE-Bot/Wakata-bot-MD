@@ -78,7 +78,7 @@ console.warn('🚀 Se excedió el límite de Listeners en:');
 console.warn(warning.stack);
 }
 });
-start('astro.js');
+start('main.js');
 
 
 /*process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '1'
