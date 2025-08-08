@@ -6,14 +6,7 @@
 
 ---
 
+> [!NOTE]
 > <p align="center">
 >  <img src="https://files.catbox.moe/0183v7.png" alt="Menú Principal">
 </p>  
-
----
-
-> [!NOTE]
-> ## **(∩_∩)**
-> ## **´･ᴗ･`**
-> ## **ฅ՞•ﻌ•՞ฅ**
-> ^_^
