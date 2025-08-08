@@ -20,9 +20,9 @@ align: 'center',
 colors: ['yellow']
 });
 say(`Multi Device`, {
-font: 'chrome',
-align: 'center',
-colors: ['redBright']
+font: 'simple',
+align: 'left',
+gradient: ['green', 'white']
 });
 say(`Developed By • Deylin`, {
 font: 'console',
