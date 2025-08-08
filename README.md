@@ -14,3 +14,7 @@
 > [!CAUTION]  
 > **Este repositorio está protegido por una [licencia propietaria](LICENSE).**  
 > Queda estrictamente prohibido clonar, copiar, modificar, distribuir o reutilizar el código sin autorización expresa del autor.
+
+---
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/naruto_bot)
