@@ -570,7 +570,7 @@ global.dfail = (type, m, conn) => {
     private: `*⚡ 〘 ${comando} 〙 solo en chat privado. Aquí no, amigo.*`,
     admin: `*👑 〘 ${comando} 〙 es un poder reservado para administradores.*`,
     botAdmin: `*⚡ Necesito ser admin para ejecutar 〘 ${comando} 〙 Dame el rango y hablamos.*`,
-    unreg: `*👑 Para usar 〘 ${comando} 〙 primero debes registrarte.*\n\n *⚡ Usa: #${verifyaleatorio} ${user2}.${edadaleatoria}*`,
+    // unreg: `*👑 Para usar 〘 ${comando} 〙 primero debes registrarte.*\n\n *⚡ Usa: #${verifyaleatorio} ${user2}.${edadaleatoria}*`,
     restrict: `*⚡ Esta función está bloqueada. Fin de la historia.*`
   }[type];
 
