@@ -52,6 +52,9 @@ global.etiqueta = '𝑫𝒆𝒚𝒍𝒊𝒏'
 
 global.catalogo = fs.readFileSync('./src/catalogo.jpg');
 global.photoSity = [catalogo]
+global.ch = {
+ch1: '120363402601912509@newsletter',
+}
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
 
