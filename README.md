@@ -16,13 +16,7 @@
 > Queda estrictamente prohibido clonar, copiar, modificar, distribuir o reutilizar el código sin autorización expresa del autor.
 
 ---
-[®](Deylin.mp4)
-
-<video autoplay loop muted playsinline width="400">
-  <source src="https://github.com/Deylin-Eliac/Naruto-Bot-MD/raw/main/src/Deylin.mp4" type="video/mp4" />
-  Tu navegador no soporta el elemento de video.
-</video>
-
+![Deylin Bot](src/Deylin.gif)
 
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/naruto_bot)
