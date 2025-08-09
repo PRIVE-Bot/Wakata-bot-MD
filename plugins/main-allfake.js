@@ -126,7 +126,7 @@ global.rcanal = {
     isForwarded: true,
     externalAdReply: {
       showAdAttribution: true,
-      title: textbot,
+      title: "prueba",
       body: dev,
       previewType: "PHOTO",
       thumbnail: iconoBuffer, 
