@@ -1,7 +1,42 @@
 import { generateWAMessageFromContent, proto } from '@whiskeysockets/baileys'
 
 const handler = async (m, { conn }) => {
-  const texto = `✨ Pulsa el botón para unirte al canal oficial`.trim()
+  const texto = `✨ Pulsa el botón para unirte o visitar nuestros espacios oficiales`.trim()
+
+  const buttons = [
+    {
+      name: 'cta_url',
+      buttonParamsJson: JSON.stringify({
+        display_text: ` ${emoji} Canal oficial`,
+        url: 'https://whatsapp.com/channel/0029VawF8fBBvvsktcInIz3m',
+        merchant_url: 'https://whatsapp.com/channel/0029VawF8fBBvvsktcInIz3m'
+      })
+    },
+    {
+      name: 'cta_url',
+      buttonParamsJson: JSON.stringify({
+        display_text: `${emoji} Grupo oficial`,
+        url: 'http://bit.ly/3ImhCFl',
+        merchant_url: 'http://bit.ly/3ImhCFl'
+      })
+    },
+    {
+      name: 'cta_url',
+      buttonParamsJson: JSON.stringify({
+        display_text: `${emoji} Creador`,
+        url: 'https://wa.link/i3ytgw',
+        merchant_url: 'https://wa.link/i3ytgw'
+      })
+    },
+    {
+      name: 'cta_url',
+      buttonParamsJson: JSON.stringify({
+        display_text: `${emoji} Regálanos una estrella en Github`,
+        url: 'https://github.com/Deylin-Eliac/kirito-bot-MD',
+        merchant_url: 'https://github.com/Deylin-Eliac/kirito-bot-MD'
+      })
+    }
+   ]
 
   const messageContent = {
     viewOnceMessage: {
@@ -12,18 +47,10 @@ const handler = async (m, { conn }) => {
         },
         interactiveMessage: proto.Message.InteractiveMessage.create({
           body: proto.Message.InteractiveMessage.Body.create({ text: texto }),
-          footer: proto.Message.InteractiveMessage.Footer.create({ text: 'Pikachu Bot by Deylin' }),
+          footer: proto.Message.InteractiveMessage.Footer.create({ text: ` ${botname} by Deylin` }),
           header: proto.Message.InteractiveMessage.Header.create({ hasMediaAttachment: false }),
           nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.create({
-            buttons: [
-  {
-    name: 'cta_url',
-    buttonParamsJson: JSON.stringify({
-      display_text: '✐ Canal oficial',
-      url: 'https://whatsapp.com/channel/0029VawF8fBBvvsktcInIz3m',
-      merchant_url: 'https://whatsapp.com/channel/0029VawF8fBBvvsktcInIz3m'
-    })
-  },
+            buttons
           })
         })
       }
@@ -38,9 +65,8 @@ const handler = async (m, { conn }) => {
   await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
 }
 
-handler.command = ['canal']
-handler.register = true
-handler.help = ['canal']
-handler.tags = ['info']
+handler.help = ['grupos'];
+handler.tags = ['info'];
+handler.command = ['grupos', 'links', 'groups'];
 
-export default handler
+export default handler;
