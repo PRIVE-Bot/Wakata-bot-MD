@@ -26,7 +26,10 @@ export async function before(m, { conn, participants, groupMetadata }) {
 ┃  ✎ *Fecha:* ${date}  
 ┃    
 ┗╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍⚁
-` 
+
+
+> *sɪɢᴜᴇ ᴇʟ ᴄᴀɴᴀʟ ᴏғɪᴄɪᴀʟ:*
+> whatsapp.com/channel/0029VbAzn9GGU3BQw830eA0F` 
       await conn.sendMessage(m.chat, { image: { url: imageUrl }, caption: bienvenida, mentions: [who] })
     }
 
@@ -42,7 +45,11 @@ export async function before(m, { conn, participants, groupMetadata }) {
 ┃  ✎ *Miembros:* ${totalMembers - 1}  
 ┃  ✎ *Fecha:* ${date}  
 ┃    
-┗╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍⚁` 
+┗╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍⚁
+
+
+> *sɪɢᴜᴇ ᴇʟ ᴄᴀɴᴀʟ ᴏғɪᴄɪᴀʟ:*
+> whatsapp.com/channel/0029VbAzn9GGU3BQw830eA0F` 
       await conn.sendMessage(m.chat, { image: { url: imageUrl }, caption: despedida, mentions: [who] })
     }
   }
