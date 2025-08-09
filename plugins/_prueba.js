@@ -1,17 +1,16 @@
 import reactionHandler from '../lib/reaction.js';
 
 let handler = async (m, { conn }) => {
-    // Envía el mensaje y guarda su ID
     let sent = await conn.sendMessage(m.chat, { text: "Reacciona con ✅ para confirmar o ❌ para cancelar" });
 
-    // Registrar acción para ✅
+    // ✅ Confirmar
     reactionHandler.registerReaction(sent.key.id, '✅', async ({ from, conn }) => {
-        await conn.sendMessage(from, { text: "✅ Acción confirmada desde el plugin." });
+        await conn.sendMessage(from, { text: "✅ Acción confirmada" });
     });
 
-    // Registrar acción para ❌
+    // ❌ Cancelar
     reactionHandler.registerReaction(sent.key.id, '❌', async ({ from, conn }) => {
-        await conn.sendMessage(from, { text: "❌ Acción cancelada desde el plugin." });
+        await conn.sendMessage(from, { text: "❌ Acción cancelada" });
     });
 };
 
