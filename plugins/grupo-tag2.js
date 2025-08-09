@@ -18,16 +18,7 @@ let handler = async (m, { conn, text, participants, groupMetadata }) => {
           mentionedJid: users,
           groupMentions: [{
             groupJid: groupJid,
-            groupSubject: groupName,
-         externalAdReply: {
-          title: `📣 ${groupName}`,
-          body: `Mencionando a todos los miembros (${users.length})`,
-          thumbnailUrl: icono,
-          sourceUrl: redes,
-          mediaType: 1,
-          renderLargerThumbnail: true,
-          showAdAttribution: true
-        }
+            groupSubject: groupName
           }]
         }
       })
