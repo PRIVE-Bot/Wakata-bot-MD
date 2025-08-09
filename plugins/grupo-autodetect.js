@@ -28,12 +28,30 @@ END:VCARD`
   let pp = await conn.profilePictureUrl(m.chat, 'image').catch(_ => null) || 'https://files.catbox.moe/xr2m6u.jpg'
 
   let nombre = `📛 El nombre del grupo fue cambiado a: *${m.messageStubParameters[0]}*\n👤 Por: ${usuario}`
-  let foto = `🖼️ La foto del grupo ha sido actualizada.\n👤 Por: ${usuario}`
-  let edit = `🔧 La configuración del grupo ha sido modificada.\n👤 Por: ${usuario}\n📋 Permisos: ${m.messageStubParameters[0] == 'on' ? 'Solo administradores' : 'Todos los miembros'}`
-  let newlink = `🔗 El enlace del grupo ha sido restablecido.\n👤 Por: ${usuario}`
-  let status = `🔒 El grupo ahora está ${m.messageStubParameters[0] == 'on' ? '*cerrado*' : '*abierto*'}.\n👤 Por: ${usuario}`
-  let admingp = `🆙 *@${m.messageStubParameters[0].split`@`[0]}* ha sido ascendido a administrador.\n👤 Acción realizada por: ${usuario}`
-  let noadmingp = `⬇️ *@${m.messageStubParameters[0].split`@`[0]}* ha sido removido como administrador.\n👤 Acción realizada por: ${usuario}`
+  let foto = `🖼️ La foto del grupo ha sido actualizada.\n👤 Por: ${usuario}
+
+> *sɪɢᴜᴇ ᴇʟ ᴄᴀɴᴀʟ ᴏғɪᴄɪᴀʟ:*
+> whatsapp.com/channel/0029VbAzn9GGU3BQw830eA0F`
+  let edit = `🔧 La configuración del grupo ha sido modificada.\n👤 Por: ${usuario}\n📋 Permisos: ${m.messageStubParameters[0] == 'on' ? 'Solo administradores' : 'Todos los miembros'}
+
+> *sɪɢᴜᴇ ᴇʟ ᴄᴀɴᴀʟ ᴏғɪᴄɪᴀʟ:*
+> whatsapp.com/channel/0029VbAzn9GGU3BQw830eA0F`
+  let newlink = `🔗 El enlace del grupo ha sido restablecido.\n👤 Por: ${usuario}
+
+> *sɪɢᴜᴇ ᴇʟ ᴄᴀɴᴀʟ ᴏғɪᴄɪᴀʟ:*
+> whatsapp.com/channel/0029VbAzn9GGU3BQw830eA0F`
+  let status = `🔒 El grupo ahora está ${m.messageStubParameters[0] == 'on' ? '*cerrado*' : '*abierto*'}.\n👤 Por: ${usuario}
+
+> *sɪɢᴜᴇ ᴇʟ ᴄᴀɴᴀʟ ᴏғɪᴄɪᴀʟ:*
+> whatsapp.com/channel/0029VbAzn9GGU3BQw830eA0F`
+  let admingp = `🆙 *@${m.messageStubParameters[0].split`@`[0]}* ha sido ascendido a administrador.\n👤 Acción realizada por: ${usuario}
+
+> *sɪɢᴜᴇ ᴇʟ ᴄᴀɴᴀʟ ᴏғɪᴄɪᴀʟ:*
+> whatsapp.com/channel/0029VbAzn9GGU3BQw830eA0F`
+  let noadmingp = `⬇️ *@${m.messageStubParameters[0].split`@`[0]}* ha sido removido como administrador.\n👤 Acción realizada por: ${usuario}
+
+> *sɪɢᴜᴇ ᴇʟ ᴄᴀɴᴀʟ ᴏғɪᴄɪᴀʟ:*
+> whatsapp.com/channel/0029VbAzn9GGU3BQw830eA0F`
 
   if (chat.detect && m.messageStubType == 21) {
     await conn.sendMessage(m.chat, { text: nombre, mentions: [m.sender] }, { quoted: fkontak })
