@@ -1,62 +1,57 @@
-import { exec } from 'child_process';
-import fs from 'fs';
-import path from 'path';
+import { exec } from 'child_process'
+import fs from 'fs'
+import path from 'path'
 
-// Función para convertir video a gif usando ffmpeg
-function videoToGif(inputPath, outputPath) {
+function videoToGif(input, output) {
   return new Promise((resolve, reject) => {
-    // comando ffmpeg: ajusta fps, tamaño, loop infinito
-    const cmd = `ffmpeg -y -i "${inputPath}" -vf "fps=15,scale=320:-1:flags=lanczos" -loop 0 "${outputPath}"`;
-    exec(cmd, (error, stdout, stderr) => {
-      if (error) return reject(error);
-      resolve(outputPath);
-    });
-  });
+    exec(`ffmpeg -y -i "${input}" -vf "fps=15,scale=320:-1:flags=lanczos" -loop 0 "${output}"`, (err) => {
+      if (err) reject(err)
+      else resolve(output)
+    })
+  })
 }
 
-export async function handler(m, { conn, command, args, isMedia, quoted }) {
-  if (command !== 'togif') return;
+export async function handler(m, { conn, command, isMedia, quoted }) {
+  if (command !== 'togif') return
 
-  // Obtener mensaje con video: puede ser media directa o video citado
-  let mediaMsg = m;
+  let mediaMessage = m
   if (!isMedia && m.quoted?.video) {
-    mediaMsg = m.quoted;
+    mediaMessage = m.quoted
   }
 
-  if (!mediaMsg || !mediaMsg.video) {
-    return await m.reply('Por favor, envía un video con el comando o responde a un video con el comando.');
+  if (!mediaMessage || !mediaMessage.video) {
+    return conn.sendMessage(m.chat, { text: '⚠️ Por favor, envía o responde a un video con el comando .togif' }, { quoted: m })
   }
 
   try {
     // Descargar video
-    const buffer = await conn.downloadMedia(mediaMsg);
+    const buffer = await conn.downloadMedia(mediaMessage)
 
-    // Rutas temporales para guardar archivos
-    const inputFile = path.join('/tmp', `input_${Date.now()}.mp4`);
-    const outputFile = path.join('/tmp', `output_${Date.now()}.gif`);
+    // Rutas temporales
+    const inputPath = path.join(__dirname, `input_${Date.now()}.mp4`)
+    const outputPath = path.join(__dirname, `output_${Date.now()}.gif`)
 
-    // Guardar video en disco
-    fs.writeFileSync(inputFile, buffer);
+    // Guardar archivo
+    fs.writeFileSync(inputPath, buffer)
 
-    // Convertir a gif
-    await videoToGif(inputFile, outputFile);
+    // Convertir a GIF
+    await videoToGif(inputPath, outputPath)
 
-    // Leer GIF convertido
-    const gifBuffer = fs.readFileSync(outputFile);
+    // Leer GIF
+    const gifBuffer = fs.readFileSync(outputPath)
 
-    // Enviar gif
-    await conn.sendMessage(m.chat, { 
-      video: gifBuffer, 
-      gifPlayback: true, // esto hará que se reproduzca como GIF en WhatsApp
-      caption: 'Aquí tienes tu GIF 😉' 
-    }, { quoted: m });
+    // Enviar GIF con gifPlayback para que se vea animado
+    await conn.sendMessage(m.chat, {
+      video: gifBuffer,
+      caption: 'Aquí está tu GIF 🎉',
+      gifPlayback: true
+    }, { quoted: m })
 
-    // Borrar archivos temporales
-    fs.unlinkSync(inputFile);
-    fs.unlinkSync(outputFile);
-
+    // Limpiar archivos
+    fs.unlinkSync(inputPath)
+    fs.unlinkSync(outputPath)
   } catch (e) {
-    console.error(e);
-    await m.reply('Error al convertir el video a GIF.');
+    console.error(e)
+    await conn.sendMessage(m.chat, { text: '❌ Error al convertir el video a GIF.' }, { quoted: m })
   }
 }
