@@ -1,75 +1,56 @@
-let handler = async (m, { conn, args, command }) => {
-  global.listadoGrupos = global.listadoGrupos || []
+import gtts from 'node-gtts';
+import { readFileSync, unlinkSync } from 'fs';
+import { join } from 'path';
 
-  if (['listgroup', 'grouplist'].includes(command)) {
-    let txt = ''
-    global.listadoGrupos = []
+const defaultLang = 'es';
 
-    const groups = Object.entries(conn.chats).filter(([jid, chat]) => jid.endsWith('@g.us') && chat.isChats)
-    const totalGroups = groups.length
-
-    for (let i = 0; i < totalGroups; i++) {
-      const [jid] = groups[i]
-      const metadata = ((conn.chats[jid] || {}).metadata || (await conn.groupMetadata(jid).catch(() => null))) || {}
-      const participants = metadata.participants || []
-      const bot = participants.find(u => conn.decodeJid(u.id) === conn.user.jid) || {}
-      const isBotAdmin = bot?.admin || false
-      const isParticipant = participants.some(u => conn.decodeJid(u.id) === conn.user.jid)
-      const participantStatus = isParticipant ? 'Participante' : 'Ex-participante'
-      const totalParticipants = participants.length
-      const groupName = metadata.subject || await conn.getName(jid)
-      const groupLink = isBotAdmin
-        ? `https://chat.whatsapp.com/${await conn.groupInviteCode(jid).catch(() => '') || 'Error'}`
-        : '(No disponible: sin permisos de admin)'
-
-      global.listadoGrupos.push({ jid, nombre: groupName })
-
-      txt += `╔══════ ⊹Grupo #${i + 1}⊹ ══════╗
-╠  Nombre: ${groupName}
-╠  ID: ${jid}
-╠  Admin: ${isBotAdmin ? 'Sí' : 'No'}
-╠  Estado: ${participantStatus}
-╠  Participantes: ${totalParticipants}
-╠  Link: ${groupLink}
-╚════════════════════╝\n\n`
-    }
-
-    m.reply(`${emoji} *Lista de grupos del bot*\n\nTotal: ${totalGroups} grupos encontrados.\n\n${txt}`.trim())
-
-  } else if (command == 'salirg') {
-    const num = parseInt(args[0])
-    if (!num || !global.listadoGrupos[num - 1]) return m.reply('❌ Grupo no encontrado. Usa primero *.listgroup*')
-
-    const { jid, nombre } = global.listadoGrupos[num - 1]
-
-    await conn.sendMessage(jid, {
-      text: `👋 *${botname}* se despide de este grupo.\nGracias por todo. ¡Hasta pronto! ✨`
-    })
-
-    await conn.groupLeave(jid)
-    await m.reply(`🚪 Salí del grupo *${nombre}* correctamente.`)
-
-  } else if (command == 'aviso') {
-    const texto = args.join(' ').split('|')
-    const numero = parseInt(texto[0])
-    const mensaje = texto[1]?.trim()
-
-    if (!numero || !mensaje) return m.reply(`⚠️ Uso: *.aviso <número> | <mensaje>*\nEjemplo: *.aviso 2 | Hola grupo!*`)
-    if (!global.listadoGrupos[numero - 1]) return m.reply('❌ Grupo no encontrado. Usa primero *.listgroup*')
-
-    const { jid, nombre } = global.listadoGrupos[numero - 1]
-
-    await conn.sendMessage(jid, {
-      text: `📢 *AVISO DEL CREADOR*\n\n${mensaje}`
-    })
-
-    m.reply(`✅ Mensaje enviado a *${nombre}*`)
+const handler = async (m, { conn, args, usedPrefix, command }) => {
+  let lang = args[0];
+  let text = args.slice(1).join(' ');
+  if ((args[0] || '').length !== 2) {
+    lang = defaultLang;
+    text = args.join(' ');
   }
+
+  if (!text && m.quoted?.text) text = m.quoted.text;
+
+
+  text = text.replace(/[^\p{L}\p{N}\p{Zs}]/gu, '');
+
+  let res;
+  try {
+    res = await tts(text, lang);
+  } catch (e) {
+    m.reply(e + '');
+    text = args.join(' ').replace(/[^\p{L}\p{N}\p{Zs}]/gu, '');
+    if (!text) throw '❗ Por favor, ingresa una frase válida.';
+    res = await tts(text, defaultLang);
+  } finally {
+    if (res) conn.sendFile(m.chat, res, 'tts.opus', null, m, true);
+  }
+};
+
+handler.help = ['tts <lang> <texto>'];
+handler.tags = ['transformador'];
+handler.command = ['tts'];
+handler.group = true;
+handler.register = true;
+
+export default handler;
+
+
+function tts(text, lang = 'es') {
+  console.log(lang, text);
+  return new Promise((resolve, reject) => {
+    try {
+      const tts = gtts(lang);
+      const filePath = join(global.__dirname(import.meta.url), '../tmp', Date.now() + '.wav');
+      tts.save(filePath, text, () => {
+        resolve(readFileSync(filePath));
+        unlinkSync(filePath);
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
 }
-
-handler.help = ['listgroup', 'salirg <número>', 'aviso <número> | <mensaje>']
-handler.tags = ['owner']
-handler.command = ['listgroup', 'salirg', 'aviso', 'grouplist']
-handler.rowner = true
-
-export default handler
