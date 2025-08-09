@@ -16,5 +16,8 @@
 > Queda estrictamente prohibido clonar, copiar, modificar, distribuir o reutilizar el código sin autorización expresa del autor.
 
 ---
+[®](Deylin.mp4)
+
+
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/naruto_bot)
