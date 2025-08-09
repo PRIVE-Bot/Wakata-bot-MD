@@ -4,12 +4,15 @@ let handler = async (m, { conn, text, participants, groupMetadata }) => {
       .map(u => u.id)
       .filter(v => v !== conn.user.jid)
 
-    const groupJid = m.chat
     const groupName = text?.trim() || groupMetadata?.subject || 'Todos'
 
     
-    const messageText = `📢 *MENCIÓN MASIVA EN ${groupName.toUpperCase()}*\n\n` +
-                        `@everyone`
+    const mentionText = users.map(u => `@${u.split('@')[0]}`).join(' ')
+    const messageText = `📢 *MENCIÓN MASIVA EN ${groupName.toUpperCase()}*\n\n${mentionText}`
+
+    
+    const icono = groupMetadata?.icon || 'https://i.imgur.com/t9HFQJQ.jpeg'
+    const redes = 'https://whatsapp.com/channel/0029VawF8fBBvvsktcInIz3m'
 
     await conn.sendMessage(m.chat, {
       text: messageText,
@@ -18,8 +21,8 @@ let handler = async (m, { conn, text, participants, groupMetadata }) => {
         mentionedJid: users,
         externalAdReply: {
           title: `📣 ${groupName}`,
-          body: `Mencionando a todos los miembros`,
-          thumbnailUrl: icono, 
+          body: `Mencionando a todos los miembros (${users.length})`,
+          thumbnailUrl: icono,
           sourceUrl: redes,
           mediaType: 1,
           renderLargerThumbnail: true,
