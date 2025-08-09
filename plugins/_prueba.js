@@ -1,29 +1,49 @@
-// plugins/reaccion.js
-let mensajesReaccion = {} // Almacena mensajes que esperan reacción
+let mensajesReaccion = {};
 
-export default async function handler(m, { conn, command }) {
+export async function handler(m, { conn, command }) {
     if (command === 'testreact') {
-        let msg = await conn.sendMessage(m.chat, { text: 'Reacciona con ❤️ para activar la acción' })
-        mensajesReaccion[msg.key.id] = {
-            chat: m.chat,
-            from: m.sender
+        const mensajeParaReaccionar = 'Reacciona con ❤️ para activar la acción';
+        const mensajeEnviado = await conn.sendMessage(m.chat, {
+            text: mensajeParaReaccionar
+        });
+
+        if (mensajeEnviado?.key?.id) {
+            mensajesReaccion[mensajeEnviado.key.id] = {
+                chat: m.chat,
+                remitenteOriginal: m.sender,
+                textoEsperado: '❤️'
+            };
         }
     }
 }
 
-// Evento para escuchar reacciones
-handler.before = async function (m, { conn }) {
-    if (m.messageStubType === 28) { // 28 = Mensaje de reacción en Baileys
-        let reaccion = m.messageStubParameters?.[0] // Emoji de la reacción
-        let msgID = m.key.id // ID del mensaje reaccionado
-        let datos = mensajesReaccion[msgID]
+handler.command = /^testreact$/i;
 
-        if (!datos) return // No está registrado
-        if (reaccion === '❤️') {
-            await conn.sendMessage(datos.chat, { text: `✅ Acción ejecutada por ${m.sender}` })
+// Escuchamos el evento de reacción directamente aquí.
+// El manejador principal del bot debe llamar a esta función en cada evento messages.upsert.
+// Si tu manejador de plugins lo soporta, podrías usar un hook `before`.
+// De lo contrario, este código funcionará si se ejecuta en cada mensaje.
+export async function before(m, {
+    conn
+}) {
+    // Verificamos si el mensaje es una reacción.
+    if (m.message && m.message.reactionMessage) {
+        const reaction = m.message.reactionMessage;
+        const keyOriginal = reaction.key;
+        const emoji = reaction.text;
+
+        const datosMensaje = mensajesReaccion[keyOriginal.id];
+
+        if (datosMensaje && emoji === datosMensaje.textoEsperado) {
+            const {
+                chat
+            } = datosMensaje;
+
+            await conn.sendMessage(chat, {
+                text: `✅ ¡Acción ejecutada! El usuario ${m.sender} ha reaccionado con ${emoji}`
+            });
+
+            delete mensajesReaccion[keyOriginal.id];
         }
     }
 }
-
-handler.command = /^testreact$/i
-export default handler
