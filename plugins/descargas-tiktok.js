@@ -20,7 +20,10 @@ var handler = async (m, { conn, args }) => {
         const info = `
 📄 *Título:* ${title || 'No disponible'}
 👤 *Autor:* ${author || 'Desconocido'}
-        `.trim();
+        
+
+> *sɪɢᴜᴇ ᴇʟ ᴄᴀɴᴀʟ ᴏғɪᴄɪᴀʟ:*
+> whatsapp.com/channel/0029VbAzn9GGU3BQw830eA0F`.trim();
 
         await conn.sendFile(m.chat, videoURL, "tiktok.mp4", `${info}\n\n✅ Video descargado correctamente.`, m);
     } catch (error1) {
