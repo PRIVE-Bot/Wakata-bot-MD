@@ -1,18 +1,19 @@
-import { esperarReaccion } from '../lib/reaction.js';
+import reactionHandler from '../lib/reaction.js';
 
 let handler = async (m, { conn }) => {
-    const emoji = '✅';
-    const mensaje = `👆 Reacciona con *${emoji}* a este mensaje para confirmar. Tienes 30 segundos.`;
+    // Envía el mensaje y guarda su ID
+    let sent = await conn.sendMessage(m.chat, { text: "Reacciona con ✅ para confirmar o ❌ para cancelar" });
 
-    const confirmado = await esperarReaccion(conn, m.chat, m.sender, emoji, mensaje);
+    // Registrar acción para ✅
+    reactionHandler.registerReaction(sent.key.id, '✅', async ({ from, conn }) => {
+        await conn.sendMessage(from, { text: "✅ Acción confirmada desde el plugin." });
+    });
 
-    if (confirmado) {
-        m.reply('✅ ¡Confirmado! Acción ejecutada.');
-        // Aquí tu acción
-    } else {
-        m.reply('❌ No reaccionaste a tiempo o usaste otro emoji.');
-    }
+    // Registrar acción para ❌
+    reactionHandler.registerReaction(sent.key.id, '❌', async ({ from, conn }) => {
+        await conn.sendMessage(from, { text: "❌ Acción cancelada desde el plugin." });
+    });
 };
 
-handler.command = ['reaccionar'];
+handler.command = ['testreact'];
 export default handler;
