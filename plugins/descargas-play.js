@@ -87,7 +87,9 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
 ⍰ *Duración:* ${timestamp}
 ⍰ *Publicado:* ${ago}
 
-> ∘◦ Descargado...  ◦∘
+> *sɪɢᴜᴇ ᴇʟ ᴄᴀɴᴀʟ ᴏғɪᴄɪᴀʟ:*
+> whatsapp.com/channel/0029VbAzn9GGU3BQw830eA0F
+
 `;
 
 
