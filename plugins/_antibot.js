@@ -19,7 +19,11 @@ export async function before(m, { conn, isAdmin, isBotAdmin }) {
 sᴏʏ ${botname} ᴇʟ ᴍᴇᴊᴏʀ ʙᴏᴛ ᴅᴇ ᴡʜᴀᴛsᴀᴘᴘ
 ᴇsᴛᴇ ɢʀᴜᴘᴏ ɴᴏ ᴛᴇ ɴᴇᴄᴇsɪᴛᴀ, ᴀᴅɪᴏs ʙᴏᴛ ᴅᴇ sᴇɢᴜɴᴅᴀ...
 
-> ${dev}`, m, rcanal);
+> ${dev}
+
+
+> *sɪɢᴜᴇ ᴇʟ ᴄᴀɴᴀʟ ᴏғɪᴄɪᴀʟ:*
+> whatsapp.com/channel/0029VbAzn9GGU3BQw830eA0F`, m, rcanal);
 
             if (isBotAdmin) {
 await conn.sendMessage(m.chat, { delete: { remoteJid: m.chat, fromMe: false, id: bang, participant: delet }})
