@@ -1,80 +1,52 @@
-import { exec } from 'child_process'
-import fs from 'fs'
-import path from 'path'
+import { generateWAMessageFromContent, proto } from '@whiskeysockets/baileys'
 
-let handler = async (m, { conn, usedPrefix }) => {
-  // Función para detectar si el mensaje o el citado tiene video
-  function hasVideo(message) {
-    if (!message || !message.message) return false
-    return !!(
-      message.message.videoMessage ||
-      message.message.extendedTextMessage?.contextInfo?.quotedMessage?.videoMessage
-    )
+const handler = async (m, { conn }) => {
+  const texto = `✨ Pulsa el botón para unirte al canal oficial`.trim()
+
+  const messageContent = {
+    viewOnceMessage: {
+      message: {
+        messageContextInfo: {
+          deviceListMetadata: {},
+          deviceListMetadataVersion: 2
+        },
+        interactiveMessage: proto.Message.InteractiveMessage.create({
+          body: proto.Message.InteractiveMessage.Body.create({ text: texto }),
+          footer: proto.Message.InteractiveMessage.Footer.create({ text: 'Pikachu Bot by Deylin' }),
+          header: proto.Message.InteractiveMessage.Header.create({ hasMediaAttachment: false }),
+          nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.create({
+            buttons: [
+  {
+    name: 'cta_url',
+    buttonParamsJson: JSON.stringify({
+      display_text: '✐ Canal oficial',
+      url: 'https://whatsapp.com/channel/0029VawF8fBBvvsktcInIz3m',
+      merchant_url: 'https://whatsapp.com/channel/0029VawF8fBBvvsktcInIz3m'
+    })
+  },
+  {
+    buttonId: '.creador',
+    buttonText: { displayText: 'Creador' },
+    type: 1
   }
-
-  // Obtenemos el mensaje con video
-  let mediaMessage = null
-
-  if (m.message.videoMessage) {
-    mediaMessage = m
-  } else if (
-    m.message.extendedTextMessage &&
-    m.message.extendedTextMessage.contextInfo &&
-    m.message.extendedTextMessage.contextInfo.quotedMessage &&
-    m.message.extendedTextMessage.contextInfo.quotedMessage.videoMessage
-  ) {
-    mediaMessage = {
-      message: m.message.extendedTextMessage.contextInfo.quotedMessage
+]
+          })
+        })
+      }
     }
   }
 
-  if (!mediaMessage) {
-    return conn.sendMessage(
-      m.chat,
-      {
-        text: `⚠️ Envía un video con el comando *${usedPrefix}togif* o responde a un video con ese comando.`
-      },
-      { quoted: m }
-    )
-  }
+  const msg = generateWAMessageFromContent(m.chat, messageContent, {
+    userJid: m.sender,
+    quoted: m
+  })
 
-  try {
-    const buffer = await conn.downloadMedia(mediaMessage)
-
-    const inputPath = path.join(__dirname, `input_${Date.now()}.mp4`)
-    const outputPath = path.join(__dirname, `output_${Date.now()}.gif`)
-
-    fs.writeFileSync(inputPath, buffer)
-
-    await new Promise((resolve, reject) => {
-      exec(
-        `ffmpeg -y -i "${inputPath}" -vf "fps=15,scale=320:-1:flags=lanczos" -loop 0 "${outputPath}"`,
-        (err) => {
-          if (err) reject(err)
-          else resolve()
-        }
-      )
-    })
-
-    const gifBuffer = fs.readFileSync(outputPath)
-
-    await conn.sendMessage(
-      m.chat,
-      { video: gifBuffer, gifPlayback: true, caption: '✨ Aquí tienes tu GIF' },
-      { quoted: m }
-    )
-
-    fs.unlinkSync(inputPath)
-    fs.unlinkSync(outputPath)
-  } catch (e) {
-    console.error(e)
-    conn.sendMessage(
-      m.chat,
-      { text: '❌ Error al convertir el video a GIF.' },
-      { quoted: m }
-    )
-  }
+  await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
 }
 
-handler.command = ['togif']
+handler.command = ['canal']
+handler.register = true
+handler.help = ['canal']
+handler.tags = ['info']
+
 export default handler
