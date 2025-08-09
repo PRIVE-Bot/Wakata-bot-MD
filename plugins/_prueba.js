@@ -1,20 +1,28 @@
-// En tu handler principal o index.js
-let reactionTargets = {} // Guardará mensajes que esperan reacciones
+// plugins/reaccion.js
+let mensajesReaccion = {} // Almacena mensajes que esperan reacción
 
-conn.ev.on('messages.reaction', async (reaction) => {
-    const { key, text, sender } = reaction[0] // Información de la reacción
-    const reactedEmoji = reaction[0].reaction.text
-    const msgId = key.id
-
-    if (reactionTargets[msgId] && reactedEmoji === '👍') {
-        await conn.sendMessage(sender, { text: '¡Recibí tu reacción con 👍!' })
+export default async function handler(m, { conn, command }) {
+    if (command === 'testreact') {
+        let msg = await conn.sendMessage(m.chat, { text: 'Reacciona con ❤️ para activar la acción' })
+        mensajesReaccion[msg.key.id] = {
+            chat: m.chat,
+            from: m.sender
+        }
     }
-})
+}
 
-// En tu plugin
-let handler = async (m, { conn }) => {
-    let sentMsg = await conn.sendMessage(m.chat, { text: 'Reacciona con 👍 a este mensaje' })
-    reactionTargets[sentMsg.key.id] = true // Guardamos el ID del mensaje para escucharlo después
+// Evento para escuchar reacciones
+handler.before = async function (m, { conn }) {
+    if (m.messageStubType === 28) { // 28 = Mensaje de reacción en Baileys
+        let reaccion = m.messageStubParameters?.[0] // Emoji de la reacción
+        let msgID = m.key.id // ID del mensaje reaccionado
+        let datos = mensajesReaccion[msgID]
+
+        if (!datos) return // No está registrado
+        if (reaccion === '❤️') {
+            await conn.sendMessage(datos.chat, { text: `✅ Acción ejecutada por ${m.sender}` })
+        }
+    }
 }
 
 handler.command = /^testreact$/i
