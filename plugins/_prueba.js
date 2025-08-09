@@ -1,41 +1,21 @@
-// plugins/testreact.js
+// En tu handler principal o index.js
+let reactionTargets = {} // Guardará mensajes que esperan reacciones
 
-let pendingReactions = {} // Guardar mensajes en espera de reacción
+conn.ev.on('messages.reaction', async (reaction) => {
+    const { key, text, sender } = reaction[0] // Información de la reacción
+    const reactedEmoji = reaction[0].reaction.text
+    const msgId = key.id
 
+    if (reactionTargets[msgId] && reactedEmoji === '👍') {
+        await conn.sendMessage(sender, { text: '¡Recibí tu reacción con 👍!' })
+    }
+})
+
+// En tu plugin
 let handler = async (m, { conn }) => {
-  // Enviar mensaje y guardar su key
-  let sentMsg = await conn.sendMessage(m.chat, { text: "✅ Reacciona con 👍 para confirmar o ❌ para cancelar" })
-
-  // Guardar info para que la reacción sea detectada
-  pendingReactions[sentMsg.key.id] = {
-    chat: m.chat,
-    user: m.sender
-  }
+    let sentMsg = await conn.sendMessage(m.chat, { text: 'Reacciona con 👍 a este mensaje' })
+    reactionTargets[sentMsg.key.id] = true // Guardamos el ID del mensaje para escucharlo después
 }
 
-handler.help = ['testreact']
-handler.tags = ['test']
 handler.command = /^testreact$/i
-
 export default handler
-
-// --- DETECTOR DE REACCIONES ---
-export async function before(m, { conn }) {
-  if (!m.message || !m.message.reactionMessage) return
-  let react = m.message.reactionMessage
-  let msgId = react.key.id
-  let reaction = react.text
-
-  if (pendingReactions[msgId]) {
-    let { chat, user } = pendingReactions[msgId]
-
-    if (reaction === '👍') {
-      await conn.sendMessage(chat, { text: `✅ Confirmado por @${user.split('@')[0]}`, mentions: [user] })
-      delete pendingReactions[msgId]
-    }
-    if (reaction === '❌') {
-      await conn.sendMessage(chat, { text: `❌ Cancelado por @${user.split('@')[0]}`, mentions: [user] })
-      delete pendingReactions[msgId]
-    }
-  }
-}
