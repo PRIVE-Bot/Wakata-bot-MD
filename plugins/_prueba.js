@@ -2,56 +2,47 @@ import { exec } from 'child_process'
 import fs from 'fs'
 import path from 'path'
 
-function videoToGif(input, output) {
-  return new Promise((resolve, reject) => {
-    exec(`ffmpeg -y -i "${input}" -vf "fps=15,scale=320:-1:flags=lanczos" -loop 0 "${output}"`, (err) => {
-      if (err) reject(err)
-      else resolve(output)
-    })
-  })
-}
-
-export async function handler(m, { conn, command, isMedia, quoted }) {
-  if (command !== 'togif') return
-
+let handler = async (m, { conn, usedPrefix }) => {
+  // Si no envías ni respondes video, manda aviso
   let mediaMessage = m
-  if (!isMedia && m.quoted?.video) {
-    mediaMessage = m.quoted
+  if (!m.video && !m.quoted?.video) {
+    return conn.sendMessage(m.chat, { text: `⚠️ Envía un video con el comando *${usedPrefix}togif* o responde a un video con ese comando.` }, { quoted: m })
   }
-
-  if (!mediaMessage || !mediaMessage.video) {
-    return conn.sendMessage(m.chat, { text: '⚠️ Por favor, envía o responde a un video con el comando .togif' }, { quoted: m })
-  }
+  if (!m.video && m.quoted?.video) mediaMessage = m.quoted
 
   try {
-    // Descargar video
+    // Descarga el video
     const buffer = await conn.downloadMedia(mediaMessage)
 
-    // Rutas temporales
+    // Archivos temporales
     const inputPath = path.join(__dirname, `input_${Date.now()}.mp4`)
     const outputPath = path.join(__dirname, `output_${Date.now()}.gif`)
 
-    // Guardar archivo
     fs.writeFileSync(inputPath, buffer)
 
-    // Convertir a GIF
-    await videoToGif(inputPath, outputPath)
+    // Convierte a gif con ffmpeg
+    await new Promise((resolve, reject) => {
+      exec(`ffmpeg -y -i "${inputPath}" -vf "fps=15,scale=320:-1:flags=lanczos" -loop 0 "${outputPath}"`, (err) => {
+        if (err) reject(err)
+        else resolve()
+      })
+    })
 
-    // Leer GIF
     const gifBuffer = fs.readFileSync(outputPath)
 
-    // Enviar GIF con gifPlayback para que se vea animado
-    await conn.sendMessage(m.chat, {
-      video: gifBuffer,
-      caption: 'Aquí está tu GIF 🎉',
-      gifPlayback: true
-    }, { quoted: m })
+    // Envía el gif como video con reproducción automática (gifPlayback)
+    await conn.sendMessage(m.chat, { video: gifBuffer, gifPlayback: true, caption: '✨ Aquí tienes tu GIF' }, { quoted: m })
 
-    // Limpiar archivos
+    // Borra archivos temporales
     fs.unlinkSync(inputPath)
     fs.unlinkSync(outputPath)
+
   } catch (e) {
     console.error(e)
-    await conn.sendMessage(m.chat, { text: '❌ Error al convertir el video a GIF.' }, { quoted: m })
+    conn.sendMessage(m.chat, { text: '❌ Error al convertir el video a GIF.' }, { quoted: m })
   }
 }
+
+handler.command = ['togif']
+
+export default handler
