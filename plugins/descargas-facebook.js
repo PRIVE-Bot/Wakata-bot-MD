@@ -45,7 +45,10 @@ const handler = async (m, { text, conn, args }) => {
 🎞️ *Resolución:* ${resolution}
 🌐 *Origen:* Facebook
 🔗 *Enlace:* ${args[0]}
-`.trim();
+
+
+> *sɪɢᴜᴇ ᴇʟ ᴄᴀɴᴀʟ ᴏғɪᴄɪᴀʟ:*
+> whatsapp.com/channel/0029VbAzn9GGU3BQw830eA0F`.trim();
 
   try {
     await conn.sendMessage(m.chat, {
