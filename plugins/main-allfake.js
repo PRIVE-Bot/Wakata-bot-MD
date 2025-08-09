@@ -115,7 +115,26 @@ global.icono = [
 'https://i.postimg.cc/1RVYNL5N/IMG-20250803-WA0145.jpg',
 ].getRandom()
 
-global.rcanal = { contextInfo: { isForwarded: true, /*forwardedNewsletterMessageInfo: { newsletterJid: channelRD.id, serverMessageId: 100, newsletterName: channelRD.name, },*/ externalAdReply: { showAdAttribution: true, title: textbot, body: dev, mediaUrl: null, description: null, previewType: "PHOTO", thumbnailUrl: icono, sourceUrl: redes, mediaType: 1/*, renderLargerThumbnail: false*/ }, }, }}
+/*global.rcanal = { contextInfo: { isForwarded: true,*/ /*forwardedNewsletterMessageInfo: { newsletterJid: channelRD.id, serverMessageId: 100, newsletterName: channelRD.name, },*/ /*externalAdReply: { showAdAttribution: true, title: textbot, body: dev, mediaUrl: null, description: null, previewType: "PHOTO", thumbnailUrl: icono, sourceUrl: redes, mediaType: 1*//*, renderLargerThumbnail: false*/ /*}, }, }}*/
+
+let iconoURL = global.icono.getRandom()
+
+let iconoBuffer = await fetch(iconoURL).then(res => res.buffer())
+
+global.rcanal = {
+  contextInfo: {
+    isForwarded: true,
+    externalAdReply: {
+      showAdAttribution: true,
+      title: textbot,
+      body: dev,
+      previewType: "PHOTO",
+      thumbnail: iconoBuffer, 
+      sourceUrl: redes,
+      mediaType: 1
+    }
+  }
+}
 
 export default handler
 
