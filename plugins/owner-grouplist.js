@@ -6,6 +6,7 @@ let handler = async (m, { conn, args, command }) => {
   if (['listgroup', 'grouplist'].includes(command)) {
     let txt = ''
     global.listadoGrupos = []
+                let mencionados = participants.map(u => u.id);
 
     const groups = Object.entries(conn.chats).filter(([jid, chat]) => jid.endsWith('@g.us') && chat.isChats)
     const totalGroups = groups.length
@@ -64,8 +65,9 @@ let handler = async (m, { conn, args, command }) => {
     }
 
     await conn.sendMessage(jid, {
-      text: `👋 *${botname}* se despide de este grupo.\nGracias por todo. ¡Hasta pronto! ✨`
-    }, { quoted: fkontak })
+      text: `${emoji} Hola todos *${botname}* se despide de este grupo.\nGracias por todo. ¡Hasta pronto! ✨`
+                        mentions: mencionados
+                }, { quoted: fkontak });
 
     await conn.groupLeave(jid)
     await m.reply(`🚪 Salí del grupo *${nombre}* correctamente.`)
@@ -101,7 +103,8 @@ let handler = async (m, { conn, args, command }) => {
 
     await conn.sendMessage(jid, {
       text: `\n\n${mensaje}`
-    }, { quoted: fkontak })
+                        mentions: mencionados
+                }, { quoted: fkontak });
 
     m.reply(`✅ Mensaje enviado a *${nombre}*`)
   }
