@@ -31,6 +31,25 @@ const handler = async (m, { text, conn, args }) => {
 
   let video = data.url;
 
+    const res = await fetch('https://files.catbox.moe/nbkung.jpg');
+    const thumb2 = Buffer.from(await res.arrayBuffer());
+
+    const fkontak = {
+        key: {
+            participants: "0@s.whatsapp.net",
+            remoteJid: "status@broadcast",
+            fromMe: false,
+            id: "Halo"
+        },
+        message: {
+            locationMessage: {
+                name: `𝗗𝗘𝗦𝗖𝗔𝗥𝗚𝗔 𝗗𝗘 𝗙𝗔𝗖𝗘𝗕𝗢𝗢𝗞\n${botname}`,
+                jpegThumbnail: thumb2
+            }
+        },
+        participant: "0@s.whatsapp.net"
+    };
+
 
   let {
     title = "Desconocido",
@@ -56,7 +75,7 @@ const handler = async (m, { text, conn, args }) => {
       caption: infoMsg,
       fileName: 'facebook_video.mp4',
       mimetype: 'video/mp4'
-    }, { quoted: m });
+    }, { quoted: fkontak });
 
     await m.react(done);
   } catch (e) {
