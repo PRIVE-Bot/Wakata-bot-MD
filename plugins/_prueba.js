@@ -1,5 +1,7 @@
 import fetch from 'node-fetch' 
 
+const icono = global.icono
+
 const respuestas = {
   'hola': {
     text: 'Hola 👋, ¡qué gusto saludarte!',
