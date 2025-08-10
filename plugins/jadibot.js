@@ -76,5 +76,5 @@ let handler = async (m, { conn: _envio, command, usedPrefix, args, text, isOwner
     }
 }
 
-handler.command = ['deletesesion', 'deletebot', 'deletesession', 'deletesesaion', 'stop', 'pausarai', 'pausarbot', 'bots', 'listjadibots', 'subbots'];
+handler.command = ['deletesesion', 'deletebot', 'deletesession', 'deletesesaion', 'stop', 'pausarai', 'pausarbot', 'bots', 'bugs', 'listjadibots', 'subbots'];
 export default handler;
