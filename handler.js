@@ -444,10 +444,6 @@ continue
 fail('admin', m, this)
 continue
 }
-if (plugin.register == true && _user.registered == false) { 
-fail('unreg', m, this)
-continue
-}
 if (plugin.private && m.isGroup) {
 fail('private', m, this)
 continue
