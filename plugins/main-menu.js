@@ -49,6 +49,29 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
       global.db.data.users[userId] = { exp: 0, level: 1 };
     }
 
+
+
+
+    const res = await fetch('https://files.catbox.moe/nwgsz3.jpg');
+    const thumb2 = Buffer.from(await res.arrayBuffer());
+
+    const fkontak = {
+        key: {
+            participants: "0@s.whatsapp.net",
+            remoteJid: "status@broadcast",
+            fromMe: false,
+            id: "Halo"
+        },
+        message: {
+            locationMessage: {
+                name: '𝗠𝗘𝗡𝗨 ＝',
+                jpegThumbnail: thumb2
+            }
+        },
+        participant: "0@s.whatsapp.net"
+    };
+
+
     let name = await conn.getName(userId);
     let { exp, level } = global.db.data.users[userId];
     let { min, xp, max } = xpRange(level, global.multiplier);
