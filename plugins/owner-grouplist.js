@@ -1,3 +1,5 @@
+import fetch from 'node-fetch'
+
 let handler = async (m, { conn, args, command }) => {
   global.listadoGrupos = global.listadoGrupos || []
 
@@ -34,7 +36,7 @@ let handler = async (m, { conn, args, command }) => {
 ╚════════════════════╝\n\n`
     }
 
-    m.reply(`${emoji} *Lista de grupos del bot*\n\nTotal: ${totalGroups} grupos encontrados.\n\n${txt}`.trim())
+    m.reply(`📋 *Lista de grupos del bot*\n\nTotal: ${totalGroups} grupos encontrados.\n\n${txt}`.trim())
 
   } else if (command == 'salirg') {
     const num = parseInt(args[0])
@@ -42,9 +44,28 @@ let handler = async (m, { conn, args, command }) => {
 
     const { jid, nombre } = global.listadoGrupos[num - 1]
 
+    const res = await fetch('https://files.catbox.moe/nwgsz3.jpg')
+    const thumb2 = Buffer.from(await res.arrayBuffer())
+
+    const fkontak = {
+      key: {
+        participants: "0@s.whatsapp.net",
+        remoteJid: "status@broadcast",
+        fromMe: false,
+        id: "Halo"
+      },
+      message: {
+        locationMessage: {
+          name: '𝗔𝗩𝗜𝗦𝗢 𝗜𝗡𝗣𝗢𝗥𝗧𝗔𝗡𝗧𝗘',
+          jpegThumbnail: thumb2
+        }
+      },
+      participant: "0@s.whatsapp.net"
+    }
+
     await conn.sendMessage(jid, {
       text: `👋 *${botname}* se despide de este grupo.\nGracias por todo. ¡Hasta pronto! ✨`
-    })
+    }, { quoted: fkontak })
 
     await conn.groupLeave(jid)
     await m.reply(`🚪 Salí del grupo *${nombre}* correctamente.`)
@@ -59,9 +80,28 @@ let handler = async (m, { conn, args, command }) => {
 
     const { jid, nombre } = global.listadoGrupos[numero - 1]
 
+    const res = await fetch('https://files.catbox.moe/nwgsz3.jpg')
+    const thumb2 = Buffer.from(await res.arrayBuffer())
+
+    const fkontak = {
+      key: {
+        participants: "0@s.whatsapp.net",
+        remoteJid: "status@broadcast",
+        fromMe: false,
+        id: "Halo"
+      },
+      message: {
+        locationMessage: {
+          name: ' 𝗥𝗘𝗖𝗢𝗥𝗗𝗔𝗧𝗢𝗥𝗜𝗢',
+          jpegThumbnail: thumb2
+        }
+      },
+      participant: "0@s.whatsapp.net"
+    }
+
     await conn.sendMessage(jid, {
       text: `📢 *AVISO DEL CREADOR*\n\n${mensaje}`
-    })
+    }, { quoted: fkontak })
 
     m.reply(`✅ Mensaje enviado a *${nombre}*`)
   }
