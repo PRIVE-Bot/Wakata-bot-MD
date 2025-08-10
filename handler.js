@@ -23,8 +23,20 @@ return
 let m = chatUpdate.messages[chatUpdate.messages.length - 1]
 if (!m)
 return;
+
+/*prueba 2*/
+this.processedMessages = this.processedMessages || new Set()
+if (this.processedMessages.has(m.key.id)) return
+this.processedMessages.add(m.key.id)
+
+
+if (this.processedMessages.size > 2000) {
+    this.processedMessages.clear()
+}
+
+/*--------*/
 if (global.db.data == null)
-await global.loadDatabase()       
+await global.loadDatabase()
 try {
 m = smsg(this, m) || m
 if (!m)
