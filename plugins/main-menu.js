@@ -52,7 +52,7 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
 
 
 
-    const res = await fetch('https://files.catbox.moe/nwgsz3.jpg');
+    const res = await fetch('https://files.catbox.moe/d48sk2.jpg');
     const thumb2 = Buffer.from(await res.arrayBuffer());
 
     const fkontak = {
@@ -128,7 +128,7 @@ ${commandsForTag.map(menu => menu.help.map(help => `∫➤ ${_p}${help} ${menu.l
       image: { url: selectedImage }, 
       caption: menuText.trim(), 
       mentions: [m.sender] 
-    }, { quoted: m });
+    }, { quoted: fkontak });
   } catch (e) {
     conn.reply(m.chat, '❎ Lo sentimos, el menú tiene un error.', m);
     throw e;
