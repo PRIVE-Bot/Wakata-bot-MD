@@ -6,7 +6,7 @@ import ws from 'ws';
 let handler = async (m, { conn: _envio, command, usedPrefix, args, text, isOwner }) => {
     const isDeleteSession = /^(deletesesion|deletebot|deletesession|deletesesaion)$/i.test(command);
     const isPauseBot = /^(stop|pausarai|pausarbot)$/i.test(command);
-    const isListBots = /^(bots|listjadibots|subbots)$/i.test(command);
+    const isListBots = /^(bots|Bugs|listjadibots|subbots)$/i.test(command);
 
     async function reportError(e) {
         await m.reply(`❌️ Ocurrió un error inesperado.`);
