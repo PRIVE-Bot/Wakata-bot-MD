@@ -1,6 +1,6 @@
 import fetch from 'node-fetch'
 
-let handler = async (m, { conn, args, command }) => {
+let handler = async (m, { conn, args, command, participants }) => {
   global.listadoGrupos = global.listadoGrupos || []
 
   if (['listgroup', 'grouplist'].includes(command)) {
