@@ -44,7 +44,7 @@ let handler = async (m, { conn, args, command }) => {
 
     const { jid, nombre } = global.listadoGrupos[num - 1]
 
-    const res = await fetch('https://files.catbox.moe/nwgsz3.jpg')
+    const res = await fetch('https://files.catbox.moe/8vxwld.jpg')
     const thumb2 = Buffer.from(await res.arrayBuffer())
 
     const fkontak = {
