@@ -74,6 +74,25 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
       return m.reply(`${emoji}\n No se encontró nada con ese nombre...`);
     }
 
+    const res = await fetch('https://files.catbox.moe/r1774j.jpg');
+    const thumb2 = Buffer.from(await res.arrayBuffer());
+
+    const fkontak = {
+        key: {
+            participants: "0@s.whatsapp.net",
+            remoteJid: "status@broadcast",
+            fromMe: false,
+            id: "Halo"
+        },
+        message: {
+            locationMessage: {
+                name: `𝗣𝗟𝗔𝗬 𝗠𝗨𝗦𝗜𝗖\n${botname}\n■■■■■ 100%`,
+                jpegThumbnail: thumb2
+            }
+        },
+        participant: "0@s.whatsapp.net"
+    };
+
     const videoInfo = search.all[0];
     const { title, thumbnail, timestamp, views, ago, url } = videoInfo;
     const vistas = formatViews(views);
@@ -112,7 +131,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
 
 
 
-      return await conn.sendMessage(m.chat, doc, { quoted: m });
+      return await conn.sendMessage(m.chat, doc, { quoted: fkontak });
     }
 
     // Video (play2/ytv/ytmp4)
@@ -153,7 +172,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
             renderLargerThumbnail: false 
           }
         }
-      }, { quoted: m });
+      }, { quoted: fkontak });
       break;
     }
   } catch (e) {
