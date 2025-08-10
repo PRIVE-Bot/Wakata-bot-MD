@@ -1,12 +1,11 @@
 import fetch from 'node-fetch'
 
-let handler = async (m, { conn, args, command, participants }) => {
+let handler = async (m, { conn, args, command }) => {
   global.listadoGrupos = global.listadoGrupos || []
 
   if (['listgroup', 'grouplist'].includes(command)) {
     let txt = ''
     global.listadoGrupos = []
-                let mencionados = participants.map(u => u.id);
 
     const groups = Object.entries(conn.chats).filter(([jid, chat]) => jid.endsWith('@g.us') && chat.isChats)
     const totalGroups = groups.length
@@ -44,6 +43,8 @@ let handler = async (m, { conn, args, command, participants }) => {
     if (!num || !global.listadoGrupos[num - 1]) return m.reply('❌ Grupo no encontrado. Usa primero *.listgroup*')
 
     const { jid, nombre } = global.listadoGrupos[num - 1]
+    const metadata = await conn.groupMetadata(jid).catch(() => ({}))
+    const mencionados = metadata.participants?.map(u => u.id) || []
 
     const res = await fetch('https://files.catbox.moe/8vxwld.jpg')
     const thumb2 = Buffer.from(await res.arrayBuffer())
@@ -65,9 +66,9 @@ let handler = async (m, { conn, args, command, participants }) => {
     }
 
     await conn.sendMessage(jid, {
-      text: `${emoji} Hola todos *${botname}* se despide de este grupo.\nGracias por todo. ¡Hasta pronto! ✨`
-                        mentions: mencionados
-                }, { quoted: fkontak });
+      text: `👋 Hola a todos, *${botname}* se despide de este grupo.\nGracias por todo. ¡Hasta pronto! ✨`,
+      mentions: mencionados
+    }, { quoted: fkontak })
 
     await conn.groupLeave(jid)
     await m.reply(`🚪 Salí del grupo *${nombre}* correctamente.`)
@@ -81,6 +82,8 @@ let handler = async (m, { conn, args, command, participants }) => {
     if (!global.listadoGrupos[numero - 1]) return m.reply('❌ Grupo no encontrado. Usa primero *.listgroup*')
 
     const { jid, nombre } = global.listadoGrupos[numero - 1]
+    const metadata = await conn.groupMetadata(jid).catch(() => ({}))
+    const mencionados = metadata.participants?.map(u => u.id) || []
 
     const res = await fetch('https://files.catbox.moe/8vxwld.jpg')
     const thumb2 = Buffer.from(await res.arrayBuffer())
@@ -94,7 +97,7 @@ let handler = async (m, { conn, args, command, participants }) => {
       },
       message: {
         locationMessage: {
-          name: ' 𝗔𝗩𝗜𝗦𝗢 𝗜𝗡𝗣𝗢𝗥𝗧𝗔𝗡𝗧𝗘',
+          name: '𝗔𝗩𝗜𝗦𝗢 𝗜𝗡𝗣𝗢𝗥𝗧𝗔𝗡𝗧𝗘',
           jpegThumbnail: thumb2
         }
       },
@@ -102,9 +105,9 @@ let handler = async (m, { conn, args, command, participants }) => {
     }
 
     await conn.sendMessage(jid, {
-      text: `\n\n${mensaje}`
-                        mentions: mencionados
-                }, { quoted: fkontak });
+      text: mensaje,
+      mentions: mencionados
+    }, { quoted: fkontak })
 
     m.reply(`✅ Mensaje enviado a *${nombre}*`)
   }
