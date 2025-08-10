@@ -24,7 +24,7 @@ let m = chatUpdate.messages[chatUpdate.messages.length - 1]
 if (!m)
 return;
 
-/*prueba 2*/
+/*prueba 2: evitar duplicar mensajes por accidente*/
 this.processedMessages = this.processedMessages || new Set()
 if (this.processedMessages.has(m.key.id)) return
 this.processedMessages.add(m.key.id)
