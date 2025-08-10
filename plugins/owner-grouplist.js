@@ -80,7 +80,7 @@ let handler = async (m, { conn, args, command }) => {
 
     const { jid, nombre } = global.listadoGrupos[numero - 1]
 
-    const res = await fetch('https://files.catbox.moe/nwgsz3.jpg')
+    const res = await fetch('https://files.catbox.moe/8vxwld.jpg')
     const thumb2 = Buffer.from(await res.arrayBuffer())
 
     const fkontak = {
@@ -92,7 +92,7 @@ let handler = async (m, { conn, args, command }) => {
       },
       message: {
         locationMessage: {
-          name: ' 𝗥𝗘𝗖𝗢𝗥𝗗𝗔𝗧𝗢𝗥𝗜𝗢',
+          name: ' 𝗔𝗩𝗜𝗦𝗢 𝗜𝗡𝗣𝗢𝗥𝗧𝗔𝗡𝗧𝗘',
           jpegThumbnail: thumb2
         }
       },
@@ -100,7 +100,7 @@ let handler = async (m, { conn, args, command }) => {
     }
 
     await conn.sendMessage(jid, {
-      text: `📢 *AVISO DEL CREADOR*\n\n${mensaje}`
+      text: `\n\n${mensaje}`
     }, { quoted: fkontak })
 
     m.reply(`✅ Mensaje enviado a *${nombre}*`)
