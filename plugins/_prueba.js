@@ -3,6 +3,9 @@ import path from 'path'
 
 let partidasVS4 = {}
 
+const emojisParticipar = ['❤️', '❤', '♥', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍', '🤎', '❤️‍🔥']
+const emojisSuplente = ['👍', '👍🏻', '👍🏼', '👍🏽', '👍🏾', '👍🏿']
+
 let handler = async (m, { conn, args }) => {
   const modalidad = args.join(' ') || ''
   const idPartida = new Date().getTime().toString()
@@ -17,13 +20,13 @@ let handler = async (m, { conn, args }) => {
 ➥ 𝐌𝐎𝐃𝐀𝐋𝐈𝐃𝐀𝐃: ${modalidad}
 ➥ 𝐉𝐔𝐆𝐀𝐃𝐎𝐑𝐄𝐒:
 
-      𝗘𝗦𝗖𝗨𝐀𝐃𝐑𝐀 1
-
+      𝗘𝗦𝗖𝗨𝗔𝗗𝗥𝗔 1
+    
     👑 ┇  
     🥷🏻 ┇  
     🥷🏻 ┇ 
     🥷🏻 ┇  
-
+    
     ʚ 𝐒𝐔𝐏𝐋𝐄𝐍𝐓𝐄𝐒:
     🥷🏻 ┇ 
     🥷🏻 ┇
@@ -43,6 +46,9 @@ let handler = async (m, { conn, args }) => {
   }
 
   let filePath = path.join('./isFree', `${idPartida}.json`)
+  if (!fs.existsSync('./isFree')) {
+    fs.mkdirSync('./isFree')
+  }
   fs.writeFileSync(filePath, JSON.stringify(partidasVS4[msg.key.id], null, 2))
 }
 
@@ -57,26 +63,43 @@ export default handler
 global.conn.ev.on('messages.upsert', async ({ messages }) => {
   let m = messages[0]
   if (!m?.message?.reactionMessage) return
-  let reactionMsg = m.message.reactionMessage
-  let key = reactionMsg.key
-  let emoji = reactionMsg.text
+
+  let reaction = m.message.reactionMessage
+  let key = reaction.key
+  let emoji = reaction.text
   let sender = m.key.participant || m.key.remoteJid
+
   let data = partidasVS4[key.id]
   if (!data) return
+
   let filePath = path.join('./isFree', `${data.idPartida}.json`)
   if (!fs.existsSync(filePath)) return
-  const emojisParticipar = ['❤️', '❤', '♥', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍', '🤎', '❤️‍🔥']
-  const emojisSuplente = ['👍', '👍🏻', '👍🏼', '👍🏽', '👍🏾', '👍🏿']
-  data.jugadores = data.jugadores.filter(u => u !== sender)
-  data.suplentes = data.suplentes.filter(u => u !== sender)
+
+  const fileData = fs.readFileSync(filePath, 'utf-8')
+  let partida = JSON.parse(fileData)
+
+  partida.jugadores = partida.jugadores.filter(u => u !== sender)
+  partida.suplentes = partida.suplentes.filter(u => u !== sender)
+
   if (emojisParticipar.includes(emoji)) {
-    if (data.jugadores.length < 4) data.jugadores.push(sender)
+    if (partida.jugadores.length < 4) {
+      partida.jugadores.push(sender)
+    }
   } else if (emojisSuplente.includes(emoji)) {
-    if (data.suplentes.length < 2) data.suplentes.push(sender)
-  } else return
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2))
-  let jugadores = data.jugadores.map(u => `@${u.split('@')[0]}`)
-  let suplentes = data.suplentes.map(u => `@${u.split('@')[0]}`)
+    if (partida.suplentes.length < 2) {
+      partida.suplentes.push(sender)
+    }
+  } else {
+    return
+  }
+
+  fs.writeFileSync(filePath, JSON.stringify(partida, null, 2))
+
+  partidasVS4[key.id] = partida
+
+  let jugadores = partida.jugadores.map(u => `@${u.split('@')[0]}`)
+  let suplentes = partida.suplentes.map(u => `@${u.split('@')[0]}`)
+
   let plantilla = `
 𝟒 𝐕𝐄𝐑𝐒𝐔𝐒 𝟒
 
@@ -84,16 +107,16 @@ global.conn.ev.on('messages.upsert', async ({ messages }) => {
 🇲🇽 𝐌𝐄𝐗𝐈𝐂𝐎 : 
 🇨🇴 𝐂𝐎𝐋𝐎𝐌𝐁𝐈𝐀 :                
 
-➥ 𝐌𝐎𝐃𝐀𝐋𝐈𝐃𝐀𝐃: ${data.modalidad}
+➥ 𝐌𝐎𝐃𝐀𝐋𝐈𝐃𝐀𝐃: ${partida.modalidad}
 ➥ 𝐉𝐔𝐆𝐀𝐃𝐎𝐑𝐄𝐒:
 
-      𝗘𝗦𝗖𝗨𝐀𝐃𝐑𝐀 1
-
+      𝗘𝗦𝗖𝐔𝐀𝗗𝗥𝗔 1
+    
     👑 ┇ ${jugadores[0] || ''}
     🥷🏻 ┇ ${jugadores[1] || ''}
     🥷🏻 ┇ ${jugadores[2] || ''}
     🥷🏻 ┇ ${jugadores[3] || ''}
-
+    
     ʚ 𝐒𝐔𝐏𝐋𝐄𝐍𝐓𝐄𝐒:
     🥷🏻 ┇ ${suplentes[0] || ''}
     🥷🏻 ┇ ${suplentes[1] || ''}
@@ -102,11 +125,11 @@ global.conn.ev.on('messages.upsert', async ({ messages }) => {
 
 • Lista Activa Por 5 Minutos
   `.trim()
-  try {
-    await conn.sendMessage(data.chat, { delete: data.originalMsgKey })
-    let newMsg = await conn.sendMessage(data.chat, { text: plantilla, mentions: [...data.jugadores, ...data.suplentes] })
-    partidasVS4[newMsg.key.id] = data
-    partidasVS4[newMsg.key.id].originalMsgKey = newMsg.key
-    delete partidasVS4[key.id]
-  } catch {}
+
+  await conn.sendMessage(partida.chat, { delete: partida.originalMsgKey })
+  let newMsg = await conn.sendMessage(partida.chat, { text: plantilla, mentions: [...partida.jugadores, ...partida.suplentes] })
+
+  partidasVS4[newMsg.key.id] = partida
+  partidasVS4[newMsg.key.id].originalMsgKey = newMsg.key
+  delete partidasVS4[key.id]
 })
