@@ -1,301 +1,143 @@
-import { createHash } from 'crypto';  
-import fetch from 'node-fetch';
+// edited and optimized by 
+// https://github.com/deylin-eliac
 
-const handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, isROwner }) => {
-  let chat = global.db.data.chats[m.chat];
-  let user = global.db.data.users[m.sender];
-  let bot = global.db.data.settings[conn.user.jid] || {};
-  let type = command.toLowerCase();
-  let isAll = false, isUser = false;
-  let isEnable = false;
+import fetch from "node-fetch";
+import yts from "yt-search";
+import axios from "axios";
+import { createMessageWithReactions, setActionCallback } from '../lib/reaction.js';
 
-  switch (type) {
-    case 'welcome':
-    case 'bv':
-    case 'bienvenida':
-      if (!m.isGroup) {
-        if (!isOwner) {
-          global.dfail('group', m, conn);
-          throw false;
-        }
-      } else if (!isAdmin) {
-        global.dfail('admin', m, conn);
-        throw false;
+const FORMAT_AUDIO = ["mp3", "m4a", "webm", "acc", "flac", "opus", "ogg", "wav"];
+const FORMAT_VIDEO = ["360", "480", "720", "1080", "1440", "4k"];
+
+const ddownr = {
+  download: async (url, format) => {
+    if (!FORMAT_AUDIO.includes(format) && !FORMAT_VIDEO.includes(format)) {
+      throw new Error("⚠️ Ese formato no es compatible.");
+    }
+
+    const config = {
+      method: "GET",
+      url: `https://p.oceansaver.in/ajax/download.php?format=${format}&url=${encodeURIComponent(url)}&api=dfcb6d76f2f6a9894gjkege8a4ab232222`,
+      headers: { "User-Agent": "Mozilla/5.0" },
+      timeout: 15000
+    };
+
+    const response = await axios.request(config).catch(() => null);
+    if (!response?.data?.success) throw new Error("⛔ No se pudo obtener detalles del video.");
+
+    const { id, title, info } = response.data;
+    const downloadUrl = await ddownr.cekProgress(id);
+    return { title, image: info.image, downloadUrl };
+  },
+
+  cekProgress: async (id) => {
+    const config = {
+      method: "GET",
+      url: `https://p.oceansaver.in/ajax/progress.php?id=${id}`,
+      headers: { "User-Agent": "Mozilla/5.0" },
+      timeout: 15000
+    };
+
+    let retries = 0;
+    while (retries < 8) {
+      const response = await axios.request(config).catch(() => null);
+      if (response?.data?.success && response.data.progress === 1000) {
+        return response.data.download_url;
       }
-      isEnable = chat.welcome = !chat.welcome;
-      break;
-
-    case 'antiprivado':
-    case 'antipriv':
-    case 'antiprivate':
-      isAll = true;
-      if (!isOwner) {
-        global.dfail('rowner', m, conn);
-        throw false;
-      }
-      isEnable = bot.antiPrivate = !bot.antiPrivate;
-      break;
-
-    case 'restrict':
-    case 'restringir':
-      isAll = true;
-      if (!isOwner) {
-        global.dfail('rowner', m, conn);
-        throw false;
-      }
-      isEnable = bot.restrict = !bot.restrict;
-      break;
-
-    case 'autolevelup':
-    case 'autonivel':
-      if (m.isGroup) {
-        if (!(isAdmin || isOwner)) {
-          global.dfail('admin', m, conn);
-          throw false;
-        }
-      }
-      isEnable = chat.autolevelup = !chat.autolevelup;
-      break;
-
-    case 'antibot':
-    case 'antibots':
-      if (m.isGroup) {
-        if (!(isAdmin || isOwner)) {
-          global.dfail('admin', m, conn);
-          throw false;
-        }
-      }
-      isEnable = chat.antiBot = !chat.antiBot;
-      break;
-
-    case 'autoaceptar':
-    case 'aceptarauto':
-      if (m.isGroup) {
-        if (!(isAdmin || isOwner)) {
-          global.dfail('admin', m, conn);
-          throw false;
-        }
-      }
-      isEnable = chat.autoAceptar = !chat.autoAceptar;
-      break;
-
-    case 'autorechazar':
-    case 'rechazarauto':
-      if (m.isGroup) {
-        if (!(isAdmin || isOwner)) {
-          global.dfail('admin', m, conn);
-          throw false;
-        }
-      }
-      isEnable = chat.autoRechazar = !chat.autoRechazar;
-      break;
-
-    case 'autoresponder':
-    case 'autorespond':
-      if (!m.isGroup) {
-        if (!isOwner) {
-          global.dfail('group', m, conn);
-          throw false;
-        }
-      } else if (!isAdmin) {
-        global.dfail('admin', m, conn);
-        throw false;
-      }
-      isEnable = chat.autoresponder = !chat.autoresponder;
-      break;
-
-    case 'antisubbots':
-    case 'antisub':
-    case 'antisubot':
-    case 'antibot2':
-      if (m.isGroup) {
-        if (!(isAdmin || isOwner)) {
-          global.dfail('admin', m, conn);
-          throw false;
-        }
-      }
-      isEnable = chat.antiBot2 = !chat.antiBot2;
-      break;
-
-    case 'modoadmin':
-    case 'soloadmin':
-      if (m.isGroup) {
-        if (!(isAdmin || isOwner)) {
-          global.dfail('admin', m, conn);
-          throw false;
-        }
-      }
-      isEnable = chat.modoadmin = !chat.modoadmin;
-      break;
-
-    case 'autoread':
-    case 'autoleer':
-    case 'autover':
-      isAll = true;
-      if (!isROwner) {
-        global.dfail('rowner', m, conn);
-        throw false;
-      }
-      isEnable = global.opts['autoread'] = !global.opts['autoread'];
-      break;
-
-    case 'antiver':
-    case 'antiocultar':
-    case 'antiviewonce':
-      if (!m.isGroup) {
-        if (!isOwner) {
-          global.dfail('group', m, conn);
-          throw false;
-        }
-      } else if (!isAdmin) {
-        global.dfail('admin', m, conn);
-        throw false;
-      }
-      isEnable = chat.antiver = !chat.antiver;
-      break;
-
-    case 'reaction':
-    case 'reaccion':
-    case 'emojis':
-      if (!m.isGroup) {
-        if (!isOwner) {
-          global.dfail('group', m, conn);
-          throw false;
-        }
-      } else if (!isAdmin) {
-        global.dfail('admin', m, conn);
-        throw false;
-      }
-      isEnable = chat.reaction = !chat.reaction;
-      break;
-
-    case 'nsfw':
-    case 'nsfwhot':
-    case 'nsfwhorny':
-      if (!m.isGroup) {
-        if (!isOwner) {
-          global.dfail('group', m, conn);
-          throw false;
-        }
-      } else if (!isAdmin) {
-        global.dfail('admin', m, conn);
-        throw false;
-      }
-      isEnable = chat.nsfw = !chat.nsfw;
-      break;
-
-    case 'antispam':
-    case 'antiSpam':
-    case 'antispamosos':
-      isAll = true;
-      if (!isOwner) {
-        global.dfail('rowner', m, conn);
-        throw false;
-      }
-      isEnable = bot.antiSpam = !bot.antiSpam;
-      break;
-
-    case 'antidelete': 
-    case 'antieliminar': 
-    case 'delete':
-      if (m.isGroup) {
-        if (!(isAdmin || isOwner)) {
-          global.dfail('admin', m, conn);
-          throw false;
-        }
-      }
-      isEnable = chat.delete = !chat.delete;
-      break;
-
-    case 'jadibotmd':
-    case 'modejadibot':
-      isAll = true;
-      if (!isOwner) {
-        global.dfail('rowner', m, conn);
-        throw false;
-      }
-      isEnable = bot.jadibotmd = !bot.jadibotmd;
-      break;
-
-    case 'detect':
-    case 'configuraciones':
-    case 'avisodegp':
-      if (!m.isGroup) {
-        if (!isOwner) {
-          global.dfail('group', m, conn);
-          throw false;
-        }
-      } else if (!isAdmin) {
-        global.dfail('admin', m, conn);
-        throw false;
-      }
-      isEnable = chat.detect = !chat.detect;
-      break;
-
-    case 'simi':
-    case 'autosimi':
-    case 'simsimi':
-      if (!m.isGroup) {
-        if (!isOwner) {
-          global.dfail('group', m, conn);
-          throw false;
-        }
-      } else if (!isAdmin) {
-        global.dfail('admin', m, conn);
-        throw false;
-      }
-      isEnable = chat.simi = !chat.simi;
-      break;
-
-    case 'antilink':
-      if (m.isGroup) {
-        if (!(isAdmin || isOwner)) {
-          global.dfail('admin', m, conn);
-          throw false;
-        }
-      }
-      isEnable = chat.antiLink = !chat.antiLink;
-      break;
-        case 'antidelete': 
-
-    case 'antitoxic': 
-    case 'antitoxicos':
-      if (m.isGroup) {
-        if (!(isAdmin || isOwner)) {
-          global.dfail('admin', m, conn);
-          throw false;
-        }
-      }
-      isEnable = chat.antitoxic = !chat.antitoxic;
-      break;
-
-      case 'antitrabas': 
-      case 'antitraba':
-      if (m.isGroup) {
-        if (!(isAdmin || isOwner)) {
-          global.dfail('admin', m, conn);
-          throw false;
-        }
-      }
-      isEnable = chat.antiTraba = !chat.antiTraba;
-      break;
-
-      case 'antifake': 
-      case 'antivirtuales':
-      if (m.isGroup) {
-        if (!(isAdmin || isOwner)) {
-          global.dfail('admin', m, conn);
-          throw false;
-        }
-      }
-      isEnable = chat.antifake = !chat.antifake;
-      break;
+      retries++;
+      await new Promise(res => setTimeout(res, 5000));
+    }
+    throw new Error("⏳ Tiempo de espera agotado para obtener enlace de descarga.");
   }
-
-  conn.reply(m.chat, `🚀 La función *${type}* se *${isEnable ? 'activó' : 'desactivó'}* ${isAll ? 'para este Bot' : isUser ? '' : 'para este chat'}`, m, rcanal);
 };
 
-handler.help = ['welcome', 'bv', 'bienvenida', 'antiprivado', 'antipriv', 'antiprivate', 'restrict', 'restringir', 'autolevelup', 'autonivel', 'antibot', 'antibots', 'autoaceptar', 'aceptarauto', 'autorechazar', 'rechazarauto', 'autoresponder', 'autorespond', 'antisubbots', 'antisub', 'antisubot', 'antibot2', 'modoadmin', 'soloadmin', 'autoread', 'autoleer', 'autover', 'antiver', 'antiocultar', 'antiviewonce', 'reaction', 'reaccion', 'emojis', 'nsfw', 'nsfwhot', 'nsfwhorny', 'antispam', 'antiSpam', 'antispamosos', 'antidelete', 'antieliminar', 'delete', 'jadibotmd', 'modejadibot', 'subbots', 'detect', 'configuraciones', 'avisodegp', 'simi', 'autosimi', 'simsimi', 'antilink', 'antitoxic', 'antitoxicos', 'antitraba', 'antitrabas', 'antifake', 'antivirtuales']
-handler.tags = ['nable'];
-handler.command = ['welcome', 'bv', 'bienvenida', 'antiprivado', 'antipriv', 'antiprivate', 'restrict', 'restringir', 'autolevelup', 'autonivel', 'antibot', 'antibots', 'autoaceptar', 'aceptarauto', 'autorechazar', 'rechazarauto', 'autoresponder', 'autorespond', 'antisubbots', 'antisubbots', 'antisub', 'antisubot', 'antibot2', 'modoadmin', 'soloadmin', 'autoread', 'autoleer', 'autover', 'antiver', 'antiocultar', 'antiviewonce', 'reaction', 'reaccion', 'emojis', 'nsfw', 'nsfwhot', 'nsfwhorny', 'antispam', 'antiSpam', 'antispamosos', 'antidelete', 'antieliminar', 'delete', 'jadibotmd', 'modejadibot', 'subbots', 'detect', 'configuraciones', 'avisodegp', 'simi', 'autosimi', 'simsimi', 'antilink', 'antitoxic', 'antitoxicos', 'antitraba', 'antitrabas', 'antifake', 'antivirtuales']
-export default handler
+const handler = async (m, { conn, text }) => {
+  await m.react('⚡️');
+
+  if (!text?.trim()) {
+    return conn.reply(m.chat, `Dime el nombre de la canción o video que buscas`, m);
+  }
+
+  try {
+    const search = await yts.search({ query: text, pages: 1 });
+    if (!search.videos.length) return m.reply("❌ No se encontró nada con ese nombre.");
+
+    const videoInfo = search.videos[0];
+    const { title, thumbnail, timestamp, views, ago, url, author } = videoInfo;
+
+    const vistas = formatViews(views);
+    const thumb = (await conn.getFile(thumbnail)).data;
+
+    const infoMessage = `★ ${global.botname || 'Bot'} ★
+
+╭⍰ *Titulo:* 「 ${title} 」 
+⍰ *Canal:* ${author?.name || 'Desconocido'} 
+⍰ *Vistas:* ${vistas} 
+⍰ *Duración:* ${timestamp}
+⍰ *Publicado:* ${ago}
+
+> *Selecciona una opción reaccionando:*
+> ❤️ = Descargar Audio | 🎬 = Descargar Video
+`;
+    
+    const actions = {
+      '❤️': { type: 'audio', data: { url, title } },
+      '🎬': { type: 'video', data: { url, title, thumb } },
+    };
+
+    await conn.sendMessage(m.chat, { image: thumb, caption: infoMessage }, { quoted: m });
+    
+    await createMessageWithReactions(conn, m, infoMessage, actions);
+
+  } catch (error) {
+    console.error("❌ Error:", error);
+    return m.reply(`⚠️ Ocurrió un error: ${error.message}`);
+  }
+};
+
+handler.command = handler.help = ["play", "yta", "ytmp3", "ytv", "ytmp4"];
+handler.tags = ["downloader"];
+
+export default handler;
+
+// Funciones para descargar que se registran con la librería
+setActionCallback('audio', async (conn, chat, data) => {
+    const { url, title } = data;
+    try {
+        const api = await ddownr.download(url, "mp3");
+        return conn.sendMessage(chat, {
+            audio: { url: api.downloadUrl },
+            mimetype: 'audio/mpeg',
+            fileName: `${title}.mp3`
+        });
+    } catch (err) {
+        return conn.sendMessage(chat, { text: `❌ Error al descargar el audio: ${err.message}` });
+    }
+});
+
+setActionCallback('video', async (conn, chat, data) => {
+    const { url, title, thumb } = data;
+    try {
+        const apiURL = `https://api.sylphy.xyz/download/ytmp4?url=${encodeURIComponent(url)}&apikey=sylphy-fbb9`;
+        const res = await fetch(apiURL);
+        const json = await res.json();
+        if (!json?.status || !json.res?.url) {
+            return conn.sendMessage(chat, { text: "❌ No se pudo descargar el video desde Sylphy." });
+        }
+        await conn.sendMessage(chat, {
+            video: { url: json.res.url },
+            fileName: `${json.res.title || title}.mp4`,
+            mimetype: "video/mp4",
+            thumbnail: thumb
+        });
+    } catch (err) {
+        return conn.sendMessage(chat, { text: `❌ Error al descargar el video: ${err.message}` });
+    }
+});
+
+function formatViews(views) {
+  if (typeof views !== "number" || isNaN(views)) return "Desconocido";
+  return views >= 1000
+    ? (views / 1000).toFixed(1) + "k (" + views.toLocaleString() + ")"
+    : views.toString();
+}
