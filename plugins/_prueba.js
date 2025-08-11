@@ -80,16 +80,14 @@ const handler = async (m, { conn, text }) => {
 > ❤️ = Descargar Audio | 🎬 = Descargar Video
 `;
     
-    // Aquí definimos las acciones para cada emoji
     const actions = {
       '❤️': { type: 'audio', data: { url, title } },
       '🎬': { type: 'video', data: { url, title, thumb } },
     };
 
-    await conn.sendMessage(m.chat, { image: thumb, caption: infoMessage }, { quoted: m });
+    const msg = await conn.sendMessage(m.chat, { image: thumb, caption: infoMessage }, { quoted: m });
     
-    // El mensaje que gestionará las reacciones es solo texto y no está citado
-    await createMessageWithReactions(conn, m, `¿Qué quieres descargar de ${title}?`, actions);
+    await createMessageWithReactions(conn, msg, actions);
 
   } catch (error) {
     console.error("❌ Error:", error);
