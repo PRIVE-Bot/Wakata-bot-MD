@@ -1,140 +1,95 @@
-// editado y reestructurado por 
-// https://github.com/deylin-eliac 
+// editado y optimizado por 
+// https://github.com/deylin-eliac
 
 import fetch from "node-fetch";
 import yts from "yt-search";
 import axios from "axios";
 
-const formatAudio = ["mp3", "m4a", "webm", "acc", "flac", "opus", "ogg", "wav"];
-const formatVideo = ["360", "480", "720", "1080", "1440", "4k"];
+const FORMAT_AUDIO = ["mp3", "m4a", "webm", "acc", "flac", "opus", "ogg", "wav"];
+const FORMAT_VIDEO = ["360", "480", "720", "1080", "1440", "4k"];
 
 const ddownr = {
   download: async (url, format) => {
-    if (!formatAudio.includes(format) && !formatVideo.includes(format)) {
+    if (!FORMAT_AUDIO.includes(format) && !FORMAT_VIDEO.includes(format)) {
       throw new Error("⚠️ Ese formato no es compatible.");
     }
 
     const config = {
       method: "GET",
       url: `https://p.oceansaver.in/ajax/download.php?format=${format}&url=${encodeURIComponent(url)}&api=dfcb6d76f2f6a9894gjkege8a4ab232222`,
-      headers: {
-        "User-Agent": "Mozilla/5.0"
-      }
+      headers: { "User-Agent": "Mozilla/5.0" },
+      timeout: 15000
     };
 
-    try {
-      const response = await axios.request(config);
-      if (response.data?.success) {
-        const { id, title, info } = response.data;
-        const downloadUrl = await ddownr.cekProgress(id);
-        return { id, title, image: info.image, downloadUrl };
-      } else {
-        throw new Error("⛔ No pudo encontrar los detalles del video.");
-      }
-    } catch (error) {
-      console.error("❌ Error:", error);
-      throw error;
-    }
+    const response = await axios.request(config).catch(() => null);
+    if (!response?.data?.success) throw new Error("⛔ No se pudo obtener detalles del video.");
+
+    const { id, title, info } = response.data;
+    const downloadUrl = await ddownr.cekProgress(id);
+    return { title, image: info.image, downloadUrl };
   },
 
   cekProgress: async (id) => {
     const config = {
       method: "GET",
       url: `https://p.oceansaver.in/ajax/progress.php?id=${id}`,
-      headers: {
-        "User-Agent": "Mozilla/5.0"
-      }
+      headers: { "User-Agent": "Mozilla/5.0" },
+      timeout: 15000
     };
 
-    try {
-      while (true) {
-        const response = await axios.request(config);
-        if (response.data?.success && response.data.progress === 1000) {
-          return response.data.download_url;
-        }
-        await new Promise(resolve => setTimeout(resolve, 5000));
+    let retries = 0;
+    while (retries < 8) { // Máx. 8 intentos (~40s)
+      const response = await axios.request(config).catch(() => null);
+      if (response?.data?.success && response.data.progress === 1000) {
+        return response.data.download_url;
       }
-    } catch (error) {
-      console.error("❌ Error:", error);
-      throw error;
+      retries++;
+      await new Promise(res => setTimeout(res, 5000));
     }
+    throw new Error("⏳ Tiempo de espera agotado para obtener enlace de descarga.");
   }
 };
 
-const handler = async (m, { conn, text, usedPrefix, command }) => {
+const handler = async (m, { conn, text, command }) => {
   await m.react('⚡️');
 
-  if (!text.trim()) {
-    return conn.reply(m.chat, `${emoji}\nDime el nombre de la canción que estás buscando`, m, rcanal);
+  if (!text?.trim()) {
+    return conn.reply(m.chat, "🎵 Dime el nombre de la canción o video que buscas", m);
   }
 
   try {
-    const search = await yts(text);
-    if (!search.all.length) {
-      return m.reply(`${emoji}\n No se encontró nada con ese nombre...`);
-    }
+    const search = await yts.search({ query: text, pages: 1 });
+    if (!search.videos.length) return m.reply("❌ No se encontró nada con ese nombre.");
 
-    const res = await fetch('https://files.catbox.moe/r1774j.jpg');
-    const thumb2 = Buffer.from(await res.arrayBuffer());
+    const videoInfo = search.videos[0];
+    const { title, thumbnail, timestamp, views, ago, url, author } = videoInfo;
 
-    const fkontak = {
-        key: {
-            participants: "0@s.whatsapp.net",
-            remoteJid: "status@broadcast",
-            fromMe: false,
-            id: "Halo"
-        },
-        message: {
-            locationMessage: {
-                name: `𝗣𝗟𝗔𝗬 𝗠𝗨𝗦𝗜𝗖\n${botname}\n■■■■■ 100%`,
-                jpegThumbnail: thumb2
-            }
-        },
-        participant: "0@s.whatsapp.net"
-    };
-
-    const videoInfo = search.all[0];
-    const { title, thumbnail, timestamp, views, ago, url } = videoInfo;
     const vistas = formatViews(views);
-    const thumb = (await conn.getFile(thumbnail))?.data;
+    const thumb = (await conn.getFile(thumbnail)).data;
 
-       const infoMessage = `★ ${botname} ★
+    const infoMessage = `★ ${global.botname || 'Bot'} ★
 
 ╭ ⍰ *Título:* 「 ${title} 」 
-⍰ *Canal:* ${videoInfo.author.name || 'Desconocido'} 
+⍰ *Canal:* ${author?.name || 'Desconocido'} 
 ⍰ *Vistas:* ${vistas} 
 ⍰ *Duración:* ${timestamp}
 ⍰ *Publicado:* ${ago}
 
-> *sɪɢᴜᴇ ᴇʟ ᴄᴀɴᴀʟ ᴏғɪᴄɪᴀʟ:*
+> *Sigue el canal oficial:*
 > whatsapp.com/channel/0029VbAzn9GGU3BQw830eA0F
-
 `;
 
+    await conn.sendMessage(m.chat, { image: thumb, caption: infoMessage }, { quoted: m });
 
-    await m.react('🎧');
-    await conn.sendMessage(m.chat, {
-  image: thumb,
-  caption: infoMessage
-}, { quoted: m });
-
-    // Audio (play/yta/ytmp3)
     if (["play", "yta", "ytmp3"].includes(command)) {
       const api = await ddownr.download(url, "mp3");
-
-      const doc = {
-  audio: { url: api.downloadUrl },
-  mimetype: 'audio/mpeg',
-  fileName: `${title}.mp3`,
-};
-
-
-
-
-      return await conn.sendMessage(m.chat, doc, { quoted: fkontak });
+      return conn.sendMessage(m.chat, {
+        audio: { url: api.downloadUrl },
+        mimetype: 'audio/mpeg',
+        fileName: `${title}.mp3`
+      }, { quoted: m });
     }
 
-    // Video (play2/ytv/ytmp4)
     if (["play2", "ytv", "ytmp4"].includes(command)) {
       const sources = [
         `https://api.siputzx.my.id/api/d/ytmp4?url=${url}`,
@@ -143,45 +98,29 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
         `https://delirius-apiofc.vercel.app/download/ytmp4?url=${url}`
       ];
 
-      let success = false;
-      for (let source of sources) {
-  try {
-    const res = await fetch(source);
-    const { data, result, downloads } = await res.json();
-    let downloadUrl = data?.dl || result?.download?.url || downloads?.url || data?.download?.url;
+      try {
+        const result = await Promise.any(
+          sources.map(src =>
+            fetch(src, { timeout: 15000 })
+              .then(r => r.json())
+              .then(({ data, result, downloads }) =>
+                data?.dl || result?.download?.url || downloads?.url || data?.download?.url
+              )
+              .catch(() => null)
+          )
+        );
 
-    if (downloadUrl) {
-      success = true;
-      await conn.sendMessage(m.chat, {
-        video: { url: downloadUrl },
-        fileName: `${title}.mp4`,
-        mimetype: "video/mp4",
-        // caption: "🎬 Aquí tienes tu video, descargado* ",
-        thumbnail: thumb,
-        contextInfo: {
-          externalAdReply: { 
-            showAdAttribution: true, 
-            title: packname, 
-            body: dev, 
-            mediaUrl: null, 
-            description: null, 
-            previewType: "PHOTO", 
-            thumbnailUrl: icono, 
-            sourceUrl: redes, 
-            mediaType: 1, 
-            renderLargerThumbnail: false 
-          }
-        }
-      }, { quoted: fkontak });
-      break;
-    }
-  } catch (e) {
-    console.error(`⚠️ Error con la fuente ${source}:`, e.message);
-  }
-}
+        if (!result) throw new Error("No se pudo obtener enlace válido.");
 
-      if (!success) {
-        return m.reply("❌ No pudo encontrar un enlace válido para descargar.");
+        await conn.sendMessage(m.chat, {
+          video: { url: result },
+          fileName: `${title}.mp4`,
+          mimetype: "video/mp4",
+          thumbnail: thumb
+        }, { quoted: m });
+
+      } catch {
+        return m.reply("❌ No se pudo descargar el video desde ninguna fuente.");
       }
     }
 
