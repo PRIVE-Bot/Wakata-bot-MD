@@ -7,7 +7,10 @@ let handler = async (m, { conn, command }) => {
   const msg = await conn.sendMessage(m.chat, { text: texto })
 
   registrarMensaje(msg.key.id, m.chat, '❤️', async (mReact, conn) => {
-    await conn.sendMessage(m.chat, { text: `✅ ¡Acción ejecutada! Usuario @${mReact.sender.split('@')[0]} reaccionó con ❤️`, mentions: [mReact.sender] })
+    await conn.sendMessage(m.chat, { 
+      text: `✅ ¡Acción ejecutada! Usuario @${mReact.sender.split('@')[0]} reaccionó con ❤️`, 
+      mentions: [mReact.sender] 
+    })
   })
 }
 
