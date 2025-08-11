@@ -1,18 +1,27 @@
-import { registrarMensaje } from './lib/reaction.js'
+import { createMessageWithReactions } from '../lib/reaction.js'
 
-let handler = async (m, { conn, command }) => {
-  if (command !== 'testreact') return
+let handler = async (m, { conn, args }) => {
+  const template = `
+¡Bienvenido a la comunidad!
+Reacciona a este mensaje para unirte a los roles.
+  
+❤️ = Rol de Jugador
+👍 = Rol de Suplente
+🔥 = Rol de Lider
+  `.trim()
 
-  const texto = 'Reacciona con ❤️ para activar la acción'
-   await conn.sendMessage(m.chat, { text: texto })
+  const actions = {
+    '❤️': { command: 'addrole jugador' },
+    '👍': { command: 'addrole suplente' },
+    '🔥': { command: 'addrole lider' }
+  }
 
-  registrarMensaje(msg.key.id, m.chat, '❤️', async (mReact, conn) => {
-    await conn.sendMessage(m.chat, { 
-      text: `✅ ¡Acción ejecutada! Usuario @${mReact.sender.split('@')[0]} reaccionó con ❤️`, 
-      mentions: [mReact.sender] 
-    })
-  })
+  await createMessageWithReactions(conn, m, template, actions)
 }
 
-handler.command = /^testreact$/i
+handler.help = ['roles']
+handler.tags = ['general']
+handler.command = /^(roles|reacciones)$/i
+handler.group = true
+
 export default handler
