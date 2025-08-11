@@ -85,9 +85,9 @@ const handler = async (m, { conn, text }) => {
       '🎬': { type: 'video', data: { url, title, thumb } },
     };
 
-    await conn.sendMessage(m.chat, { image: thumb, caption: infoMessage }, { quoted: m });
+    const msg = await conn.sendMessage(m.chat, { image: thumb, caption: infoMessage }, { quoted: m });
     
-    await createMessageWithReactions(conn, m, infoMessage, actions);
+    await createMessageWithReactions(conn, msg, actions);
 
   } catch (error) {
     console.error("❌ Error:", error);
@@ -100,7 +100,6 @@ handler.tags = ["downloader"];
 
 export default handler;
 
-// Funciones para descargar que se registran con la librería
 setActionCallback('audio', async (conn, chat, data) => {
     const { url, title } = data;
     try {
