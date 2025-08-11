@@ -91,33 +91,54 @@ const handler = async (m, { conn, text, command }) => {
     }
 
     if (["play2", "ytv", "ytmp4"].includes(command)) {
-      const sources = [
-        `https://api.siputzx.my.id/api/d/ytmp4?url=${url}`,
-        `https://api.zenkey.my.id/api/download/ytmp4?apikey=zenkey&url=${url}`,
-        `https://axeel.my.id/api/download/video?url=${encodeURIComponent(url)}`,
-        `https://delirius-apiofc.vercel.app/download/ytmp4?url=${url}`
-      ];
+  const sources = [
+    `https://api.siputzx.my.id/api/d/ytmp4?url=${url}`,
+    `https://api.zenkey.my.id/api/download/ytmp4?apikey=zenkey&url=${url}`,
+    `https://axeel.my.id/api/download/video?url=${encodeURIComponent(url)}`,
+    `https://delirius-apiofc.vercel.app/download/ytmp4?url=${url}`
+  ];
 
-      try {
-        const result = await Promise.any(
-          sources.map(src =>
-            fetch(src, { timeout: 15000 })
-              .then(r => r.json())
-              .then(({ data, result, downloads }) =>
-                data?.dl || result?.download?.url || downloads?.url || data?.download?.url
-              )
-              .catch(() => null)
+  let downloadUrl = null;
+
+  
+  try {
+    downloadUrl = await Promise.any(
+      sources.map(src =>
+        fetch(src, { timeout: 15000 })
+          .then(r => r.json())
+          .then(({ data, result, downloads }) =>
+            data?.dl || result?.download?.url || downloads?.url || data?.download?.url || null
           )
-        );
+          .catch(() => null)
+      )
+    );
+  } catch {
+    downloadUrl = null;
+  }
 
-        if (!result) throw new Error("No se pudo obtener enlace válido.");
+  
+  if (!downloadUrl) {
+    try {
+      const api = await ddownr.download(url, "720"); 
+      downloadUrl = api.downloadUrl;
+    } catch {
+      downloadUrl = null;
+    }
+  }
 
-        await conn.sendMessage(m.chat, {
-          video: { url: result },
-          fileName: `${title}.mp4`,
-          mimetype: "video/mp4",
-          thumbnail: thumb
-        }, { quoted: m });
+  
+  if (!downloadUrl) {
+    return m.reply("❌ No se pudo obtener el video desde ninguna fuente disponible.");
+  }
+
+  
+  await conn.sendMessage(m.chat, {
+    video: { url: downloadUrl },
+    fileName: `${title}.mp4`,
+    mimetype: "video/mp4",
+    thumbnail: thumb
+  }, { quoted: m });
+}
 
       } catch {
         return m.reply("❌ No se pudo descargar el video desde ninguna fuente.");
