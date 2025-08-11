@@ -26,28 +26,10 @@ return;
 
 /*prueba 2: evitar duplicar mensajes por accidente*/
 
-if (!global.processedMessages) global.processedMessages = new Map()
+if (!global.lastMsgId) global.lastMsgId = null
 
-const now = Date.now()
-const msgId = m.key.id
-
-
-if (global.processedMessages.has(msgId)) {
-    const lastTime = global.processedMessages.get(msgId)
-    if (now - lastTime < 5 * 60 * 1000) return // 5 min
-}
-
-
-global.processedMessages.set(msgId, now)
-
-
-if (global.processedMessages.size > 2000) {
-    for (let [id, time] of global.processedMessages) {
-        if (now - time > 5 * 60 * 1000) {
-            global.processedMessages.delete(id)
-        }
-    }
-}
+if (m.key.id === global.lastMsgId) return
+global.lastMsgId = m.key.id
 
 
 
