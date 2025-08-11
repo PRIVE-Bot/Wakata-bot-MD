@@ -57,42 +57,26 @@ export default handler
 global.conn.ev.on('messages.upsert', async ({ messages }) => {
   let m = messages[0]
   if (!m?.message?.reactionMessage) return
-
-  // La reacción está en m.message.reactionMessage
   let reactionMsg = m.message.reactionMessage
   let key = reactionMsg.key
   let emoji = reactionMsg.text
   let sender = m.key.participant || m.key.remoteJid
-
-  // Buscar partida según el id del mensaje reaccionado
   let data = partidasVS4[key.id]
   if (!data) return
-
   let filePath = path.join('./isFree', `${data.idPartida}.json`)
   if (!fs.existsSync(filePath)) return
-
-  // Emojis que aceptamos para participar y suplentes
   const emojisParticipar = ['❤️', '❤', '♥', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍', '🤎', '❤️‍🔥']
   const emojisSuplente = ['👍', '👍🏻', '👍🏼', '👍🏽', '👍🏾', '👍🏿']
-
-  // Primero quitar al jugador si ya estaba
   data.jugadores = data.jugadores.filter(u => u !== sender)
   data.suplentes = data.suplentes.filter(u => u !== sender)
-
-  // Añadir según el emoji y la capacidad
   if (emojisParticipar.includes(emoji)) {
     if (data.jugadores.length < 4) data.jugadores.push(sender)
   } else if (emojisSuplente.includes(emoji)) {
     if (data.suplentes.length < 2) data.suplentes.push(sender)
   } else return
-
-  // Guardar cambios
   fs.writeFileSync(filePath, JSON.stringify(data, null, 2))
-
-  // Construir lista con menciones
   let jugadores = data.jugadores.map(u => `@${u.split('@')[0]}`)
   let suplentes = data.suplentes.map(u => `@${u.split('@')[0]}`)
-
   let plantilla = `
 𝟒 𝐕𝐄𝐑𝐒𝐔𝐒 𝟒
 
@@ -118,22 +102,11 @@ global.conn.ev.on('messages.upsert', async ({ messages }) => {
 
 • Lista Activa Por 5 Minutos
   `.trim()
-
   try {
-    // Borrar mensaje anterior
     await conn.sendMessage(data.chat, { delete: data.originalMsgKey })
-
-    // Enviar mensaje actualizado con menciones
-    let newMsg = await conn.sendMessage(data.chat, {
-      text: plantilla,
-      mentions: [...data.jugadores, ...data.suplentes]
-    })
-
-    // Actualizar partida con nuevo mensaje original
+    let newMsg = await conn.sendMessage(data.chat, { text: plantilla, mentions: [...data.jugadores, ...data.suplentes] })
     partidasVS4[newMsg.key.id] = data
     partidasVS4[newMsg.key.id].originalMsgKey = newMsg.key
     delete partidasVS4[key.id]
-  } catch (e) {
-    console.error('Error al actualizar mensaje 4vs4:', e)
-  }
+  } catch {}
 })
