@@ -24,7 +24,7 @@ let m = chatUpdate.messages[chatUpdate.messages.length - 1]
 if (!m)
 return;
 
-if (conn.user.jid.split('@')[0] === global.ofcbot) {
+//if (conn.user.jid.split('@')[0] === global.ofcbot) {
   return
 }
 /*prueba Anti-duplicados*/
