@@ -17,13 +17,13 @@ let handler = async (m, { conn, args }) => {
 ➥ 𝐌𝐎𝐃𝐀𝐋𝐈𝐃𝐀𝐃: ${modalidad}
 ➥ 𝐉𝐔𝐆𝐀𝐃𝐎𝐑𝐄𝐒:
 
-      𝗘𝗦𝗖𝗨𝗔𝐃𝐑𝐀 1
-    
+      𝗘𝗦𝗖𝗨𝐀𝐃𝐑𝐀 1
+
     👑 ┇  
     🥷🏻 ┇  
     🥷🏻 ┇ 
     🥷🏻 ┇  
-    
+
     ʚ 𝐒𝐔𝐏𝐋𝐄𝐍𝐓𝐄𝐒:
     🥷🏻 ┇ 
     🥷🏻 ┇
@@ -58,31 +58,38 @@ global.conn.ev.on('messages.upsert', async ({ messages }) => {
   let m = messages[0]
   if (!m?.message?.reactionMessage) return
 
-  let reaction = m.message.reactionMessage
-  let key = reaction.key
-  let emoji = reaction.text
+  // La reacción está en m.message.reactionMessage
+  let reactionMsg = m.message.reactionMessage
+  let key = reactionMsg.key
+  let emoji = reactionMsg.text
   let sender = m.key.participant || m.key.remoteJid
 
+  // Buscar partida según el id del mensaje reaccionado
   let data = partidasVS4[key.id]
   if (!data) return
 
   let filePath = path.join('./isFree', `${data.idPartida}.json`)
   if (!fs.existsSync(filePath)) return
 
+  // Emojis que aceptamos para participar y suplentes
   const emojisParticipar = ['❤️', '❤', '♥', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍', '🤎', '❤️‍🔥']
   const emojisSuplente = ['👍', '👍🏻', '👍🏼', '👍🏽', '👍🏾', '👍🏿']
 
+  // Primero quitar al jugador si ya estaba
   data.jugadores = data.jugadores.filter(u => u !== sender)
   data.suplentes = data.suplentes.filter(u => u !== sender)
 
+  // Añadir según el emoji y la capacidad
   if (emojisParticipar.includes(emoji)) {
     if (data.jugadores.length < 4) data.jugadores.push(sender)
   } else if (emojisSuplente.includes(emoji)) {
     if (data.suplentes.length < 2) data.suplentes.push(sender)
   } else return
 
+  // Guardar cambios
   fs.writeFileSync(filePath, JSON.stringify(data, null, 2))
 
+  // Construir lista con menciones
   let jugadores = data.jugadores.map(u => `@${u.split('@')[0]}`)
   let suplentes = data.suplentes.map(u => `@${u.split('@')[0]}`)
 
@@ -97,12 +104,12 @@ global.conn.ev.on('messages.upsert', async ({ messages }) => {
 ➥ 𝐉𝐔𝐆𝐀𝐃𝐎𝐑𝐄𝐒:
 
       𝗘𝗦𝗖𝗨𝐀𝐃𝐑𝐀 1
-    
+
     👑 ┇ ${jugadores[0] || ''}
     🥷🏻 ┇ ${jugadores[1] || ''}
     🥷🏻 ┇ ${jugadores[2] || ''}
     🥷🏻 ┇ ${jugadores[3] || ''}
-    
+
     ʚ 𝐒𝐔𝐏𝐋𝐄𝐍𝐓𝐄𝐒:
     🥷🏻 ┇ ${suplentes[0] || ''}
     🥷🏻 ┇ ${suplentes[1] || ''}
@@ -112,10 +119,21 @@ global.conn.ev.on('messages.upsert', async ({ messages }) => {
 • Lista Activa Por 5 Minutos
   `.trim()
 
-  await conn.sendMessage(data.chat, { delete: data.originalMsgKey })
-  let newMsg = await conn.sendMessage(data.chat, { text: plantilla, mentions: [...data.jugadores, ...data.suplentes] })
+  try {
+    // Borrar mensaje anterior
+    await conn.sendMessage(data.chat, { delete: data.originalMsgKey })
 
-  partidasVS4[newMsg.key.id] = data
-  partidasVS4[newMsg.key.id].originalMsgKey = newMsg.key
-  delete partidasVS4[key.id]
+    // Enviar mensaje actualizado con menciones
+    let newMsg = await conn.sendMessage(data.chat, {
+      text: plantilla,
+      mentions: [...data.jugadores, ...data.suplentes]
+    })
+
+    // Actualizar partida con nuevo mensaje original
+    partidasVS4[newMsg.key.id] = data
+    partidasVS4[newMsg.key.id].originalMsgKey = newMsg.key
+    delete partidasVS4[key.id]
+  } catch (e) {
+    console.error('Error al actualizar mensaje 4vs4:', e)
+  }
 })
