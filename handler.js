@@ -49,6 +49,18 @@ if (global.processedMessages.size > 2000) {
     }
 }
 
+
+
+/*this.processedMessages = this.processedMessages || new Set()
+if (this.processedMessages.has(m.key.id)) return
+this.processedMessages.add(m.key.id)
+
+
+if (this.processedMessages.size > 2000) {
+    this.processedMessages.clear()
+}*/
+
+
 /*--------*/
 if (global.db.data == null)
 await global.loadDatabase()
