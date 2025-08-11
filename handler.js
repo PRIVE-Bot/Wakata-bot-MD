@@ -32,9 +32,9 @@ if (this.processedMessages.has(m.key.id)) return
 this.processedMessages.add(m.key.id)
 
 
-/*if (this.processedMessages.size > 2000) {
+if (this.processedMessages.size > 2000) {
     this.processedMessages.clear()
-}*/
+}
 
 
 /*--------*/
