@@ -82,12 +82,12 @@ const handler = async (m, { conn, text }) => {
 ⍰ *Publicado:* ${ago}
 
 > *Selecciona una opción reaccionando:*
-> ❤️ = Descargar Audio | 🎬 = Descargar Video
+> ❤️ = Descargar Audio | 🔥 = Descargar Video
 `;
     
     const actions = {
       '❤️': { type: 'audio', data: { url, title } },
-      '🎬': { type: 'video', data: { url, title, thumb: thumbFile.data } },
+      '🔥': { type: 'video', data: { url, title, thumb: thumbFile.data } },
     };
 
     const msg = await conn.sendMessage(m.chat, { image: thumbFile.data, caption: infoMessage }, { quoted: m });
