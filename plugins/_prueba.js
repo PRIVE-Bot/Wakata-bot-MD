@@ -54,7 +54,8 @@ const ddownr = {
 const handler = async (m, { conn, text }) => {
   await m.react('⚡️');
 
-  if (!text?.trim()) {
+  // Nueva verificación para asegurarnos de que `text` sea una cadena de texto
+  if (typeof text !== 'string' || !text.trim()) {
     return conn.reply(m.chat, `Dime el nombre de la canción o video que buscas`, m);
   }
 
