@@ -12,14 +12,14 @@ const FORMAT_VIDEO = ["360", "480", "720", "1080", "1440", "4k"];
 const ddownr = {
   download: async (url, format) => {
     if (!FORMAT_AUDIO.includes(format) && !FORMAT_VIDEO.includes(format)) {
-      throw new Error("⚠️ Ese formato no es compatible.");
+      throw new Error("⚠️ Formato no compatible.");
     }
 
     const config = {
       method: "GET",
       url: `https://p.oceansaver.in/ajax/download.php?format=${format}&url=${encodeURIComponent(url)}&api=dfcb6d76f2f6a9894gjkege8a4ab232222`,
       headers: { "User-Agent": "Mozilla/5.0" },
-      timeout: 15000
+      timeout: 10000
     };
 
     const response = await axios.request(config).catch(() => null);
@@ -35,110 +35,95 @@ const ddownr = {
       method: "GET",
       url: `https://p.oceansaver.in/ajax/progress.php?id=${id}`,
       headers: { "User-Agent": "Mozilla/5.0" },
-      timeout: 15000
+      timeout: 8000
     };
 
-    let retries = 0;
-    while (retries < 8) {
+    for (let i = 0; i < 5; i++) {
       const response = await axios.request(config).catch(() => null);
       if (response?.data?.success && response.data.progress === 1000) {
         return response.data.download_url;
       }
-      retries++;
-      await new Promise(res => setTimeout(res, 5000));
+      await new Promise(res => setTimeout(res, 3000));
     }
-    throw new Error("⏳ Tiempo de espera agotado para obtener enlace de descarga.");
+    throw new Error("⏳ Tiempo agotado al obtener enlace de descarga.");
   }
 };
 
 const handler = async (m, { conn, text }) => {
   await m.react('⚡️');
-
-  
-  if (typeof text !== 'string' || !text.trim()) {
-    return conn.reply(m.chat, `Dime el nombre de la canción o video que buscas`, m);
-  }
+  if (!text?.trim()) return conn.reply(m.chat, "Dime el nombre de la canción o video que buscas", m);
 
   try {
-    const search = await yts.search({ query: text, pages: 1 });
-    if (!search.videos.length) return m.reply("❌ No se encontró nada con ese nombre.");
+    const search = await yts.search(text);
+    const videoInfo = search?.videos?.[0];
+    if (!videoInfo) return m.reply("❌ No se encontró nada.");
 
-    const videoInfo = search.videos[0];
     const { title, thumbnail, timestamp, views, ago, url, author } = videoInfo;
-
-    const vistas = formatViews(views);
-    const thumb = (await conn.getFile(thumbnail)).data;
+    const thumbData = (await conn.getFile(thumbnail)).data;
 
     const infoMessage = `★ ${global.botname || 'Bot'} ★
 
 ╭⍰ *Titulo:* 「 ${title} 」 
 ⍰ *Canal:* ${author?.name || 'Desconocido'} 
-⍰ *Vistas:* ${vistas} 
+⍰ *Vistas:* ${formatViews(views)} 
 ⍰ *Duración:* ${timestamp}
 ⍰ *Publicado:* ${ago}
 
-> *Selecciona una opción reaccionando:*
-> ❤️ = Descargar Audio | 🔥 = Descargar Video
+> ❤️ = Audio | 🔥 = Video
 `;
 
     const actions = {
       '❤️': { type: 'audio', data: { url, title } },
-      '🔥': { type: 'video', data: { url, title, thumb } },
+      '🔥': { type: 'video', data: { url, title, thumb: thumbData } },
     };
 
-    const msg = await conn.sendMessage(m.chat, { image: thumb, caption: infoMessage }, { quoted: m });
-
-    await createMessageWithReactions(conn, msg, actions);
+    const msg = await conn.sendMessage(m.chat, { image: thumbData, caption: infoMessage }, { quoted: m });
+    createMessageWithReactions(conn, msg, actions); // no bloquea la ejecución
 
   } catch (error) {
     console.error("❌ Error:", error);
-    return m.reply(`⚠️ Ocurrió un error: ${error.message}`);
+    return m.reply(`⚠️ Error: ${error.message}`);
   }
 };
 
 handler.command = handler.help = ["play", "yta", "ytmp3", "ytv", "ytmp4"];
 handler.tags = ["downloader"];
-
 export default handler;
 
 
 setActionCallback('audio', async (conn, chat, data) => {
-    const { url, title } = data;
-    try {
-        const api = await ddownr.download(url, "mp3");
-        return conn.sendMessage(chat, {
-            audio: { url: api.downloadUrl },
-            mimetype: 'audio/mpeg',
-            fileName: `${title}.mp3`
-        });
-    } catch (err) {
-        return conn.sendMessage(chat, { text: `❌ Error al descargar el audio: ${err.message}` });
-    }
+  try {
+    const api = await ddownr.download(data.url, "mp3");
+    await conn.sendMessage(chat, {
+      audio: { url: api.downloadUrl },
+      mimetype: 'audio/mpeg',
+      fileName: `${data.title}.mp3`
+    });
+  } catch (err) {
+    await conn.sendMessage(chat, { text: `❌ Error al descargar audio: ${err.message}` });
+  }
 });
 
 setActionCallback('video', async (conn, chat, data) => {
-    const { url, title, thumb } = data;
-    try {
-        const apiURL = `https://api.sylphy.xyz/download/ytmp4?url=${encodeURIComponent(url)}&apikey=sylphy-fbb9`;
-        const res = await fetch(apiURL);
-        const json = await res.json();
-        if (!json?.status || !json.res?.url) {
-            return conn.sendMessage(chat, { text: "❌ No se pudo descargar el video desde Sylphy." });
-        }
-        await conn.sendMessage(chat, {
-            video: { url: json.res.url },
-            fileName: `${json.res.title || title}.mp4`,
-            mimetype: "video/mp4",
-            thumbnail: thumb
-        });
-    } catch (err) {
-        return conn.sendMessage(chat, { text: `❌ Error al descargar el video: ${err.message}` });
-    }
+  try {
+    const apiURL = `https://api.sylphy.xyz/download/ytmp4?url=${encodeURIComponent(data.url)}&apikey=sylphy-fbb9`;
+    const json = await fetch(apiURL).then(r => r.json()).catch(() => null);
+    if (!json?.status || !json.res?.url) throw new Error("No se pudo descargar el video.");
+    await conn.sendMessage(chat, {
+      video: { url: json.res.url },
+      fileName: `${json.res.title || data.title}.mp4`,
+      mimetype: "video/mp4",
+      thumbnail: data.thumb
+    });
+  } catch (err) {
+    await conn.sendMessage(chat, { text: `❌ Error al descargar video: ${err.message}` });
+  }
 });
 
 function formatViews(views) {
-  if (typeof views !== "number" || isNaN(views)) return "Desconocido";
-  return views >= 1000
-    ? (views / 1000).toFixed(1) + "k (" + views.toLocaleString() + ")"
-    : views.toString();
+  return typeof views === "number" && !isNaN(views)
+    ? views >= 1000
+      ? (views / 1000).toFixed(1) + "k (" + views.toLocaleString() + ")"
+      : views.toString()
+    : "Desconocido";
 }
