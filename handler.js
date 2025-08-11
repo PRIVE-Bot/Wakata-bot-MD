@@ -26,19 +26,13 @@ return;
 
 /*prueba 2: evitar duplicar mensajes por accidente*/
 
-if (!global.lastMsgId) global.lastMsgId = null
 
-if (m.key.id === global.lastMsgId) return
-global.lastMsgId = m.key.id
-
-
-
-/*this.processedMessages = this.processedMessages || new Set()
+this.processedMessages = this.processedMessages || new Set()
 if (this.processedMessages.has(m.key.id)) return
 this.processedMessages.add(m.key.id)
 
 
-if (this.processedMessages.size > 2000) {
+/*if (this.processedMessages.size > 2000) {
     this.processedMessages.clear()
 }*/
 
