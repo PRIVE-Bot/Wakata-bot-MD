@@ -81,6 +81,7 @@ const handler = async (m, { conn, text, command }) => {
 
     await conn.sendMessage(m.chat, { image: thumb, caption: infoMessage }, { quoted: m });
 
+    // Audio
     if (["play", "yta", "ytmp3"].includes(command)) {
       const api = await ddownr.download(url, "mp3");
       return conn.sendMessage(m.chat, {
@@ -90,30 +91,27 @@ const handler = async (m, { conn, text, command }) => {
       }, { quoted: m });
     }
 
+    // Video
     if (["play2", "ytv", "ytmp4"].includes(command)) {
-  try {
-    const apiURL = `https://api.sylphy.xyz/download/ytmp4?url=${encodeURIComponent(url)}&apikey=sylphy-fbb9`;
-    const res = await fetch(apiURL);
-    const json = await res.json();
+      try {
+        const apiURL = `https://api.sylphy.xyz/download/ytmp4?url=${encodeURIComponent(url)}&apikey=sylphy-fbb9`;
+        const res = await fetch(apiURL);
+        const json = await res.json();
 
-    if (!json?.status || !json.res?.url) {
-      return m.reply("❌ No se pudo descargar el video desde Sylphy.");
-    }
+        if (!json?.status || !json.res?.url) {
+          return m.reply("❌ No se pudo descargar el video desde Sylphy.");
+        }
 
-    await conn.sendMessage(m.chat, {
-      video: { url: json.res.url },
-      fileName: `${json.res.title || title}.mp4`,
-      mimetype: "video/mp4",
-      thumbnail: thumb
-    }, { quoted: m });
+        await conn.sendMessage(m.chat, {
+          video: { url: json.res.url },
+          fileName: `${json.res.title || title}.mp4`,
+          mimetype: "video/mp4",
+          thumbnail: thumb
+        }, { quoted: m });
 
-  } catch (err) {
-    console.error("❌ Error en play2:", err.message);
-    return m.reply(`⚠️ Ocurrió un error: ${err.message}`);
-  }
-}
-      } catch {
-        return m.reply("❌ No se pudo descargar el video desde ninguna fuente.");
+      } catch (err) {
+        console.error("❌ Error en play2:", err.message);
+        return m.reply(`⚠️ Ocurrió un error: ${err.message}`);
       }
     }
 
