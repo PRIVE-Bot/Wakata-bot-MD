@@ -14,6 +14,19 @@ clearTimeout(this)
 resolve()
 }, ms))
 
+export async function handler(chatUpdate) {
+this.msgqueque = this.msgqueque || []
+this.uptime = this.uptime || Date.now()
+if (!chatUpdate)
+return
+    this.pushMessage(chatUpdate.messages).catch(console.error)
+let m = chatUpdate.messages[chatUpdate.messages.length - 1]
+if (!m)
+return;
+
+if (conn.user.jid.split('@')[0] === global.ofcbot) {
+  return
+}
 /*prueba Anti-duplicados*/
 this.processedMessages = this.processedMessages || new Map()
 const id = m.key.id
@@ -34,16 +47,6 @@ if (this.processedMessages.has(id)) return
 this.processedMessages.set(id, now)
 
 /*----------*/
-
-export async function handler(chatUpdate) {
-this.msgqueque = this.msgqueque || []
-this.uptime = this.uptime || Date.now()
-if (!chatUpdate)
-return
-    this.pushMessage(chatUpdate.messages).catch(console.error)
-let m = chatUpdate.messages[chatUpdate.messages.length - 1]
-if (!m)
-return;
 
 if (global.db.data == null)
 await global.loadDatabase()
