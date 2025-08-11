@@ -25,14 +25,14 @@ if (!m)
 return;
 
 /*prueba 2: evitar duplicar mensajes por accidente*/
-this.processedMessages = this.processedMessages || new Set()
+/*this.processedMessages = this.processedMessages || new Set()
 if (this.processedMessages.has(m.key.id)) return
 this.processedMessages.add(m.key.id)
 
 
 if (this.processedMessages.size > 2000) {
     this.processedMessages.clear()
-}
+}*/
 
 /*--------*/
 if (global.db.data == null)
