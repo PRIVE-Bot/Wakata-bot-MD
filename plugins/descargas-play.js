@@ -69,7 +69,7 @@ const handler = async (m, { conn, text, command }) => {
 
     const infoMessage = `★ ${global.botname || 'Bot'} ★
 
-╭ ⍰ *Título:* 「 ${title} 」 
+╭⍰ *Titulo:* 「 ${title} 」 
 ⍰ *Canal:* ${author?.name || 'Desconocido'} 
 ⍰ *Vistas:* ${vistas} 
 ⍰ *Duración:* ${timestamp}
