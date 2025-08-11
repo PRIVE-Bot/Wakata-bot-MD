@@ -4,7 +4,7 @@ let handler = async (m, { conn, command }) => {
   if (command !== 'testreact') return
 
   const texto = 'Reacciona con ❤️ para activar la acción'
-  const msg = await conn.sendMessage(m.chat, { text: texto })
+   await conn.sendMessage(m.chat, { text: texto })
 
   registrarMensaje(msg.key.id, m.chat, '❤️', async (mReact, conn) => {
     await conn.sendMessage(m.chat, { 
