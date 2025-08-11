@@ -25,8 +25,8 @@ if (!m)
 return;
 
 //if (conn.user.jid.split('@')[0] === global.ofcbot) {
-  return
-}
+ // return
+//}
 /*prueba Anti-duplicados*/
 this.processedMessages = this.processedMessages || new Map()
 const id = m.key.id
