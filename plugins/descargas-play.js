@@ -91,73 +91,27 @@ const handler = async (m, { conn, text, command }) => {
     }
 
     if (["play2", "ytv", "ytmp4"].includes(command)) {
-  const sylphyAPI = `https://api.sylphy.xyz/download/ytmp4?url=${encodeURIComponent(url)}&apikey=sylphy-fbb9`;
-
-  let downloadUrl = null;
-  let videoTitle = title; 
-
-  
   try {
-    const res = await fetch(sylphyAPI);
+    const apiURL = `https://api.sylphy.xyz/download/ytmp4?url=${encodeURIComponent(url)}&apikey=sylphy-fbb9`;
+    const res = await fetch(apiURL);
     const json = await res.json();
 
-    if (json?.status && json.res?.url) {
-      downloadUrl = json.res.url;
-      videoTitle = json.res.title || videoTitle;
+    if (!json?.status || !json.res?.url) {
+      return m.reply("❌ No se pudo descargar el video desde Sylphy.");
     }
+
+    await conn.sendMessage(m.chat, {
+      video: { url: json.res.url },
+      fileName: `${json.res.title || title}.mp4`,
+      mimetype: "video/mp4",
+      thumbnail: thumb
+    }, { quoted: m });
+
   } catch (err) {
-    console.error("⚠️ Error con Sylphy:", err.message);
+    console.error("❌ Error en play2:", err.message);
+    return m.reply(`⚠️ Ocurrió un error: ${err.message}`);
   }
-
-  
-  if (!downloadUrl) {
-    const sources = [
-      `https://api.siputzx.my.id/api/d/ytmp4?url=${url}`,
-      `https://api.zenkey.my.id/api/download/ytmp4?apikey=zenkey&url=${url}`,
-      `https://axeel.my.id/api/download/video?url=${encodeURIComponent(url)}`,
-      `https://delirius-apiofc.vercel.app/download/ytmp4?url=${url}`
-    ];
-
-    try {
-      downloadUrl = await Promise.any(
-        sources.map(src =>
-          fetch(src, { timeout: 15000 })
-            .then(r => r.json())
-            .then(({ data, result, downloads }) =>
-              data?.dl || result?.download?.url || downloads?.url || data?.download?.url || null
-            )
-            .catch(() => null)
-        )
-      );
-    } catch {
-      downloadUrl = null;
-    }
-  }
-
-  
-  if (!downloadUrl) {
-    try {
-      const api = await ddownr.download(url, "720");
-      downloadUrl = api.downloadUrl;
-    } catch {
-      downloadUrl = null;
-    }
-  }
-
-  
-  if (!downloadUrl) {
-    return m.reply("❌ No se pudo descargar el video desde ninguna fuente disponible.");
-  }
-
-  
-  await conn.sendMessage(m.chat, {
-    video: { url: downloadUrl },
-    fileName: `${videoTitle}.mp4`,
-    mimetype: "video/mp4",
-    thumbnail: thumb
-  }, { quoted: m });
 }
-
       } catch {
         return m.reply("❌ No se pudo descargar el video desde ninguna fuente.");
       }
