@@ -54,7 +54,7 @@ const handler = async (m, { conn, text, command }) => {
   await m.react('⚡️');
 
   if (!text?.trim()) {
-    return conn.reply(m.chat, " emoji, Dime el nombre de la canción o video que buscas", m, rcanal);
+    return conn.reply(m.chat, `${emoji} Dime el nombre de la canción o video que buscas`, m, rcanal);
   }
 
   try {
