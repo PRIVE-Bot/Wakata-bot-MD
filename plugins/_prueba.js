@@ -54,20 +54,24 @@ const ddownr = {
 const handler = async (m, { conn, text }) => {
   await m.react('⚡️');
 
-  // Nueva verificación para asegurarnos de que `text` sea una cadena de texto
   if (typeof text !== 'string' || !text.trim()) {
     return conn.reply(m.chat, `Dime el nombre de la canción o video que buscas`, m);
   }
 
   try {
-    const search = await yts.search({ query: text, pages: 1 });
-    if (!search.videos.length) return m.reply("❌ No se encontró nada con ese nombre.");
+    
+    const [search, thumbFile] = await Promise.all([
+      yts.search({ query: text, pages: 1 }),
+      conn.getFile((await yts.search({ query: text, pages: 1 })).videos[0].thumbnail)
+    ]);
+
+    if (!search.videos.length) {
+      return m.reply("❌ No se encontró nada con ese nombre.");
+    }
 
     const videoInfo = search.videos[0];
     const { title, thumbnail, timestamp, views, ago, url, author } = videoInfo;
-
     const vistas = formatViews(views);
-    const thumb = (await conn.getFile(thumbnail)).data;
 
     const infoMessage = `★ ${global.botname || 'Bot'} ★
 
@@ -83,10 +87,10 @@ const handler = async (m, { conn, text }) => {
     
     const actions = {
       '❤️': { type: 'audio', data: { url, title } },
-      '🎬': { type: 'video', data: { url, title, thumb } },
+      '🎬': { type: 'video', data: { url, title, thumb: thumbFile.data } },
     };
 
-    const msg = await conn.sendMessage(m.chat, { image: thumb, caption: infoMessage }, { quoted: m });
+    const msg = await conn.sendMessage(m.chat, { image: thumbFile.data, caption: infoMessage }, { quoted: m });
     
     await createMessageWithReactions(conn, msg, actions);
 
@@ -101,7 +105,7 @@ handler.tags = ["downloader"];
 
 export default handler;
 
-// Funciones para descargar que se registran con la librería
+
 setActionCallback('audio', async (conn, chat, data) => {
     const { url, title } = data;
     try {
