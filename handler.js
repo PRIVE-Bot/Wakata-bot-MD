@@ -26,15 +26,20 @@ return;
 
 /*prueba 2: evitar duplicar mensajes por accidente*/
 
+this.processedMessages = this.processedMessages || new Map()
+const id = m.key.id
+const now = Date.now()
+const lifeTime = 5000 
 
-this.processedMessages = this.processedMessages || new Set()
-if (this.processedMessages.has(m.key.id)) return
-this.processedMessages.add(m.key.id)
-
-
-if (this.processedMessages.size > 2000) {
-    this.processedMessages.clear()
+for (let [msgId, time] of this.processedMessages) {
+    if (now - time > lifeTime) {
+        this.processedMessages.delete(msgId)
+    }
 }
+
+if (this.processedMessages.has(id)) return
+
+this.processedMessages.set(id, now)
 
 
 /*--------*/
