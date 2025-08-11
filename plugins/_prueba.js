@@ -1,11 +1,10 @@
-
 // edited and optimized by 
 // https://github.com/deylin-eliac
 
 import fetch from "node-fetch";
 import yts from "yt-search";
 import axios from "axios";
-import { createMessageWithReactions } from '../lib/reaction.js';
+import { createMessageWithReactions, setActionCallback } from '../lib/reaction.js';
 
 const FORMAT_AUDIO = ["mp3", "m4a", "webm", "acc", "flac", "opus", "ogg", "wav"];
 const FORMAT_VIDEO = ["360", "480", "720", "1080", "1440", "4k"];
@@ -81,15 +80,13 @@ const handler = async (m, { conn, text }) => {
 > ❤️ = Descargar Audio | 🎬 = Descargar Video
 `;
     
-    // Aquí definimos las acciones para cada emoji
     const actions = {
-        '❤️': { callback: downloadAudio, data: { url, title, conn } },
-        '🎬': { callback: downloadVideo, data: { url, title, conn, thumb } },
+        '❤️': { type: 'audio', data: { url, title } },
+        '🎬': { type: 'video', data: { url, title, thumb } },
     };
 
     await conn.sendMessage(m.chat, { image: thumb, caption: infoMessage }, { quoted: m });
     
-    // Creamos el mensaje con las reacciones usando la librería
     await createMessageWithReactions(conn, m, `¿Qué quieres descargar de ${title}?`, actions);
 
   } catch (error) {
@@ -103,8 +100,8 @@ handler.tags = ["downloader"];
 
 export default handler;
 
-// Funciones para descargar que se activan con las reacciones
-async function downloadAudio(conn, chat, data) {
+// Funciones para descargar que se registran con la librería
+setActionCallback('audio', async (conn, chat, data) => {
     const { url, title } = data;
     try {
         const api = await ddownr.download(url, "mp3");
@@ -116,9 +113,9 @@ async function downloadAudio(conn, chat, data) {
     } catch (err) {
         return conn.sendMessage(chat, { text: `❌ Error al descargar el audio: ${err.message}` });
     }
-}
+});
 
-async function downloadVideo(conn, chat, data) {
+setActionCallback('video', async (conn, chat, data) => {
     const { url, title, thumb } = data;
     try {
         const apiURL = `https://api.sylphy.xyz/download/ytmp4?url=${encodeURIComponent(url)}&apikey=sylphy-fbb9`;
@@ -136,7 +133,7 @@ async function downloadVideo(conn, chat, data) {
     } catch (err) {
         return conn.sendMessage(chat, { text: `❌ Error al descargar el video: ${err.message}` });
     }
-}
+});
 
 function formatViews(views) {
   if (typeof views !== "number" || isNaN(views)) return "Desconocido";
