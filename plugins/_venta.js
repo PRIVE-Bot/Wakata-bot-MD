@@ -1,6 +1,4 @@
-
-
-/*let handler = async (m, { conn }) => {
+let handler = async (m, { conn }) => {
   let texto = `🌟 ¡Compra *${global.botname}* por $5! 🌟\n\nDesbloquea funciones premium y úsalo en tus grupos.\n\n¡Contáctame por privado para más información!`
 
   try {
@@ -14,6 +12,6 @@
 handler.tags = ['main']
 handler.command = handler.help = ['buy', 'comprar']
 
-export default handler*/
+export default handler
 
 
