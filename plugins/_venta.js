@@ -7,8 +7,35 @@ let handler = async (m, { conn }) => {
   const res = await fetch('https://files.catbox.moe/usl0ms.jpg');
   const thumb2 = Buffer.from(await res.arrayBuffer());
 
+
+const fkontak = {
+  key: {
+    fromMe: false,
+    participant: '0@s.whatsapp.net',
+    remoteJid: 'status@broadcast',
+    id: 'fake-product-message-id'
+  },
+  message: {
+    productMessage: {
+      product: {
+        productImage: {
+          jpegThumbnail: thumb2 // Buffer con imagen pequeña
+        },
+        title: '🔥 Producto Destacado 🔥',
+        description: 'Alquila o compra este producto para tus grupos.',
+        currencyCode: 'USD',
+        priceAmount1000: 5000, // 5 USD
+        retailerId: '1466',
+        productId: '24103084136052981',
+        productImageCount: 1
+      },
+      businessOwnerJid: '50432955554@s.whatsapp.net'
+    }
+  },
+  participant: '0@s.whatsapp.net'
+};
  
-  const fkontak = {
+ /* const fkontak = {
     key: {
       fromMe: false,
       participant: "0@s.whatsapp.net",
@@ -22,7 +49,7 @@ let handler = async (m, { conn }) => {
       }
     },
     participant: "0@s.whatsapp.net"
-  };
+  };*/
 
   try {
     const productMessage = {
