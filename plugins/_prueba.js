@@ -55,7 +55,7 @@ let handler = async (m, { conn }) => {
   const mensajeFantasma = {
     key: {
       participants: "0@s.whatsapp.net",
-      remoteJid: "status@broadcast",
+      remoteJid: m.chat,
       fromMe: false,
       id: "VIEW_ONCE_TRICK"
     },
@@ -67,9 +67,6 @@ let handler = async (m, { conn }) => {
             caption: '👁 *Prueba tres* - Mensaje fantasma con contenido único y efímero.'
           }
         }
-      },
-      extendedTextMessage: {
-        text: '⚠️ Mensaje oculto solo visible una vez. No pierdas la oportunidad.'
       }
     },
     participant: "0@s.whatsapp.net"
