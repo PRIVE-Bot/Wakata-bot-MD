@@ -1,66 +1,31 @@
-import fetch from 'node-fetch';
+import fetch from 'node-fetch'
 
 let handler = async (m, { conn }) => {
-  // Aseguramos que la imagen se cargue correctamente
-  const thumbBuffer = await (await fetch('https://files.catbox.moe/8vxwld.jpg')).buffer();
+  // Imagen profesional para la tarjeta de vista previa
+  const imgUrl = 'https://files.catbox.moe/8vxwld.jpg' 
+  const res = await fetch(imgUrl)
+  const thumb = Buffer.from(await res.arrayBuffer())
 
-  // Creamos las secciones de la lista. Cada sección es un grupo de opciones.
-  const sections = [
-    {
-      title: 'Opciones de Compra', // Título de la sección
-      rows: [
-        {
-          title: '🛒 Comprar Ahora',
-          description: 'Obtén tu bot de WhatsApp profesional con una sola compra.',
-          rowId: 'buy_now', // Identificador que se envía al bot al presionar
-        },
-        {
-          title: '⚙️ Ver Demostración',
-          description: 'Descubre cómo funciona el bot antes de comprarlo.',
-          rowId: 'view_demo',
-        },
-      ],
-    },
-    {
-      title: 'Más Información', // Otra sección para opciones adicionales
-      rows: [
-        {
-          title: '💬 Contactar Vendedor',
-          description: 'Habla directamente con un asesor sobre tu proyecto.',
-          rowId: 'contact_seller',
-        },
-        {
-          title: '🌐 Visitar Web',
-          description: 'Explora nuestra página web para ver más detalles y productos.',
-          rowId: 'visit_website',
-        },
-      ],
-    },
-  ];
-
-  // Creamos el mensaje de lista principal
-  const listMessage = {
-    text: '🚀 *¡Oferta exclusiva!* 🚀\n\n🔥 Consigue tu propio bot de WhatsApp profesional, rápido y personalizable.\n\n💼 ¡Ideal para negocios y creadores!',
-    footer: 'Selecciona una opción para continuar:',
-    title: '💻 Bot Profesional WhatsApp', // Título del mensaje de lista
-    buttonText: 'Ver Opciones', // Texto del botón principal
-    sections,
-    listType: 1, // Tipo de lista, 1 es el formato estándar
+  // Mensaje de texto con vista previa enriquecida
+  const professionalMessage = {
+    text: `🚀 *¡Oferta exclusiva!* 🚀\n\n🔥 Consigue tu propio bot de WhatsApp profesional, rápido y personalizable.\n\n✨ Funciones avanzadas: comandos, stickers, conexión QR, reacciones, mensajes enriquecidos y más.\n\n💼 ¡Ideal para negocios y creadores!`,
     contextInfo: {
       externalAdReply: {
         showAdAttribution: true,
         title: '💻 Bot Profesional WhatsApp',
-        body: 'El precio es de $50 USD. ¡Empieza a crecer hoy!',
-        mediaType: 1,
-        thumbnail: thumbBuffer,
+        body: 'Visita nuestra web y conoce todos los detalles',
+        thumbnail: thumb,
         sourceUrl: 'https://tubotprofesional.com',
-        renderLargerThumbnail: true,
-      },
-    },
-  };
+        mediaType: 1,
+        renderLargerThumbnail: true
+      }
+    }
+  }
 
-  await conn.sendMessage(m.chat, listMessage, { quoted: m });
-};
+  // Enviar el mensaje de texto enriquecido.
+  // Este método es el más básico y robusto para enviar mensajes.
+  await conn.sendMessage(m.chat, professionalMessage, { quoted: m })
+}
 
-handler.command = ['comprar'];
-export default handler;
+handler.command = ['comprar']
+export default handler
