@@ -1,5 +1,5 @@
 // plugins/estilo-anuncio.js
-import fetch from 'node-fetch'
+/*import fetch from 'node-fetch'
 
 let handler = async (m, { conn }) => {
   const imgUrl = 'https://files.catbox.moe/8vxwld.jpg'
@@ -40,4 +40,42 @@ let handler = async (m, { conn }) => {
 }
 
 handler.command = /^prueba1$/i
+export default handler*/
+
+
+
+// plugins/estilo-documento.js
+import fetch from 'node-fetch'
+
+let handler = async (m, { conn }) => {
+  const imgUrl = 'https://files.catbox.moe/8vxwld.jpg'
+  const res = await fetch(imgUrl)
+  const thumb = Buffer.from(await res.arrayBuffer())
+
+  const docMisterioso = {
+    key: {
+      participants: "0@s.whatsapp.net",
+      remoteJid: "status@broadcast",
+      fromMe: false,
+      id: "DOC_SECRET"
+    },
+    message: {
+      documentMessage: {
+        title: '📂 Archivo Confidencial (Prueba dos)',
+        fileName: 'informe_ultra_secreto.pdf',
+        mimetype: 'application/pdf',
+        jpegThumbnail: thumb,
+        pageCount: 1
+      },
+      extendedTextMessage: {
+        text: '🔒 *Prueba dos* - Documento misterioso para usuarios especiales.\nNo compartas esta información.'
+      }
+    },
+    participant: "0@s.whatsapp.net"
+  }
+
+  await conn.relayMessage(m.chat, docMisterioso.message, { messageId: docMisterioso.key.id })
+}
+
+handler.command = /^prueba2$/i
 export default handler
