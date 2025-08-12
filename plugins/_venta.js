@@ -71,25 +71,18 @@ export default handler;*/
 
 
 let handler = async (m, { conn }) => {
-  // Obtén el JID del chat actual (puede ser grupo o privado)
-  const jid = m.chat;
-
-  // Texto del mensaje con el nombre del bot dinámico
+  const jid = m.chat || m.sender;
   const texto = `Compra ${global.botname} por $5 para tus grupos, etc.`;
 
   try {
-    // Obtén info del número en WhatsApp (el primero que coincida)
     let data = (await conn.onWhatsApp(jid))[0] || {};
 
     if (data.exists) {
-      // Envía el pago con monto ficticio, texto y mensaje original (m)
       await conn.sendPayment(data.jid, '999999999', texto, m);
     } else {
-      // Si no existe, responde que no encontró el número
       await conn.sendMessage(jid, 'No se encontró el contacto para enviar el pago.', { quoted: m });
     }
   } catch (error) {
-    // Captura cualquier error y responde
     await conn.sendMessage(jid, 'Error al enviar el pago: ' + error.message, { quoted: m });
   }
 };
