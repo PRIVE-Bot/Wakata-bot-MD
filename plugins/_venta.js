@@ -1,6 +1,21 @@
 let handler = async (m, { conn }) => {
   const jid = m.chat;
 
+const fakeQuote = {
+      key: {
+        fromMe: false, 
+        participant: '0@s.whatsapp.net', 
+        remoteJid: 'status@broadcast', 
+      },
+      message: {
+        imageMessage: {
+          mimetype: 'image/jpeg',
+          caption: text, 
+          jpegThumbnail: Buffer.from(imageBuffer), 
+        },
+      },
+    };
+
   try {
     const productMessage = {
       product: {
