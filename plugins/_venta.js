@@ -1,10 +1,10 @@
 
 
 let handler = async (m, { conn }) => {
-  let texto = `Compra *${global.botname}* por $5 para tus grupos y mucho más. ¡Contáctanos para más información!`
+  let texto = `🌟 ¡Compra *${global.botname}* por $5! 🌟\n\nDesbloquea funciones premium y úsalo en tus grupos.\n\n¡Contáctame por privado para más información!`
 
   try {
-    await conn.sendPayment(m.chat, '999999999', texto, m)
+    await conn.sendPayment(m.chat, '5', texto, m)
     await conn.sendMessage(m.chat, '💸 Mensaje de venta enviado aquí.', { quoted: m })
   } catch (e) {
     await conn.sendMessage(m.chat, 'Ocurrió un error al enviar el pago.', { quoted: m })
