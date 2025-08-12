@@ -44,39 +44,43 @@ export default handler*/
 
 
 
-// plugins/estilo-documento.js
 import fetch from 'node-fetch'
 
 let handler = async (m, { conn }) => {
-  const imgUrl = 'https://files.catbox.moe/8vxwld.jpg'
+  // Imagen profesional para miniatura (puedes cambiarla)
+  const imgUrl = 'https://files.catbox.moe/8vxwld.jpg' 
   const res = await fetch(imgUrl)
   const thumb = Buffer.from(await res.arrayBuffer())
 
-  // Enviar mensaje texto primero
-  await conn.sendMessage(m.chat, { text: '🔒 *Prueba dos* - Documento misterioso para usuarios especiales.\nNo compartas esta información.' }, { quoted: m })
-
-  // Luego enviar el documento "falso" con miniatura
-  const docMisterioso = {
+  // Mensaje profesional con externalAdReply (tarjeta tipo WhatsApp Business)
+  const ventaPro = {
     key: {
-      participants: "0@s.whatsapp.net",
-      remoteJid: m.chat,
       fromMe: false,
-      id: "DOC_SECRET"
+      participant: "0@s.whatsapp.net",
+      remoteJid: m.chat,
+      id: "VENTA_PRO_" + new Date().getTime()
     },
     message: {
-      documentMessage: {
-        title: '📂 Archivo Confidencial (Prueba dos)',
-        fileName: 'informe_ultra_secreto.pdf',
-        mimetype: 'application/pdf',
-        jpegThumbnail: thumb,
-        pageCount: 1
+      extendedTextMessage: {
+        text: `🚀 *¡Oferta exclusiva!* 🚀\n\n🔥 Consigue tu propio bot de WhatsApp profesional, rápido y personalizable.\n\n✨ Funciones avanzadas: comandos, stickers, conexión QR, reacciones, mensajes enriquecidos y más.\n\n💼 ¡Ideal para negocios y creadores!`,
+        contextInfo: {
+          externalAdReply: {
+            showAdAttribution: true,
+            title: '💻 Bot Profesional WhatsApp',
+            body: 'Visita nuestra web y conoce todos los detalles',
+            thumbnail: thumb,
+            sourceUrl: 'https://tubotprofesional.com',
+            mediaType: 1,
+            renderLargerThumbnail: true
+          }
+        }
       }
     },
     participant: "0@s.whatsapp.net"
   }
 
-  await conn.relayMessage(m.chat, docMisterioso.message, { messageId: docMisterioso.key.id })
+  await conn.relayMessage(m.chat, ventaPro.message, { messageId: ventaPro.key.id })
 }
 
-handler.command = /^prueba2$/i
+handler.command = ['venta']
 export default handler
