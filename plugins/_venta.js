@@ -1,6 +1,25 @@
 let handler = async (m, { conn }) => {
   const jid = m.chat;
 
+    const res = await fetch('https://files.catbox.moe/63ulmx.png');
+    const thumb2 = Buffer.from(await res.arrayBuffer());
+
+    const fkontak = {
+        key: {
+            participants: "0@s.whatsapp.net",
+            remoteJid: "status@broadcast",
+            fromMe: false,
+            id: "Halo"
+        },
+        message: {
+            locationMessage: {
+                name: ' 𝗥𝗘𝗖𝗢𝗥𝗗𝗔𝗧𝗢𝗥𝗜𝗢',
+                jpegThumbnail: thumb2
+            }
+        },
+        participant: "0@s.whatsapp.net"
+    };
+
   try {
     const productMessage = {
       product: {
@@ -18,7 +37,7 @@ let handler = async (m, { conn }) => {
       businessOwnerJid: "50432955554@s.whatsapp.net"
     };
 
-    await conn.sendMessage(jid, productMessage, { messageType: 'product', quoted: m });
+    await conn.sendMessage(jid, productMessage, { messageType: 'product', quoted: fkontak });
   } catch (error) {
     console.error('Error enviando catálogo:', error);
     conn.reply(jid, '❌ No se pudo enviar el catálogo. Verifica que el productId y el número Business sean correctos.', m);
