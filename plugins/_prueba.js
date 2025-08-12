@@ -1,59 +1,55 @@
-import {
-  generateWAMessageFromContent
-} from '@adiwajshing/baileys';
-import fetch from 'node-fetch';
+// plugins/fake-product.js
+import fetch from 'node-fetch'
 
-let handler = async (m, {
-  conn,
-  text,
-  command
-}) => {
-  // Verifica si el usuario proporcionó un texto
-  if (!text) {
-    return conn.reply(m.chat, `📌 Usa: *${command}* <texto>`, m);
-  }
+let handler = async (m, { conn, text, command }) => {
+  if (!text) throw `📌 Usa: *${command}* <texto>`
 
-  // URL de la imagen que quieres que aparezca en la cita
-  const imageUrl = 'https://i.postimg.cc/jqWqwd8Z/IMG-20250803-WA0146.jpg'; // Reemplaza esta URL con la imagen que desees.
+  // URL de la imagen que quieres que aparezca
+  const imageUrl = 'https://i.postimg.cc/jqWqwd8Z/IMG-20250803-WA0146.jpg' // <-- Reemplaza con tu imagen
 
   try {
-    // Obtiene el buffer de la imagen desde la URL
-    const imageResponse = await fetch(imageUrl);
-    if (!imageResponse.ok) {
-      throw new Error('No se pudo obtener la imagen de la URL.');
-    }
-    const imageBuffer = await imageResponse.arrayBuffer();
+    const res = await fetch(imageUrl)
+    if (!res.ok) throw new Error('No se pudo obtener la imagen.')
+    const thumbnailBuffer = Buffer.from(await res.arrayBuffer())
 
-    // Crea el objeto del mensaje simulado (fake quote)
-    const fakeQuote = {
+    const fakeProduct = {
       key: {
-        fromMe: false, // Indica que no es un mensaje tuyo
-        participant: '0@s.whatsapp.net', // Número ficticio para evitar que se asocie con un contacto real
-        remoteJid: 'status@broadcast', // ID ficticio para simular un estado, no un chat real
+        fromMe: false,
+        participant: '0@s.whatsapp.net',
+        remoteJid: 'status@broadcast',
+        id: 'product-message-id',
       },
       message: {
-        imageMessage: {
-          mimetype: 'image/jpeg',
-          caption: text, // El texto que aparecerá en la cita
-          jpegThumbnail: Buffer.from(imageBuffer), // El buffer de la imagen
+        productMessage: {
+          product: {
+            productImage: {
+              mimetype: 'image/jpeg',
+              jpegThumbnail: thumbnailBuffer,
+            },
+            productId: '9999999', // Debe ser un número
+            title: '⭐ Mensaje Destacado', // Título que se muestra
+            description: text, // El texto que pasas en el comando
+            currencyCode: 'USD',
+            priceAmount1000: 1000, // Precio en centavos (aquí $1.00 USD)
+            salePriceAmount1000: 1000,
+            retailerId: 'ID-de-tu-bot',
+          },
+          businessOwnerJid: '0@s.whatsapp.net',
         },
       },
+      participant: '0@s.whatsapp.net',
     };
 
-    // Envía el mensaje principal, citando el mensaje simulado
-    await conn.sendMessage(m.chat, {
-      text: 'Este es el mensaje principal que envía el bot.',
-      quoted: fakeQuote, // Usa la propiedad `quoted` para citar el mensaje
-    });
+    await conn.sendMessage(m.chat, { text: 'Este es el mensaje principal.', quoted: fakeProduct });
 
   } catch (error) {
-    console.error('Error al enviar el mensaje con cita falsa:', error);
-    conn.reply(m.chat, '❌ Ocurrió un error al intentar simular el mensaje.', m);
+    console.error('Error al crear el mensaje de producto:', error);
+    m.reply('❌ Ocurrió un error al intentar enviar el mensaje.');
   }
-};
+}
 
-handler.help = ['fakequoteimg <texto>'];
-handler.tags = ['fun'];
-handler.command = ['fakequoteimg'];
+handler.help = ['fakeproduct <texto>']
+handler.tags = ['unique']
+handler.command = ['fakeproduct']
 
-export default handler;
+export default handler
