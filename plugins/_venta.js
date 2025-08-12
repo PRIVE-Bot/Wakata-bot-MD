@@ -4,7 +4,7 @@ let handler = async (m, { conn }) => {
   const jid = m.chat;
 
   
-  const res = await fetch('https://files.catbox.moe/63ulmx.png');
+  const res = await fetch('https://files.catbox.moe/usl0ms.jpg');
   const thumb2 = Buffer.from(await res.arrayBuffer());
 
  
