@@ -12,7 +12,7 @@ let handler = async (m, { conn }) => {
         currencyCode: "USD",
         priceAmount1000: 5000,
         retailerId: "1466", 
-        productId: "24502048122733040", 
+        productId: "24103084136052981", 
         productImageCount: 1,
       },
       businessOwnerJid: "50432955554@s.whatsapp.net" 
