@@ -50,45 +50,46 @@ import { generateWAMessageFromContent } from '@whiskeysockets/baileys'
 let handler = async (m, { conn }) => {
   const thumb = await (await fetch('https://files.catbox.moe/8vxwld.jpg')).buffer()
 
-  const productMessage = generateWAMessageFromContent(
-    m.chat,
-    {
-      productMessage: {
-        product: {
-          productImage: {
-            mimetype: 'image/jpeg',
-            jpegThumbnail: thumb,
-          },
-          productId: '334456799976443',
-          title: 'Bot Profesional WhatsApp',
-          description:
-            `🚀 ¡Tu negocio en el siguiente nivel!\n\n🔥 Consigue un bot de WhatsApp rápido, personalizable y con funciones avanzadas para automatizar tu negocio.\n\n✨ Comandos, stickers, conexión QR, mensajes enriquecidos y más.\n\n💼 ¡Ideal para negocios y creadores!`,
-          currencyCode: 'USD',
-          priceAmount1000: 500000000000,
-          salePriceAmount1000: 0,
-          retailerId: '',
-          url: 'https://tubotprofesional.com',
-        },
-        businessOwnerJid: '50432955554@s.whatsapp.net',
-        contextInfo: {
-          externalAdReply: {
-            showAdAttribution: true,
-            title: '💻 Bot Profesional WhatsApp',
-            body: '¡Empieza a crecer hoy!',
-            mediaType: 1,
-            thumbnail: thumb,
-            sourceUrl: 'https://tubotprofesional.com',
-            renderLargerThumbnail: true,
-          },
+  // Información del producto
+  const product = {
+    // Esencial para que el mensaje sea válido
+    productImage: {
+      mimetype: 'image/jpeg',
+      jpegThumbnail: thumb,
+    },
+    // ID del producto, puede ser un número aleatorio o un SKU
+    productId: '334456799976443', 
+    title: 'Bot Profesional WhatsApp',
+    description: `🚀 ¡Tu negocio en el siguiente nivel!\n\n🔥 Consigue un bot de WhatsApp rápido, personalizable y con funciones avanzadas para automatizar tu negocio.\n\n✨ Comandos, stickers, conexión QR, mensajes enriquecidos y más.\n\n💼 ¡Ideal para negocios y creadores!`,
+    currencyCode: 'USD',
+    // Precio en centavos, aquí 50 USD
+    priceAmount1000: 50000, 
+    retailerId: 'TU_ID_DE_COMERCIO', // Puedes dejarlo vacío si no tienes
+    url: 'https://tubotprofesional.com',
+  };
+
+  const productMessage = {
+    productMessage: {
+      product: product,
+      businessOwnerJid: '50432955554@s.whatsapp.net', // Tu JID de WhatsApp Business
+      contextInfo: {
+        externalAdReply: {
+          showAdAttribution: true,
+          title: '💻 Bot Profesional WhatsApp',
+          body: '¡Empieza a crecer hoy!',
+          mediaType: 1,
+          thumbnail: thumb,
+          sourceUrl: 'https://tubotprofesional.com',
+          renderLargerThumbnail: true,
         },
       },
     },
-    { quoted: m }
-  )
+  };
 
-  await conn.sendMessage(m.chat, productMessage.message, { quoted: m })
-}
+  // Envía el mensaje con el formato de producto
+  conn.sendMessage(m.chat, productMessage, { quoted: m });
+};
 
-handler.command = ['comprar']
+handler.command = ['comprar'];
 
-export default handler
+export default handler;
