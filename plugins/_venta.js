@@ -1,7 +1,7 @@
 let handler = async (m, { conn }) => {
-  if (m.isGroup) {
-    return m.reply('Los pagos solo se pueden enviar en chats privados.', { quoted: m })
-  }
+ // if (m.isGroup) {
+ //   return m.reply('Los pagos solo se pueden enviar en chats privados.', { quoted: m })
+ // }
 
   let texto = `Compra *${global.botname}* por $5 para tus grupos y mucho más. ¡Contáctanos para más información!`
 
