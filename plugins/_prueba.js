@@ -1,44 +1,65 @@
-import fetch from 'node-fetch'
+import fetch from 'node-fetch';
 
 let handler = async (m, { conn }) => {
-  const thumb = await (await fetch('https://files.catbox.moe/8vxwld.jpg')).buffer()
+  // Aseguramos que la imagen se cargue correctamente
+  const thumbBuffer = await (await fetch('https://files.catbox.moe/8vxwld.jpg')).buffer();
 
-  // Define la información del producto
-  const product = {
-    productImage: {
-      mimetype: 'image/jpeg',
-      jpegThumbnail: thumb,
-    },
-    productId: '334456799976443',
-    title: 'Bot Profesional WhatsApp',
-    description: `🚀 ¡Tu negocio en el siguiente nivel!\n\n🔥 Consigue un bot de WhatsApp rápido, personalizable y con funciones avanzadas para automatizar tu negocio.\n\n✨ Comandos, stickers, conexión QR, mensajes enriquecidos y más.\n\n💼 ¡Ideal para negocios y creadores!`,
-    currencyCode: 'USD',
-    priceAmount1000: 50000, // 50 USD
-    retailerId: '',
-    url: 'https://tubotprofesional.com',
-  };
-
-  // Crea el mensaje completo con el formato de producto
-  const productMessage = {
-    productMessage: {
-      product: product,
-      businessOwnerJid: '50432955554@s.whatsapp.net',
-      contextInfo: {
-        externalAdReply: {
-          showAdAttribution: true,
-          title: '💻 Bot Profesional WhatsApp',
-          body: '¡Empieza a crecer hoy!',
-          mediaType: 1,
-          thumbnail: thumb,
-          sourceUrl: 'https://tubotprofesional.com',
-          renderLargerThumbnail: true,
+  // Creamos las secciones de la lista. Cada sección es un grupo de opciones.
+  const sections = [
+    {
+      title: 'Opciones de Compra', // Título de la sección
+      rows: [
+        {
+          title: '🛒 Comprar Ahora',
+          description: 'Obtén tu bot de WhatsApp profesional con una sola compra.',
+          rowId: 'buy_now', // Identificador que se envía al bot al presionar
         },
+        {
+          title: '⚙️ Ver Demostración',
+          description: 'Descubre cómo funciona el bot antes de comprarlo.',
+          rowId: 'view_demo',
+        },
+      ],
+    },
+    {
+      title: 'Más Información', // Otra sección para opciones adicionales
+      rows: [
+        {
+          title: '💬 Contactar Vendedor',
+          description: 'Habla directamente con un asesor sobre tu proyecto.',
+          rowId: 'contact_seller',
+        },
+        {
+          title: '🌐 Visitar Web',
+          description: 'Explora nuestra página web para ver más detalles y productos.',
+          rowId: 'visit_website',
+        },
+      ],
+    },
+  ];
+
+  // Creamos el mensaje de lista principal
+  const listMessage = {
+    text: '🚀 *¡Oferta exclusiva!* 🚀\n\n🔥 Consigue tu propio bot de WhatsApp profesional, rápido y personalizable.\n\n💼 ¡Ideal para negocios y creadores!',
+    footer: 'Selecciona una opción para continuar:',
+    title: '💻 Bot Profesional WhatsApp', // Título del mensaje de lista
+    buttonText: 'Ver Opciones', // Texto del botón principal
+    sections,
+    listType: 1, // Tipo de lista, 1 es el formato estándar
+    contextInfo: {
+      externalAdReply: {
+        showAdAttribution: true,
+        title: '💻 Bot Profesional WhatsApp',
+        body: 'El precio es de $50 USD. ¡Empieza a crecer hoy!',
+        mediaType: 1,
+        thumbnail: thumbBuffer,
+        sourceUrl: 'https://tubotprofesional.com',
+        renderLargerThumbnail: true,
       },
     },
   };
-  
-  // Envía el mensaje con el formato de producto de forma directa
-  conn.sendMessage(m.chat, productMessage, { quoted: m });
+
+  await conn.sendMessage(m.chat, listMessage, { quoted: m });
 };
 
 handler.command = ['comprar'];
