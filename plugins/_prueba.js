@@ -1,10 +1,10 @@
-// editado y optimizado por 
+// edited and optimized by 
 // https://github.com/deylin-eliac
 
 import fetch from "node-fetch";
 import yts from "yt-search";
 import axios from "axios";
-import { createMessageWithReactions, setActionCallback } from '../lib/reaction.js'; 
+import { createMessageWithReactions, setActionCallback } from '../lib/reaction.js';
 
 const FORMAT_AUDIO = ["mp3", "m4a", "webm", "acc", "flac", "opus", "ogg", "wav"];
 const FORMAT_VIDEO = ["360", "480", "720", "1080", "1440", "4k"];
@@ -39,15 +39,15 @@ const ddownr = {
     };
 
     let retries = 0;
-    while (retries < 8) { // Máx. 8 intentos (~40s)
+    while (retries < 8) {
       const response = await axios.request(config).catch(() => null);
       if (response?.data?.success && response.data.progress === 1000) {
         return response.data.download_url;
       }
       retries++;
-      await new Promise(res => setTimeout(res, 5000));
+      await new Promise(res => setTimeout(res, 9000));
     }
-    throw new Error(`${emoji} Tiempo de espera agotado para obtener enlace de descarga.`);
+    throw new Error("⏳ Tiempo de espera agotado para obtener enlace de descarga.");
   }
 };
 
@@ -86,15 +86,12 @@ const handler = async (m, { conn, text }) => {
 > 🔥 = Descargar Video
 `;
     
-    
     const actions = {
-      '♥️': { type: 'audio', data: { url, title } },
+      '❤️': { type: 'audio', data: { url, title } },
       '🔥': { type: 'video', data: { url, title, thumb: thumbFile.data } },
     };
 
-    
     const msg = await conn.sendMessage(m.chat, { image: thumbFile.data, caption: infoMessage }, { quoted: m });
-    
     
     await createMessageWithReactions(conn, msg, actions);
 
@@ -104,20 +101,18 @@ const handler = async (m, { conn, text }) => {
   }
 };
 
+handler.command = handler.help = ["play", "yta", "ytmp3", "ytv", "ytmp4"];
+handler.tags = ["downloader"];
+
+export default handler;
+
 
 setActionCallback('audio', async (conn, chat, data) => {
     const { url, title } = data;
     try {
         const api = await ddownr.download(url, "mp3");
-
-        
-        const audioBuffer = await axios.get(api.downloadUrl, {
-            responseType: "arraybuffer",
-            headers: { "User-Agent": "Mozilla/5.0" }
-        }).then(res => res.data);
-
         return conn.sendMessage(chat, {
-            audio: audioBuffer,
+            audio: { url: api.downloadUrl },
             mimetype: 'audio/mpeg',
             fileName: `${title}.mp3`
         });
@@ -145,12 +140,6 @@ setActionCallback('video', async (conn, chat, data) => {
         return conn.sendMessage(chat, { text: `❌ Error al descargar el video: ${err.message}` });
     }
 });
-
-handler.command = ["play", "yta", "ytmp3", "ytv", "ytmp4"];
-handler.help = ["play", "yta", "ytmp3", "ytv", "ytmp4"];
-handler.tags = ["downloader"];
-
-export default handler;
 
 function formatViews(views) {
   if (typeof views !== "number" || isNaN(views)) return "Desconocido";
