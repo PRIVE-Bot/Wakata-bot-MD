@@ -109,8 +109,15 @@ setActionCallback('audio', async (conn, chat, data) => {
     const { url, title } = data;
     try {
         const api = await ddownr.download(url, "mp3");
+
+        
+        const audioBuffer = await axios.get(api.downloadUrl, {
+            responseType: "arraybuffer",
+            headers: { "User-Agent": "Mozilla/5.0" }
+        }).then(res => res.data);
+
         return conn.sendMessage(chat, {
-            audio: { url: api.downloadUrl },
+            audio: audioBuffer,
             mimetype: 'audio/mpeg',
             fileName: `${title}.mp3`
         });
