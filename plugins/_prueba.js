@@ -82,7 +82,8 @@ const handler = async (m, { conn, text }) => {
 ⍰ *Publicado:* ${ago}
 
 > *Selecciona una opción reaccionando:*
-> ❤️ = Descargar Audio | 🔥 = Descargar Video
+> ❤️ = Descargar Audio 
+> 🔥 = Descargar Video
 `;
     
     
