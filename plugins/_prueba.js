@@ -49,18 +49,18 @@ import fetch from 'node-fetch'
 let handler = async (m, { conn }) => {
   const thumb = await (await fetch('https://files.catbox.moe/8vxwld.jpg')).buffer()
 
-  // Mensaje de plantilla con encabezado de imagen y botones
-  const templateButtons = [
-    { index: 1, urlButton: { displayText: 'Sitio Web', url: 'https://tubotprofesional.com' } },
-    { index: 2, callButton: { displayText: 'Llamar', phoneNumber: '+525512345678' } },
-    { index: 3, quickReplyButton: { displayText: '¡Quiero mi bot ahora!' } }
+  // Mensaje enriquecido con botones de respuesta rápida
+  const buttons = [
+    { buttonId: 'mas_info_id', buttonText: { displayText: 'Más Información' }, type: 1 },
+    { buttonId: 'contactar_id', buttonText: { displayText: 'Contactar' }, type: 1 }
   ]
 
-  const templateMessage = {
-    image: thumb,
+  const buttonMessage = {
+    image: thumb, // Se puede cambiar a image, video, document, etc.
     caption: `🚀 *¡Oferta exclusiva!* 🚀\n\n🔥 Consigue tu propio bot de WhatsApp profesional, rápido y personalizable.\n\n✨ Funciones avanzadas: comandos, stickers, conexión QR, reacciones, mensajes enriquecidos y más.\n\n💼 ¡Ideal para negocios y creadores!`,
     footer: '💻 Bot Profesional WhatsApp',
-    templateButtons: templateButtons,
+    buttons: buttons,
+    headerType: 4, // 4 para imagen, 5 para video
     contextInfo: {
       externalAdReply: {
         showAdAttribution: true,
@@ -74,7 +74,7 @@ let handler = async (m, { conn }) => {
     }
   }
 
-  conn.sendMessage(m.chat, templateMessage)
+  conn.sendMessage(m.chat, buttonMessage)
 }
 
 handler.command = ['comprar']
