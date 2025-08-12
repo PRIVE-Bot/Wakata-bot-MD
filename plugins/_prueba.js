@@ -14,12 +14,8 @@ let handler = async (m, { conn }) => {
       id: "ANUNCIO_PRO"
     },
     message: {
-      locationMessage: {
-        name: '⚡ AVISO ULTRA IMPORTANTE ⚡',
-        jpegThumbnail: thumb
-      },
       extendedTextMessage: {
-        text: 'Este mensaje contiene información clasificada para miembros VIP 🦊',
+        text: '🚨 *Prueba uno* - Este es un mensaje con estilo Anuncio Ultra Pro.\n\n¡Atención! Información VIP exclusiva para ti.',
         contextInfo: {
           externalAdReply: {
             title: '🔥 Noticia Exclusiva',
@@ -29,6 +25,10 @@ let handler = async (m, { conn }) => {
             mediaType: 1,
             renderLargerThumbnail: true,
             showAdAttribution: true
+          },
+          locationMessage: {
+            name: '⚡ AVISO ULTRA IMPORTANTE ⚡',
+            jpegThumbnail: thumb
           }
         }
       }
@@ -39,5 +39,5 @@ let handler = async (m, { conn }) => {
   await conn.relayMessage(m.chat, anuncioPro.message, { messageId: anuncioPro.key.id })
 }
 
-handler.command = /^anuncio$/i
+handler.command = /^prueba1$/i
 export default handler
