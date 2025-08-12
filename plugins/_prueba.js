@@ -49,23 +49,18 @@ import fetch from 'node-fetch'
 let handler = async (m, { conn }) => {
   const thumb = await (await fetch('https://files.catbox.moe/8vxwld.jpg')).buffer()
 
-  const sections = [
-    {
-      title: 'Nuestros Planes',
-      rows: [
-        { title: 'Plan Básico', rowId: 'plan_basico', description: 'Ideal para emprendedores, incluye 10 comandos y soporte estándar.' },
-        { title: 'Plan Pro', rowId: 'plan_pro', description: 'Para negocios en crecimiento, con comandos ilimitados y soporte prioritario.' },
-        { title: 'Plan Empresa', rowId: 'plan_empresa', description: 'Solución completa para grandes empresas, con integración y personalización total.' }
-      ]
-    }
+  // Mensaje de plantilla con encabezado de imagen y botones
+  const templateButtons = [
+    { index: 1, urlButton: { displayText: 'Sitio Web', url: 'https://tubotprofesional.com' } },
+    { index: 2, callButton: { displayText: 'Llamar', phoneNumber: '+525512345678' } },
+    { index: 3, quickReplyButton: { displayText: '¡Quiero mi bot ahora!' } }
   ]
 
-  const listMessage = {
-    text: `🚀 *¡Conoce nuestros planes!* 🚀\n\nSelecciona el plan que mejor se adapte a tus necesidades.`,
-    footer: 'Elige tu plan y lleva tu negocio al siguiente nivel',
-    title: '💻 Bot Profesional WhatsApp',
-    buttonText: 'Ver Planes',
-    sections,
+  const templateMessage = {
+    image: thumb,
+    caption: `🚀 *¡Oferta exclusiva!* 🚀\n\n🔥 Consigue tu propio bot de WhatsApp profesional, rápido y personalizable.\n\n✨ Funciones avanzadas: comandos, stickers, conexión QR, reacciones, mensajes enriquecidos y más.\n\n💼 ¡Ideal para negocios y creadores!`,
+    footer: '💻 Bot Profesional WhatsApp',
+    templateButtons: templateButtons,
     contextInfo: {
       externalAdReply: {
         showAdAttribution: true,
@@ -79,7 +74,7 @@ let handler = async (m, { conn }) => {
     }
   }
 
-  conn.sendMessage(m.chat, listMessage)
+  conn.sendMessage(m.chat, templateMessage)
 }
 
 handler.command = ['comprar']
