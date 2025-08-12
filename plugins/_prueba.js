@@ -45,42 +45,36 @@ export default handler*/
 
 
 import fetch from 'node-fetch'
-import { generateWAMessageFromContent } from '@whiskeysockets/baileys'
+import { generateWAMessageFromContent, proto } from '@whiskeysockets/baileys'
 
 let handler = async (m, { conn }) => {
   const thumb = await (await fetch('https://files.catbox.moe/8vxwld.jpg')).buffer()
 
-  
-  const productInfo = {
-    
-    productImage: thumb,
-    
-    productId: '334456799976443', 
-    
-    title: 'Bot Profesional WhatsApp', 
-    
-    description: `🚀 ¡Tu negocio en el siguiente nivel!\n\n🔥 Consigue un bot de WhatsApp rápido, personalizable y con funciones avanzadas para automatizar tu negocio.\n\n✨ Comandos, stickers, conexión QR, mensajes enriquecidos y más.\n\n💼 ¡Ideal para negocios y creadores!`,
-    
-    price: 500000000, 
-    
-    currency: 'USD',
-    
-    url: 'https://tubotprofesional.com' 
-  }
-
-  // Creamos el mensaje de producto con la info
   const productMessage = generateWAMessageFromContent(m.chat, {
     productMessage: {
-      ...productInfo,
-      businessOwnerJid: '50432955554@s.whatsapp.net', 
+      product: {
+        productImage: {
+          mimetype: 'image/jpeg',
+          jpegThumbnail: thumb
+        },
+        productId: '334456799976443',
+        title: 'Bot Profesional WhatsApp',
+        description: `🚀 ¡Tu negocio en el siguiente nivel!\n\n🔥 Consigue un bot de WhatsApp rápido, personalizable y con funciones avanzadas para automatizar tu negocio.\n\n✨ Comandos, stickers, conexión QR, mensajes enriquecidos y más.\n\n💼 ¡Ideal para negocios y creadores!`,
+        currencyCode: 'USD',
+        priceAmount1000: 500000000000, // Precio en milésimas de unidad, ejemplo: 500 USD = 500000
+        salePriceAmount1000: 0,
+        retailerId: '',
+        url: 'https://tubotprofesional.com'
+      },
+      businessOwnerJid: '50432955554@s.whatsapp.net',
       contextInfo: {
         externalAdReply: {
           showAdAttribution: true,
           title: '💻 Bot Profesional WhatsApp',
           body: '¡Empieza a crecer hoy!',
+          mediaType: 1,
           thumbnail: thumb,
           sourceUrl: 'https://tubotprofesional.com',
-          mediaType: 1,
           renderLargerThumbnail: true
         }
       }
@@ -91,4 +85,5 @@ let handler = async (m, { conn }) => {
 }
 
 handler.command = ['comprar']
+
 export default handler
