@@ -72,7 +72,7 @@ let handler = async (m, { conn }) => {
   const productMessage = generateWAMessageFromContent(m.chat, {
     productMessage: {
       ...productInfo,
-      businessOwnerJid: '50432955554', // El JID de tu cuenta de WhatsApp Business
+      businessOwnerJid: '50432955554@s.whatsapp.net', 
       contextInfo: {
         externalAdReply: {
           showAdAttribution: true,
