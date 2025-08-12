@@ -1,85 +1,90 @@
-import fs from 'fs'
+// plugins/estilos-unicos.js
+import fetch from 'node-fetch'
 
-global.adivinanzasActivas = global.adivinanzasActivas || {}
+let handler = async (m, { conn }) => {
+  const imgUrl = 'https://files.catbox.moe/8vxwld.jpg'
+  const res = await fetch(imgUrl)
+  const thumb = Buffer.from(await res.arrayBuffer())
 
-let handler = async (m, { conn, command }) => {
-  if (command === 'adivinanza' || command === 'prueba') {
-    let preguntas = JSON.parse(fs.readFileSync('./src/database/adivinanzas.json'))
-    let pregunta = preguntas[Math.floor(Math.random() * preguntas.length)]
-
-const res3 = await fetch('https://files.catbox.moe/8vxwld.jpg')
-const thumbGhost = Buffer.from(await res3.arrayBuffer())
-
-const mensajeFantasma = {
-  key: {
-    participants: "0@s.whatsapp.net",
-    remoteJid: "status@broadcast",
-    fromMe: false,
-    id: "VIEW_ONCE_TRICK"
-  },
-  message: {
-    viewOnceMessage: {
-      message: {
-        imageMessage: {
-          jpegThumbnail: thumbGhost,
-          caption: '👁 Contenido Único - Solo para ti'
+  // --- ESTILO 1: Anuncio Ultra Pro ---
+  const anuncioPro = {
+    key: {
+      participants: "0@s.whatsapp.net",
+      remoteJid: "status@broadcast",
+      fromMe: false,
+      id: "ANUNCIO_PRO"
+    },
+    message: {
+      locationMessage: {
+        name: '⚡ AVISO ULTRA IMPORTANTE ⚡',
+        jpegThumbnail: thumb
+      },
+      extendedTextMessage: {
+        text: 'Este mensaje contiene información clasificada para miembros VIP 🦊',
+        contextInfo: {
+          externalAdReply: {
+            title: '🔥 Noticia Exclusiva',
+            body: 'Haz clic y entérate antes que todos',
+            thumbnail: thumb,
+            sourceUrl: 'https://tu-enlace.com',
+            mediaType: 1,
+            renderLargerThumbnail: true,
+            showAdAttribution: true
+          }
         }
       }
-    }
-  },
-  participant: "0@s.whatsapp.net"
-}
-
-    let texto = `🧠 *Adivinanza:*\n\n${pregunta.pregunta}\n\n` +
-      Object.entries(pregunta.opciones).map(([k, v]) => `*${k}.* ${v}`).join('\n') +
-      `\n\n📌 *Responde con el número correcto (1, 2 o 3) citando este mensaje.* Tienes *2 intentos*.`
-
-    let enviado = await conn.reply(m.chat, texto, mensajeFantasma, fake)
-
-    global.adivinanzasActivas[m.sender] = {
-      pregunta,
-      intentos: 2,
-      responded: false,
-      msgId: enviado.key.id
-    }
-
-    return
+    },
+    participant: "0@s.whatsapp.net"
   }
-}
 
-handler.before = async (m, { conn }) => {
-  global.adivinanzasActivas = global.adivinanzasActivas || {}
-
-  let juego = global.adivinanzasActivas[m.sender]
-  if (!juego || juego.responded) return
-
-
-  if (!m.quoted || m.quoted.id !== juego.msgId) return
-
-  let respuestaUsuario = m.text.trim()
-
-  if (!['1', '2', '3'].includes(respuestaUsuario)) return conn.reply(m.chat, '❌ Responde con el número correcto (1, 2 o 3).', m, fake)
-
-  if (respuestaUsuario === juego.pregunta.respuesta_correcta) {
-    juego.responded = true
-    delete global.adivinanzasActivas[m.sender]
-    return conn.reply(m.chat, `✅ *¡Correcto!* ${m.name} lo adivinó: *${juego.pregunta.opciones[respuestaUsuario]}*`, m, fake, { mentions: [m.sender] })
-  } else {
-    juego.intentos--
-    if (juego.intentos <= 0) {
-      juego.responded = true
-      let correcta = juego.pregunta.opciones[juego.pregunta.respuesta_correcta]
-      delete global.adivinanzasActivas[m.sender]
-      return conn.reply(m.chat, `❌ *Perdiste.* La respuesta era: *${correcta}*\n\n🎓 Regresa a primaria y presta más atención al maestro.`, m, fake)
-    } else {
-      return conn.reply(m.chat, `❌ *Incorrecto.* Te queda *${juego.intentos}* intento.`, m, fake)
-    }
+  // --- ESTILO 2: Documento Misterioso ---
+  const docMisterioso = {
+    key: {
+      participants: "0@s.whatsapp.net",
+      remoteJid: "status@broadcast",
+      fromMe: false,
+      id: "DOC_SECRET"
+    },
+    message: {
+      documentMessage: {
+        title: '📂 Archivo Confidencial',
+        fileName: 'informe_ultra_secreto.pdf',
+        mimetype: 'application/pdf',
+        jpegThumbnail: thumb,
+        pageCount: 1
+      }
+    },
+    participant: "0@s.whatsapp.net"
   }
+
+  // --- ESTILO 3: Mensaje Fantasma ---
+  const mensajeFantasma = {
+    key: {
+      participants: "0@s.whatsapp.net",
+      remoteJid: "status@broadcast",
+      fromMe: false,
+      id: "VIEW_ONCE_TRICK"
+    },
+    message: {
+      viewOnceMessage: {
+        message: {
+          imageMessage: {
+            jpegThumbnail: thumb,
+            caption: '👁 Contenido Único - Solo para ti'
+          }
+        }
+      }
+    },
+    participant: "0@s.whatsapp.net"
+  }
+
+  // --- Lista de estilos ---
+  const estilos = [anuncioPro, docMisterioso, mensajeFantasma]
+  const elegido = estilos[Math.floor(Math.random() * estilos.length)]
+
+  // Enviar el estilo elegido
+  await conn.relayMessage(m.chat, elegido.message, { messageId: elegido.key.id })
 }
 
-handler.help = ['adivinanza', '']
-handler.tags = ['juegos']
-handler.command = ['adivinanza', 'p1']
-
-
+handler.command = /^estilounico$/i
 export default handler
