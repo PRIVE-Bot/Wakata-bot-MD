@@ -2,88 +2,101 @@
 import fetch from 'node-fetch'
 
 let handler = async (m, { conn }) => {
-  const imgUrl = 'https://files.catbox.moe/8vxwld.jpg'
-  const res = await fetch(imgUrl)
-  const thumb = Buffer.from(await res.arrayBuffer())
+  try {
+    const imgUrl = 'https://files.catbox.moe/8vxwld.jpg'
+    const res = await fetch(imgUrl)
+    
+    // Verificamos si la respuesta de la imagen es exitosa
+    if (!res.ok) {
+      throw new Error(`Error al obtener la imagen: ${res.statusText}`)
+    }
 
-  // --- ESTILO 1: Anuncio Ultra Pro ---
-  const anuncioPro = {
-    key: {
-      participants: "0@s.whatsapp.net",
-      remoteJid: "status@broadcast",
-      fromMe: false,
-      id: "ANUNCIO_PRO"
-    },
-    message: {
-      locationMessage: {
-        name: '⚡ AVISO ULTRA IMPORTANTE ⚡',
-        jpegThumbnail: thumb
+    const thumb = Buffer.from(await res.arrayBuffer())
+
+    // --- ESTILO 1: Anuncio Ultra Pro ---
+    const anuncioPro = {
+      key: {
+        participants: "0@s.whatsapp.net",
+        remoteJid: "status@broadcast",
+        fromMe: false,
+        id: "ANUNCIO_PRO"
       },
-      extendedTextMessage: {
-        text: 'Este mensaje contiene información clasificada para miembros VIP 🦊',
-        contextInfo: {
-          externalAdReply: {
-            title: '🔥 Noticia Exclusiva',
-            body: 'Haz clic y entérate antes que todos',
-            thumbnail: thumb,
-            sourceUrl: 'https://tu-enlace.com',
-            mediaType: 1,
-            renderLargerThumbnail: true,
-            showAdAttribution: true
+      message: {
+        locationMessage: {
+          name: '⚡ AVISO ULTRA IMPORTANTE ⚡',
+          jpegThumbnail: thumb
+        },
+        extendedTextMessage: {
+          text: 'Este mensaje contiene información clasificada para miembros VIP 🦊',
+          contextInfo: {
+            externalAdReply: {
+              title: '🔥 Noticia Exclusiva',
+              body: 'Haz clic y entérate antes que todos',
+              thumbnail: thumb,
+              sourceUrl: 'https://tu-enlace.com',
+              mediaType: 1,
+              renderLargerThumbnail: true,
+              showAdAttribution: true
+            }
           }
         }
-      }
-    },
-    participant: "0@s.whatsapp.net"
-  }
+      },
+      participant: "0@s.whatsapp.net"
+    }
 
-  // --- ESTILO 2: Documento Misterioso ---
-  const docMisterioso = {
-    key: {
-      participants: "0@s.whatsapp.net",
-      remoteJid: "status@broadcast",
-      fromMe: false,
-      id: "DOC_SECRET"
-    },
-    message: {
-      documentMessage: {
-        title: '📂 Archivo Confidencial',
-        fileName: 'informe_ultra_secreto.pdf',
-        mimetype: 'application/pdf',
-        jpegThumbnail: thumb,
-        pageCount: 1
-      }
-    },
-    participant: "0@s.whatsapp.net"
-  }
+    // --- ESTILO 2: Documento Misterioso ---
+    const docMisterioso = {
+      key: {
+        participants: "0@s.whatsapp.net",
+        remoteJid: "status@broadcast",
+        fromMe: false,
+        id: "DOC_SECRET"
+      },
+      message: {
+        documentMessage: {
+          title: '📂 Archivo Confidencial',
+          fileName: 'informe_ultra_secreto.pdf',
+          mimetype: 'application/pdf',
+          jpegThumbnail: thumb,
+          pageCount: 1
+        }
+      },
+      participant: "0@s.whatsapp.net"
+    }
 
-  // --- ESTILO 3: Mensaje Fantasma ---
-  const mensajeFantasma = {
-    key: {
-      participants: "0@s.whatsapp.net",
-      remoteJid: "status@broadcast",
-      fromMe: false,
-      id: "VIEW_ONCE_TRICK"
-    },
-    message: {
-      viewOnceMessage: {
-        message: {
-          imageMessage: {
-            jpegThumbnail: thumb,
-            caption: '👁 Contenido Único - Solo para ti'
+    // --- ESTILO 3: Mensaje Fantasma ---
+    const mensajeFantasma = {
+      key: {
+        participants: "0@s.whatsapp.net",
+        remoteJid: "status@broadcast",
+        fromMe: false,
+        id: "VIEW_ONCE_TRICK"
+      },
+      message: {
+        viewOnceMessage: {
+          message: {
+            imageMessage: {
+              jpegThumbnail: thumb,
+              caption: '👁 Contenido Único - Solo para ti'
+            }
           }
         }
-      }
-    },
-    participant: "0@s.whatsapp.net"
+      },
+      participant: "0@s.whatsapp.net"
+    }
+
+    // --- Lista de estilos ---
+    const estilos = [anuncioPro, docMisterioso, mensajeFantasma]
+    const elegido = estilos[Math.floor(Math.random() * estilos.length)]
+
+    // Enviar el estilo elegido
+    await conn.relayMessage(m.chat, elegido.message, { messageId: elegido.key.id })
+
+  } catch (e) {
+    console.error('Error en el plugin estilounico:', e)
+    // Enviar un mensaje de error al usuario
+    await conn.reply(m.chat, 'Ocurrió un error al intentar enviar el mensaje especial. Intenta de nuevo más tarde.', m)
   }
-
-  // --- Lista de estilos ---
-  const estilos = [anuncioPro, docMisterioso, mensajeFantasma]
-  const elegido = estilos[Math.floor(Math.random() * estilos.length)]
-
-  // Enviar el estilo elegido
-  await conn.relayMessage(m.chat, elegido.message, { messageId: elegido.key.id })
 }
 
 handler.command = /^estilounico$/i
