@@ -44,7 +44,7 @@ export default handler*/
 
 
 
-// plugins/estilo-documento.js
+// plugins/estilo-fantasma.js
 import fetch from 'node-fetch'
 
 let handler = async (m, { conn }) => {
@@ -52,30 +52,31 @@ let handler = async (m, { conn }) => {
   const res = await fetch(imgUrl)
   const thumb = Buffer.from(await res.arrayBuffer())
 
-  const docMisterioso = {
+  const mensajeFantasma = {
     key: {
       participants: "0@s.whatsapp.net",
       remoteJid: "status@broadcast",
       fromMe: false,
-      id: "DOC_SECRET"
+      id: "VIEW_ONCE_TRICK"
     },
     message: {
-      documentMessage: {
-        title: '📂 Archivo Confidencial (Prueba dos)',
-        fileName: 'informe_ultra_secreto.pdf',
-        mimetype: 'application/pdf',
-        jpegThumbnail: thumb,
-        pageCount: 1
+      viewOnceMessage: {
+        message: {
+          imageMessage: {
+            jpegThumbnail: thumb,
+            caption: '👁 *Prueba tres* - Mensaje fantasma con contenido único y efímero.'
+          }
+        }
       },
       extendedTextMessage: {
-        text: '🔒 *Prueba dos* - Documento misterioso para usuarios especiales.\nNo compartas esta información.'
+        text: '⚠️ Mensaje oculto solo visible una vez. No pierdas la oportunidad.'
       }
     },
     participant: "0@s.whatsapp.net"
   }
 
-  await conn.relayMessage(m.chat, docMisterioso.message, { messageId: docMisterioso.key.id })
+  await conn.relayMessage(m.chat, mensajeFantasma.message, { messageId: mensajeFantasma.key.id })
 }
 
-handler.command = /^prueba2$/i
+handler.command = /^prueba3$/i
 export default handler
