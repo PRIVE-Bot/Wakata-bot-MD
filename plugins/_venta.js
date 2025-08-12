@@ -11,14 +11,14 @@ let handler = async (m, { conn }) => {
         description: `Alquila o compra ${global.botname} para tus grupos.`,
         currencyCode: "USD",
         priceAmount1000: 5000,
-        retailerId: "1466", 
-        productId: "24103084136052981", 
+        retailerId: "1466",
+        productId: "24103084136052981",
         productImageCount: 1,
       },
-      businessOwnerJid: "50432955554@s.whatsapp.net" 
+      businessOwnerJid: "50432955554@s.whatsapp.net"
     };
 
-    await conn.sendMessage(jid, productMessage, { messageType: 'product' });
+    await conn.sendMessage(jid, productMessage, { messageType: 'product', quoted: m });
   } catch (error) {
     console.error('Error enviando catálogo:', error);
     conn.reply(jid, '❌ No se pudo enviar el catálogo. Verifica que el productId y el número Business sean correctos.', m);
