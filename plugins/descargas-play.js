@@ -65,7 +65,7 @@ const handler = async (m, { conn, text }) => {
     const thumb3 = Buffer.from(await res.arrayBuffer())
 
 
-             let  = {
+             let fkontak = {
     key: m.key,
     message: {
         imageMessage: {
@@ -107,7 +107,7 @@ const handler = async (m, { conn, text }) => {
       '🔥': { type: 'video', data: { url, title, thumb: thumbFile.data } },
     };
 
-    const msg = await conn.sendMessage(m.chat, { image: thumbFile.data, caption: infoMessage }, { quoted: m });
+    const msg = await conn.sendMessage(m.chat, { image: thumbFile.data, caption: infoMessage }, { quoted: fkontak });
 
     await createMessageWithReactions(conn, msg, actions);
 
