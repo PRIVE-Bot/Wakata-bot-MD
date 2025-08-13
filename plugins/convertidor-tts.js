@@ -14,18 +14,26 @@ const handler = async (m, { conn, args }) => {
   }
   if (!text && m.quoted?.text) text = m.quoted.text
 
-  const imgRes = await fetch('https://files.catbox.moe/nuu7tj.jpg')
+const imgRes = await fetch('https://files.catbox.moe/nuu7tj.jpg')
   const thumb3 = Buffer.from(await imgRes.arrayBuffer())
-  let allfake = {
-    key: m.key,
+
+
+        if (m?.message?.protocolMessage) {
+            let msg = global.delete.find(x => x.key.id === m.message.protocolMessage.key.id);
+
+            if (msg) {
+
+             let quoted = {
+    key: msg.key,
     message: {
-      imageMessage: {
-        mimetype: 'image/jpeg',
-        caption: '🎤 Audio creado con éxito.',
-        jpegThumbnail: thumb3
-      }
+        imageMessage: {
+            mimetype: 'image/jpeg',
+            caption: '🎤 Audio creado con éxito.',
+            jpegThumbnail: thumb3 
+        }
     }
-  }
+};
+
 
   text = text.replace(/[^\p{L}\p{N}\p{Zs}]/gu, '')
   let audioBuffer
