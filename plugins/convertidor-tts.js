@@ -1,36 +1,34 @@
-import fetch from 'node-fetch'
-import fs from 'fs'
+import gtts from 'node-gtts';
+import { readFileSync, unlinkSync } from 'fs';
+import { join } from 'path';
 
-let handler = async (m, { conn, text }) => {
-  if (!text) return m.reply('📌 Ingresa el texto que quieres convertir a voz.')
+const defaultLang = 'es';
 
-  const resImg = await fetch('https://files.catbox.moe/8vxwld.jpg')
-  const thumb = Buffer.from(await resImg.arrayBuffer())
+const handler = async (m, { conn, args, usedPrefix, command }) => {
+  let lang = args[0];
+  let text = args.slice(1).join(' ');
+  if ((args[0] || '').length !== 2) {
+    lang = defaultLang;
+    text = args.join(' ');
+  }
 
-  const resAudio = await fetch(`https://api.tts.quest/v3/voicevox/speak?text=${encodeURIComponent(text)}&speaker=1`)
-  const json = await resAudio.json()
+  if (!text && m.quoted?.text) text = m.quoted.text;
 
-  if (!json.audioUrl) return m.reply('❌ No se pudo generar el audio.')
 
-  const audioBuffer = await (await fetch(json.audioUrl)).buffer()
+  text = text.replace(/[^\p{L}\p{N}\p{Zs}]/gu, '');
 
-  await conn.sendMessage(m.chat, {
-    audio: audioBuffer,
-    mimetype: 'audio/mpeg',
-    ptt: true
-  }, {
-    quoted: {
-      key: m.key,
-      message: {
-        imageMessage: {
-          mimetype: 'image/jpeg',
-          caption: '🎤 Audio creado con éxito.',
-          jpegThumbnail: thumb
-        }
-      }
-    }
-  })
-}
+  let res;
+  try {
+    res = await tts(text, lang);
+  } catch (e) {
+    m.reply(e + '');
+    text = args.join(' ').replace(/[^\p{L}\p{N}\p{Zs}]/gu, '');
+    if (!text) throw '❗ Por favor, ingresa una frase válida.';
+    res = await tts(text, defaultLang);
+  } finally {
+    if (res) conn.sendFile(m.chat, res, 'tts.opus', null, m, true);
+  }
+};
 
 handler.help = ['tts <lang> <texto>'];
 handler.tags = ['transformador'];
@@ -39,3 +37,20 @@ handler.group = true;
 handler.register = true;
 
 export default handler;
+
+
+function tts(text, lang = 'es') {
+  console.log(lang, text);
+  return new Promise((resolve, reject) => {
+    try {
+      const tts = gtts(lang);
+      const filePath = join(global.__dirname(import.meta.url), '../tmp', Date.now() + '.wav');
+      tts.save(filePath, text, () => {
+        resolve(readFileSync(filePath));
+        unlinkSync(filePath);
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+}
