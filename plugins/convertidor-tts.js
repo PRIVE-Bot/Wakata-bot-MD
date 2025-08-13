@@ -14,6 +14,20 @@ const handler = async (m, { conn, args, usedPrefix, command }) => {
 
   if (!text && m.quoted?.text) text = m.quoted.text;
 
+    const res = await fetch('https://files.catbox.moe/nuu7tj.jpg')
+    const thumb3 = Buffer.from(await res.arrayBuffer())
+
+             let quoted = {
+    key: msg.key,
+    message: {
+        imageMessage: {
+            mimetype: 'image/jpeg',
+            caption: ' creado con éxito.',
+            jpegThumbnail: thumb3 
+        }
+    }
+};
+
 
   text = text.replace(/[^\p{L}\p{N}\p{Zs}]/gu, '');
 
@@ -26,7 +40,7 @@ const handler = async (m, { conn, args, usedPrefix, command }) => {
     if (!text) throw '❗ Por favor, ingresa una frase válida.';
     res = await tts(text, defaultLang);
   } finally {
-    if (res) conn.sendFile(m.chat, res, 'tts.opus', null, m, true);
+    if (res) conn.sendFile(m.chat, res, 'tts.opus', null, quoted, true);
   }
 };
 
