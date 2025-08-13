@@ -24,18 +24,14 @@ export async function before(m, { conn, isAdmin }) {
 
             if (msg) {
                 
-                let quoted = {
-    key: msg.key,
-    message: {
-        imageMessage: {
-            url: 'https://files.catbox.moe/nuu7tj.jpg',
-            mimetype: 'image/jpeg',
-            caption: '《✧》Este usuario eliminó un mensaje.',
-            fileLength: '500000', 
-            jpegThumbnail: null 
-        }
-    }
-};
+                                let quoted = {
+                    key: msg.key,
+                    message: {
+                        extendedTextMessage: {
+                            text: 'Este usuario eliminó un mensaje.'
+                        }
+                    }
+                };
 
                 
                 await sendMessageForward(msg, {
