@@ -13,6 +13,7 @@ const handler = async (m, { conn, args }) => {
     text = args.join(' ')
   }
   if (!text && m.quoted?.text) text = m.quoted.text
+
   const imgRes = await fetch('https://files.catbox.moe/nuu7tj.jpg')
   const thumb3 = Buffer.from(await imgRes.arrayBuffer())
   let allfake = {
@@ -25,6 +26,7 @@ const handler = async (m, { conn, args }) => {
       }
     }
   }
+
   text = text.replace(/[^\p{L}\p{N}\p{Zs}]/gu, '')
   let audioBuffer
   try {
@@ -35,8 +37,13 @@ const handler = async (m, { conn, args }) => {
     if (!text) throw '❗ Por favor, ingresa una frase válida.'
     audioBuffer = await tts(text, defaultLang)
   }
+
   if (audioBuffer) {
-    await conn.sendFile(m.chat, audioBuffer, 'tts.opus', null, { quoted: allfake })
+    await conn.sendMessage(m.chat, {
+      audio: audioBuffer,
+      mimetype: 'audio/mpeg',
+      ptt: true
+    }, { quoted: allfake })
   }
 }
 
@@ -52,7 +59,7 @@ function tts(text, lang = 'es') {
   return new Promise((resolve, reject) => {
     try {
       const gttsInstance = gtts(lang)
-      const filePath = join(global.__dirname(import.meta.url), '../tmp', Date.now() + '.wav')
+      const filePath = join(global.__dirname(import.meta.url), '../tmp', Date.now() + '.mp3')
       gttsInstance.save(filePath, text, () => {
         const buffer = readFileSync(filePath)
         unlinkSync(filePath)
