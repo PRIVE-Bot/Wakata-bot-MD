@@ -69,7 +69,7 @@ Hola *@${userId.split('@')[0]}* soy *${botname}*
 
 *sɪɢᴜᴇ ᴇʟ ᴄᴀɴᴀʟ ᴏғɪᴄɪᴀʟ:*
 whatsapp.com/channel/0029VbAzn9GGU3BQw830eA0F
-
+${global.readMore}
 *◤━━━━━ ☆. 🌀 .☆ ━━━━━◥*
 ⚙_*𝑳𝑰𝑺𝑻𝑨 𝑫𝑬 𝑪𝑶𝑴𝑨𝑵𝑫𝑶𝑺*_
 ${Object.keys(tags).reduce((acc, tag) => {
