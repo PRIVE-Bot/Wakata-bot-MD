@@ -108,7 +108,7 @@ Ejemplo:
   }
 };
 
-handler.command = ['tts3'];
+handler.command = ['tts2'];
 handler.help = ['tts2 <texto>|<modelo>'];
 handler.tags = ['herramientas'];
 handler.group = false;
