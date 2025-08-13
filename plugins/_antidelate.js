@@ -26,15 +26,16 @@ export async function before(m, { conn, isAdmin }) {
 
             if (msg) {
                 
-                                let quoted = {
-                    key: msg.key,
-                    message: {
-                        extendedTextMessage: {
-                            text: 'Este usuario eliminó un mensaje.',
-          jpegThumbnail: thumb2
-                        }
-                    }
-                };
+             let quoted = {
+    key: msg.key,
+    message: {
+        imageMessage: {
+            mimetype: 'image/jpeg',
+            caption: '《✧》Este usuario eliminó un mensaje.',
+            jpegThumbnail: thumb2 
+        }
+    }
+};
 
                 
                 await sendMessageForward(msg, {
