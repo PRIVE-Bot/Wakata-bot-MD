@@ -17,6 +17,7 @@ global.confirmCode = ''
 
 global.owner = [
   [ '50432955554', 'Deylin', true ],
+  [ '15614809253', 'David', true ],
   ['155968113483985@lid'],
   ['155968113483985'],
 ]; 
