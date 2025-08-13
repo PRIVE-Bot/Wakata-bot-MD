@@ -60,22 +60,6 @@ const handler = async (m, { conn, text }) => {
 
   try {
 
-
-    const res = await fetch('https://files.catbox.moe/nuu7tj.jpg')
-    const thumb3 = Buffer.from(await res.arrayBuffer())
-
-
-             let fkontak = {
-    key: m.key,
-    message: {
-        imageMessage: {
-            mimetype: 'image/jpeg',
-            caption: '《✧》Este usuario eliminó un mensaje.',
-            jpegThumbnail: thumb3 
-        }
-    }
-};
-
     const [search, thumbFile] = await Promise.all([
       yts.search({ query: text, pages: 1 }),
       conn.getFile((await yts.search({ query: text, pages: 1 })).videos[0].thumbnail)
