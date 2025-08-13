@@ -7,8 +7,8 @@ export async function before(m, { conn, isAdmin }) {
     if (isAdmin) return; 
     if (!m.isGroup) return; 
     if (m.key.fromMe) return; 
-    const res = await fetch('https://files.catbox.moe/8vxwld.jpg')
-    const thumb2 = Buffer.from(await res.arrayBuffer())
+    const res = await fetch('https://files.catbox.moe/nuu7tj.jpg')
+    const thumb3 = Buffer.from(await res.arrayBuffer())
 
     let chat = global.db.data.chats[m.chat];
 
@@ -32,7 +32,7 @@ export async function before(m, { conn, isAdmin }) {
         imageMessage: {
             mimetype: 'image/jpeg',
             caption: '《✧》Este usuario eliminó un mensaje.',
-            jpegThumbnail: thumb2 
+            jpegThumbnail: thumb3 
         }
     }
 };
