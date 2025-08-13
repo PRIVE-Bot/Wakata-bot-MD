@@ -441,7 +441,7 @@ export async function JadiBot(options) {
   let isInit = true;
 
   const connectionUpdate = async (update) => {
-    const { connection, lastDisconnect, isNewLogin, qr } = update;
+const { connection, lastDisconnect, isNewLogin, qr } = update
     if (isNewLogin) sock.isInit = false;
 
     if (qr && !mcode) {
