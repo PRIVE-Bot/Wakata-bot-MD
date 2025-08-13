@@ -150,7 +150,7 @@ if (store) {
 conversation: 'Bot',
 }}}*/
 
-let sock = makeWASocket(connectionOptions)
+/*let sock = makeWASocket(connectionOptions)
 sock.isInit = false
 let isInit = true
 
