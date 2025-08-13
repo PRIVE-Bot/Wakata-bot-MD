@@ -15,7 +15,7 @@ const handler = async (m, { conn, args }) => {
   if (!text && m.quoted?.text) text = m.quoted.text
   const imgRes = await fetch('https://files.catbox.moe/nuu7tj.jpg')
   const thumb3 = Buffer.from(await imgRes.arrayBuffer())
-  let quoted = {
+  let allfake = {
     key: m.key,
     message: {
       imageMessage: {
@@ -36,7 +36,7 @@ const handler = async (m, { conn, args }) => {
     audioBuffer = await tts(text, defaultLang)
   }
   if (audioBuffer) {
-    await conn.sendFile(m.chat, audioBuffer, 'tts.opus', null, m, true, { quoted })
+    await conn.sendFile(m.chat, audioBuffer, 'tts.opus', null, true, { quoted: allfake })
   }
 }
 
