@@ -7,7 +7,7 @@ import axios from 'axios'
 const { generateWAMessageContent, generateWAMessageFromContent, proto } = (await import('@whiskeysockets/baileys')).default
 
 let handler = async (m, { conn }) => {
- // const proses = '⚘️ Obteniendo información de mi creador...'
+  const proses = `${emoji}\n *Obteniendo información de mi creador...*`
   await conn.sendMessage(m.chat, { text: proses }, { quoted: m })
 
   async function createImage(url) {
