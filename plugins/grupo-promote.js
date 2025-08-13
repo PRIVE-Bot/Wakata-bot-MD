@@ -8,6 +8,25 @@ var number = text.split`@`[1]
 var number = text
 }
 
+    const res = await fetch('https://files.catbox.moe/9xene9.jpg');
+    const thumb2 = Buffer.from(await res.arrayBuffer());
+
+    const fkontak = {
+        key: {
+            participants: "0@s.whatsapp.net",
+            remoteJid: "status@broadcast",
+            fromMe: false,
+            id: "Halo"
+        },
+        message: {
+            locationMessage: {
+                name: '𝗡𝗨𝗘𝗩𝗢 𝗔𝗗𝗠𝗜𝗡',
+                jpegThumbnail: thumb2
+            }
+        },
+        participant: "0@s.whatsapp.net"
+    };
+
 if (!text && !m.quoted) return conn.reply(m.chat, `${emoji} Debes mencionar a un usuario para poder promoverlo a administrador.`, m, fake)
 if (number.length > 13 || (number.length < 11 && number.length > 0)) return conn.reply(m.chat, `${emoji} Debe de responder o mensionar a una persona para usar este comando.`, m, fake)
 
@@ -22,7 +41,7 @@ var user = number + '@s.whatsapp.net'
 } catch (e) {
 } finally {
 conn.groupParticipantsUpdate(m.chat, [user], 'promote')
-conn.reply(m.chat, `${emoji}\n *Fue agregado como admin del grupo con exito.*`, m, fake)
+conn.reply(m.chat, `${emoji}\n *Fue agregado como admin del grupo con exito.*`, fkontak, fake)
 }
 
 }
