@@ -7,6 +7,8 @@ export async function before(m, { conn, isAdmin }) {
     if (isAdmin) return; 
     if (!m.isGroup) return; 
     if (m.key.fromMe) return; 
+    const res = await fetch('https://files.catbox.moe/8vxwld.jpg')
+    const thumb2 = Buffer.from(await res.arrayBuffer())
 
     let chat = global.db.data.chats[m.chat];
 
@@ -28,7 +30,8 @@ export async function before(m, { conn, isAdmin }) {
                     key: msg.key,
                     message: {
                         extendedTextMessage: {
-                            text: 'Este usuario eliminó un mensaje.'
+                            text: 'Este usuario eliminó un mensaje.',
+          jpegThumbnail: thumb2
                         }
                     }
                 };
@@ -42,7 +45,7 @@ export async function before(m, { conn, isAdmin }) {
                     quoted
                 });
 
-                // Eliminarlo del historial
+                
                 let index = global.delete.indexOf(msg);
                 if (index !== -1) global.delete.splice(index, 1);
             }
@@ -71,7 +74,7 @@ async function sendMessageForward(msg, opts = {}) {
         }
     }
 
-    // Marcar como "View Once" si corresponde
+    
     if (opts.isReadOneView) {
         forwardContent[forwardType].viewOnce = opts.viewOnce;
     }
