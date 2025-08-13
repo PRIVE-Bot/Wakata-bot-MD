@@ -1,29 +1,22 @@
-/* Código hecho por Destroy
- - https://github.com/The-King-Destroy
- - Modificado por Deylin
-*/
+/*
+ * Código hecho por Destroy
+ * https://github.com/The-King-Destroy
+ * Modificado por Deylin - Optimizado
+ */
 
-let handler = async (m, { conn, args, text }) => {
-    let who;
+let handler = async (m, { conn, text }) => {
+  let who = m.quoted?.sender
+    || (m.mentionedJid && m.mentionedJid[0])
+    || (text && /\d{5,}/.test(text) ? text.replace(/\D/g, '') + '@s.whatsapp.net' : null)
+    || (m.fromMe ? conn.user.jid : m.sender);
 
-    if (m.quoted) {
-        who = m.quoted.sender;
-    } else if (m.mentionedJid && m.mentionedJid[0]) {
-        who = m.mentionedJid[0];
-    } else if (text && text.replace(/\D/g, '').length > 4) {
-        let number = text.replace(/\D/g, '') + '@s.whatsapp.net';
-        who = number;
-    } else {
-        who = m.fromMe ? conn.user.jid : m.sender;
-    }
-
-    try {
-        let name = await conn.getName(who);
-        let pp = await conn.profilePictureUrl(who, 'image').catch(() => 'https://files.catbox.moe/9y329o.jpg');
-        await conn.sendFile(m.chat, pp, 'profile.jpg', `*Foto de perfil de: »* ${name}`, m);
-    } catch (e) {
-        await m.reply('❌ No se pudo obtener la foto de perfil.');
-    }
+  try {
+    let name = await conn.getName(who);
+    let ppUrl = await conn.profilePictureUrl(who, 'image').catch(() => 'https://files.catbox.moe/9y329o.jpg');
+    await conn.sendFile(m.chat, ppUrl, 'profile.jpg', `*Foto de perfil de:* ${name}`, m);
+  } catch {
+    await m.reply('❌ No se pudo obtener la foto de perfil.');
+  }
 };
 
 handler.help = ['pfp @user', 'pfp +numero'];
