@@ -627,7 +627,7 @@ const delay = (ms) => isNumber(ms) && new Promise((resolve) => setTimeout(functi
     resolve();
 }, ms));
 
-// --- Util local para reply seguro ---
+
 function makeReply(conn) {
     return (jid, text, quoted) => {
         if (typeof conn.reply === 'function') {
@@ -648,11 +648,11 @@ export async function handler(chatUpdate) {
     const { autoread, self } = global.db.data.settings[conn.user.jid] || {};
     const { noprint, queque, swonly, restrict, autoread: optsAutoread } = opts;
 
-    // Inicializar keep-alive y re-suscripción solo una vez por conexión
+    
     if (!conn.__keepAliveStarted) {
         conn.__keepAliveStarted = true;
 
-        // 1) Re-suscribir presencia a todos los chats cuando la conexión se abre
+        
         conn.ev.on('connection.update', ({ connection }) => {
             if (connection === 'open') {
                 const allJids = Object.keys(global.db?.data?.chats || {});
@@ -662,7 +662,7 @@ export async function handler(chatUpdate) {
             }
         });
 
-        // 2) Ping/presence periódico para que no se "duerman" los chats inactivos
+        
         const PRESENCE_INTERVAL_MIN = 15;
         conn.__presenceInterval = setInterval(async () => {
             const chats = Object.keys(global.db?.data?.chats || {});
@@ -679,7 +679,7 @@ export async function handler(chatUpdate) {
         return;
     }
 
-    // Usar pushMessage de forma segura
+    
     try {
         await conn.pushMessage(chatUpdate.messages);
     } catch (e) {
@@ -691,7 +691,7 @@ export async function handler(chatUpdate) {
         return;
     }
 
-    // --- Anti-duplicados por chat ---
+    
     const lifeTime = 30_000;
     const id = `${m.key?.remoteJid || 'unknown'}:${m.key?.id || 'noid'}`;
     const now = Date.now();
@@ -723,7 +723,7 @@ export async function handler(chatUpdate) {
         m.exp = 0;
         m.coin = 0;
 
-        // --- INIT: users, chats, settings ---
+        
         try {
             const defaultUser = {
                 exp: 0,
@@ -811,7 +811,7 @@ export async function handler(chatUpdate) {
                 global.db.data.settings[conn.user.jid] = { ...defaultSettings };
             }
 
-            // Asegurarse de que todas las propiedades existen
+            
             Object.keys(defaultUser).forEach(key => {
                 if (global.db.data.users[m.sender][key] === undefined) {
                     global.db.data.users[m.sender][key] = defaultUser[key];
@@ -833,7 +833,7 @@ export async function handler(chatUpdate) {
             console.error('Error initializing user/chat data:', e);
         }
 
-        // --- Filtros de ejecución ---
+        
         if (swonly && m.chat !== 'status@broadcast') {
             return;
         }
@@ -845,7 +845,7 @@ export async function handler(chatUpdate) {
             m.text = '';
         }
 
-        // --- Manejo de permisos ---
+        
         const detectwhat = m.sender.includes('@lid') ? '@lid' : '@s.whatsapp.net';
         const isROwner = [...global.owner.map(([number]) => number)].map(v => v.replace(/[^0-9]/g, '') + detectwhat).includes(m.sender);
         const isOwner = isROwner || m.fromMe;
@@ -856,7 +856,7 @@ export async function handler(chatUpdate) {
             return;
         }
 
-        // --- Cola de mensajes (queque) ---
+        
         if (queque && m.text && !(isMods || isPrems)) {
             let queque = conn.msgqueque;
             const previousID = queque[queque.length - 1];
@@ -871,7 +871,7 @@ export async function handler(chatUpdate) {
 
         m.exp += Math.ceil(Math.random() * 10);
 
-        // --- Datos de grupo ---
+        
         const groupMetadata = m.isGroup ? ((conn.chats[m.chat] || {}).metadata || await conn.groupMetadata(m.chat).catch(() => null)) : {};
         const participants = m.isGroup ? (groupMetadata.participants || []) : [];
         const botId = await (async () => {
@@ -955,19 +955,19 @@ export async function handler(chatUpdate) {
 
                 global.comando = command;
 
-                // --- Ignorar mensajes propios del sistema WA ---
+                
                 if (m.id.startsWith('NJX-') || m.id.startsWith('BAE5') || m.id.startsWith('B24E')) {
                     continue;
                 }
 
-                // --- Modo admin SOLO bloquea comandos válidos ---
+                
                 const adminMode = global.db.data.chats[m.chat]?.modoadmin;
                 if (adminMode && !isOwner && !isROwner && m.isGroup && !isAdmin) {
                     global.dfail('admin', m, conn);
                     continue;
                 }
 
-                // --- Verificaciones de baneo ---
+                
                 const chat = global.db.data.chats[m.chat] || {};
                 const userDb = global.db.data.users[m.sender] || {};
 
@@ -981,7 +981,7 @@ export async function handler(chatUpdate) {
                     continue;
                 }
 
-                // --- Filtro de spam ---
+                
                 if (userDb.antispam2 && isROwner) {
                     continue;
                 }
@@ -1088,7 +1088,7 @@ export async function handler(chatUpdate) {
             await conn.readMessages([m.key]).catch(() => {});
         }
 
-        // REACT automático seguro
+        
         try {
             const chat = global.db.data.chats[m.chat] || {};
             if (chat.reaction && m.text?.match(/(ción|dad|aje|oso|izar|mente|pero|tion|age|ous|ate|and|but|ify|ai|Pikachu|a|s)/gi)) {
