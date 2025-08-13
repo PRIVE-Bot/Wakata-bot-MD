@@ -7,7 +7,7 @@ import axios from 'axios'
 const { generateWAMessageContent, generateWAMessageFromContent, proto } = (await import('@whiskeysockets/baileys')).default
 
 let handler = async (m, { conn }) => {
-  const proses = '⚘️ Obteniendo información de mi creador...'
+ // const proses = '⚘️ Obteniendo información de mi creador...'
   await conn.sendMessage(m.chat, { text: proses }, { quoted: m })
 
   async function createImage(url) {
@@ -22,7 +22,7 @@ let handler = async (m, { conn }) => {
     {
       name: 'Deylin',
       desc: 'Creador Principal de Naruto-MD',
-      image: 'https://files.cloudkuimages.guru/images/nDXLaJr1.jpg',
+      image: 'https://files.catbox.moe/51epch.jpg',
       buttons: [
         { name: 'WhatsApp', url: 'https://wa.me/50432955554' },
         { name: 'Paypal', url: 'https://www.paypal.me/DeylinB' },
@@ -71,7 +71,7 @@ let handler = async (m, { conn }) => {
         },
         interactiveMessage: proto.Message.InteractiveMessage.fromObject({
           body: proto.Message.InteractiveMessage.Body.create({
-            text: '⚘️ Creador de Naruto-MD ⚘️'
+            text: '👑 Creador Deylin de Naruto-MD'
           }),
           footer: proto.Message.InteractiveMessage.Footer.create({
             text: 'Conoce a los desarrolladores del bot'
@@ -87,8 +87,7 @@ let handler = async (m, { conn }) => {
   await conn.relayMessage(m.chat, slideMessage.message, { messageId: slideMessage.key.id })
 }
 
-handler.help = ['owner']
-handler.tags = ['info']
-handler.command = /^(donar|owner|cuentasoficiales|creador|cuentas)$/i
+handler.tags = ['main']
+handler.command = handler.help = /^(donar|owner|cuentasoficiales|creador|cuentas)$/i
 
 export default handler
