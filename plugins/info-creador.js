@@ -71,7 +71,7 @@ let handler = async (m, { conn }) => {
         },
         interactiveMessage: proto.Message.InteractiveMessage.fromObject({
           body: proto.Message.InteractiveMessage.Body.create({
-            text: '⚘️ Creadores de Nino Nakano Ai ⚘️'
+            text: '⚘️ Creador de Naruto-MD ⚘️'
           }),
           footer: proto.Message.InteractiveMessage.Footer.create({
             text: 'Conoce a los desarrolladores del bot'
@@ -89,6 +89,6 @@ let handler = async (m, { conn }) => {
 
 handler.help = ['owner']
 handler.tags = ['info']
-handler.command = /^(donar|owner|cuentasoficiales|creadores|cuentas)$/i
+handler.command = /^(donar|owner|cuentasoficiales|creador|cuentas)$/i
 
 export default handler
