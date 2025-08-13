@@ -27,7 +27,7 @@ return;
 //if (conn.user.jid.split('@')[0] === global.ofcbot) {
  // return
 //}
-/*prueba Anti-duplicados*/
+//prueba Anti-duplicados
 this.processedMessages = this.processedMessages || new Map()
 const id = m.key.id
 const now = Date.now()
@@ -46,7 +46,7 @@ if (this.processedMessages.has(id)) return
 
 this.processedMessages.set(id, now)
 
-/*----------*/
+//---------//
 
 if (global.db.data == null)
 await global.loadDatabase()
