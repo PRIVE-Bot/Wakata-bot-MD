@@ -5,6 +5,7 @@ import { join } from 'path';
 const defaultLang = 'es';
 
 const handler = async (m, { conn, args, usedPrefix, command }) => {
+            let msg = global.delete.find(x => x.key.id === m.message.protocolMessage.key.id);
   let lang = args[0];
   let text = args.slice(1).join(' ');
   if ((args[0] || '').length !== 2) {
