@@ -18,10 +18,10 @@ ${usedPrefix}ailabsvideo <prompt> (genera video)`, m)
   }
 
   if (type === 'image') {
-    return conn.sendMessage(m.chat, { image: { url: res.result.url }, caption: '✅ Imagen generada' }, { quoted: metaai })
+    return conn.sendMessage(m.chat, { image: { url: res.result.url }, caption: '✅ Imagen generada' }, { quoted: m })
   }
 
-  return conn.sendMessage(m.chat, { video: { url: res.result.url }, caption: '✅ Video generado' }, { quoted: metaai })
+  return conn.sendMessage(m.chat, { video: { url: res.result.url }, caption: '✅ Video generado' }, { quoted: m })
 }
 
 handler.help = ['ailabsimg <prompt>', 'ailabsvideo <prompt>']
