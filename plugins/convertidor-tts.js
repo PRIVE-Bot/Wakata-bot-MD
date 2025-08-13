@@ -36,7 +36,7 @@ const handler = async (m, { conn, args }) => {
     audioBuffer = await tts(text, defaultLang)
   }
   if (audioBuffer) {
-    await conn.sendFile(m.chat, audioBuffer, 'tts.opus', null, true, { quoted: allfake })
+    await conn.sendFile(m.chat, audioBuffer, 'tts.opus', null, { quoted: allfake })
   }
 }
 
