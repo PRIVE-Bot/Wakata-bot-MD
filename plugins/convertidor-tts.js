@@ -1,71 +1,65 @@
-import gtts from 'node-gtts';
-import { readFileSync, unlinkSync } from 'fs';
-import { join } from 'path';
+import gtts from 'node-gtts'
+import { readFileSync, unlinkSync } from 'fs'
+import { join } from 'path'
+import fetch from 'node-fetch'
 
-const defaultLang = 'es';
+const defaultLang = 'es'
 
-const handler = async (m, { conn, args, usedPrefix, command }) => {
-            let msg = global.delete.find(x => x.key.id === m.message.protocolMessage.key.id);
-  let lang = args[0];
-  let text = args.slice(1).join(' ');
+const handler = async (m, { conn, args }) => {
+  let lang = args[0]
+  let text = args.slice(1).join(' ')
   if ((args[0] || '').length !== 2) {
-    lang = defaultLang;
-    text = args.join(' ');
+    lang = defaultLang
+    text = args.join(' ')
   }
-
-  if (!text && m.quoted?.text) text = m.quoted.text;
-
-    const res = await fetch('https://files.catbox.moe/nuu7tj.jpg')
-    const thumb3 = Buffer.from(await res.arrayBuffer())
-
-             let quoted = {
-    key: msg.key,
+  if (!text && m.quoted?.text) text = m.quoted.text
+  const imgRes = await fetch('https://files.catbox.moe/nuu7tj.jpg')
+  const thumb3 = Buffer.from(await imgRes.arrayBuffer())
+  let quoted = {
+    key: m.key,
     message: {
-        imageMessage: {
-            mimetype: 'image/jpeg',
-            caption: ' creado con éxito.',
-            jpegThumbnail: thumb3 
-        }
+      imageMessage: {
+        mimetype: 'image/jpeg',
+        caption: '🎤 Audio creado con éxito.',
+        jpegThumbnail: thumb3
+      }
     }
-};
-
-
-  text = text.replace(/[^\p{L}\p{N}\p{Zs}]/gu, '');
-
-  let res;
-  try {
-    res = await tts(text, lang);
-  } catch (e) {
-    m.reply(e + '');
-    text = args.join(' ').replace(/[^\p{L}\p{N}\p{Zs}]/gu, '');
-    if (!text) throw '❗ Por favor, ingresa una frase válida.';
-    res = await tts(text, defaultLang);
-  } finally {
-    if (res) conn.sendFile(m.chat, res, 'tts.opus', null, quoted, true);
   }
-};
+  text = text.replace(/[^\p{L}\p{N}\p{Zs}]/gu, '')
+  let audioBuffer
+  try {
+    audioBuffer = await tts(text, lang)
+  } catch (e) {
+    m.reply(e + '')
+    text = args.join(' ').replace(/[^\p{L}\p{N}\p{Zs}]/gu, '')
+    if (!text) throw '❗ Por favor, ingresa una frase válida.'
+    audioBuffer = await tts(text, defaultLang)
+  }
+  if (audioBuffer) {
+    await conn.sendFile(m.chat, audioBuffer, 'tts.opus', null, m, true, { quoted })
+  }
+}
 
-handler.help = ['tts <lang> <texto>'];
-handler.tags = ['transformador'];
-handler.command = ['tts'];
-handler.group = true;
-handler.register = true;
+handler.help = ['tts <lang> <texto>']
+handler.tags = ['transformador']
+handler.command = ['tts']
+handler.group = true
+handler.register = true
 
-export default handler;
-
+export default handler
 
 function tts(text, lang = 'es') {
-  console.log(lang, text);
   return new Promise((resolve, reject) => {
     try {
-      const tts = gtts(lang);
-      const filePath = join(global.__dirname(import.meta.url), '../tmp', Date.now() + '.wav');
-      tts.save(filePath, text, () => {
-        resolve(readFileSync(filePath));
-        unlinkSync(filePath);
-      });
+      const gttsInstance = gtts(lang)
+      const filePath = join(global.__dirname(import.meta.url), '../tmp', Date.now() + '.wav')
+      gttsInstance.save(filePath, text, () => {
+        const buffer = readFileSync(filePath)
+        unlinkSync(filePath)
+        resolve(buffer)
+      })
     } catch (e) {
-      reject(e);
+      reject(e)
     }
-  });
+  })
 }
