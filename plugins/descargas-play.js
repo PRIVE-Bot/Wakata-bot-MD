@@ -150,11 +150,12 @@ setActionCallback('audio', async (conn, chat, data) => {
     const { url, title } = data;
     try {
         const api = await ddownr.download(url, "mp3");
-        return conn.sendMessage(chat, {
-            audio: { url: api.downloadUrl },
-            mimetype: 'audio/mpeg',
-            fileName: `${title}.mp3`,
-                  }, { quoted: fkontak2 });
+              return conn.sendMessage(m.chat, {
+        audio: { url: api.downloadUrl },
+        mimetype: 'audio/mpeg',
+        fileName: `${title}.mp3`
+      }, { quoted: fkontak });
+    }
     } catch (err) {
         return conn.sendMessage(chat, { text: `❌ Error al descargar el audio: ${err.message}` });
     }
