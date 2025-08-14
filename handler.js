@@ -593,24 +593,6 @@ this.copyNForward(msg.chat, msg).catch(e => console.log(e, msg))
 } catch (e) {
 console.error(e)
 }}
-
-  if (global.db.data == null)
-    await global.loadDatabase()
-
-  Object.defineProperty(global, 'botname', {
-    configurable: true,
-    enumerable: true,
-    get() {
-      const conn = this;
-      if (conn?.user?.jid) {
-        return global.db.data.settings[conn.user.jid]?.botName || '𝑵𝒂𝒓𝒖𝒕𝒐 - 𝑩𝒐𝒕 𝑴𝑫';
-      }
-      return '𝑵𝒂𝒓𝒖𝒕𝒐 - 𝑩𝒐𝒕 𝑴𝑫';
-    },
-  });
-  
-  try {
-    m = smsg(this, m) || m
     
 
 global.dfail = (type, m, conn) => {
@@ -618,7 +600,7 @@ global.dfail = (type, m, conn) => {
   let user2 = m.pushName || 'Anónimo';
   let verifyaleatorio = ['registrar', 'reg', 'verificar', 'verify', 'register'].getRandom();
   
- // const botName = getBotName(conn); 
+ 
   const msg = {
     rowner: `*👑 〘 ${global.comando} 〙 es solo para los creadores, no insistas.*`,
     owner: `*⚡ 〘 ${global.comando} 〙 es exclusivo para los desarrolladores. Nivel insuficiente.*`,
@@ -632,7 +614,7 @@ global.dfail = (type, m, conn) => {
     restrict: `*⚡ Esta función está bloqueada. Fin de la historia.*`
   }[type];
 
-  if (msg) return conn.reply(m.chat, msg, m, { caption: botName }).then(_ => m.react('✖️'));
+  if (msg) return conn.reply(m.chat, msg, m ).then(_ => m.react('✖️'));
 }
 
 
