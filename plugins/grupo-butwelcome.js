@@ -2,17 +2,22 @@ import { generateWAMessageFromContent, proto } from '@whiskeysockets/baileys'
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
     
-    // Obtiene el JID del usuario que envió el mensaje
-    let userJid = m.sender
+    // Verifica si se ha mencionado a un usuario
+    const taggedUserJid = m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : null;
 
-    // Obtiene el nombre del usuario
-    let userName = conn.getName(userJid)
+    if (!taggedUserJid) {
+        // Si no se menciona a nadie, envía un mensaje de error o instruye al usuario.
+        return conn.reply(m.chat, `Por favor, etiqueta al usuario que quieres saludar, por ejemplo: ${usedPrefix}${command} @nombre`, m);
+    }
+
+    // Obtiene el JID y el nombre del usuario mencionado
+    const userJid = taggedUserJid;
+    const userName = conn.getName(userJid);
 
     // Obtiene el nombre del grupo, si es un grupo
-    let groupName = m.isGroup ? (await conn.groupMetadata(m.chat)).subject : ''
+    let groupName = m.isGroup ? (await conn.groupMetadata(m.chat)).subject : '';
 
-    // Construye el mensaje de bienvenida. La clave es que la mención
-    // debe estar en el formato @número_de_teléfono
+    // Construye el mensaje de bienvenida.
     let welcomeText = `*👋 ¡Bienvenido(a), @${userJid.split('@')[0]}!*
 Te damos la bienvenida al grupo *${groupName}*.
 Soy *${global.botname}*, tu bot en este grupo.
@@ -24,7 +29,7 @@ Soy *${global.botname}*, tu bot en este grupo.
     const message = {
         image: { url: imageUrl },
         caption: welcomeText,
-        // Agrega el JID del usuario al arreglo de menciones
+        // Agrega el JID del usuario mencionado al arreglo de menciones
         mentions: [userJid]
     }
 
