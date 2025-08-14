@@ -56,7 +56,7 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
     let menuText = `
 *⌬━━━━▣━━◤◉‿◉◢━━▣━━━━━⌬*
 
-Hola *@${userId.split('@')[0]}* soy *${botname}*
+Hola *@${userId.split('@')[0]}* soy *${global.botname}*
 
 ╔══════⌬『 𝑰 𝑵 𝑭 𝑶 』
 ║ ✎ *Cliente:* @${userId.split('@')[0]}
