@@ -75,7 +75,7 @@ ${global.readMore}
 ${Object.keys(tags).reduce((acc, tag) => {
   const cmds = help.filter(h => h.tags.includes(tag));
   if (!cmds.length) return acc;
-  const cmdList = cmds.flatMap(c => c.help.map(cmd => `┃*\`»\`* /${cmd} ${c.limit ? '◜⭐◞' : ''} ${c.premium ? '◜🪪◞' : ''}`)).join('\n');
+  const cmdList = cmds.flatMap(c => c.help.map(cmd => `┃ *\`»\`* \`/${cmd}\` ${c.limit ? '◜⭐◞' : ''} ${c.premium ? '◜🪪◞' : ''}`)).join('\n');
   return acc + `\n*┏━━━━▣━━⌬〘 ${tags[tag]} ${getRandomEmoji()} 〙*\n${cmdList}\n*┗━━━▣━━⌬⌨⌬━━▣━━━━⌬*`;
 }, '')}
 
