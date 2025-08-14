@@ -68,7 +68,7 @@ let handler = async (m, { conn, usedPrefix, command }) => {
     await conn.sendMessage(m.chat, {
       image: thumbBuffer,
       caption: txt
-    }, { quoted: m })
+    }, { quoted: fkontak })
 
   } catch (err) {
     console.error(err)
