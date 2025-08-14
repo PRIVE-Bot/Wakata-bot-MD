@@ -1,5 +1,6 @@
 import acrcloud from 'acrcloud'
 import yts from 'yt-search'
+import fetch from 'node-fetch'
 
 let acr = new acrcloud({
   host: 'identify-eu-west-1.acrcloud.com',
@@ -11,8 +12,9 @@ let handler = async (m, { conn, usedPrefix, command }) => {
   try {
     let q = m.quoted ? m.quoted : m
     let mime = (q.msg || q).mimetype || q.mediaType || ''
-    if (!/video|audio/.test(mime)) return conn.reply(m.chat, `🔥 Etiqueta un audio o video de corta duración con el comando *${usedPrefix + command}* para identificar la música.`, m, fake)
+    if (!/video|audio/.test(mime)) return conn.reply(m.chat, `🎵 Etiqueta un audio o video corto con *${usedPrefix + command}* para identificar la música.`, m)
 
+    // Descargar el archivo
     let buffer = await q.download()
     let { status, metadata } = await acr.identify(buffer)
     if (status.code !== 0) throw status.msg
@@ -20,31 +22,43 @@ let handler = async (m, { conn, usedPrefix, command }) => {
     let music = metadata.music[0]
     let { title, artists, album, genres, release_date } = music
 
-    
-    let txt = '┏╾❑「 *Whatmusic Tools* 」\n'
-    txt += `┃  ≡◦ *Titulo ∙* ${title}`
-    if (artists) txt += `\n┃  ≡◦ *Artista ∙* ${artists.map(v => v.name).join(', ')}`
-    if (album) txt += `\n┃  ≡◦ *Album ∙* ${album.name}`
-    if (genres) txt += `\n┃  ≡◦ *Genero ∙* ${genres.map(v => v.name).join(', ')}`
-    txt += `\n┃  ≡◦ *Fecha de lanzamiento ∙* ${release_date || 'Desconocida'}\n`
-    txt += '┗╾❑'
+    // Buscar en YouTube usando el título devuelto por ACRCloud
+    const searchResults = await yts.search(title)
+    if (!searchResults.videos.length) return conn.reply(m.chat, "❌ No se encontró ningún video relacionado en YouTube.", m)
+    const video = searchResults.videos[0]
+    const { url, title: ytTitle, author, views, timestamp, ago, thumbnail } = video
 
-    
-    if (album && album.cover) {
-      await conn.sendMessage(m.chat, { image: { url: album.cover }, caption: txt }, { quoted: m })
-    } else {
-      await conn.reply(m.chat, txt, m)
-    }
+    // Construir mensaje
+    let txt = '┏╾❑「 *Whatmusic Tools* 」\n'
+    txt += `┃  ≡◦ *Titulo ∙* ${title}\n`
+    if (artists) txt += `┃  ≡◦ *Artista ∙* ${artists.map(v => v.name).join(', ')}\n`
+    if (album) txt += `┃  ≡◦ *Album ∙* ${album.name}\n`
+    if (genres) txt += `┃  ≡◦ *Genero ∙* ${genres.map(v => v.name).join(', ')}\n`
+    txt += `┃  ≡◦ *Fecha de lanzamiento ∙* ${release_date || 'Desconocida'}\n`
+    txt += `┃  ≡◦ *YouTube:* ${ytTitle}\n`
+    txt += `┃  ≡◦ *Canal:* ${author?.name || 'Desconocido'}\n`
+    txt += `┃  ≡◦ *Vistas:* ${views}\n`
+    txt += `┃  ≡◦ *Duración:* ${timestamp}\n`
+    txt += `┗╾❑`
+
+    // Descargar thumbnail
+    const thumbRes = await fetch(thumbnail)
+    const thumbBuffer = Buffer.from(await thumbRes.arrayBuffer())
+
+    // Enviar mensaje con imagen
+    await conn.sendMessage(m.chat, {
+      image: thumbBuffer,
+      caption: txt
+    }, { quoted: m })
 
   } catch (err) {
     console.error(err)
-    conn.reply(m.chat, `❌ No se pudo identificar la música. Intenta con otro audio o video.`, m)
+    conn.reply(m.chat, `❌ Error al procesar la música: ${err.message}`, m)
   }
 }
 
 handler.help = ['whatmusic <audio/video>']
 handler.tags = ['tools']
 handler.command = ['shazam', 'whatmusic']
-//handler.limit = 1
 
 export default handler
