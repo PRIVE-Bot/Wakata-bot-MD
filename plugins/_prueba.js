@@ -1,47 +1,14 @@
-import fetch from 'node-fetch'
-import { prepareWAMessageMedia } from '@whiskeysockets/baileys'
-
-let handler = async (m, { conn }) => {
-  // Enlace de la imagen
-  const imageUrl = 'https://files.catbox.moe/8vxwld.jpg' 
+const handler = async (m, { conn, text }) => {
+  if (!text) throw '✳️ _Por favor, ingresa el nuevo nombre para el bot._';
   
-  // Prepara el mensaje de imagen
-  const imageMessage = await prepareWAMessageMedia({ image: { url: imageUrl } }, { upload: conn.waUploadToServer })
-
-  // Mensaje de texto con la descripción y el enlace
-  const caption = `
-🚀 *¡Oferta exclusiva!* 🚀
-
-🔥 Consigue tu propio bot de WhatsApp profesional, rápido y personalizable.
-
-✨ Funciones avanzadas: comandos, stickers, conexión QR, reacciones, mensajes enriquecidos y más.
-
-💼 ¡Ideal para negocios y creadores!
-
-Visita nuestra web:
-👉 https://tubotprofesional.com
-  `
+  global.db.data.settings[conn.user.jid].botName = text;
   
-  // Objeto del mensaje final
-  const finalMessage = {
-    image: imageMessage.image,
-    caption: caption,
-    contextInfo: {
-      externalAdReply: {
-        showAdAttribution: true,
-        title: '💻 Bot Profesional WhatsApp',
-        body: 'Visita nuestra web y conoce todos los detalles',
-        thumbnail: imageMessage.image,
-        sourceUrl: 'https://tubotprofesional.com',
-        mediaType: 1,
-        renderLargerThumbnail: true
-      }
-    }
-  }
+  m.reply(`✅ El nombre del bot se ha cambiado exitosamente a: *${text}*`);
+};
 
-  // Enviar el mensaje
-  await conn.sendMessage(m.chat, finalMessage, { quoted: m })
-}
+handler.help = ['setname <nombre>'];
+handler.tags = ['owner'];
+handler.command = /^(setname)$/i;
+handler.owner = true;
 
-handler.command = ['comprar']
-export default handler
+export default handler;
