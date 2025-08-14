@@ -14,7 +14,7 @@ let handler = async (m, { conn, usedPrefix, command }) => {
     let mime = (q.msg || q).mimetype || q.mediaType || ''
     if (!/video|audio/.test(mime)) return conn.reply(m.chat, `🎵 Etiqueta un audio o video corto con *${usedPrefix + command}* para identificar la música.`, m, rcanal)
 
-    const res = await fetch('https://files.catbox.moe/zpyb90.jpg');
+    const res = await fetch('https://files.catbox.moe/64ots5.png');
     const thumb2 = Buffer.from(await res.arrayBuffer());
 
     const fkontak = {
