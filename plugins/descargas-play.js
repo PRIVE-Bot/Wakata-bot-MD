@@ -82,7 +82,7 @@ const fkontak2 = {
 
 
 const handler = async (m, { conn, text }) => {
-    await m.react('🔥');
+    await m.react('👑');
 
     if (!text) {
         return conn.reply(m.chat, `Dime el nombre de la canción o video que buscas`, m, rcanal);
