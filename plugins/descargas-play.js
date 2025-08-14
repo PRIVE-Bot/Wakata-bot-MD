@@ -51,7 +51,7 @@ const ddownr = {
   }
 };
 
-    const res = await fetch('https://files.catbox.moe/nwgsz3.jpg');
+    const res = await fetch('https://files.catbox.moe/6cmp7p.jpg');
     const thumb2 = Buffer.from(await res.arrayBuffer());
 
     const fkontak = {
