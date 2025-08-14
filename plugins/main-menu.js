@@ -54,18 +54,18 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
 
     
     let menuText = `
-*⌬━━━━▣━━◤◉‿◉◢━━▣━━━━━⌬*
+*◈ ━━━━━━━ ⸙ ━━━━━━━ ◈*
 
 Hola *@${userId.split('@')[0]}* soy *${global.botname}*
 
-╔══════⌬『 𝑰 𝑵 𝑭 𝑶 』
-║ ✎ *Cliente:* @${userId.split('@')[0]}
-║ ✎ *Bot:* ${(conn.user.jid == global.conn.user.jid ? 'Principal 🅥' : 'Prem Bot 🅑')}
-║ ✎ *Modo:* ${mode}
-║ ✎ *Usuarios »* ${totalReg}
-║ ✎ *Tiempo Activo:* ${uptime}
-║ ✎ *Comandos »* ${totalCommands}
-╚══════ ♢.💥.♢ ══════➤
+┏╍╍╍╍╍╍╍╍╾『 𝑰 𝑵 𝑭 𝑶 』
+┃ ʕ˖͜͡˖ʔ *Cliente:* @${userId.split('@')[0]}
+┃ ۵卍 *Bot:* ${(conn.user.jid == global.conn.user.jid ? 'Principal 🅥' : 'Prem Bot 🅑')}
+┃ ☒ *Modo:* ${mode}
+┃ ஐ *Usuarios »* ${totalReg}
+┃ ✎ *Tiempo Activo:* ${uptime}
+┃ 〄 *Comandos »* ${totalCommands}
+┗╍╍╍╍╍╍╍ ♢.💥.♢ ━━━━━━➤
 
 *sɪɢᴜᴇ ᴇʟ ᴄᴀɴᴀʟ ᴏғɪᴄɪᴀʟ:*
 whatsapp.com/channel/0029VbAzn9GGU3BQw830eA0F
@@ -75,7 +75,7 @@ ${global.readMore}
 ${Object.keys(tags).reduce((acc, tag) => {
   const cmds = help.filter(h => h.tags.includes(tag));
   if (!cmds.length) return acc;
-  const cmdList = cmds.flatMap(c => c.help.map(cmd => `∫➤ /${cmd} ${c.limit ? '◜⭐◞' : ''} ${c.premium ? '◜🪪◞' : ''}`)).join('\n');
+  const cmdList = cmds.flatMap(c => c.help.map(cmd => `┃*\`»\`* /${cmd} ${c.limit ? '◜⭐◞' : ''} ${c.premium ? '◜🪪◞' : ''}`)).join('\n');
   return acc + `\n*┏━━━━▣━━⌬〘 ${tags[tag]} ${getRandomEmoji()} 〙*\n${cmdList}\n*┗━━━▣━━⌬⌨⌬━━▣━━━━⌬*`;
 }, '')}
 
