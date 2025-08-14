@@ -1,14 +1,41 @@
-const handler = async (m, { conn, text }) => {
-  if (!text) throw '✳️ _Por favor, ingresa el nuevo nombre para el bot._';
-  
-  global.db.data.settings[conn.user.jid].botName = text;
-  
-  m.reply(`✅ El nombre del bot se ha cambiado exitosamente a: *${text}*`);
-};
+import fetch from 'node-fetch'
 
-handler.help = ['setname <nombre>'];
-handler.tags = ['owner'];
-handler.command = /^(setname)$/i;
-handler.owner = true;
+let handler = async (m, { conn, usedPrefix, command }) => {
+  try {
+    let q = m.quoted ? m.quoted : m
+    let mime = (q.msg || q).mimetype || q.mediaType || ''
+    if (!/image/.test(mime)) return conn.reply(m.chat, `🖼️ Etiqueta una imagen con el comando *${usedPrefix + command}* para eliminar su fondo.`, m)
 
-export default handler;
+    
+    const buffer = await q.download()
+
+    
+    const formData = new FormData()
+    formData.append('image_file', new Blob([buffer]), 'image.png')
+    formData.append('size', 'auto') // Mantiene tamaño original
+
+    const response = await fetch('https://api.remove.bg/v1.0/removebg', {
+      method: 'POST',
+      headers: {
+        'X-Api-Key': '3SqybUm2S1uEb9yGzErTrdfP' 
+      },
+      body: formData
+    })
+
+    if (!response.ok) throw new Error(`Error eliminando fondo: ${response.statusText}`)
+    const resultBuffer = Buffer.from(await response.arrayBuffer())
+
+    
+    await conn.sendMessage(m.chat, { image: resultBuffer, caption: '✅ Fondo eliminado correctamente.' }, { quoted: m })
+
+  } catch (err) {
+    console.error(err)
+    conn.reply(m.chat, `❌ Error: ${err.message}`, m)
+  }
+}
+
+handler.help = ['removebg']
+handler.tags = ['tools']
+handler.command = ['removebg','nofondo']
+
+export default handler
