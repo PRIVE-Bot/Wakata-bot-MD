@@ -43,7 +43,7 @@ global.Jadibts = true
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
 
 global.packname = '𝑵𝒂𝒓𝒖𝒕𝒐 - 𝑩𝒐𝒕 𝑴𝑫';
-// global.botname = '𝑵𝒂𝒓𝒖𝒕𝒐 - 𝑩𝒐𝒕 𝑴𝑫'
+global.botname = '𝑵𝒂𝒓𝒖𝒕𝒐 - 𝑩𝒐𝒕 𝑴𝑫'
 global.author = 'Made By 𝐃𝐞𝐲𝐥𝐢𝐧'
 global.dev = '© ⍴᥆ᥕᥱrᥱძ ᑲᥡ 𝑫𝒆𝒚𝒍𝒊𝒏'
 global.textbot = '𝑵𝒂𝒓𝒖𝒕𝒐 - 𝐁𝐨𝐭 𝑴𝑫 • Powered By 𝑫𝒆𝒚𝒍𝒊𝒏'
