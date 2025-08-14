@@ -2,8 +2,6 @@ import { generateWAMessageFromContent, proto } from '@whiskeysockets/baileys'
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
     
-    let mention = m.quoted ? m.quoted.sender : m.sender
-
     
     let userName = conn.getName(mention)
 
@@ -23,7 +21,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     const message = {
         image: { url: imageUrl },
         caption: welcomeText,
-        mentions: [mention]
+              mentions: [m.sender]
     }
 
     
