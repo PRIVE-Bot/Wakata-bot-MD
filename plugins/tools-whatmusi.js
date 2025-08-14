@@ -14,6 +14,25 @@ let handler = async (m, { conn, usedPrefix, command }) => {
     let mime = (q.msg || q).mimetype || q.mediaType || ''
     if (!/video|audio/.test(mime)) return conn.reply(m.chat, `🎵 Etiqueta un audio o video corto con *${usedPrefix + command}* para identificar la música.`, m, rcanal)
 
+    const res = await fetch('https://files.catbox.moe/nwgsz3.jpg');
+    const thumb2 = Buffer.from(await res.arrayBuffer());
+
+    const fkontak = {
+        key: {
+            participants: "0@s.whatsapp.net",
+            remoteJid: "status@broadcast",
+            fromMe: false,
+            id: "Halo"
+        },
+        message: {
+            locationMessage: {
+                name: `𝗥𝗘𝗦𝗨𝗟𝗧𝗔𝗗𝗢𝗦 𝗗𝗘 𝗔𝗖𝗥𝗖𝗟𝗢𝗨𝗗\n${botname}`,
+                jpegThumbnail: thumb2
+            }
+        },
+        participant: "0@s.whatsapp.net"
+    };
+
     
     let buffer = await q.download()
     let { status, metadata } = await acr.identify(buffer)
