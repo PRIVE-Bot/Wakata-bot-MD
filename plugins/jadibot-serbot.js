@@ -12,7 +12,7 @@ Contenido adaptado por:
 - elrebelde21 >> https://github.com/elrebelde21
 */
 
-/*const { useMultiFileAuthState, DisconnectReason, makeCacheableSignalKeyStore, fetchLatestBaileysVersion} = (await import("@whiskeysockets/baileys"));
+const { useMultiFileAuthState, DisconnectReason, makeCacheableSignalKeyStore, fetchLatestBaileysVersion} = (await import("@whiskeysockets/baileys"));
 import qrcode from "qrcode"
 import NodeCache from "node-cache"
 import fs from "fs"
@@ -69,7 +69,7 @@ return m.reply(`${emoji2} No se han encontrado espacios para *Sub-Bots* disponib
 /*if (Object.values(global.conns).length === 30) {
 return m.reply(`${emoji2} No se han encontrado espacios para *Sub-Bots* disponibles.`)
 }*/
-/*let who = m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.fromMe ? conn.user.jid : m.sender
+let who = m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.fromMe ? conn.user.jid : m.sender
 let id = `${who.split`@`[0]}`  //conn.getName(who)
 let pathJadiBot = path.join(`./${jadi}/`, id)
 if (!fs.existsSync(pathJadiBot)){
@@ -130,7 +130,7 @@ msgRetryCache,
 browser: mcode ? ['Ubuntu', 'Chrome', '110.0.5585.95'] : ['Bot(Sub Bot)', 'Chrome','2.0.0'],
 version: version,
 generateHighQualityLinkPreview: true
-};*/
+};
 
 /*const connectionOptions = {
 printQRInTerminal: false,
@@ -150,7 +150,7 @@ if (store) {
 conversation: 'Bot',
 }}}*/
 
-/*let sock = makeWASocket(connectionOptions)
+let sock = makeWASocket(connectionOptions)
 sock.isInit = false
 let isInit = true
 
@@ -316,254 +316,4 @@ return minutes + ' m y ' + seconds + ' s '
 async function joinChannels(conn) {
 for (const channelId of Object.values(global.ch)) {
 await conn.newsletterFollow(channelId).catch(() => {})
-}}*/
-
-
-
-
-
-import { useMultiFileAuthState, DisconnectReason, makeCacheableSignalKeyStore, fetchLatestBaileysVersion } from "@whiskeysockets/baileys";
-import qrcode from "qrcode";
-import NodeCache from "node-cache";
-import fs from "fs";
-import path from "path";
-import pino from 'pino';
-import chalk from 'chalk';
-import * as ws from 'ws';
-import { spawn } from 'child_process';
-import { makeWASocket } from '../lib/simple.js';
-import { fileURLToPath } from 'url';
-
-// --- Textos estáticos para mensajes, optimizados para legibilidad y consistencia ---
-const QR_MESSAGE = `
-*⛩️✦ ↫ 𝐍𝐚𝐫𝐮𝐭𝐨 - 𝐁𝐨𝐭 - 𝐌𝐃 ↬ ✦⛩️*
-
-🍥 *Modo QR - Sub-Bot Temporal* 🍥
-
-🔥 Escanea este código con otro celular o en tu PC para convertirte en un *Shinobi Sub-Bot* temporal.
-
-\`1\` » Haz clic en los tres puntos (⋮) arriba a la derecha
-\`2\` » Toca *Dispositivos vinculados*
-\`3\` » Escanea este código QR para iniciar sesión con el bot
-
-⚠️ ¡Este QR se autodestruirá en 45 segundos!
-> *sɪɢᴜᴇ ᴇʟ ᴄᴀɴᴀʟ ᴏғɪᴄɪᴀʟ:*
-> whatsapp.com/channel/0029VbAzn9GGU3BQw830eA0F
-`;
-
-const CODE_MESSAGE = `
-┌─────────────── ⛩️🍃
-│ 🍜 *𝐍𝐚𝐫𝐮𝐭𝐨 - 𝐁𝐨𝐭 - 𝐌𝐃* 🍥
-└─────────────── ⛩️🍃
-
-🎌 *Modo Código - Sub-Bot Temporal* 🎯
-
-📲 Usa este código ninja secreto para vincularte al sistema del Hokage:
-
-➊ Ve a los tres puntos ⋮ en la esquina superior derecha  
-➋ Toca *"Dispositivos vinculados"* ➌ Elige *"Vincular con número de teléfono"* ➍ Ingresa el código de conexión y prepárate para la acción
-
-⚠️ *¡Alerta Shinobi!* Este código se desvanece como un clon de sombra en *45 segundos* ⏱️
-
-🍃 *¡El camino del ninja comienza aquí, joven genin!* 💥
-> *sɪɢᴜᴇ ᴇʟ ᴄᴀɴᴀʟ ᴏғɪᴄɪᴀʟ:*
-> whatsapp.com/channel/0029VbAzn9GGU3BQw830eA0F
-`;
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const JB_OPTIONS = {};
-
-if (!global.conns) {
-  global.conns = [];
-}
-
-let handler = async (m, { conn, args, usedPrefix, command, isOwner }) => {
-  if (!global.db.data.settings[conn.user.jid].jadibotmd) {
-    return m.reply(`♡ Comando desactivado temporalmente.`);
-  }
-
-  const subBots = global.conns.filter(conn => conn.user && conn.ws.socket?.readyState !== ws.CLOSED);
-  if (subBots.length >= 20) {
-    return m.reply(`🈴 No se han encontrado espacios para *Sub-Bots* disponibles.`);
-  }
-
-  const mcode = args[0]?.trim() === 'code';
-  const id = m.sender.split('@')[0];
-  const pathJadiBot = path.join(`./jadi/${id}`);
-
-  // Preparar opciones de forma más limpia
-  JB_OPTIONS.pathJadiBot = pathJadiBot;
-  JB_OPTIONS.m = m;
-  JB_OPTIONS.conn = conn;
-  JB_OPTIONS.args = args;
-  JB_OPTIONS.usedPrefix = usedPrefix;
-  JB_OPTIONS.command = command;
-  JB_OPTIONS.fromCommand = true;
-  JB_OPTIONS.mcode = mcode;
-
-  await JadiBot(JB_OPTIONS);
-};
-
-handler.help = ['qr', 'code'];
-handler.tags = ['serbot'];
-handler.command = ['qr', 'code'];
-
-export default handler;
-
-export async function JadiBot(options) {
-  const { pathJadiBot, m, conn, mcode } = options;
-
-  if (!fs.existsSync(pathJadiBot)) {
-    fs.mkdirSync(pathJadiBot, { recursive: true });
-  }
-
-  const { version } = await fetchLatestBaileysVersion();
-  const { state, saveCreds } = await useMultiFileAuthState(pathJadiBot);
-  const msgRetryCache = new NodeCache();
-
-  const connectionOptions = {
-    logger: pino({ level: "fatal" }),
-    printQRInTerminal: false,
-    auth: { creds: state.creds, keys: makeCacheableSignalKeyStore(state.keys, pino({ level: 'silent' })) },
-    msgRetryCache,
-    browser: mcode ? ['Ubuntu', 'Chrome', '110.0.5585.95'] : ['Bot(Sub Bot)', 'Chrome', '2.0.0'],
-    version,
-    generateHighQualityLinkPreview: true,
-  };
-
-  const sock = makeWASocket(connectionOptions);
-  let isInit = true;
-
-  async function connectionUpdate(update) {
-    const { connection, lastDisconnect, qr, isNewLogin } = update;
-
-    if (isNewLogin) {
-      sock.isInit = false;
-    }
-
-    // --- Manejo de QR y Código de emparejamiento con temporizador ---
-    if (qr) {
-      if (mcode) {
-        const secret = await sock.requestPairingCode(m.sender.split('@')[0]);
-        const formattedSecret = secret.match(/.{1,4}/g)?.join("-");
-        const codeMsg = await m.reply(formattedSecret);
-        m.reply(CODE_MESSAGE);
-        setTimeout(() => conn.sendMessage(m.chat, { delete: codeMsg.key }), 45000);
-      } else {
-        const qrMsg = await conn.sendMessage(m.chat, { image: await qrcode.toBuffer(qr, { scale: 8 }), caption: QR_MESSAGE }, { quoted: m });
-        setTimeout(() => conn.sendMessage(m.chat, { delete: qrMsg.key }), 45000);
-      }
-      return;
-    }
-
-    const reason = lastDisconnect?.error?.output?.statusCode || lastDisconnect?.error?.output?.payload?.statusCode;
-
-    // --- Manejo de cierres de conexión más eficiente ---
-    if (connection === 'close') {
-      console.error(chalk.bold.red(`\n[ERROR DE CONEXIÓN] Sesión: +${path.basename(pathJadiBot)} - Razón: ${reason}`));
-
-      const handleDisconnection = async (action, message) => {
-        try {
-          if (m?.chat) {
-            await conn.sendMessage(`${path.basename(pathJadiBot)}@s.whatsapp.net`, { text: message }, { quoted: m });
-          }
-        } catch (error) {
-          console.error(chalk.bold.yellow(`Error al enviar mensaje a: +${path.basename(pathJadiBot)}`));
-        }
-        if (action === 'reload') {
-          await creloadHandler(true);
-        } else if (action === 'delete') {
-          fs.rmdirSync(pathJadiBot, { recursive: true });
-        }
-      };
-
-      switch (reason) {
-        case DisconnectReason.connectionClosed:
-        case DisconnectReason.connectionLost:
-          console.log(chalk.bold.magentaBright(`Reconectando...`));
-          await handleDisconnection('reload', 'La conexión se perdió o expiró. Reconectando...');
-          break;
-        case DisconnectReason.loggedOut:
-        case DisconnectReason.badSession:
-          console.log(chalk.bold.magentaBright(`Sesión cerrada o credenciales no válidas.`));
-          await handleDisconnection('delete', 'Tu sesión ha sido cerrada. Conéctate de nuevo.');
-          break;
-        case DisconnectReason.connectionReplaced:
-          console.log(chalk.bold.magentaBright(`Sesión reemplazada.`));
-          await handleDisconnection('reload', 'Tu sesión ha sido reemplazada por una nueva. Borra la nueva para continuar.');
-          break;
-        case DisconnectReason.connectionTimeout:
-          console.log(chalk.bold.magentaBright(`Tiempo de conexión agotado. Borrando datos...`));
-          await handleDisconnection('reload', 'Tiempo de conexión agotado. Por favor, intenta de nuevo.');
-          break;
-        default:
-          console.log(chalk.bold.magentaBright(`Error desconocido (${reason}). Intentando reconectar...`));
-          await handleDisconnection('reload', 'Ocurrió un error. Intentando reconectar...');
-          break;
-      }
-    } else if (connection === 'open') {
-      console.log(chalk.bold.cyanBright(`\n❒⸺⸺⸺⸺【• SUB-BOT •】⸺⸺⸺⸺❒`));
-      console.log(chalk.bold.cyanBright(`│ 🟢 ${sock.authState.creds.me.name} (+${path.basename(pathJadiBot)}) conectado.`));
-      console.log(chalk.bold.cyanBright(`❒⸺⸺⸺【• CONECTADO •】⸺⸺⸺❒`));
-      
-      sock.isInit = true;
-      global.conns.push(sock);
-      
-      try {
-        await conn.sendMessage(m.chat, { 
-          text: `Bienvenido @${m.sender.split('@')[0]}, a la familia. Disfruta del bot.`, 
-          mentions: [m.sender] 
-        }, { quoted: m });
-      } catch (e) {}
-
-      await joinChannels(sock);
-    }
-  }
-
-  // --- Limpieza de conexiones inactivas más robusta ---
-  setInterval(() => {
-    if (!sock.user && sock.ws.socket?.readyState !== ws.OPEN) {
-      try { sock.ws.close(); } catch (e) {}
-      sock.ev.removeAllListeners();
-      const i = global.conns.indexOf(sock);
-      if (i > -1) {
-        global.conns.splice(i, 1);
-      }
-    }
-  }, 60000);
-
-  const creloadHandler = async (restatConn) => {
-    const handler = await import(`../handler.js?update=${Date.now()}`).catch(console.error);
-    if (!isInit) {
-      sock.ev.off("messages.upsert", sock.handler);
-      sock.ev.off("connection.update", sock.connectionUpdate);
-      sock.ev.off('creds.update', sock.credsUpdate);
-    }
-
-    if (restatConn) {
-      const oldChats = sock.chats;
-      try { sock.ws.close(); } catch {}
-      sock.ev.removeAllListeners();
-      sock = makeWASocket(connectionOptions, { chats: oldChats });
-      isInit = true;
-    }
-
-    sock.handler = handler.handler.bind(sock);
-    sock.connectionUpdate = connectionUpdate.bind(sock);
-    sock.credsUpdate = saveCreds.bind(sock, true);
-    sock.ev.on("messages.upsert", sock.handler);
-    sock.ev.on("connection.update", sock.connectionUpdate);
-    sock.ev.on("creds.update", sock.credsUpdate);
-    isInit = false;
-  };
-  
-  await creloadHandler(false);
-}
-
-// --- Funciones auxiliares simplificadas y eficientes ---
-async function joinChannels(conn) {
-  for (const channelId of Object.values(global.ch)) {
-    await conn.newsletterFollow(channelId).catch(() => {});
-  }
-}
+}}
