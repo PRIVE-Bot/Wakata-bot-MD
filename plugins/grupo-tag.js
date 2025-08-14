@@ -5,7 +5,27 @@ import * as fs from 'fs'
 var handler = async (m, { conn, text, participants, isOwner, isAdmin }) => {
 
   
-  if (!m.quoted && !text) return conn.reply(m.chat, `${emoji} Debes enviar un texto para hacer un tag.`, m)
+  if (!m.quoted && !text) return conn.reply(m.chat, `${emoji} Debes enviar un texto para hacer un tag.`, m, fake)
+
+
+    const res = await fetch('https://i.postimg.cc/fTSvbGkv/1755199731191.jpg');
+    const thumb2 = Buffer.from(await res.arrayBuffer());
+
+    const fkontak = {
+        key: {
+            participants: "0@s.whatsapp.net",
+            remoteJid: "status@broadcast",
+            fromMe: false,
+            id: "Halo"
+        },
+        message: {
+            locationMessage: {
+                name: `𝗠𝗘𝗡𝗦𝗔𝗝𝗘 𝗗𝗘 𝗨𝗡 𝗔𝗗𝗠𝗜𝗡 𝗗𝗘𝗟 𝗚𝗥𝗨𝗣𝗢\n${botname}`,
+                jpegThumbnail: thumb2
+            }
+        },
+        participant: "0@s.whatsapp.net"
+    };
 
   try { 
     let users = participants.map(u => conn.decodeJid(u.id))
@@ -21,7 +41,7 @@ var handler = async (m, { conn, text, participants, isOwner, isAdmin }) => {
       generateWAMessageFromContent(
         m.chat, 
         { [m.quoted ? q.mtype : 'extendedTextMessage']: m.quoted ? c.message[q.mtype] : { text: '' || c }}, 
-        { quoted: null, userJid: conn.user.id }
+        { quoted: fkontak, userJid: conn.user.id }
       ), 
       newText, 
       conn.user.jid, 
@@ -48,13 +68,13 @@ var handler = async (m, { conn, text, participants, isOwner, isAdmin }) => {
       conn.sendMessage(m.chat, { image: mediax, mentions: users, caption: htextos }, { quoted: m })
     } else if ((isMedia && quoted.mtype === 'videoMessage') && htextos) {
       var mediax = await quoted.download?.()
-      conn.sendMessage(m.chat, { video: mediax, mentions: users, mimetype: 'video/mp4', caption: htextos }, { quoted: m })
+      conn.sendMessage(m.chat, { video: mediax, mentions: users, mimetype: 'video/mp4', caption: htextos }, { quoted: fkontak })
     } else if ((isMedia && quoted.mtype === 'audioMessage') && htextos) {
       var mediax = await quoted.download?.()
-      conn.sendMessage(m.chat, { audio: mediax, mentions: users, mimetype: 'audio/mp4', fileName: `Hidetag.mp3` }, { quoted: m })
+      conn.sendMessage(m.chat, { audio: mediax, mentions: users, mimetype: 'audio/mp4', fileName: `Hidetag.mp3` }, { quoted: fkontak })
     } else if ((isMedia && quoted.mtype === 'stickerMessage') && htextos) {
       var mediax = await quoted.download?.()
-      conn.sendMessage(m.chat, { sticker: mediax, mentions: users }, { quoted: m })
+      conn.sendMessage(m.chat, { sticker: mediax, mentions: users }, { quoted: fkontak })
     } else {
       await conn.relayMessage(
         m.chat, 
