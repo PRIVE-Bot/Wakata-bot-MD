@@ -51,6 +51,25 @@ const ddownr = {
   }
 };
 
+    const res = await fetch('https://files.catbox.moe/nwgsz3.jpg');
+    const thumb2 = Buffer.from(await res.arrayBuffer());
+
+    const fkontak = {
+        key: {
+            participants: "0@s.whatsapp.net",
+            remoteJid: "status@broadcast",
+            fromMe: false,
+            id: "Halo"
+        },
+        message: {
+            locationMessage: {
+                name: '𝗥𝗘𝗔𝗖𝗖𝗜𝗢𝗡𝗔 𝗔 𝗘𝗦𝗧𝗘 𝗠𝗘𝗡𝗦𝗔𝗝𝗘 𝗖𝗢𝗡 𝗟𝗢𝗦 𝗘𝗠𝗢𝗝𝗜𝗦 𝗜𝗡𝗗𝗜𝗖𝗔𝗗𝗢𝗦',
+                jpegThumbnail: thumb2
+            }
+        },
+        participant: "0@s.whatsapp.net"
+    };
+
 const handler = async (m, { conn, text }) => {
   await m.react('⚡️');
 
