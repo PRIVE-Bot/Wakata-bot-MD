@@ -1,7 +1,7 @@
 // edited and optimized by 
 // https://github.com/deylin-eliac
 
-import fetch from "node-fetch";
+/*import fetch from "node-fetch";
 import yts from "yt-search";
 import axios from "axios";
 import { createMessageWithReactions, setActionCallback } from '../lib/reaction.js';
@@ -190,7 +190,7 @@ function formatViews(views) {
   const scaled = views / scale;
   return scaled.toFixed(1) + postfix;
 }
-
+*/
 
 
 
@@ -199,7 +199,7 @@ function formatViews(views) {
 // 👇
 
 
-/*// editado y optimizado por 
+// editado y optimizado por 
 // https://github.com/deylin-eliac
 
 import fetch from "node-fetch";
@@ -265,6 +265,46 @@ const handler = async (m, { conn, text, command }) => {
     const videoInfo = search.videos[0];
     const { title, thumbnail, timestamp, views, ago, url, author } = videoInfo;
 
+const [thumbFileRes, thumb2Res] = await Promise.all([
+      conn.getFile(thumbnail),
+      fetch('https://files.catbox.moe/6cmp7p.jpg')
+    ]);
+
+    const thumb2 = Buffer.from(await thumb2Res.arrayBuffer());
+
+    const fkontak = {
+      key: {
+        participants: "0@s.whatsapp.net",
+        remoteJid: "status@broadcast",
+        fromMe: false,
+        id: "Halo"
+      },
+      message: {
+        locationMessage: {
+          name: '𝗗𝗘𝗦𝗖𝗔𝗥𝗚𝗔𝗦 𝗣𝗟𝗔𝗬',
+          jpegThumbnail: thumb2
+        }
+      },
+      participant: "0@s.whatsapp.net"
+    };
+
+    const fkontak2 = {
+        key: {
+            participants: "0@s.whatsapp.net",
+            remoteJid: "status@broadcast",
+            fromMe: false,
+            id: "Halo"
+        },
+        message: {
+            locationMessage: {
+                name: `𝗗𝗘𝗦𝗖𝗔𝗥𝗚𝗔 𝗖𝗢𝗠𝗣𝗟𝗘𝗧𝗔:\n「 ${title} 」`,
+                jpegThumbnail: thumb2
+            }
+        },
+        participant: "0@s.whatsapp.net"
+    };
+
+
     const vistas = formatViews(views);
     const thumb = (await conn.getFile(thumbnail)).data;
 
@@ -280,7 +320,7 @@ const handler = async (m, { conn, text, command }) => {
 > whatsapp.com/channel/0029VbAzn9GGU3BQw830eA0F
 `;
 
-    await conn.sendMessage(m.chat, { image: thumb, caption: infoMessage }, { quoted: m });
+    await conn.sendMessage(m.chat, { image: thumb, caption: infoMessage }, { quoted: fkontak });
 
     // Audio
     if (["play", "yta", "ytmp3"].includes(command)) {
@@ -289,7 +329,7 @@ const handler = async (m, { conn, text, command }) => {
         audio: { url: api.downloadUrl },
         mimetype: 'audio/mpeg',
         fileName: `${title}.mp3`
-      }, { quoted: m });
+      }, { quoted: fkontak2 });
     }
 
     // Video
@@ -308,7 +348,7 @@ const handler = async (m, { conn, text, command }) => {
           fileName: `${json.res.title || title}.mp4`,
           mimetype: "video/mp4",
           thumbnail: thumb
-        }, { quoted: m });
+        }, { quoted: fkontak2 });
 
       } catch (err) {
         console.error("❌ Error en play2:", err.message);
@@ -332,4 +372,4 @@ function formatViews(views) {
   return views >= 1000
     ? (views / 1000).toFixed(1) + "k (" + views.toLocaleString() + ")"
     : views.toString();
-}*/
+}
