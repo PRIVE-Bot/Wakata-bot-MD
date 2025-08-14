@@ -122,8 +122,8 @@ const handler = async (m, { conn, text }) => {
 `;
 
     const actions = {
-      '❤️': { type: 'audio', data: { url, title, fkontak } },
-      '🔥': { type: 'video', data: { url, title, thumb: thumbFileRes.data, fkontak } },
+      '❤️': { type: 'audio', data: { url, title, fkontak2 } },
+      '🔥': { type: 'video', data: { url, title, thumb: thumbFileRes.data, fkontak2 } },
     };
 
     const msg = await conn.sendMessage(m.chat, { image: thumbFileRes.data, caption: infoMessage }, { quoted: fkontak });
@@ -142,7 +142,7 @@ export default handler;
 
 
 setActionCallback('audio', async (conn, chat, data) => {
-  const { url, title, fkontak } = data;
+  const { url, title, fkontak2 } = data;
   try {
     const api = await ddownr.download(url, "mp3");
     await conn.sendMessage(chat, {
@@ -156,7 +156,7 @@ setActionCallback('audio', async (conn, chat, data) => {
 });
 
 setActionCallback('video', async (conn, chat, data) => {
-  const { url, title, thumb, fkontak } = data;
+  const { url, title, thumb, fkontak2 } = data;
   try {
     const apiURL = `https://api.sylphy.xyz/download/ytmp4?url=${encodeURIComponent(url)}&apikey=sylphy-fbb9`;
     const res = await fetch(apiURL);
