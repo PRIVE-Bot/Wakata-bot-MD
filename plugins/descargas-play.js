@@ -51,43 +51,67 @@ const ddownr = {
   }
 };
 
-const getFkontak = async (thumbUrl, titleText) => {
-  const res = await fetch(thumbUrl);
-  const thumb = Buffer.from(await res.arrayBuffer());
+    const res = await fetch('https://files.catbox.moe/6cmp7p.jpg');
+    const thumb2 = Buffer.from(await res.arrayBuffer());
 
-  return {
-    key: {
-      participants: "0@s.whatsapp.net",
-      remoteJid: "status@broadcast",
-      fromMe: false,
-      id: "Halo"
-    },
-    message: {
-      locationMessage: {
-        name: titleText,
-        jpegThumbnail: thumb
-      }
-    },
-    participant: "0@s.whatsapp.net"
-  };
-};
+    const fkontak = {
+        key: {
+            participants: "0@s.whatsapp.net",
+            remoteJid: "status@broadcast",
+            fromMe: false,
+            id: "Halo"
+        },
+        message: {
+            locationMessage: {
+                name: '𝗥𝗘𝗔𝗖𝗖𝗜𝗢𝗡𝗔 𝗔 𝗘𝗦𝗧𝗘 𝗠𝗘𝗡𝗦𝗔𝗝𝗘 𝗖𝗢𝗡 𝗟𝗢𝗦 𝗘𝗠𝗢𝗝𝗜𝗦 𝗜𝗡𝗗𝗜𝗖𝗔𝗗𝗢𝗦',
+                jpegThumbnail: thumb2
+            }
+        },
+        participant: "0@s.whatsapp.net"
+    };
+
+
+    const res = await fetch(thumbFile.data);
+    const thumb2 = Buffer.from(await res.arrayBuffer());
+
+    const fkontak2 = {
+        key: {
+            participants: "0@s.whatsapp.net",
+            remoteJid: "status@broadcast",
+            fromMe: false,
+            id: "Halo"
+        },
+        message: {
+            locationMessage: {
+                name: `𝗗𝗘𝗦𝗖𝗔𝗥𝗚𝗔 𝗖𝗢𝗠𝗣𝗟𝗘𝗧𝗔\n${title}`,
+                jpegThumbnail: thumb2
+            }
+        },
+        participant: "0@s.whatsapp.net"
+    };
+
 
 const handler = async (m, { conn, text }) => {
-  await m.react('⚡️');
+  await m.react('🔥');
 
-  if (!text || typeof text !== 'string' || !text.trim()) {
-    return conn.reply(m.chat, "❌ Dime el nombre de la canción o video que buscas", m);
+  if (typeof text !== 'string' || !text.trim()) {
+    return conn.reply(m.chat, `${emoji} Dime el nombre de la canción o video que buscas`, m, rcanal);
   }
 
   try {
-    const searchResults = await yts.search({ query: text, pages: 1 });
-    if (!searchResults.videos.length) return m.reply("❌ No se encontró nada con ese nombre.");
 
-    const videoInfo = searchResults.videos[0];
+    const [search, thumbFile] = await Promise.all([
+      yts.search({ query: text, pages: 1 }),
+      conn.getFile((await yts.search({ query: text, pages: 1 })).videos[0].thumbnail)
+    ]);
+
+    if (!search.videos.length) {
+      return m.reply("❌ No se encontró nada con ese nombre.");
+    }
+
+    const videoInfo = search.videos[0];
     const { title, thumbnail, timestamp, views, ago, url, author } = videoInfo;
     const vistas = formatViews(views);
-
-    const thumbFile = await conn.getFile(thumbnail);
 
     const infoMessage = `★ ${global.botname || 'Bot'} ★
 
@@ -107,9 +131,8 @@ const handler = async (m, { conn, text }) => {
       '🔥': { type: 'video', data: { url, title, thumb: thumbFile.data } },
     };
 
-    const fkontak = await getFkontak('https://files.catbox.moe/6cmp7p.jpg', '𝗥𝗘𝗔𝗖𝗖𝗜𝗢𝗡𝗔 𝗔 𝗘𝗦𝗧𝗘 𝗠𝗘𝗡𝗦𝗔𝗝𝗘 𝗖𝗢𝗡 𝗟𝗢𝗦 𝗘𝗠𝗢𝗝𝗜𝗦 𝗜𝗡𝗗𝗜𝗖𝗔𝗗𝗢𝗦');
-
     const msg = await conn.sendMessage(m.chat, { image: thumbFile.data, caption: infoMessage }, { quoted: fkontak });
+
     await createMessageWithReactions(conn, msg, actions);
 
   } catch (error) {
@@ -125,41 +148,38 @@ export default handler;
 
 
 setActionCallback('audio', async (conn, chat, data) => {
-  const { url, title } = data;
-  try {
-    const api = await ddownr.download(url, "mp3");
-    const fkontak2 = await getFkontak(api.image, `𝗗𝗘𝗦𝗖𝗔𝗥𝗚𝗔 𝗖𝗢𝗠𝗣𝗟𝗘𝗧𝗔\n${title}`);
-    return conn.sendMessage(chat, {
-      audio: { url: api.downloadUrl },
-      mimetype: 'audio/mpeg',
-      fileName: `${title}.mp3`,
-      quoted: fkontak2 
-    });
-  } catch (err) {
-    return conn.sendMessage(chat, { text: `❌ Error al descargar el audio: ${err.message}` });
-  }
+    const { url, title } = data;
+    try {
+        const api = await ddownr.download(url, "mp3");
+        return conn.sendMessage(chat, {
+            audio: { url: api.downloadUrl },
+            mimetype: 'audio/mpeg',
+            fileName: `${title}.mp3`,
+                  }, { quoted: m });
+    } catch (err) {
+        return conn.sendMessage(chat, { text: `❌ Error al descargar el audio: ${err.message}` });
+    }
 });
 
 setActionCallback('video', async (conn, chat, data) => {
-  const { url, title, thumb } = data;
-  try {
-    const apiURL = `https://api.sylphy.xyz/download/ytmp4?url=${encodeURIComponent(url)}&apikey=sylphy-fbb9`;
-    const res = await fetch(apiURL);
-    const json = await res.json();
-    if (!json?.status || !json.res?.url) {
-      return conn.sendMessage(chat, { text: "❌ No se pudo descargar el video desde Sylphy." });
+    const { url, title, thumb } = data;
+    try {
+        const apiURL = `https://api.sylphy.xyz/download/ytmp4?url=${encodeURIComponent(url)}&apikey=sylphy-fbb9`;
+        const res = await fetch(apiURL);
+        const json = await res.json();
+        if (!json?.status || !json.res?.url) {
+            return conn.sendMessage(chat, { text: "❌ No se pudo descargar el video desde Sylphy." });
+        }
+        await conn.sendMessage(chat, {
+            video: { url: json.res.url },
+            fileName: `${json.res.title || title}.mp4`,
+            mimetype: "video/mp4",
+            thumbnail: thumb
+        });
+    } catch (err) {
+        return conn.sendMessage(chat, { text: `❌ Error al descargar el video: ${err.message}` });
     }
-    await conn.sendMessage(chat, {
-      video: { url: json.res.url },
-      fileName: `${json.res.title || title}.mp4`,
-      mimetype: "video/mp4",
-      thumbnail: thumb
-    });
-  } catch (err) {
-    return conn.sendMessage(chat, { text: `❌ Error al descargar el video: ${err.message}` });
-  }
 });
-
 
 function formatViews(views) {
   if (typeof views !== "number" || isNaN(views)) return "Desconocido";
