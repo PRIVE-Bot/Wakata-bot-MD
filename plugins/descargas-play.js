@@ -70,6 +70,27 @@ const ddownr = {
         participant: "0@s.whatsapp.net"
     };
 
+
+    const res = await fetch(thumbFile.data);
+    const thumb2 = Buffer.from(await res.arrayBuffer());
+
+    const fkontak2 = {
+        key: {
+            participants: "0@s.whatsapp.net",
+            remoteJid: "status@broadcast",
+            fromMe: false,
+            id: "Halo"
+        },
+        message: {
+            locationMessage: {
+                name: `𝗗𝗘𝗦𝗖𝗔𝗥𝗚𝗔 𝗖𝗢𝗠𝗣𝗟𝗘𝗧𝗔\n${title}`,
+                jpegThumbnail: thumb2
+            }
+        },
+        participant: "0@s.whatsapp.net"
+    };
+
+
 const handler = async (m, { conn, text }) => {
   await m.react('⚡️');
 
@@ -133,7 +154,8 @@ setActionCallback('audio', async (conn, chat, data) => {
         return conn.sendMessage(chat, {
             audio: { url: api.downloadUrl },
             mimetype: 'audio/mpeg',
-            fileName: `${title}.mp3`
+            fileName: `${title}.mp3`,
+            quoted: fkontak2 
         });
     } catch (err) {
         return conn.sendMessage(chat, { text: `❌ Error al descargar el audio: ${err.message}` });
