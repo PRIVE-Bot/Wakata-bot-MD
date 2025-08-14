@@ -51,45 +51,45 @@ const ddownr = {
   }
 };
 
-    const res = await fetch('https://files.catbox.moe/6cmp7p.jpg');
-    const thumb2 = Buffer.from(await res.arrayBuffer());
-
-    const fkontak = {
-        key: {
-            participants: "0@s.whatsapp.net",
-            remoteJid: "status@broadcast",
-            fromMe: false,
-            id: "Halo"
-        },
-        message: {
-            locationMessage: {
-                name: '𝗥𝗘𝗔𝗖𝗖𝗜𝗢𝗡𝗔 𝗔 𝗘𝗦𝗧𝗘 𝗠𝗘𝗡𝗦𝗔𝗝𝗘 𝗖𝗢𝗡 𝗟𝗢𝗦 𝗘𝗠𝗢𝗝𝗜𝗦 𝗜𝗡𝗗𝗜𝗖𝗔𝗗𝗢𝗦',
-                jpegThumbnail: thumb2
-            }
-        },
-        participant: "0@s.whatsapp.net"
-    };
-
 const handler = async (m, { conn, text }) => {
   await m.react('🔥');
 
-  if (typeof text !== 'string' || !text.trim()) {
-    return conn.reply(m.chat, `${emoji} Dime el nombre de la canción o video que buscas`, m, rcanal);
+  if (!text) {
+    return conn.reply(m.chat, `Dime el nombre de la canción o video que buscas`, m);
   }
 
   try {
-
-    const [search, thumbFile] = await Promise.all([
-      yts.search({ query: text, pages: 1 }),
-      conn.getFile((await yts.search({ query: text, pages: 1 })).videos[0].thumbnail)
-    ]);
-
-    if (!search.videos.length) {
+    const searchResults = await yts.search({ query: text, pages: 1 });
+    if (!searchResults.videos.length) {
       return m.reply("❌ No se encontró nada con ese nombre.");
     }
 
-    const videoInfo = search.videos[0];
+    const videoInfo = searchResults.videos[0];
     const { title, thumbnail, timestamp, views, ago, url, author } = videoInfo;
+
+    const [thumbFileRes, thumb2Res] = await Promise.all([
+      conn.getFile(thumbnail),
+      fetch('https://files.catbox.moe/6cmp7p.jpg')
+    ]);
+
+    const thumb2 = Buffer.from(await thumb2Res.arrayBuffer());
+
+    const fkontak = {
+      key: {
+        participants: "0@s.whatsapp.net",
+        remoteJid: "status@broadcast",
+        fromMe: false,
+        id: "Halo"
+      },
+      message: {
+        locationMessage: {
+          name: '𝗥𝗘𝗔𝗖𝗖𝗜𝗢𝗡𝗔 𝗔 𝗘𝗦𝗧𝗘 𝗠𝗘𝗡𝗦𝗔𝗝𝗘 𝗖𝗢𝗡 𝗟𝗢𝗦 𝗘𝗠𝗢𝗝𝗜𝗦 𝗜𝗡𝗗𝗜𝗖𝗔𝗗𝗢𝗦',
+          jpegThumbnail: thumb2
+        }
+      },
+      participant: "0@s.whatsapp.net"
+    };
+
     const vistas = formatViews(views);
 
     const infoMessage = `★ ${global.botname || 'Bot'} ★
@@ -106,16 +106,15 @@ const handler = async (m, { conn, text }) => {
 `;
 
     const actions = {
-      '❤️': { type: 'audio', data: { url, title } },
-      '🔥': { type: 'video', data: { url, title, thumb: thumbFile.data } },
+      '❤️': { type: 'audio', data: { url, title, fkontak } },
+      '🔥': { type: 'video', data: { url, title, thumb: thumbFileRes.data, fkontak } },
     };
 
-    const msg = await conn.sendMessage(m.chat, { image: thumbFile.data, caption: infoMessage }, { quoted: fkontak });
-
+    const msg = await conn.sendMessage(m.chat, { image: thumbFileRes.data, caption: infoMessage }, { quoted: fkontak });
     await createMessageWithReactions(conn, msg, actions);
 
   } catch (error) {
-    console.error("❌ Error:", error);
+    console.error("❌ Error en handler:", error);
     return m.reply(`⚠️ Ocurrió un error: ${error.message}`);
   }
 };
@@ -127,46 +126,55 @@ export default handler;
 
 
 setActionCallback('audio', async (conn, chat, data) => {
-    const { url, title } = data;
-    try {
-        const api = await ddownr.download(url, "mp3");
-              return conn.sendMessage(m.chat, {
-        audio: { url: api.downloadUrl },
-        mimetype: 'audio/mpeg',
-        fileName: `${title}.mp3`
-      }, { quoted: fkontak });
-    }
-    } catch (err) {
-        return conn.sendMessage(chat, { text: `❌ Error al descargar el audio: ${err.message}` });
-    }
+  const { url, title, fkontak } = data;
+  try {
+    const api = await ddownr.download(url, "mp3");
+    await conn.sendMessage(chat, {
+      audio: { url: api.downloadUrl },
+      mimetype: 'audio/mpeg',
+      fileName: `${title}.mp3`
+    }, { quoted: fkontak });
+  } catch (err) {
+    await conn.sendMessage(chat, { text: `❌ Error al descargar el audio: ${err.message}` });
+  }
 });
 
 setActionCallback('video', async (conn, chat, data) => {
-    const { url, title, thumb } = data;
-    try {
-        const apiURL = `https://api.sylphy.xyz/download/ytmp4?url=${encodeURIComponent(url)}&apikey=sylphy-fbb9`;
-        const res = await fetch(apiURL);
-        const json = await res.json();
-        if (!json?.status || !json.res?.url) {
-            return conn.sendMessage(chat, { text: "❌ No se pudo descargar el video desde Sylphy." });
-        }
-        await conn.sendMessage(chat, {
-            video: { url: json.res.url },
-            fileName: `${json.res.title || title}.mp4`,
-            mimetype: "video/mp4",
-            thumbnail: thumb
-        });
-    } catch (err) {
-        return conn.sendMessage(chat, { text: `❌ Error al descargar el video: ${err.message}` });
+  const { url, title, thumb, fkontak } = data;
+  try {
+    const apiURL = `https://api.sylphy.xyz/download/ytmp4?url=${encodeURIComponent(url)}&apikey=sylphy-fbb9`;
+    const res = await fetch(apiURL);
+    const json = await res.json();
+    if (!json?.status || !json.res?.url) {
+      await conn.sendMessage(chat, { text: "❌ No se pudo descargar el video desde Sylphy." });
+      return;
     }
+    await conn.sendMessage(chat, {
+      video: { url: json.res.url },
+      fileName: `${json.res.title || title}.mp4`,
+      mimetype: "video/mp4",
+      thumbnail: thumb
+    }, { quoted: fkontak });
+  } catch (err) {
+    await conn.sendMessage(chat, { text: `❌ Error al descargar el video: ${err.message}` });
+  }
 });
+
 
 function formatViews(views) {
   if (typeof views !== "number" || isNaN(views)) return "Desconocido";
-  return views >= 1000
-    ? (views / 1000).toFixed(1) + "k (" + views.toLocaleString() + ")"
-    : views.toString();
+  if (views < 1000) {
+    return views.toString();
+  }
+  const SI_POSTFIXES = ["", "k", "M", "G", "T", "P", "E"];
+  const tier = Math.log10(Math.abs(views)) / 3 | 0;
+  if (tier === 0) return views.toString();
+  const postfix = SI_POSTFIXES[tier];
+  const scale = Math.pow(10, tier * 3);
+  const scaled = views / scale;
+  return scaled.toFixed(1) + postfix;
 }
+
 
 
 
