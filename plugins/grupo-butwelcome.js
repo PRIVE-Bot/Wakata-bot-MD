@@ -38,7 +38,7 @@ Soy *${global.botname}*, tu bot en este grupo.
 }
 
 handler.command = handler.help ['bienvenido', 'bienvenida']
-handler.tags = ['group']
+handler.tags = ['grupo']
 handler.group = true
 handler.botAdmin = false
 handler.admin = false
