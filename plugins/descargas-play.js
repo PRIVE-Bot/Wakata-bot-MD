@@ -71,6 +71,25 @@ const ddownr = {
     };
 
 
+    const res2 = await fetch('https://files.catbox.moe/nwgsz3.jpg');
+    const thumb3 = Buffer.from(await res2.arrayBuffer());
+
+    const fkontak2 = {
+        key: {
+            participants: "0@s.whatsapp.net",
+            remoteJid: "status@broadcast",
+            fromMe: false,
+            id: "Halo"
+        },
+        message: {
+            locationMessage: {
+                name: `𝗖𝗢𝗠𝗣𝗟𝗘𝗧𝗢:\n「 ${title} 」`,
+                jpegThumbnail: thumb3
+            }
+        },
+        participant: "0@s.whatsapp.net"
+    };
+
 const handler = async (m, { conn, text }) => {
   await m.react('🔥');
 
@@ -135,7 +154,7 @@ setActionCallback('audio', async (conn, chat, data) => {
             audio: { url: api.downloadUrl },
             mimetype: 'audio/mpeg',
             fileName: `${title}.mp3`,
-                  }, { quoted: m });
+                  }, { quoted: fkontak2 });
     } catch (err) {
         return conn.sendMessage(chat, { text: `❌ Error al descargar el audio: ${err.message}` });
     }
