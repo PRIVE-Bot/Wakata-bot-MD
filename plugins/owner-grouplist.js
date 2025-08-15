@@ -3,7 +3,7 @@ import fetch from 'node-fetch'
 let handler = async (m, { conn, args, command }) => {
   global.listadoGrupos = global.listadoGrupos || []
 
-  if (['listgroup', 'grouplist'].includes(command)) {
+  if (['listg', 'grouplist'].includes(command)) {
     let txt = ''
     global.listadoGrupos = []
 
@@ -115,7 +115,7 @@ let handler = async (m, { conn, args, command }) => {
 
 handler.help = ['listgroup', 'salirg <número>', 'aviso <número> | <mensaje>']
 handler.tags = ['owner']
-handler.command = ['listgroup', 'salirg', 'aviso', 'grouplist']
+handler.command = ['listg', 'salirg', 'aviso', 'grouplist']
 handler.rowner = true
 
 export default handler
