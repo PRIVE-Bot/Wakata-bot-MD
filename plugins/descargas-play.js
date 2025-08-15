@@ -69,7 +69,7 @@ const handler = async (m, { conn, text }) => {
 
     const [thumbFileRes, thumb2Res] = await Promise.all([
       conn.getFile(thumbnail),
-      fetch('https://files.catbox.moe/6cmp7p.jpg')
+      fetch('https://files.catbox.moe/f8qrut.png')
     ]);
 
     const thumb2 = Buffer.from(await thumb2Res.arrayBuffer());
@@ -267,7 +267,7 @@ const handler = async (m, { conn, text, command }) => {
 
 const [thumbFileRes, thumb2Res] = await Promise.all([
       conn.getFile(thumbnail),
-      fetch('https://files.catbox.moe/6cmp7p.jpg')
+      fetch('https://files.catbox.moe/f8qrut.png')
     ]);
 
     const thumb2 = Buffer.from(await thumb2Res.arrayBuffer());
