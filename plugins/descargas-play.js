@@ -223,7 +223,10 @@ const ddownr = {
     };
 
     const response = await axios.request(config).catch(() => null);
-    if (!response?.data?.success) throw new Error("⛔ No se pudo obtener detalles del video.");
+    if (!response?.data?.success) {
+  const apiMsg = response?.data?.msg || response?.data?.error || "Error desconocido";
+  throw new Error(`⛔ Error API: ${apiMsg}`);
+}
 
     const { id, title, info } = response.data;
     const downloadUrl = await ddownr.cekProgress(id);
