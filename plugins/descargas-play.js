@@ -328,11 +328,24 @@ const [thumbFileRes, thumb2Res] = await Promise.all([
     // Audio
     if (["play", "yta", "ytmp3"].includes(command)) {
       const api = await ddownr.download(url, "mp3");
-      return conn.sendMessage(m.chat, {
-        audio: { url: api.downloadUrl },
-        mimetype: 'audio/mpeg',
-        fileName: `${title}.mp3`
-      }, { quoted: fkontak2 });
+      await conn.sendMessage(
+  m.chat,
+  {
+    audio: { url: api.downloadUrl },
+    mimetype: "audio/mpeg",
+    fileName: `${title}.mp3`,
+    ptt: true,
+    contextInfo: {
+      isForwarded: true,
+      forwardedNewsletterMessageInfo: {
+        newsletterJid: "120363300000000000@newsletter", 
+        newsletterName: ,           
+        serverMessageId: -1
+      }
+    }
+  },
+  { quoted: fkontak2 } 
+);
     }
 
     // Video
