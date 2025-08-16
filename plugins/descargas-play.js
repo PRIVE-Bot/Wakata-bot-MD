@@ -374,12 +374,17 @@ if (["play", "yta", "ytmp3"].includes(command)) {
           return m.reply("❌ No se pudo descargar el video desde Sylphy.");
         }
 
-        await conn.sendMessage(m.chat, {
-          video: { url: json.res.url },
-          fileName: `${json.res.title || title}.mp4`,
-          mimetype: "video/mp4",
-          thumbnail: thumb
-        }, { quoted: fkontak2 });
+        await conn.sendMessage(
+  m.chat,
+  {
+    video: { url: json.res.url },
+    fileName: `${json.res.title || title}.mp4`,
+    mimetype: "video/mp4",
+    thumbnail: thumb,
+    ...global.fake
+  },
+  { quoted: fkontak2 }
+);
 
       } catch (err) {
         console.error("❌ Error en play2:", err.message);
