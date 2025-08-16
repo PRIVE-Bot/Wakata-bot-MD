@@ -323,7 +323,22 @@ const [thumbFileRes, thumb2Res] = await Promise.all([
 > whatsapp.com/channel/0029VbAzn9GGU3BQw830eA0F
 `;
 
-    await conn.sendMessage(m.chat, { image: thumb, caption: infoMessage }, { quoted: fkontak });
+    await conn.sendMessage(
+  m.chat,
+  {
+    image: thumb,
+    caption: infoMessage,
+    contextInfo: {
+      isForwarded: true,
+      forwardedNewsletterMessageInfo: {
+        newsletterJid: channelRD.id,
+        newsletterName: channelRD.name,
+        serverMessageId: -1
+      }
+    }
+  },
+  { quoted: fkontak }
+);
 
     // Audio
 if (["play", "yta", "ytmp3"].includes(command)) {
