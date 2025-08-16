@@ -1,8 +1,7 @@
-// [💥] 𝗧𝗜𝗞𝗧𝗢𝗞 𝗠𝗣3
 import fetch from 'node-fetch';
 
 let handler = async (m, { conn, args, usedPrefix, command }) => {
-    if (!args[0]) return conn.reply(m.chat, `${emoji}Ingrese una URL de TikTok\n*Ejemplo:* ${usedPrefix + command} https://vm.tiktok.com/ZMh3KL31o/`, m, fake);
+    if (!args[0]) return conn.reply(m.chat, `🎩 Ingrese una URL de TikTok\n*Ejemplo:* ${usedPrefix + command} https://vm.tiktok.com/dirección`, m, fake);
 
     try {
         
@@ -10,23 +9,30 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
         let response = await fetch(api);
         let json = await response.json();
 
-        
         let res = Array.isArray(json.results) ? json.results[0] : json.results;
-
         if (!res) return m.reply('❌ No se encontró ningún resultado.');
 
-        let ttt = `*Autor:* ${res.author}\n*Título:* ${res.title}`;
+        let ttt = `*Autor:* ${res.author || 'Desconocido'}\n*Título:* ${res.title || 'Sin título'}`;
 
-        
+        // API de descarga
         let dark = await (await fetch(`https://dark-core-api.vercel.app/api/download/tiktok?key=dk-vip&url=${args[0]}`)).json();
         let aud = res.audio;
         let img = dark.result?.thumbnail || null;
 
-        if (img) await conn.sendFile(m.chat, img, 'thumbnail.jpg', ttt, m);
+        // Validar imagen
+        if (img) await conn.sendFile(m.chat, img, 'thumbnail.jpg', ttt, m).catch(err => console.log('Error enviando thumbnail:', err));
 
-        await conn.sendMessage(m.chat, { audio: { url: aud }, mimetype: 'audio/mpeg' }, { quoted: m });
+        // Validar audio
+        if (aud) {
+            await conn.sendMessage(
+                m.chat,
+                { audio: { url: aud.toString() }, mimetype: 'audio/mpeg' },
+                { quoted: m }
+            ).catch(err => console.log('Error enviando audio:', err));
+        } else {
+            m.reply('❌ No se pudo obtener el audio del TikTok.');
+        }
 
-        
         if (conn.react) m.react('✅');
 
     } catch (e) {
