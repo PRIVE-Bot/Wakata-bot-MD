@@ -37,7 +37,7 @@ Soy *${global.botname}*, tu bot en este grupo.
     await conn.sendMessage(m.chat, message)
 }
 
-handler.command = handler.help ['bienvenido', 'bienvenida']
+handler.command = handler.help = ['bienvenido', 'bienvenida']
 handler.tags = ['grupo']
 handler.group = true
 handler.botAdmin = false
