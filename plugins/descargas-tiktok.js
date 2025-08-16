@@ -12,8 +12,6 @@ var handler = async (m, { conn, args }) => {
   await m.react('⏳');
   await m.react('⌛');
   await m.react('⏳');
-  await m.react('⌛');
-  await m.react('⏳');
         const tiktokData = await tiktokdl(args[0]);
 
         if (!tiktokData || !tiktokData.video_url) {
