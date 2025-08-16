@@ -43,3 +43,8 @@
 
 <!-- Banner inferior -->
 <img src="https://capsule-render.vercel.app/api?type=waving&height=140&section=footer&color=0:000000,50:1B2A49,100:F68512" width="100%"/>
+
+
+
+<img src="https://killua-bot.vercel.app/" width="100%"/>
+
