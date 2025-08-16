@@ -19,3 +19,6 @@
 
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/naruto_bot)
+
+
+  <img src="https://capsule-render.vercel.app/api?type=wave&height=300&color=blue%20&text=Input%20text&fontAlign=0&descAlign=0" />
