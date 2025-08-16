@@ -1,28 +1,28 @@
+<!-- Banner superior -->
+<img src="https://capsule-render.vercel.app/api?type=waving&height=260&section=header&text=Naruto-Bot%20MD&fontSize=60&fontAlign=50&fontAlignY=35&color=0:F68512,50:1B2A49,100:000000&stroke=000000&strokeWidth=1&fontColor=FFFFFF&textBg=true" width="100%"/>
+
 > [!TIP]
-> ## **` En desarrollo.. ↻`**
->
->
-> <h1 align="center"> Naruto-Bot-MD</h1>
+> ## **`🚧 En desarrollo... ↻`**
+> Este proyecto está en constante mejora y optimización.  
+> Próximamente más funciones, mejor rendimiento y nuevos comandos.
+
+<h1 align="center"> 🌀 Naruto-Bot-MD 🌀 </h1>
 
 ---
 
 > [!NOTE]
 > <p align="center">
->  <img src="https://files.catbox.moe/0183v7.png" alt="Menú Principal">
-</p>  
-
-> [!CAUTION]  
-> **Este repositorio está protegido por una [licencia propietaria](LICENSE).**  
-> Queda estrictamente prohibido clonar, copiar, modificar, distribuir o reutilizar el código sin autorización expresa del autor.
+>   <img src="https://files.catbox.moe/0183v7.png" alt="Menú Principal" width="85%">
+> </p>
+> Bot de WhatsApp basado en **Baileys MD** con estilo **Naruto** — estable, rápido y con comandos avanzados.
 
 ---
 
+> [!CAUTION]  
+> **📜 Este repositorio está protegido por una [licencia propietaria](LICENSE).**  
+> 🚫 Queda prohibido clonar, copiar, modificar, distribuir o reutilizar el código sin autorización del autor.
 
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/naruto_bot)
-
-
-<!-- Encabezado estilo Naruto -->
-<img src="https://capsule-render.vercel.app/api?type=waving&height=260&section=header&text=Naruto-Bot%20MD&fontSize=60&fontAlign=50&fontAlignY=35&color=0:F68512,50:1B2A49,100:000000&stroke=000000&strokeWidth=1&fontColor=FFFFFF&textBg=true" width="100%"/>
+---
 
 <!-- Texto animado -->
 <p align="center">
@@ -36,7 +36,10 @@
   </a>
   <img src="https://img.shields.io/badge/Naruto%20Style-F68512?logo=firefox&logoColor=white" />
   <img src="https://img.shields.io/badge/Baileys-WhatsApp%20MD-1B2A49?logo=whatsapp&logoColor=white" />
+  <a href="https://ko-fi.com/naruto_bot">
+    <img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="Apóyame en Ko-fi"/>
+  </a>
 </p>
 
-<!-- Pie de página -->
+<!-- Banner inferior -->
 <img src="https://capsule-render.vercel.app/api?type=waving&height=140&section=footer&color=0:000000,50:1B2A49,100:F68512" width="100%"/>
