@@ -6,8 +6,14 @@ var handler = async (m, { conn, args }) => {
     }
 
     try {
-        await conn.reply(m.chat, `Descargando el video, por favor espera...`, m, rcanal);
-
+       // await conn.reply(m.chat, `Descargando el video, por favor espera...`, m, rcanal);
+  await m.react('⏳');
+  await m.react('⌛');
+  await m.react('⏳');
+  await m.react('⌛');
+  await m.react('⏳');
+  await m.react('⌛');
+  await m.react('⏳');
         const tiktokData = await tiktokdl(args[0]);
 
         if (!tiktokData || !tiktokData.video_url) {
@@ -26,6 +32,7 @@ var handler = async (m, { conn, args }) => {
 > whatsapp.com/channel/0029VbAzn9GGU3BQw830eA0F`.trim();
 
         await conn.sendFile(m.chat, videoURL, "tiktok.mp4", `${info}\n\n✅ Video descargado correctamente.`, m);
+  await m.react('🔥');
     } catch (error1) {
         console.error(error1);
         return conn.reply(m.chat, `Ocurrió un error al descargar el video: ${error1.message}`, m, rcanal);
