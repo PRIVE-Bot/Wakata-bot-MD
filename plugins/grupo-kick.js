@@ -55,9 +55,9 @@ var handler = async (m, { conn, participants, usedPrefix, command, args }) => {
 
     let text = `${emoji} *Expulsión completada*\n\n`;
 
-    if (kicked.length) {
+   /* if (kicked.length) {
         text += `✅ *Expulsados:*\n` + kicked.map(u => `@${u.split('@')[0]}`).join('\n') + '\n\n';
-    }
+    }*/
     if (notAllowed.length) {
         text += `❌ *No expulsados:*\n` + notAllowed.join('\n');
     }
