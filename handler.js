@@ -306,11 +306,15 @@ const senderJid = m.sender
 const botJid = conn.user.jid
 const groupMetadata = m.isGroup ? ((conn.chats[m.chat] || {}).metadata || await this.groupMetadata(m.chat).catch(_ => null)) : {}
 const participants = m.isGroup ? (groupMetadata.participants || []) : []
-const user = participants.find(p => p.id === senderLid || p.id === senderJid) || {}
-const bot = participants.find(p => p.id === botLid || p.id === botJid) || {}
+
+const senderJid = m.sender
+const botJid = conn.user.jid
+const user = participants.find(p => p.id === senderJid) || {}
+const bot = participants.find(p => p.id === botJid) || {}
 const isRAdmin = user?.admin === "superadmin"
 const isAdmin = isRAdmin || user?.admin === "admin"
-const isBotAdmin = !!bot?.admin
+const isBotAdmin = !!bot?.admin;
+
 
 const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './plugins')
 for (let name in global.plugins) {
