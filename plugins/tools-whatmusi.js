@@ -14,22 +14,13 @@ let handler = async (m, { conn, usedPrefix, command }) => {
     let mime = (q.msg || q).mimetype || q.mediaType || ''
     if (!/video|audio/.test(mime)) return conn.reply(m.chat, `🎵 Etiqueta un audio o video corto con *${usedPrefix + command}* para identificar la música.`, m, rcanal)
 
+    
     const res = await fetch('https://files.catbox.moe/64ots5.png');
     const thumb2 = Buffer.from(await res.arrayBuffer());
 
     const fkontak = {
-        key: {
-            participants: "0@s.whatsapp.net",
-            remoteJid: "status@broadcast",
-            fromMe: false,
-            id: "Halo"
-        },
-        message: {
-            locationMessage: {
-                name: `𝗥𝗘𝗦𝗨𝗟𝗧𝗔𝗗𝗢𝗦 𝗗𝗘 𝗔𝗖𝗥𝗖𝗟𝗢𝗨𝗗\n${botname}`,
-                jpegThumbnail: thumb2
-            }
-        },
+        key: { participants: "0@s.whatsapp.net", remoteJid: "status@broadcast", fromMe: false, id: "Halo" },
+        message: { locationMessage: { name: `𝗥𝗘𝗦𝗨𝗟𝗧𝗔𝗗𝗢𝗦 𝗗𝗘 𝗔𝗖𝗥𝗖𝗟𝗢𝗨𝗗\n${botname}`, jpegThumbnail: thumb2 } },
         participant: "0@s.whatsapp.net"
     };
 
@@ -44,8 +35,9 @@ let handler = async (m, { conn, usedPrefix, command }) => {
     
     const searchResults = await yts.search(title)
     if (!searchResults.videos.length) return conn.reply(m.chat, "❌ No se encontró ningún video relacionado en YouTube.", m, rcanal)
+
     const video = searchResults.videos[0]
-    const { url, title: ytTitle, author, views, timestamp, ago, thumbnail } = video
+    const { url, title: ytTitle, author, views, timestamp, thumbnail } = video
 
     
     let txt = '┏╾❑「 *Whatmusic Tools* 」\n'
@@ -58,13 +50,12 @@ let handler = async (m, { conn, usedPrefix, command }) => {
     txt += `┃  ≡◦ *Canal:* ${author?.name || 'Desconocido'}\n`
     txt += `┃  ≡◦ *Vistas:* ${views}\n`
     txt += `┃  ≡◦ *Duración:* ${timestamp}\n`
+    txt += `┃  ≡◦ *URL del video:* ${url}\n`
     txt += `┗╾❑`
 
-    
     const thumbRes = await fetch(thumbnail)
     const thumbBuffer = Buffer.from(await thumbRes.arrayBuffer())
 
-   
     await conn.sendMessage(m.chat, {
       image: thumbBuffer,
       caption: txt
@@ -72,7 +63,7 @@ let handler = async (m, { conn, usedPrefix, command }) => {
 
   } catch (err) {
     console.error(err)
-    conn.reply(m.chat, `❌ Error al procesar la música: ${err.message}`, m, rcanal)
+    conn.reply(m.chat, `❌ Error al procesar la música: ${err.message}`, m)
   }
 }
 
