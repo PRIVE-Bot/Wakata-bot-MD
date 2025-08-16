@@ -332,7 +332,16 @@ if (["play", "yta", "ytmp3"].includes(command)) {
   audio: { url: api.downloadUrl },
   mimetype: 'audio/mpeg',
   fileName: `${title}.mp3`,
-  ptt: true 
+  ptt: true,
+  contextInfo: {
+    isForwarded: true,
+    forwardedNewsletterMessageInfo: {
+      newsletterJid: channelRD.id,   
+      newsletterName: channelRD.name,
+      serverMessageId: -1
+    }
+  }
+};
 }, { quoted: fkontak2 });
 }
 
