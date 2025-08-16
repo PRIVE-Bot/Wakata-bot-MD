@@ -4,6 +4,25 @@ let handler = async (m, { conn, text, participants, groupMetadata }) => {
       .map(u => u.id)
       .filter(v => v !== conn.user.jid)
 
+    const res = await fetch('https://files.catbox.moe/mm7fop.png');
+    const thumb2 = Buffer.from(await res.arrayBuffer());
+
+    const fkontak = {
+        key: {
+            participants: "0@s.whatsapp.net",
+            remoteJid: "status@broadcast",
+            fromMe: false,
+            id: "Halo"
+        },
+        message: {
+            locationMessage: {
+                name: `𝗠𝗘𝗡𝗖𝗜𝗢́𝗡 𝗚𝗘𝗡𝗘𝗥𝗔𝗟\n${botname}`,
+                jpegThumbnail: thumb2
+            }
+        },
+        participant: "0@s.whatsapp.net"
+    };
+
     const groupJid = m.chat
     const groupName = text?.trim() || groupMetadata?.subject || 'everyone'
 
