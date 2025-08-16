@@ -18,7 +18,8 @@ let handler = async (m, { conn, text, participants, groupMetadata }) => {
           mentionedJid: users,
           groupMentions: [{
             groupJid: groupJid,
-            groupSubject: groupName
+            groupSubject: groupName,
+            { quoted: fkontak }
           }]
         }
       })
