@@ -326,27 +326,27 @@ const [thumbFileRes, thumb2Res] = await Promise.all([
     await conn.sendMessage(m.chat, { image: thumb, caption: infoMessage }, { quoted: fkontak });
 
     // Audio
-    if (["play", "yta", "ytmp3"].includes(command)) {
-      const api = await ddownr.download(url, "mp3");
-      await conn.sendMessage(
-  m.chat,
-  {
-    audio: { url: api.downloadUrl },
-    mimetype: "audio/mpeg",
-    fileName: `${title}.mp3`,
-    ptt: true,
-    contextInfo: {
-      isForwarded: true,
-      forwardedNewsletterMessageInfo: {
-        newsletterJid: "120363300000000000@newsletter", 
-        newsletterName: ,           
-        serverMessageId: -1
+if (["play", "yta", "ytmp3"].includes(command)) {
+  const api = await ddownr.download(url, "mp3");
+  await conn.sendMessage(
+    m.chat,
+    {
+      audio: { url: api.downloadUrl },
+      mimetype: "audio/mpeg",
+      fileName: `${title}.mp3`,
+      ptt: true, // nota de voz estilo WhatsApp
+      contextInfo: {
+        isForwarded: true,
+        forwardedNewsletterMessageInfo: {
+          newsletterJid: "120363300000000000@newsletter", // ID del canal (puedes poner el tuyo real)
+          newsletterName: "RUKIA UPDATE V2 ❄️",          // Nombre que se mostrará como canal
+          serverMessageId: -1
+        }
       }
-    }
-  },
-  { quoted: fkontak2 } 
-);
-    }
+    },
+    { quoted: fkontak2 } // mantiene la vista como reenviado
+  );
+}
 
     // Video
     if (["play2", "ytv", "ytmp4"].includes(command)) {
