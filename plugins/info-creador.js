@@ -35,7 +35,7 @@ let handler = async (m, { conn }) => {
   {
     name: '𝑪𝒉𝒐𝒍𝒊𝒕𝒐-𝑿𝒚𝒛⁩',
     desc: '🌀 Co-creador y tester oficial',
-    image: 'https://files.catbox.moe/51epch.jpg',
+    image: 'https://files.catbox.moe/29tejb.jpg',
     footer: '💡 Gracias a 𝑪𝒉𝒐𝒍𝒊𝒕𝒐-𝑿𝒚𝒛⁩ este bot evoluciona con cada prueba',
     buttons: [
       { name: 'WhatsApp', url: 'https://wa.me/50493374445' },
