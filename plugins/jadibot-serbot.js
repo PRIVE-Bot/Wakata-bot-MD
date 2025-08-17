@@ -183,7 +183,7 @@ if (m?.chat) {
 txtQR = await conn.sendMessage(m.chat, {
     image: await qrcode.toBuffer(qr, { scale: 8 }),
     caption: rtx.trim(),
-   // ...global.fake,
+    ...global.fake,
 }, { quoted: m })
 } else {
 return 
