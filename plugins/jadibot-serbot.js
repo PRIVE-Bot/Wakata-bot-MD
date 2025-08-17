@@ -31,7 +31,7 @@ let crm3 = "SBpbmZvLWRvbmFyLmpz"
 let crm4 = "IF9hdXRvcmVzcG9uZGVyLmpzIGluZm8tYm90Lmpz"
 let drm1 = ""
 let drm2 = ""
-let rtx = "*⛩️✦ ↫ 𝐍𝐚𝐫𝐮𝐭𝐨 - 𝐁𝐨𝐭 - 𝐌𝐃 ↬ ✦⛩️*\n\n🍥 𝐌𝐨𝐝𝐨 𝐐𝐑 - 𝐒𝐮𝐛-𝐁𝐨𝐭 𝐓𝐞𝐦𝐩𝐨𝐫𝐚𝐥 🍥\n\n🔥 Escanea este código con otro celular o en tu PC para convertirte en un *Shinobi Sub-Bot* temporal.\n\n\`1\` » Haz clic en los tres puntos (⋮) arriba a la derecha\n\`2\` » Toca *Dispositivos vinculados*\n\`3\` » Escanea este código QR para iniciar sesión con el bot\n\n⚠️ ¡Este QR se autodestruirá en 45 segundos!\n> *sɪɢᴜᴇ ᴇʟ ᴄᴀɴᴀʟ ᴏғɪᴄɪᴀʟ:*\n> whatsapp.com/channel/0029VbAzn9GGU3BQw830eA0F"
+let rtx = "*⛩️✦ ↫ 𝐍𝐚𝐫𝐮𝐭𝐨 - 𝐁𝐨𝐭 - 𝐌𝐃 ↬ ✦⛩️*\n\n🍥 𝐌𝐨𝐝𝐨 𝐐𝐑 - 𝐒𝐮𝐛-𝐁𝐨𝐭 𝐓𝐞𝐦𝐩𝐨𝐫𝐚𝐥 🍥\n\n🔥 Escanea este código con otro celular o en tu PC para convertirte en un *Shinobi Sub-Bot* temporal.\n\n\`1\` » Haz clic en los tres puntos (⋮) arriba a la derecha\n\`2\` » Toca *Dispositivos vinculados*\n\`3\` » Escanea este código QR para iniciar sesión con el bot\n\n⚠️ ¡Este QR se autodestruirá en 45 segundos!\n> *sɪɢᴜᴇ ᴇʟ ᴄᴀɴᴀʟ ᴏғɪᴄɪᴀʟ ᴛᴏᴄᴀ ᴀǫᴜɪ 👇*"
 let rtx2 = `┌─────────────── ⛩️🍃
 │ 🍜 𝐍𝐚𝐫𝐮𝐭𝐨 - 𝐁𝐨𝐭 - 𝐌𝐃 🍥
 └─────────────── ⛩️🍃
@@ -49,8 +49,8 @@ let rtx2 = `┌─────────────── ⛩️🍃
 Este código se desvanece como un clon de sombra en *5 segundos* ⏱️
 
 🍃 *¡El camino del ninja comienza aquí, joven genin!* 💥
-> *sɪɢᴜᴇ ᴇʟ ᴄᴀɴᴀʟ ᴏғɪᴄɪᴀʟ:*
-> whatsapp.com/channel/0029VbAzn9GGU3BQw830eA0F`
+> *sɪɢᴜᴇ ᴇʟ ᴄᴀɴᴀʟ ᴏғɪᴄɪᴀʟ ᴛᴏᴄᴀ ᴀǫᴜɪ 👇*
+`
 
 let imagenUrl = global.icono
 
