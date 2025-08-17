@@ -32,14 +32,14 @@ let handler = async (m, { conn }) => {
         { name: 'Paypal', url: 'https://www.paypal.me/DeylinB' }
       ]
     },
-    {
-      name: 'Deylin (extra)',
-      desc: '🌐 Más redes de Deylin',
-      image: 'https://files.catbox.moe/51epch.jpg',
-      footer: '💻 Descubre mis otros proyectos aquí.',
+     {
+      name: 'davi zuni 17',
+      desc: '⚡ Colaborador y desarrollador base',
+      image: 'https://files.catbox.moe/dign93.jpg',
+      footer: '🔥 Aporta mejoras en el código y estabilidad del bot.',
       buttons: [
-        { name: 'Github', url: 'https://github.com/deylin-eliac' },
-        { name: 'Website', url: 'https://deylin.vercel.app/' }
+        { name: 'WhatsApp', url: 'https://wa.me/15614809253' },
+        { name: 'Github', url: 'https://github.com/Davizuni17' }
       ]
     },
     {
@@ -52,25 +52,6 @@ let handler = async (m, { conn }) => {
         { name: 'Github', url: 'https://github.com/Elder504' },
         { name: 'Canal', url: 'https://whatsapp.com/channel/0029VbABQOU77qVUUPiUek2W' }
       ]
-   /* },
-    {
-      name: '𝑪𝒉𝒐𝒍𝒊𝒕𝒐-𝑿𝒚𝒛 (extra)',
-      desc: '🌐 Más de 𝑪𝒉𝒐𝒍𝒊𝒕𝒐',
-      image: 'https://files.catbox.moe/29tejb.jpg',
-      footer: '🔗 Página web oficial.',
-      buttons: [
-        { name: 'Website', url: 'https://killua-bot.vercel.app/' }
-      ]
-    },
-    {
-      name: 'davi zuni 17',
-      desc: '⚡ Colaborador y desarrollador base',
-      image: 'https://files.catbox.moe/dign93.jpg',
-      footer: '🔥 Aporta mejoras en el código y estabilidad del bot.',
-      buttons: [
-        { name: 'WhatsApp', url: 'https://wa.me/15614809253' },
-        { name: 'Github', url: 'https://github.com/Davizuni17' }
-      ]*/
     }
   ]
 
