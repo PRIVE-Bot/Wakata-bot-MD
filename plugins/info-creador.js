@@ -69,7 +69,7 @@ let handler = async (m, { conn }) => {
 
   cards.push({
     body: proto.Message.InteractiveMessage.Body.fromObject({
-      text: `${emoji} *${owner.name}*\n${owner.desc}`
+      text: ` *${owner.name}*\n${owner.desc}`
     }),
     footer: proto.Message.InteractiveMessage.Footer.fromObject({
       text: owner.footer   
