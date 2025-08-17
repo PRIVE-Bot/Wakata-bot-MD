@@ -302,8 +302,7 @@ async function getLidFromJid(id, conn) {
     return res[0]?.lid || id;
 }
 
-const groupMetadata = m.isGroup ? await this.groupMetadata(m.chat).catch(_ => null) : {};
-
+const groupMetadata = m.isGroup ? ((conn.chats[m.chat] || {}).metadata || await this.groupMetadata(m.chat).catch(_ => null)) : {};
 const participants = m.isGroup ? (groupMetadata.participants || []) : [];
 const senderLid = await getLidFromJid(m.sender, conn);
 const botLid = await getLidFromJid(conn.user.jid, conn);
@@ -313,7 +312,17 @@ const bot = participants.find(p => p.id === botLid || p.id === conn.user.jid);
 
 const isRAdmin = user?.admin === "superadmin";
 const isAdmin = isRAdmin || user?.admin === "admin";
-const isBotAdmin = !!bot?.admin;
+
+// Nuevo método para verificar si el bot es admin
+let isBotAdmin = !!bot?.admin;
+if (m.isGroup && groupMetadata.addressingMode === 'lid') {
+    // Si el grupo es nuevo (usa LIDs), verifica solo si el bot existe en la lista de participantes
+    const botInParticipants = participants.some(p => p.id === botLid);
+    if (botInParticipants) {
+        isBotAdmin = true;
+    }
+}
+
 
 
 
