@@ -38,8 +38,7 @@ let handler = async (m, { conn }) => {
     footer: '💡 Gracias a 𝑪𝒉𝒐𝒍𝒊𝒕𝒐-𝑿𝒚𝒛⁩ este bot evoluciona con cada prueba',
     buttons: [
       { name: 'WhatsApp', url: 'https://wa.me/50493374445' },
-      { name: 'Github', url: 'https://github.com/naruto-dev' },
-      { name: 'Website', url: 'https://naruto.dev' }
+      { name: 'Github', url: 'https://github.com/' }
     ]
   },
   {
@@ -48,8 +47,7 @@ let handler = async (m, { conn }) => {
     image: 'https://files.catbox.moe/51epch.jpg',
     footer: '🔥 davi zuni 17⁩ aporta mejoras en el código y estabilidad del bot.',
     buttons: [
-      { name: 'WhatsApp', url: 'https://wa.me/15614809253' },
-      { name: 'Paypal', url: 'https://paypal.me/sasuke' }
+      { name: 'WhatsApp', url: 'https://wa.me/15614809253' }
     ]
   }
 ]
