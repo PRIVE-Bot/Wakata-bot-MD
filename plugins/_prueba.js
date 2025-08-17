@@ -1,73 +1,102 @@
-// Comando: .whois <numero>
-// Ej: .whois 50499999999
-
 import { jidNormalizedUser, jidDecode } from '@whiskeysockets/baileys'
 
 let handler = async (m, { conn, args, usedPrefix, command }) => {
-  if (!args[0]) throw `📌 Uso: ${usedPrefix + command} 50499999999`
+  // Asegúrate de que se proporciona un argumento
+  if (!args[0]) {
+    return m.reply(`📌 Uso: ${usedPrefix + command} 50499999999`);
+  }
 
-  const raw = args[0].replace(/\D/g, '')
-  const jid = jidNormalizedUser(raw + '@s.whatsapp.net')
+  // Limpia el número de entrada
+  const rawNumber = args[0].replace(/\D/g, '');
+  if (rawNumber.length < 8) {
+    return m.reply('❌ Por favor, ingresa un número de teléfono válido con código de país.');
+  }
+  
+  // Normaliza el JID
+  const jid = jidNormalizedUser(rawNumber + '@s.whatsapp.net');
 
-  // Verificar si existe en WhatsApp
-  let results = []
+  // Verifica si el número existe en WhatsApp
+  let exists = false;
   try {
-    results = await conn.onWhatsApp(raw) // acepta número sin @
-  } catch (e) {}
-  const wa = results?.[0]
-  if (!wa || (wa.exists === false)) return m.reply('❌ Ese número no está en WhatsApp')
+    const results = await conn.onWhatsApp(rawNumber);
+    if (results && results[0] && results[0].exists) {
+      exists = true;
+    }
+  } catch (e) {
+    console.error("Error al verificar la existencia del número en WhatsApp:", e);
+  }
 
-  // Datos base
-  const safeJid = wa.jid || jid
-  const lid = wa.lid || null
+  if (!exists) {
+    return m.reply('❌ Ese número no está en WhatsApp o no se pudo verificar.');
+  }
 
-  // Perfil
-  let ppUrl = null, name = 'No disponible', statusText = 'No disponible'
-  try { ppUrl = await conn.profilePictureUrl(safeJid, 'image') } catch {}
-  try { name = await conn.getName(safeJid) } catch {}
+  // Define variables para los datos del perfil
+  let ppUrl = 'https://i.imgur.com/Qj4S7o7.png'; // URL por defecto para la foto de perfil no encontrada
+  let name = 'No disponible';
+  let statusText = 'No disponible';
+  let businessInfo = null;
+
+  // Obtiene los datos del perfil de forma segura
   try {
-    const s = await conn.fetchStatus(safeJid)
-    if (s?.status) statusText = s.status
-  } catch {}
+    ppUrl = await conn.profilePictureUrl(jid, 'image');
+  } catch (e) { /* La URL por defecto se mantiene */ }
+  
+  try {
+    name = await conn.getName(jid);
+  } catch (e) { /* El nombre por defecto se mantiene */ }
+  
+  try {
+    const status = await conn.fetchStatus(jid);
+    if (status && status.status) {
+      statusText = status.status;
+    }
+  } catch (e) { /* El estado por defecto se mantiene */ }
 
-  // Decodificar JID (multi-dispositivo)
-  const d = jidDecode(safeJid) || {}
-  const decodedLines = []
-  if (d.user) decodedLines.push(`• user: ${d.user}`)
-  if (d.server) decodedLines.push(`• server: ${d.server}`)
-  if (typeof d.device !== 'undefined') decodedLines.push(`• device: ${d.device}`) // 0 = primario, >0 = companion
-
-  // (Opcional) Perfil de negocio
-  let businessInfo = null
+  // Intenta obtener el perfil de negocio (si la función existe)
   try {
     if (typeof conn.getBusinessProfile === 'function') {
-      businessInfo = await conn.getBusinessProfile(safeJid) // algunas versiones de Baileys lo soportan
+      businessInfo = await conn.getBusinessProfile(jid);
     }
-  } catch {}
-
-  let info = [
-    '📱 *Información pública del número*',
-    '',
-    `👤 *Nombre:* ${name}`,
-    `📞 *JID:* ${safeJid}`,
-    lid ? `🧩 *LID:* ${lid}` : null,
-    `💬 *Estado:* ${statusText}`,
-    `🖼️ *Foto de perfil:* ${ppUrl ? 'Sí ✅' : 'No ❌'}`,
-    decodedLines.length ? `\n🔎 *JID decodificado:*\n${decodedLines.map(l => '   ' + l).join('\n')}` : null,
-    businessInfo ? `\n🏪 *Cuenta Business:* Sí\n   • descripción: ${businessInfo.description || 'N/D'}\n   • categorías: ${businessInfo.categories?.join(', ') || 'N/D'}` : '\n🏪 *Cuenta Business:* No detectado',
-    '\n⚠️ *Privacidad:* IP, ubicación u otros datos privados NO son accesibles ni legales de recolectar.'
-  ].filter(Boolean).join('\n')
-
-  await conn.sendMessage(m.chat, {
-    text: info,
-    ...(ppUrl ? { contextInfo: { externalAdReply: { title: name, thumbnailUrl: ppUrl, sourceUrl: ppUrl } } } : {})
-  }, { quoted: m })
-
-  // Si quieres enviar también la foto completa (si existe):
-  if (ppUrl) {
-    await conn.sendMessage(m.chat, { image: { url: ppUrl }, caption: `Foto de perfil de ${name}` }, { quoted: m })
+  } catch (e) {
+    console.error("Error al obtener el perfil de negocios:", e);
   }
-}
+
+  // Decodifica el JID para obtener información de dispositivo
+  const d = jidDecode(jid) || {};
+  const decodedLines = [];
+  if (d.user) decodedLines.push(`• Usuario: ${d.user}`);
+  if (d.server) decodedLines.push(`• Servidor: ${d.server}`);
+  if (typeof d.device !== 'undefined') decodedLines.push(`• Dispositivo: ${d.device === 0 ? 'Principal' : 'Compañero'}`);
+
+  // Construye el mensaje de respuesta
+  const info = [
+    `*INFORMACIÓN DEL NÚMERO:*`,
+    `> Número: ${jid.split('@')[0]}`,
+    `> JID: ${jid}`,
+    `> Nombre: ${name}`,
+    `> Estado: ${statusText}`,
+    `> Foto de perfil: ${ppUrl !== 'https://i.imgur.com/Qj4S7o7.png' ? 'Sí ✅' : 'No ❌'}`,
+    businessInfo ? `> Cuenta Business: Sí ✅` : `> Cuenta Business: No detectado ❌`,
+    businessInfo?.description ? `> Descripción Business: ${businessInfo.description}` : '',
+    businessInfo?.categories?.length ? `> Categorías Business: ${businessInfo.categories.join(', ')}` : '',
+    decodedLines.length ? `\n*JID Decodificado:*\n${decodedLines.map(l => `  ${l}`).join('\n')}` : '',
+    `\n*🚨 Nota:* Solo se muestra información pública. No se accede a datos privados como IP o ubicación.`
+  ].filter(Boolean).join('\n');
+
+  // Envía el mensaje y la foto de perfil
+  await conn.sendMessage(m.chat, {
+    image: { url: ppUrl },
+    caption: info,
+    contextInfo: {
+      externalAdReply: {
+        title: name,
+        body: 'Información de WhatsApp',
+        thumbnailUrl: ppUrl,
+        sourceUrl: 'https://whatsapp.com'
+      }
+    }
+  }, { quoted: m });
+};
 
 handler.help = ['whois <número>']
 handler.tags = ['herramientas']
