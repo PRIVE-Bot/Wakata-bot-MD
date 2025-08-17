@@ -52,6 +52,27 @@ Este código se desvanece como un clon de sombra en *5 segundos* ⏱️
 > *sɪɢᴜᴇ ᴇʟ ᴄᴀɴᴀʟ ᴏғɪᴄɪᴀʟ:*
 > whatsapp.com/channel/0029VbAzn9GGU3BQw830eA0F`
 
+let imagenUrl = global.ivono
+
+    const res = await fetch('https://files.catbox.moe/oljc0e.png');
+    const thumb2 = Buffer.from(await res.arrayBuffer());
+
+    const fkontak = {
+        key: {
+            participants: "0@s.whatsapp.net",
+            remoteJid: "status@broadcast",
+            fromMe: false,
+            id: "Halo"
+        },
+        message: {
+            locationMessage: {
+                name: `𝗦𝗨𝗕𝗕𝗢𝗧 𝗠𝗢𝗗𝗘 𝗖𝗢𝗗𝗘 ✦ 8\n ${botname}`,
+                jpegThumbnail: thumb2
+            }
+        },
+        participant: "0@s.whatsapp.net"
+    };
+
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const JBOptions = {}
@@ -172,8 +193,12 @@ if (qr && mcode) {
   let secret = await sock.requestPairingCode((m.sender.split`@`[0]))
 secret = secret.match(/.{1,4}/g)?.join("-")
 //if (m.isWABusiness) {
-txtCode = await conn.sendMessage(m.chat, {text : rtx2}, { quoted: m })
-codeBot = await m.reply(secret)
+txtCode = await conn.sendMessage(m.chat, {
+    image: { url: imagenUrl },
+    caption: rtx2,
+    quoted: fake
+});
+codeBot = await conn.reply(m.chat, `${secret}`, fkontak, fake);
 //} else {
 //txtCode = await conn.sendButton(m.chat, rtx2.trim(), wm, null, [], secret, null, m) 
 //}
