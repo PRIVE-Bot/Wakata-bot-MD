@@ -25,7 +25,19 @@ let handler = async (m, { conn }) => {
       image: 'https://files.catbox.moe/51epch.jpg',
       buttons: [
         { name: 'WhatsApp', url: 'https://wa.me/50432955554' },
-        { name: 'WhatsApp', url: 'https://wa.me/50493374445' },
+        { name: 'Paypal', url: 'https://www.paypal.me/DeylinB' },
+        { name: 'Github', url: 'https://github.com/deylin-eliac' },
+        { name: 'Website', url: 'https://deylin.vercel.app/' }
+      ]
+    }
+  ],
+  [
+    {
+      name: 'Deylin',
+      desc: 'Creador Principal de Naruto-MD',
+      image: 'https://files.catbox.moe/51epch.jpg',
+      buttons: [
+        { name: 'WhatsApp', url: 'https://wa.me/50432955554' },
         { name: 'Paypal', url: 'https://www.paypal.me/DeylinB' },
         { name: 'Github', url: 'https://github.com/deylin-eliac' },
         { name: 'Website', url: 'https://deylin.vercel.app/' }
