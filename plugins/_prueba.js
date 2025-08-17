@@ -1,10 +1,12 @@
 import { performance } from 'perf_hooks';
-import fs from 'fs';
 
-const handler = async (m, { conn, text }) => {
+const handler = async (m, { conn, text, participants }) => {
   const start = performance.now();
   const end = performance.now();
   const executionTime = (end - start);
+
+  let target = m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.sender;
+  let phoneNumber = target.split('@')[0];
 
   async function loading() {
     const steps = [
@@ -21,8 +23,7 @@ const handler = async (m, { conn, text }) => {
       "🛡 Eliminando rastros digitales...",
       `⏳ Progreso: ${getRandomInt(80, 95)}%`,
       "✅ HACKING COMPLETED",
-      "📤 Enviando archivos recopilados al servidor...",
-      "📡 Transmisión finalizada — Conexión cerrada."
+      "📡 Generando reporte final..."
     ];
 
     let { key } = await conn.sendMessage(
@@ -36,23 +37,52 @@ const handler = async (m, { conn, text }) => {
       await conn.sendMessage(m.chat, { text: steps[i], edit: key }, { quoted: m });
     }
 
-    // Crear información falsa
-    const fakeData = generateFakeInfo();
-    const filePath = './fake_logs.txt';
-    fs.writeFileSync(filePath, fakeData);
+    
+    const fakeReport = `
+      *\` ☠ HACKED DATA ☠ \`*
+ 👤 Nombre detectado: ${randomString(7)} ${randomString(8)}
+ 📱 Teléfono vinculado: +${phoneNumber}
+ 🌐 Dirección IP: 192.168.${getRandomInt(1,255)}.${getRandomInt(1,255)}
+ 🛰 Ubicación aproximada: ${getRandomInt(1,255)}.${getRandomInt(1,255)}.${getRandomInt(1,255)}.${getRandomInt(1,255)} (GeoIP)
 
-    // Enviar como documento
-    await conn.sendMessage(
-      m.chat,
-      { document: { url: filePath }, mimetype: 'text/plain', fileName: 'logs_hackeados.txt' },
-      { quoted: m }
-    );
+ \`📧 Emails filtrados:\`
+ - ${randomString(6)}@gmail.com
+ - ${randomString(6)}@yahoo.com
+ - ${randomString(6)}@proton.me
+
+ \`🔑 Contraseñas expuestas:\`
+ - ${randomString(10)}
+ - ${randomString(10)}
+ - ${randomString(10)}
+
+ \`🍪 Cookies de sesión:\`
+ - session_${randomString(12)}
+ - auth_${randomString(12)}
+ - token_${randomString(12)}
+
+ \`📜 Historial de navegación:\`
+ - facebook.com/${randomString(6)}
+ - instagram.com/${randomString(6)}
+ - tiktok.com/@${randomString(6)}
+ - youtube.com/watch?v=${randomString(11)}
+
+ \`🖥 Logs del sistema:\`
+ [${new Date().toISOString()}] WARNING: Root access detected
+ [${new Date().toISOString()}] ERROR: Unauthorized login bypass
+ [${new Date().toISOString()}] INFO: Malware signature "trojan.fake" injected
+
+
+⚠️ Datos transmitidos al servidor remoto con éxito.
+`;
+
+    // Enviar el mensaje hacker final
+    await conn.sendMessage(m.chat, { text: fakeReport }, { quoted: m });
   }
 
   loading();
 };
 
-handler.help = ['doxxing <nombre> | <@tag>'];
+handler.help = ['doxxing <@tag>'];
 handler.tags = ['fun'];
 handler.command = ['doxxing'];
 handler.group = true;
@@ -62,49 +92,6 @@ export default handler;
 
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-function generateFakeInfo() {
-  const ips = Array.from({ length: 5 }, () => `192.168.${getRandomInt(0, 255)}.${getRandomInt(0, 255)}`);
-  const emails = Array.from({ length: 5 }, () => `${randomString(6)}@gmail.com`);
-  const passwords = Array.from({ length: 5 }, () => randomString(10));
-  const cookies = Array.from({ length: 5 }, () => `session_${randomString(15)}`);
-  const phones = Array.from({ length: 5 }, () => `+${getRandomInt(1, 99)}${getRandomInt(100000000, 999999999)}`);
-
-  return `
-========= 📂 DOXX REPORT LOGS 📂 =========
-
-👤 Nombre: ${randomString(7)} ${randomString(8)}
-📌 Ubicación aproximada: ${getRandomInt(1, 255)}.${getRandomInt(1, 255)}.${getRandomInt(1, 255)}.${getRandomInt(1, 255)} (GeoIP tracking)
-📱 Teléfono: ${phones.join(', ')}
-
-🌐 IPs detectadas:
-${ips.join('\n')}
-
-📧 Emails encontrados:
-${emails.join('\n')}
-
-🔑 Contraseñas filtradas:
-${passwords.join('\n')}
-
-🍪 Cookies de sesión:
-${cookies.join('\n')}
-
-📜 Historial de navegación:
-- https://facebook.com/${randomString(6)}
-- https://instagram.com/${randomString(6)}
-- https://tiktok.com/@${randomString(6)}
-- https://youtube.com/watch?v=${randomString(11)}
-
-🖥 Logs del sistema:
-[${new Date().toISOString()}] ERROR: Kernel panic detected
-[${new Date().toISOString()}] WARNING: Unauthorized root access
-[${new Date().toISOString()}] INFO: Malware signature "trojan.win32" removed
-[${new Date().toISOString()}] INFO: Backdoor opened on port ${getRandomInt(1000, 9999)}
-
-=========================================
-⚠️ Datos transmitidos al servidor remoto con éxito.
-`;
 }
 
 function randomString(length) {
