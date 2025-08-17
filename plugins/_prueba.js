@@ -1,13 +1,17 @@
 import { jidNormalizedUser, jidDecode } from '@whiskeysockets/baileys'
 
 let handler = async (m, { conn, args, usedPrefix, command }) => {
-  // Asegúrate de que se proporciona un argumento
-  if (!args[0]) {
+  // Une todos los argumentos para manejar números con espacios
+  const fullNumber = args.join('');
+  
+  if (!fullNumber) {
     return m.reply(`📌 Uso: ${usedPrefix + command} 50499999999`);
   }
 
-  // Limpia el número de entrada
-  const rawNumber = args[0].replace(/\D/g, '');
+  // Limpia el número de entrada de cualquier caracter que no sea un dígito
+  const rawNumber = fullNumber.replace(/\D/g, '');
+  
+  // Ahora la longitud del número será la correcta
   if (rawNumber.length < 8) {
     return m.reply('❌ Por favor, ingresa un número de teléfono válido con código de país.');
   }
@@ -71,7 +75,7 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
   // Construye el mensaje de respuesta
   const info = [
     `*INFORMACIÓN DEL NÚMERO:*`,
-    `> Número: ${jid.split('@')[0]}`,
+    `> Número: ${rawNumber}`,
     `> JID: ${jid}`,
     `> Nombre: ${name}`,
     `> Estado: ${statusText}`,
