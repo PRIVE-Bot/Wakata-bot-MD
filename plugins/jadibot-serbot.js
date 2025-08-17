@@ -52,7 +52,7 @@ Este código se desvanece como un clon de sombra en *5 segundos* ⏱️
 > *sɪɢᴜᴇ ᴇʟ ᴄᴀɴᴀʟ ᴏғɪᴄɪᴀʟ:*
 > whatsapp.com/channel/0029VbAzn9GGU3BQw830eA0F`
 
-let imagenUrl = global.ivono
+let imagenUrl = global.icono
 
     const res = await fetch('https://files.catbox.moe/oljc0e.png');
     const thumb2 = Buffer.from(await res.arrayBuffer());
