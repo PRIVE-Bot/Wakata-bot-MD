@@ -32,21 +32,21 @@ let handler = async (m, { conn }) => {
     ]
   },
   {
-    name: 'Naruto',
+    name: '𝑪𝒉𝒐𝒍𝒊𝒕𝒐-𝑿𝒚𝒛⁩',
     desc: '🌀 Co-creador y tester oficial',
-    image: 'https://files.catbox.moe/abcd12.jpg',
-    footer: '💡 Gracias a Naruto este bot evoluciona con cada prueba.',
+    image: 'https://files.catbox.moe/51epch.jpg',
+    footer: '💡 Gracias a 𝑪𝒉𝒐𝒍𝒊𝒕𝒐-𝑿𝒚𝒛⁩ este bot evoluciona con cada prueba',
     buttons: [
-      { name: 'WhatsApp', url: 'https://wa.me/50499999999' },
+      { name: 'WhatsApp', url: 'https://wa.me/50493374445' },
       { name: 'Github', url: 'https://github.com/naruto-dev' },
       { name: 'Website', url: 'https://naruto.dev' }
     ]
   },
   {
-    name: 'Sasuke',
+    name: 'davi zuni 17⁩',
     desc: '⚡ Colaborador y desarrollador base',
-    image: 'https://files.catbox.moe/efgh34.jpg',
-    footer: '🔥 Sasuke aporta mejoras en el código y estabilidad del bot.',
+    image: 'https://files.catbox.moe/51epch.jpg',
+    footer: '🔥 davi zuni 17⁩ aporta mejoras en el código y estabilidad del bot.',
     buttons: [
       { name: 'WhatsApp', url: 'https://wa.me/50488888888' },
       { name: 'Paypal', url: 'https://paypal.me/sasuke' }
