@@ -26,6 +26,7 @@ let handler = async (m, { conn }) => {
     footer: '✨ Apóyame en mis proyectos y descubre más en mis redes.',
     buttons: [
       { name: 'WhatsApp', url: 'https://wa.me/50432955554' },
+      { name: 'WhatsApp canal', url: 'https://whatsapp.com/channel/0029VbAzn9GGU3BQw830eA0F' },
       { name: 'Paypal', url: 'https://www.paypal.me/DeylinB' },
       { name: 'Github', url: 'https://github.com/deylin-eliac' },
       { name: 'Website', url: 'https://deylin.vercel.app/' }
@@ -38,7 +39,9 @@ let handler = async (m, { conn }) => {
     footer: '💡 Gracias a 𝑪𝒉𝒐𝒍𝒊𝒕𝒐-𝑿𝒚𝒛⁩ este bot evoluciona con cada prueba',
     buttons: [
       { name: 'WhatsApp', url: 'https://wa.me/50493374445' },
-      { name: 'Github', url: 'https://github.com/' }
+      { name: 'Github', url: 'https://github.com/Elder504' },
+     { name: 'WhatsApp canal', url: 'https://whatsapp.com/channel/0029VbABQOU77qVUUPiUek2W' },
+     { name: 'Website', url: 'https://killua-bot.vercel.app/' },
     ]
   },
   {
@@ -47,7 +50,8 @@ let handler = async (m, { conn }) => {
     image: 'https://files.catbox.moe/51epch.jpg',
     footer: '🔥 davi zuni 17⁩ aporta mejoras en el código y estabilidad del bot.',
     buttons: [
-      { name: 'WhatsApp', url: 'https://wa.me/15614809253' }
+      { name: 'WhatsApp', url: 'https://wa.me/15614809253' },
+      { name: 'Github', url: 'https://github.com/Davizuni17' }
     ]
   }
 ]
