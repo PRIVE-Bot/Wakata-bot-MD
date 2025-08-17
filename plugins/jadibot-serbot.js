@@ -180,7 +180,9 @@ const { connection, lastDisconnect, isNewLogin, qr } = update
 if (isNewLogin) sock.isInit = false
 if (qr && !mcode) {
 if (m?.chat) {
-txtQR = await conn.sendMessage(m.chat, { image: await qrcode.toBuffer(qr, { scale: 8 }), caption: rtx.trim()}, { quoted: m})
+txtQR = await conn.sendMessage(m.chat, 
+{ 
+image: await qrcode.toBuffer(qr, { scale: 8 }), caption: rtx.trim()}, { quoted: m})
 } else {
 return 
 }
@@ -197,7 +199,7 @@ txtCode = await conn.sendMessage(m.chat, {
     image: { url: imagenUrl },
     caption: rtx2,
     ...global.fake,
-   { quoted: m },
+    quoted: m,
 });
 codeBot = await conn.reply(m.chat, `${secret}`, fkontak, fake);
 //} else {
