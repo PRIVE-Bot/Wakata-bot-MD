@@ -4,7 +4,7 @@
 // No quites créditos
 
 import axios from 'axios'
-const { generateWAMessageFromContent, proto } = (await import('@whiskeysockets/baileys')).default
+const { generateWAMessageContent, proto } = (await import('@whiskeysockets/baileys')).default
 
 let handler = async (m, { conn }) => {
   const proses = `*Obteniendo información de mi creador...*`
@@ -14,6 +14,7 @@ let handler = async (m, { conn }) => {
   {
     name: 'Deylin',
     desc: '👑 Creador Principal de Naruto-MD',
+    image: 'https://files.catbox.moe/51epch.jpg',
     buttons: [
       { name: 'WhatsApp', url: 'https://wa.me/50432955554' },
       { name: 'WhatsApp canal', url: 'https://whatsapp.com/channel/0029VbAzn9GGU3BQw830eA0F' },
@@ -25,6 +26,7 @@ let handler = async (m, { conn }) => {
   {
     name: '𝑪𝒉𝒐𝒍𝒊𝒕𝒐-𝑿𝒚𝒛⁩',
     desc: '🌀 Co-creador y tester oficial',
+    image: 'https://files.catbox.moe/29tejb.jpg',
     buttons: [
       { name: 'WhatsApp', url: 'https://wa.me/50493374445' },
       { name: 'Github', url: 'https://github.com/Elder504' },
@@ -35,6 +37,7 @@ let handler = async (m, { conn }) => {
   {
     name: 'davi zuni 17⁩',
     desc: '⚡ Colaborador y desarrollador base',
+    image: 'https://files.catbox.moe/dign93.jpg',
     buttons: [
       { name: 'WhatsApp', url: 'https://wa.me/15614809253' },
       { name: 'Github', url: 'https://github.com/Davizuni17' }
@@ -42,43 +45,26 @@ let handler = async (m, { conn }) => {
   }
 ]
   
-  const sections = owners.map((owner, index) => {
-    // Para los botones de URL en mensajes de lista, no hay un tipo de 'url' directo en las filas.
-    // La fila solo puede enviar un mensaje de respuesta.
-    // Lo más cercano es usar la descripción para mostrar el enlace.
-    return {
-      title: `${owner.name} - ${owner.desc}`,
-      rows: owner.buttons.map((btn, i) => ({
-        title: btn.name,
-        rowId: `link-${index}-${i}`,
-        description: `Enlace: ${btn.url}`
-      }))
+  // Enviamos los datos de cada creador de forma individual
+  for (let owner of owners) {
+    const media = { image: { url: owner.image } };
+    const textMessage = `*${owner.name}*\n${owner.desc}\n\n`;
+    
+    // Generar el texto de los enlaces
+    let linksText = '';
+    for (let btn of owner.buttons) {
+      linksText += `*${btn.name}:* ${btn.url}\n`;
     }
-  })
 
-  const listMessage = {
-    text: `*Conoce a los desarrolladores del bot*\n\nPulsa el botón de abajo para ver sus enlaces.`,
-    footer: "© Naruto-MD",
-    title: `👑 Creadores de Naruto-MD`,
-    buttonText: "Ver Creadores",
-    sections
+    // Enviar la imagen
+    await conn.sendMessage(m.chat, media);
+
+    // Enviar el mensaje de texto con los detalles y los enlaces
+    await conn.sendMessage(m.chat, { text: textMessage + linksText }, { quoted: m });
   }
 
-  const listMessageProto = proto.Message.fromObject({
-      listMessage: listMessage
-  })
-
-  const generatedMessage = generateWAMessageFromContent(
-    m.chat,
-    {
-      listMessage: listMessage
-    },
-    { quoted: m }
-  )
-
-  await conn.relayMessage(m.chat, generatedMessage.message, {
-    messageId: generatedMessage.key.id
-  })
+  // Mensaje final
+  await conn.sendMessage(m.chat, { text: '✨ ¡Gracias por usar nuestro bot! Apoya a los creadores visitando sus enlaces.' }, { quoted: m });
 }
 
 handler.tags = ['main']
