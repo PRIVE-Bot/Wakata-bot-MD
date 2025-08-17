@@ -302,7 +302,8 @@ async function getLidFromJid(id, conn) {
     return res[0]?.lid || id;
 }
 
-const groupMetadata = m.isGroup ? ((conn.chats[m.chat] || {}).metadata || await this.groupMetadata(m.chat).catch(_ => null)) : {};
+const groupMetadata = m.isGroup ? await this.groupMetadata(m.chat).catch(_ => null) : {};
+
 const participants = m.isGroup ? (groupMetadata.participants || []) : [];
 const senderLid = await getLidFromJid(m.sender, conn);
 const botLid = await getLidFromJid(conn.user.jid, conn);
