@@ -19,61 +19,70 @@ let handler = async (m, { conn }) => {
 
 
   const owners = [
-    {
-      name: 'Deylin',
-      desc: 'Creador Principal de Naruto-MD',
-      image: 'https://files.catbox.moe/51epch.jpg',
-      buttons: [
-        { name: 'WhatsApp', url: 'https://wa.me/50432955554' },
-        { name: 'Paypal', url: 'https://www.paypal.me/DeylinB' },
-        { name: 'Github', url: 'https://github.com/deylin-eliac' },
-        { name: 'Website', url: 'https://deylin.vercel.app/' }
-      ]
-    }
-  ],
-  [
-    {
-      name: 'Deylin',
-      desc: 'Creador Principal de Naruto-MD',
-      image: 'https://files.catbox.moe/51epch.jpg',
-      buttons: [
-        { name: 'WhatsApp', url: 'https://wa.me/50432955554' },
-        { name: 'Paypal', url: 'https://www.paypal.me/DeylinB' },
-        { name: 'Github', url: 'https://github.com/deylin-eliac' },
-        { name: 'Website', url: 'https://deylin.vercel.app/' }
-      ]
-    }
-  ]
+  {
+    name: 'Deylin',
+    desc: '👑 Creador Principal de Naruto-MD',
+    image: 'https://files.catbox.moe/51epch.jpg',
+    footer: '✨ Apóyame en mis proyectos y descubre más en mis redes.',
+    buttons: [
+      { name: 'WhatsApp', url: 'https://wa.me/50432955554' },
+      { name: 'Paypal', url: 'https://www.paypal.me/DeylinB' },
+      { name: 'Github', url: 'https://github.com/deylin-eliac' },
+      { name: 'Website', url: 'https://deylin.vercel.app/' }
+    ]
+  },
+  {
+    name: 'Naruto',
+    desc: '🌀 Co-creador y tester oficial',
+    image: 'https://files.catbox.moe/abcd12.jpg',
+    footer: '💡 Gracias a Naruto este bot evoluciona con cada prueba.',
+    buttons: [
+      { name: 'WhatsApp', url: 'https://wa.me/50499999999' },
+      { name: 'Github', url: 'https://github.com/naruto-dev' },
+      { name: 'Website', url: 'https://naruto.dev' }
+    ]
+  },
+  {
+    name: 'Sasuke',
+    desc: '⚡ Colaborador y desarrollador base',
+    image: 'https://files.catbox.moe/efgh34.jpg',
+    footer: '🔥 Sasuke aporta mejoras en el código y estabilidad del bot.',
+    buttons: [
+      { name: 'WhatsApp', url: 'https://wa.me/50488888888' },
+      { name: 'Paypal', url: 'https://paypal.me/sasuke' }
+    ]
+  }
+]
 
   let cards = []
 
   for (let owner of owners) {
-    const imageMsg = await createImage(owner.image)
+  const imageMsg = await createImage(owner.image)
 
-    let formattedButtons = owner.buttons.map(btn => ({
-      name: 'cta_url',
-      buttonParamsJson: JSON.stringify({
-        display_text: btn.name,
-        url: btn.url
-      })
-    }))
-
-    cards.push({
-      body: proto.Message.InteractiveMessage.Body.fromObject({
-        text: `🪴 *${owner.name}*\n${owner.desc}`
-      }),
-      footer: proto.Message.InteractiveMessage.Footer.fromObject({
-        text: '> Conoce más sobre nuestros creadores siguiendo sus redes sociales. Haz clic en cualquier botón para acceder a sus perfiles y descubrir su trabajo. Si te gustaría apoyarlos, también puedes realizar una donación a través de nuestro PayPal.'
-      }),
-      header: proto.Message.InteractiveMessage.Header.fromObject({
-        hasMediaAttachment: true,
-        imageMessage: imageMsg
-      }),
-      nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.fromObject({
-        buttons: formattedButtons
-      })
+  let formattedButtons = owner.buttons.map(btn => ({
+    name: 'cta_url',
+    buttonParamsJson: JSON.stringify({
+      display_text: btn.name,
+      url: btn.url
     })
-  }
+  }))
+
+  cards.push({
+    body: proto.Message.InteractiveMessage.Body.fromObject({
+      text: `${emoji} *${owner.name}*\n${owner.desc}`
+    }),
+    footer: proto.Message.InteractiveMessage.Footer.fromObject({
+      text: owner.footer   
+    }),
+    header: proto.Message.InteractiveMessage.Header.fromObject({
+      hasMediaAttachment: true,
+      imageMessage: imageMsg
+    }),
+    nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.fromObject({
+      buttons: formattedButtons
+    })
+  })
+}
 
   const slideMessage = generateWAMessageFromContent(m.chat, {
     viewOnceMessage: {
