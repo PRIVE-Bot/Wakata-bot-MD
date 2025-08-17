@@ -4,6 +4,7 @@
 // No quites créditos
 
 import axios from 'axios'
+const { generateWAMessageFromContent, proto } = (await import('@whiskeysockets/baileys')).default
 
 let handler = async (m, { conn }) => {
   const proses = `*Obteniendo información de mi creador...*`
@@ -42,25 +43,42 @@ let handler = async (m, { conn }) => {
 ]
   
   const sections = owners.map((owner, index) => {
+    // Para los botones de URL en mensajes de lista, no hay un tipo de 'url' directo en las filas.
+    // La fila solo puede enviar un mensaje de respuesta.
+    // Lo más cercano es usar la descripción para mostrar el enlace.
     return {
-      title: `${owner.name}`,
-      rows: owner.buttons.map(btn => ({
-        header: `${btn.name}`,
-        id: `link-${btn.url}`,
-        description: `${btn.url}`
+      title: `${owner.name} - ${owner.desc}`,
+      rows: owner.buttons.map((btn, i) => ({
+        title: btn.name,
+        rowId: `link-${index}-${i}`,
+        description: `Enlace: ${btn.url}`
       }))
     }
   })
 
   const listMessage = {
-    text: `*👑 Conoce a los creadores de Naruto-MD*`,
-    footer: 'Selecciona una opción para ver más detalles.',
-    title: 'Creadores',
-    buttonText: 'Ver Creadores',
+    text: `*Conoce a los desarrolladores del bot*\n\nPulsa el botón de abajo para ver sus enlaces.`,
+    footer: "© Naruto-MD",
+    title: `👑 Creadores de Naruto-MD`,
+    buttonText: "Ver Creadores",
     sections
   }
 
-  await conn.sendMessage(m.chat, listMessage, { quoted: m })
+  const listMessageProto = proto.Message.fromObject({
+      listMessage: listMessage
+  })
+
+  const generatedMessage = generateWAMessageFromContent(
+    m.chat,
+    {
+      listMessage: listMessage
+    },
+    { quoted: m }
+  )
+
+  await conn.relayMessage(m.chat, generatedMessage.message, {
+    messageId: generatedMessage.key.id
+  })
 }
 
 handler.tags = ['main']
