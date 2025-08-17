@@ -47,7 +47,7 @@ let handler = async (m, { conn }) => {
   {
     name: 'davi zuni 17⁩',
     desc: '⚡ Colaborador y desarrollador base',
-    image: 'https://files.catbox.moe/51epch.jpg',
+    image: 'https://files.catbox.moe/dign93.jpg',
     footer: '🔥 davi zuni 17⁩ aporta mejoras en el código y estabilidad del bot.',
     buttons: [
       { name: 'WhatsApp', url: 'https://wa.me/15614809253' },
