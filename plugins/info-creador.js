@@ -7,7 +7,7 @@ import axios from 'axios'
 const { generateWAMessageContent, generateWAMessageFromContent, proto } = (await import('@whiskeysockets/baileys')).default
 
 let handler = async (m, { conn }) => {
-  const proses = `${emoji}\n *Obteniendo información de mi creador...*`
+  const proses = `*Obteniendo información de mi creador...*`
   await conn.sendMessage(m.chat, { text: proses }, { quoted: m })
 
   async function createImage(url) {
@@ -16,7 +16,6 @@ let handler = async (m, { conn }) => {
     })
     return imageMessage
   }
-
 
   const owners = [
   {
@@ -59,32 +58,32 @@ let handler = async (m, { conn }) => {
   let cards = []
 
   for (let owner of owners) {
-  const imageMsg = await createImage(owner.image)
+    const imageMsg = await createImage(owner.image)
 
-  let formattedButtons = owner.buttons.map(btn => ({
-    name: 'cta_url',
-    buttonParamsJson: JSON.stringify({
-      display_text: btn.name,
-      url: btn.url
-    })
-  }))
+    let formattedButtons = owner.buttons.map(btn => ({
+      name: 'cta_url',
+      buttonParamsJson: JSON.stringify({
+        display_text: btn.name,
+        url: btn.url
+      })
+    }))
 
-  cards.push({
-    body: proto.Message.InteractiveMessage.Body.fromObject({
-      text: ` *${owner.name}*\n${owner.desc}`
-    }),
-    footer: proto.Message.InteractiveMessage.Footer.fromObject({
-      text: owner.footer   
-    }),
-    header: proto.Message.InteractiveMessage.Header.fromObject({
-      hasMediaAttachment: true,
-      imageMessage: imageMsg
-    }),
-    nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.fromObject({
-      buttons: formattedButtons
+    cards.push({
+      body: proto.Message.InteractiveMessage.Body.fromObject({
+        text: `*${owner.name}*\n${owner.desc}`
+      }),
+      footer: proto.Message.InteractiveMessage.Footer.fromObject({
+        text: owner.footer   
+      }),
+      header: proto.Message.InteractiveMessage.Header.fromObject({
+        hasMediaAttachment: true,
+        imageMessage: imageMsg
+      }),
+      nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.fromObject({
+        buttons: formattedButtons
+      })
     })
-  })
-}
+  }
 
   const slideMessage = generateWAMessageFromContent(m.chat, {
     viewOnceMessage: {
