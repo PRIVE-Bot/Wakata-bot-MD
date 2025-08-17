@@ -36,55 +36,53 @@ const handler = async (m, { conn, text, participants }) => {
       await new Promise(resolve => setTimeout(resolve, getRandomInt(700, 2000)));
       await conn.sendMessage(m.chat, { text: steps[i], edit: key }, { quoted: m });
     }
+    let nombre = await conn.getName(target);
 
-    
     const fakeReport = `
-      *\` ☠ HACKED DATA ☠ \`*
- 👤 Nombre detectado: ${randomString(7)} ${randomString(8)}
- 📱 Teléfono vinculado: +${phoneNumber}
- 🌐 Dirección IP: 192.168.${getRandomInt(1,255)}.${getRandomInt(1,255)}
- 🛰 Ubicación aproximada: ${getRandomInt(1,255)}.${getRandomInt(1,255)}.${getRandomInt(1,255)}.${getRandomInt(1,255)} (GeoIP)
+*\`☠ HACKED DATA ☠\`*
+👤 Nombre detectado: ${nombre}
+📱 Teléfono vinculado: +${phoneNumber}
+🌐 Dirección IP: 192.168.${getRandomInt(1,255)}.${getRandomInt(1,255)}
+🛰 Ubicación aproximada: ${getRandomInt(1,255)}.${getRandomInt(1,255)}.${getRandomInt(1,255)}.${getRandomInt(1,255)} (GeoIP)
 
- \`📧 Emails filtrados:\`
- - ${randomString(6)}@gmail.com
- - ${randomString(6)}@yahoo.com
- - ${randomString(6)}@proton.me
+\`📧 Emails filtrados:\`
+- ${randomString(6)}@gmail.com
+- ${randomString(6)}@yahoo.com
+- ${randomString(6)}@proton.me
 
- \`🔑 Contraseñas expuestas:\`
- - ${randomString(10)}
- - ${randomString(10)}
- - ${randomString(10)}
+\`🔑 Contraseñas expuestas:\`
+- ${randomString(10)}
+- ${randomString(10)}
+- ${randomString(10)}
 
- \`🍪 Cookies de sesión:\`
- - session_${randomString(12)}
- - auth_${randomString(12)}
- - token_${randomString(12)}
+\`🍪 Cookies de sesión:\`
+- session_${randomString(12)}
+- auth_${randomString(12)}
+- token_${randomString(12)}
 
- \`📜 Historial de navegación:\`
- - facebook.com/${randomString(6)}
- - instagram.com/${randomString(6)}
- - tiktok.com/@${randomString(6)}
- - youtube.com/watch?v=${randomString(11)}
+\`📜 Historial de navegación:\`
+- facebook.com/${randomString(6)}
+- instagram.com/${randomString(6)}
+- tiktok.com/@${randomString(6)}
+- youtube.com/watch?v=${randomString(11)}
 
- \`🖥 Logs del sistema:\`
- [${new Date().toISOString()}] WARNING: Root access detected
- [${new Date().toISOString()}] ERROR: Unauthorized login bypass
- [${new Date().toISOString()}] INFO: Malware signature "trojan.fake" injected
-
+\`🖥 Logs del sistema:\`
+[${new Date().toISOString()}] WARNING: Root access detected
+[${new Date().toISOString()}] ERROR: Unauthorized login bypass
+[${new Date().toISOString()}] INFO: Malware signature "trojan.fake" injected
 
 ⚠️ Datos transmitidos al servidor remoto con éxito.
 `;
 
-    // Enviar el mensaje hacker final
     await conn.sendMessage(m.chat, { text: fakeReport }, { quoted: m });
   }
 
   loading();
 };
 
-handler.help = ['doxxing <@tag>'];
+handler.help = ['doxear <@tag>'];
 handler.tags = ['fun'];
-handler.command = ['doxxing'];
+handler.command = ['doxxing', 'doxear'];
 handler.group = true;
 handler.register = true;
 
