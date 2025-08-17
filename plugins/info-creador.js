@@ -41,7 +41,7 @@ let handler = async (m, { conn }) => {
         { name: 'Github', url: 'https://github.com/deylin-eliac' },
         { name: 'Website', url: 'https://deylin.vercel.app/' }
       ]
-    },
+    /*},
     {
       name: '𝑪𝒉𝒐𝒍𝒊𝒕𝒐-𝑿𝒚𝒛',
       desc: '🌀 Co-creador y tester oficial',
@@ -70,7 +70,7 @@ let handler = async (m, { conn }) => {
       buttons: [
         { name: 'WhatsApp', url: 'https://wa.me/15614809253' },
         { name: 'Github', url: 'https://github.com/Davizuni17' }
-      ]
+      ]*/
     }
   ]
 
