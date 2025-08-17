@@ -48,7 +48,7 @@ let handler = async (m, { conn }) => {
     image: 'https://files.catbox.moe/51epch.jpg',
     footer: '🔥 davi zuni 17⁩ aporta mejoras en el código y estabilidad del bot.',
     buttons: [
-      { name: 'WhatsApp', url: 'https://wa.me/50488888888' },
+      { name: 'WhatsApp', url: 'https://wa.me/15614809253' },
       { name: 'Paypal', url: 'https://paypal.me/sasuke' }
     ]
   }
