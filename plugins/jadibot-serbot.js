@@ -196,7 +196,8 @@ secret = secret.match(/.{1,4}/g)?.join("-")
 txtCode = await conn.sendMessage(m.chat, {
     image: { url: imagenUrl },
     caption: rtx2,
-    quoted: m
+    ...global.fake,
+   { quoted: m },
 });
 codeBot = await conn.reply(m.chat, `${secret}`, fkontak, fake);
 //} else {
