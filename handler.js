@@ -296,35 +296,23 @@ m.exp += Math.ceil(Math.random() * 10)
 let usedPrefix
 
 
+
 async function getLidFromJid(id, conn) {
-    if (id.endsWith('@lid')) return id;
-    const res = await conn.onWhatsApp(id).catch(() => []);
-    return res[0]?.lid || id;
+if (id.endsWith('@lid')) return id
+const res = await conn.onWhatsApp(id).catch(() => [])
+return res[0]?.lid || id
 }
-
-const groupMetadata = m.isGroup ? ((conn.chats[m.chat] || {}).metadata || await this.groupMetadata(m.chat).catch(_ => null)) : {};
-const participants = m.isGroup ? (groupMetadata.participants || []) : [];
-const senderLid = await getLidFromJid(m.sender, conn);
-const botLid = await getLidFromJid(conn.user.jid, conn);
-
-const user = participants.find(p => p.id === senderLid || p.id === m.sender);
-const bot = participants.find(p => p.id === botLid || p.id === conn.user.jid);
-
-const isRAdmin = user?.admin === "superadmin";
-const isAdmin = isRAdmin || user?.admin === "admin";
-
-// Nuevo método para verificar si el bot es admin
-let isBotAdmin = !!bot?.admin;
-if (m.isGroup && groupMetadata.addressingMode === 'lid') {
-    // Si el grupo es nuevo (usa LIDs), verifica solo si el bot existe en la lista de participantes
-    const botInParticipants = participants.some(p => p.id === botLid);
-    if (botInParticipants) {
-        isBotAdmin = true;
-    }
-}
-
-
-
+const senderLid = await getLidFromJid(m.sender, conn)
+const botLid = await getLidFromJid(conn.user.jid, conn)
+const senderJid = m.sender
+const botJid = conn.user.jid
+const groupMetadata = m.isGroup ? ((conn.chats[m.chat] || {}).metadata || await this.groupMetadata(m.chat).catch(_ => null)) : {}
+const participants = m.isGroup ? (groupMetadata.participants || []) : []
+const user = participants.find(p => p.id === senderLid || p.id === senderJid) || {}
+const bot = participants.find(p => p.id === botLid || p.id === botJid) || {}
+const isRAdmin = user?.admin === "superadmin"
+const isAdmin = isRAdmin || user?.admin === "admin"
+const isBotAdmin = !!bot?.admin
 
 const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './plugins')
 for (let name in global.plugins) {
