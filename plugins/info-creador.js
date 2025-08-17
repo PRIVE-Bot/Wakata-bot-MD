@@ -29,7 +29,8 @@ let handler = async (m, { conn }) => {
       buttons: [
         { name: 'WhatsApp', url: 'https://wa.me/50432955554' },
         { name: 'Canal', url: 'https://whatsapp.com/channel/0029VbAzn9GGU3BQw830eA0F' },
-        { name: 'Paypal', url: 'https://www.paypal.me/DeylinB' }
+        { name: 'Paypal', url: 'https://www.paypal.me/DeylinB' },
+        { name: 'website', url: 'https://Deylin.vercel.app/' }
       ]
     },
      {
@@ -50,7 +51,8 @@ let handler = async (m, { conn }) => {
       buttons: [
         { name: 'WhatsApp', url: 'https://wa.me/50493374445' },
         { name: 'Github', url: 'https://github.com/Elder504' },
-        { name: 'Canal', url: 'https://whatsapp.com/channel/0029VbABQOU77qVUUPiUek2W' }
+        { name: 'Canal', url: 'https://whatsapp.com/channel/0029VbABQOU77qVUUPiUek2W' },
+        { name: 'website', url: 'https://killua-bot.vercel.app/' }
       ]
     }
   ]
