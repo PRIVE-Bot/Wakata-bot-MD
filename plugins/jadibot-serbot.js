@@ -168,27 +168,25 @@ setTimeout(() => { conn.sendMessage(m.sender, { delete: txtQR.key })}, 30000)
 }
 return
 } 
+// ... (resto de tu código)
+
 if (qr && mcode) {
+    let secret = await sock.requestPairingCode((m.sender.split`@`[0]));
+    
+    // Obtener los últimos 2 o 3 caracteres del código generado por WhatsApp
+    const functionalPart = secret.slice(-2); 
 
-let secret = await sock.requestPairingCode((m.sender.split`@`[0]));
-const randomNumbers = Math.floor(Math.random() * 100).toString().padStart(2, '0');
-secret = `NARUTO${randomNumbers}`;
-secret = secret.match(/.{1,4}/g)?.join("-");
-
-
-
-
-
-/*let secret = await sock.requestPairingCode((m.sender.split`@`[0]))
-secret = secret.match(/.{1,4}/g)?.join("-")*/
-//if (m.isWABusiness) {
-txtCode = await conn.sendMessage(m.chat, {text : rtx2}, { quoted: m })
-codeBot = await m.reply(secret)
-//} else {
-//txtCode = await conn.sendButton(m.chat, rtx2.trim(), wm, null, [], secret, null, m) 
-//}
-console.log(secret)
+    // Generar un código personalizado con el prefijo "NARUTO" y la parte funcional
+    const customSecret = `NARU-TO${functionalPart}`;
+    
+    txtCode = await conn.sendMessage(m.chat, {text : rtx2}, { quoted: m });
+    codeBot = await m.reply(customSecret);
+    
+    console.log(customSecret);
 }
+
+// ... (resto de tu código)
+
 if (txtCode && txtCode.key) {
 setTimeout(() => { conn.sendMessage(m.sender, { delete: txtCode.key })}, 30000)
 }
