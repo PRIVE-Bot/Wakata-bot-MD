@@ -1,4 +1,4 @@
-/*import fetch from 'node-fetch'
+import fetch from 'node-fetch'
 import { generateWAMessageFromContent, proto } from '@whiskeysockets/baileys'
 
 
@@ -28,5 +28,5 @@ let fkontak = {
   )
 }
 handler.command = /^estado$/i
-export default handler*/
+export default handler
 
