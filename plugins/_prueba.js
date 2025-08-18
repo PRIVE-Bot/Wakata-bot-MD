@@ -4,7 +4,7 @@ import { generateWAMessageFromContent, proto } from '@whiskeysockets/baileys'
 
 let handler = async (m, {conn}) => {
 const res = await fetch('https://files.catbox.moe/oljc0e.png');
-const thumb2 = Buffer.from(await res.arrayBuffer());
+const img = Buffer.from(await res.arrayBuffer());
 
 const fkontak = {
     key: { 
@@ -13,16 +13,19 @@ const fkontak = {
         participant: m.sender 
     },
     message: {
-        orderMessage: {
-            itemCount: 1,
-            status: 1,
-            surface: 1,
-            message: `${botname}`,
-            orderTitle: "Mejor Bot",
-            thumbnail: thumb2
+        productMessage: {
+            product: {
+                productImage: { jpegThumbnail: img },
+                title: "Membresía Naruto-Bot MD",
+                description: botname ,
+                currencyCode: "USD",
+                priceAmount1000: "5000", 
+                retailerId: "BOT"
+            },
+            businessOwnerJid: "0@s.whatsapp.net"
         }
     }
-}
+};
 
   await conn.sendMessage(
     m.chat,
