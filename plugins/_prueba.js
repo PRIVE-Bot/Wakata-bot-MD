@@ -9,7 +9,7 @@ const fkontak = {
     message: {
         documentMessage: {
             title: botname ,
-            fileName: "El mejor Bot",
+            fileName: "Naruto-Bot.pdf",
             jpegThumbnail: thumb2
         }
     }
