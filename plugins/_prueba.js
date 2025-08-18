@@ -1,23 +1,22 @@
 
 
 var handler = async (m, { conn, text }) => {
-const res = await fetch('https://files.catbox.moe/oljc0e.png'); 
-const thumb3 = Buffer.from(await res.arrayBuffer());
+const res = await fetch('https://files.catbox.moe/oljc0e.png');
+const img = Buffer.from(await res.arrayBuffer());
 
-let userJid = m.sender; 
-
-let fkontak = {
-    key: {
-        fromMe: false,
-        remoteJid: m.chat,
-        id: "deletedMessageFake",
-        participant: userJid 
-    },
+const fkontak = {
+    key: { fromMe: false, participant: "0@s.whatsapp.net" },
     message: {
-        imageMessage: {
-            mimetype: 'image/jpeg',
-            caption: botname ,
-            jpegThumbnail: thumb3
+        productMessage: {
+            product: {
+                productImage: { jpegThumbnail: img },
+                title: "Membresía Naruto-Bot MD",
+                description: botname ,
+                currencyCode: "USD",
+                priceAmount1000: "5000", 
+                retailerId: "BOT"
+            },
+            businessOwnerJid: "0@s.whatsapp.net"
         }
     }
 };
