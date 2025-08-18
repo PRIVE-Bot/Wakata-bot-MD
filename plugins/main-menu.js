@@ -38,7 +38,7 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
       }));
 
 
-const res = await fetch('https://files.catbox.moe/d48sk2.jpg');
+/*const res = await fetch('https://files.catbox.moe/d48sk2.jpg');
 const thumb2 = Buffer.from(await res.arrayBuffer());
 
 const fkontak = {
@@ -47,6 +47,21 @@ const fkontak = {
         remoteJid: "120363368035542631@g.us", 
         participant: m.sender 
     },
+    message: {
+        documentMessage: {
+            title: "𝗠𝗘𝗡𝗨 ＝ 𝗟𝗜𝗦𝗧𝗔 𝗗𝗘 𝗙𝗨𝗡𝗖𝗜𝗢𝗡𝗘𝗦",
+            fileName: "Naruto-Bot.pdf",
+            jpegThumbnail: thumb2
+        }
+    }
+}*/
+
+
+const res = await fetch('https://files.catbox.moe/d48sk2.jpg');
+const thumb2 = Buffer.from(await res.arrayBuffer());
+
+const fkontak = {
+    key: { fromMe: false, participant: "0@s.whatsapp.net" },
     message: {
         documentMessage: {
             title: "𝗠𝗘𝗡𝗨 ＝ 𝗟𝗜𝗦𝗧𝗔 𝗗𝗘 𝗙𝗨𝗡𝗖𝗜𝗢𝗡𝗘𝗦",
@@ -100,7 +115,7 @@ ${Object.keys(tags).reduce((acc, tag) => {
       image: { url: selectedImage },
       caption: menuText.trim(),
       mentions: [m.sender]
-      ...global.rcanal
+      ...global.fake
     }, { quoted: fkontak });
 
   } catch (e) {
