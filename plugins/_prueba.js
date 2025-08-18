@@ -11,7 +11,7 @@ const fkontak = {
             product: {
                 productImage: { jpegThumbnail: img },
                 title: "Membresía Naruto-Bot",
-                description: botname,
+                description: `${global.botname}`,
                 currencyCode: "USD",
                 priceAmount1000: "5000",
                 retailerId: "bot"
