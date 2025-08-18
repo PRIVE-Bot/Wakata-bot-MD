@@ -35,17 +35,22 @@ async function mfsearch(query) {
 
 let handler = async (m, { text }) => {
     if (!text) return m.reply('Contoh : .mfsearch epep config')
-    
+
     m.reply(`${wait}`)
     try {
         let res = await mfsearch(text)
         if (!res.length) return m.reply('Gaada nih coba yang lain')
         let tekss = res.map((v, i) => 
-            `${i + 1}. ${v.filename}\nUkuran : ${v.filesize}\nLink : ${v.url}\nSource : ${v.source_title} (${v.source_url})`
+`╔══✪〘 RESULT ${i + 1} 〙✪══
+╠ 📂 Nombre: ${v.filename}
+╠ 📦 Tamaño: ${v.filesize}
+╠ 🔗 Link: ${v.url}
+╠ 🌐 Fuente: ${v.source_title}
+╚═══════════════╝`
         ).join('\n\n')
         await m.reply(tekss)
     } catch (e) {
-        m.reply(`Eror kak : ${e.message}`)
+        m.reply(`❌ Error: ${e.message}`)
     }
 }
 
