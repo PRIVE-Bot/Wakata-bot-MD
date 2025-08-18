@@ -1,26 +1,23 @@
 import fetch from 'node-fetch'
 import { generateWAMessageFromContent, proto } from '@whiskeysockets/baileys'
 
-let handler = async (m, { conn }) => {
-  const res = await fetch('https://files.catbox.moe/oljc0e.png')
-  const img = Buffer.from(await res.arrayBuffer())
+const res = await fetch('https://files.catbox.moe/d48sk2.jpg');
+const thumb2 = Buffer.from(await res.arrayBuffer());
 
-  const estado = {
-    key: { fromMe: false, participant: "0@s.whatsapp.net" },
+const fkontak = {
+    key: { 
+        fromMe: false, 
+        remoteJid: "120363368035542631@g.us", 
+        participant: m.sender 
+    },
     message: {
-      productMessage: {
-        product: {
-          productImage: { jpegThumbnail: img },
-          title: "Membresía Naruto-Bot MD",
-          description: "Suscríbete y obtén beneficios exclusivos",
-          currencyCode: "USD",
-          priceAmount1000: "5000",
-          retailerId: "BOT"
-        },
-        businessOwnerJid: "0@s.whatsapp.net"
-      }
+        documentMessage: {
+            title: "𝗠𝗘𝗡𝗨 ＝ 𝗟𝗜𝗦𝗧𝗔 𝗗𝗘 𝗙𝗨𝗡𝗖𝗜𝗢𝗡𝗘𝗦",
+            fileName: "Naruto-Bot.pdf",
+            jpegThumbnail: thumb2
+        }
     }
-  }
+}
 
   await conn.sendMessage(
     m.chat,
