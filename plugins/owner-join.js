@@ -10,11 +10,31 @@ let handler = async (m, { conn, text, isOwner }) => {
 
     if (isOwner) {
         try {
+const res = await fetch('https://files.catbox.moe/oljc0e.png'); 
+const thumb3 = Buffer.from(await res.arrayBuffer());
+
+let userJid = m.sender; 
+
+let fkontak = {
+    key: {
+        fromMe: false,
+        remoteJid: m.chat,
+        id: "deletedMessageFake",
+        participant: userJid 
+    },
+    message: {
+        imageMessage: {
+            mimetype: 'image/jpeg',
+            caption: botname ,
+            jpegThumbnail: thumb3
+        }
+    }
+};
             let groupId = await conn.groupAcceptInvite(code);
             m.reply(`${emojis} Me he unido exitosamente al grupo.`);
 
 
-            await conn.sendMessage(groupId, { text: `Hola, soy ${botname}` });
+            await conn.sendMessage(groupId, { text: `Hola, soy ${botname}` }, { quoted: fkontak });
 
         } catch (err) {
             console.error('[ERROR AL UNIRSE AL GRUPO]', err);
