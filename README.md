@@ -26,7 +26,7 @@
 
 <!-- Texto animado -->
 <p align="center">
-  <img src="https://readme-typing-svg.herokuapp.com?size=26&duration=2300&pause=600&center=true&vCenter=true&width=900&lines=Bienvenido+al+mundo+shinobi;Conexi%C3%B3n+por+QR+y+Emparejamiento;Comandos+avanzados+y+veloces;By+Mode" />
+  <img src="https://readme-typing-svg.herokuapp.com?size=26&duration=2300&pause=600&center=true&vCenter=true&width=900&lines=Bienvenido+al+mundo+shinobi;Conexi%C3%B3n+por+QR+y+Emparejamiento;Comandos+avanzados+y+veloces;By+Deylin" />
 </p>
 
 <!-- Badges -->
