@@ -97,7 +97,7 @@ let handler = async (m, { conn, text }) => {
             participants: "0@s.whatsapp.net",
             remoteJid: "status@broadcast",
             fromMe: false,
-            id: "Halo"
+            id: "ia"
         },
         message: {
             locationMessage: {
