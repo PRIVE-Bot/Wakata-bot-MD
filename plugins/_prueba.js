@@ -6,7 +6,7 @@ try {
 await m.react(rwait)
 conn.reply(m.chat, `${emoji} Descargando su aplicación, espere un momento...`, m)
 let searchA = await search(text)
-let data5 = await download(searchA[0].id)⑩)
+let data5 = await download(searchA[0].id)
 let txt = `┏━━━━━━━━━━━━━━━━☒
 let txt = `┇➙ *❒ APTOIDE - DESCARGAS* ❑\n┣━━━━━━━━━━━━━━━━⚄\n`
 txt += `┋➙ *Nombre* : ${data5.name}\n`
