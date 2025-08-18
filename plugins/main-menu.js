@@ -5,7 +5,7 @@ const tags = {
   serbot: 'SUB BOTS', rpg: 'RPG', sticker: 'STICKER', grupo: 'GROUPS',
   nable: 'ON / OFF', premium: 'PREMIUM', downloader: 'DOWNLOAD', tools: 'TOOLS',
   fun: 'FUN', nsfw: 'NSFW', cmd: 'DATABASE', owner: 'OWNER', audio: 'AUDIOS',
-  advanced: 'ADVANCED', weather: 'WEATHER', news: 'NEWS', finance: 'FINANCE',
+  advanced: 'ADVANCED', buscador: 'BUSCADORES', weather: 'WEATHER', news: 'NEWS', finance: 'FINANCE',
   education: 'EDUCATION', health: 'HEALTH', entertainment: 'ENTERTAINMENT',
   sports: 'SPORTS', travel: 'TRAVEL', food: 'FOOD', shopping: 'SHOPPING',
   productivity: 'PRODUCTIVITY', social: 'SOCIAL', security: 'SECURITY', custom: 'CUSTOM'
