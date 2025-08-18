@@ -1,6 +1,8 @@
 import fetch from 'node-fetch'
 import { generateWAMessageFromContent, proto } from '@whiskeysockets/baileys'
 
+
+ver handler = async (m, {conn}) => {
 const res = await fetch('https://files.catbox.moe/oljc0e.png'); 
 const thumb3 = Buffer.from(await res.arrayBuffer());
 
