@@ -38,26 +38,36 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
       }));
 
     
-    const fkontak = {
-    key: { 
-        fromMe: false, 
-        participant: "50455555555@s.whatsapp.net",
-        remoteJid: "120363368035542631@g.us" 
-    },
-    message: {
-        productMessage: {
-            product: {
-                productImage: { jpegThumbnail: img },
-                title: "𝗠𝗘𝗡𝗨 ＝ 𝗟𝗜𝗦𝗧𝗔 𝗗𝗘 𝗙𝗨𝗡𝗖𝗜𝗢𝗡𝗘𝗦",
-                description: botname ,
-                currencyCode: "USD",
-                priceAmount1000: "5000", 
-                retailerId: "BOT"
-            },
-            businessOwnerJid: "0@s.whatsapp.net"
-        }
+    const res = await fetch('https://files.catbox.moe/d48sk2.jpg');
+const img = Buffer.from(await res.arrayBuffer());
+
+const groupJid  = '120363368035542631@g.us';
+const authorJid = m.sender; // o pon aquí el número que deseas simular
+const ownerJid  = (conn.user && conn.user.id) ? conn.user.id : authorJid; // JID válido
+
+const fkontak = {
+  key: { 
+    fromMe: false,
+    remoteJid: groupJid,
+    id: 'MSG_' + Date.now(),         // ID único para evitar queja del cliente
+    participant: authorJid           // autor “en el grupo”
+  },
+  message: {
+    productMessage: {
+      product: {
+        productImage: { jpegThumbnail: img },
+        title: '𝗠𝗘𝗡𝗨 ＝ 𝗟𝗜𝗦𝗧𝗔 𝗗𝗘 𝗙𝗨𝗡𝗖𝗜𝗢𝗡𝗘𝗦',
+        description: botname,
+        currencyCode: 'USD',
+        priceAmount1000: 5000,       // número, no string
+        retailerId: 'BOT'
+      },
+      businessOwnerJid: ownerJid     // JID real (tu bot o el autor)
     }
+  }
 };
+
+
 
 
     
@@ -102,6 +112,7 @@ ${Object.keys(tags).reduce((acc, tag) => {
       image: { url: selectedImage },
       caption: menuText.trim(),
       mentions: [m.sender]
+      ...global.rcanal
     }, { quoted: fkontak });
 
   } catch (e) {
