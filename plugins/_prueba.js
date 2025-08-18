@@ -36,7 +36,7 @@ async function mfsearch(query) {
 let handler = async (m, { text }) => {
     if (!text) return m.reply('Contoh : .mfsearch epep config')
     
-    m.reply('weit')
+    m.reply('wait')
     try {
         let res = await mfsearch(text)
         if (!res.length) return m.reply('Gaada nih coba yang lain')
