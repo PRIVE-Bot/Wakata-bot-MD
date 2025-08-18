@@ -1,7 +1,7 @@
 
 
 var handler = async (m, { conn, text }) => {
-const res = await fetch('https://files.catbox.moe/875ido.png');
+const res = await fetch('https://files.catbox.moe/oljc0e.png');
 const img = Buffer.from(await res.arrayBuffer());
 
 const fkontak = {
@@ -10,11 +10,11 @@ const fkontak = {
         productMessage: {
             product: {
                 productImage: { jpegThumbnail: img },
-                title: "Membresía KilluaBot",
-                description: "Accede a funciones premium con KilluaBot",
+                title: "Naruto-Bot MD",
+                description: botname,
                 currencyCode: "USD",
-                priceAmount1000: "5000", // $5.00
-                retailerId: "KLBOTPREMIUM"
+                priceAmount1000: "5000", 
+                retailerId: "BOT"
             },
             businessOwnerJid: "0@s.whatsapp.net"
         }
