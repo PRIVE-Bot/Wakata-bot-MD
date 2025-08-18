@@ -1,7 +1,7 @@
 
 
 var handler = async (m, { conn, text }) => {
-fetch('https://files.catbox.moe/oljc0e.png');
+const res = await fetch('https://files.catbox.moe/oljc0e.png');
 const thumb2 = Buffer.from(await res.arrayBuffer());
 
 const fkontak = {
