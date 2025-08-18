@@ -89,8 +89,8 @@ let handler = async (m, { conn, text }) => {
 
 
   try {
-    const res = await fetch('https://files.catbox.moe/875ido.png');
-    const thumb2 = Buffer.from(await res.arrayBuffer());
+    const res2 = await fetch('https://files.catbox.moe/875ido.png');
+    const thumb2 = Buffer.from(await res2.arrayBuffer());
 
     const fkontak = {
         key: {
