@@ -89,6 +89,24 @@ let handler = async (m, { conn, text }) => {
 
 
   try {
+    const res = await fetch('https://files.catbox.moe/875ido.png');
+    const thumb2 = Buffer.from(await res.arrayBuffer());
+
+    const fkontak = {
+        key: {
+            participants: "0@s.whatsapp.net",
+            remoteJid: "status@broadcast",
+            fromMe: false,
+            id: "Halo"
+        },
+        message: {
+            locationMessage: {
+                name: '𝗕𝗨𝗦𝗤𝗨𝗘𝗗𝗔 𝗗𝗘 ✦ 𝗣𝗶𝗻𝘁𝗲𝗿𝗲𝘀𝘁',
+                jpegThumbnail: thumb2
+            }
+        },
+        participant: "0@s.whatsapp.net"
+    };
     m.react('🕒');
     const results = await pins(text);
     if (!results || results.length === 0) return conn.reply(m.chat, `No se encontraron resultados para "${text}".`, m, rcanal);
@@ -105,8 +123,7 @@ let handler = async (m, { conn, text }) => {
 
     await sendAlbumMessage(m.chat, medias, {
       caption: `𝗥𝗲𝘀𝘂𝗹𝘁𝗮𝗱𝗼𝘀 𝗱𝗲: ${text}\n𝗖𝗮𝗻𝘁𝗶𝗱𝗮𝗱 𝗱𝗲 𝗿𝗲𝘀𝘂𝗹𝘁𝗮𝗱𝗼𝘀: 15`,
-      ...global.fake,
-      quoted: m
+      quoted: fkontak
     });
 
     await conn.sendMessage(m.chat, { react: { text: '✅', key: m.key } });
