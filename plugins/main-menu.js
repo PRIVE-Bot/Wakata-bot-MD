@@ -42,7 +42,7 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
 const img = Buffer.from(await res.arrayBuffer());
 let userJid = m.sender;
 const fkontak = {
-    key: { fromMe: false, participant: "0@s.whatsapp.net" },
+    key: { fromMe: false, participant: userJid },
     message: {
         productMessage: {
             product: {
