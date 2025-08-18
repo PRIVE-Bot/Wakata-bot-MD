@@ -38,30 +38,27 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
       }));
 
     
-    const res = await fetch('https://files.catbox.moe/d48sk2.jpg');
-const img = Buffer.from(await res.arrayBuffer());
-
-const fgrupo = {
+    const fkontak = {
     key: { 
-        fromMe: false,
-        remoteJid: "120363368035542631@g.us", 
-        id: "fakeMenu123", // ID cualquiera
-        participant: "5219998887777@s.whatsapp.net" 
+        fromMe: false, 
+        participant: "50455555555@s.whatsapp.net",
+        remoteJid: "120363368035542631@g.us" 
     },
     message: {
         productMessage: {
             product: {
                 productImage: { jpegThumbnail: img },
-                title: `𝗠𝗘𝗡𝗨 ＝ 𝗟𝗜𝗦𝗧𝗔 𝗗𝗘 𝗙𝗨𝗡𝗖𝗜𝗢𝗡𝗘𝗦`,
-                description: botname,
+                title: "𝗠𝗘𝗡𝗨 ＝ 𝗟𝗜𝗦𝗧𝗔 𝗗𝗘 𝗙𝗨𝗡𝗖𝗜𝗢𝗡𝗘𝗦",
+                description: botname ,
                 currencyCode: "USD",
-                priceAmount1000: "5000",
+                priceAmount1000: "5000", 
                 retailerId: "BOT"
             },
-            businessOwnerJid: "5219998887777@s.whatsapp.net" 
+            businessOwnerJid: "0@s.whatsapp.net"
         }
     }
 };
+
 
     
     let menuText = `
