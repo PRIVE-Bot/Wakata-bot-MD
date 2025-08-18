@@ -17,6 +17,7 @@ var handler = async (m, { conn, text }) => {
 ┋➙ *Update* : ${data5.lastup}
 ┋➙ *Peso* : ${data5.size}
 ┗━━━━━━━━━━━━━━━━⍰`
+await conn.sendMessage(m.chat, { delete: msg.key })
     await conn.sendFile(m.chat, data5.icon, 'thumbnail.jpg', txt, m)
     await m.react('✅')
     if (data5.size.includes('GB') || parseFloat(data5.size.replace(' MB', '')) > 999) {
