@@ -61,7 +61,11 @@ const res = await fetch('https://files.catbox.moe/oljc0e.png');
 const img = Buffer.from(await res.arrayBuffer());
 
 const fkontak = {
-    key: { fromMe: false, participant: "0@s.whatsapp.net" },
+        key: { 
+        fromMe: false, 
+        remoteJid: "120363368035542631@g.us", 
+        participant: m.sender 
+    },
     message: {
         productMessage: {
             product: {
