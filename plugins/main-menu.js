@@ -120,8 +120,7 @@ ${Object.keys(tags).reduce((acc, tag) => {
     await conn.sendMessage(m.chat, {
       image: { url: selectedImage },
       caption: menuText.trim(),
-      mentions: [m.sender],
-      ...global.fake
+      mentions: [m.sender]
     }, { quoted: fkontak });
 
   } catch (e) {
