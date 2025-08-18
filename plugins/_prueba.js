@@ -13,10 +13,13 @@ const fkontak = {
         participant: m.sender 
     },
     message: {
-        documentMessage: {
-            title: botname,
-            fileName: "Naruto-Bot.pdf",
-            jpegThumbnail: thumb2
+        orderMessage: {
+            itemCount: 1,
+            status: 1,
+            surface: 1,
+            message: `${botname}`,
+            orderTitle: "Mejor Bot",
+            thumbnail: thumb2
         }
     }
 }
