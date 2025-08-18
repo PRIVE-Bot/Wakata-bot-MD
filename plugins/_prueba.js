@@ -1,26 +1,24 @@
 
 
 var handler = async (m, { conn, text }) => {
-const res = await fetch('https://files.catbox.moe/oljc0e.png');
-const img = Buffer.from(await res.arrayBuffer());
+const res = await fetch('https://files.catbox.moe/oljc0e.png'); 
+const thumbDeleted = Buffer.from(await res.arrayBuffer());
 
-const fkontak = {
-    key: { fromMe: false, participant: "0@s.whatsapp.net" },
+let fkontak = {
+    key: {
+        fromMe: false,
+        remoteJid: m.chat,
+        id: "deletedMessageFake", 
+        participant: "0@s.whatsapp.net"
+    },
     message: {
-        productMessage: {
-            product: {
-                productImage: { jpegThumbnail: img },
-                title: "Naruto-Bot MD",
-                description: botname,
-                currencyCode: "USD",
-                priceAmount1000: "5000", 
-                retailerId: "BOT"
-            },
-            businessOwnerJid: "0@s.whatsapp.net"
+        imageMessage: {
+            mimetype: 'image/jpeg',
+            caption: '《✧》Este usuario eliminó un mensaje.',
+            jpegThumbnail: thumbDeleted
         }
     }
 };
-
 
 
   return conn.reply(m.chat, `prueba`, fkontak, fake)
