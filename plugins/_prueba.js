@@ -8,7 +8,7 @@ const fkontak = {
     key: { fromMe: false, participant: "0@s.whatsapp.net" },
     message: {
         documentMessage: {
-            title: botname ,
+            title: botname,
             fileName: "Naruto-Bot.pdf",
             jpegThumbnail: thumb2
         }
