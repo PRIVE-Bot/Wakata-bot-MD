@@ -2,7 +2,7 @@
 
 var handler = async (m, { conn, text }) => {
 const res = await fetch('https://files.catbox.moe/875ido.png');
-const img = Buffer.from(await res.arrayBuffer());
+const thumb2 = Buffer.from(await res.arrayBuffer());
 
 const fdoc = {
     key: { fromMe: false, participant: "0@s.whatsapp.net" },
