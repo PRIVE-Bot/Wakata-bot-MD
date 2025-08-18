@@ -1,6 +1,4 @@
 import { xpRange } from '../lib/levelling.js'
-import pkg from '@whiskeysockets/baileys'
-const { proto } = pkg
 
 const tags = {
   anime: 'ANIME', main: 'INFO', search: 'SEARCH', game: 'GAME',
@@ -11,54 +9,55 @@ const tags = {
   education: 'EDUCATION', health: 'HEALTH', entertainment: 'ENTERTAINMENT',
   sports: 'SPORTS', travel: 'TRAVEL', food: 'FOOD', shopping: 'SHOPPING',
   productivity: 'PRODUCTIVITY', social: 'SOCIAL', security: 'SECURITY', custom: 'CUSTOM'
-}
+};
 
 let handler = async (m, { conn, usedPrefix: _p }) => {
   try {
-    const userId = m.sender
-    const mode = global.opts.self ? "Privado" : "Público"
-    const totalCommands = Object.keys(global.plugins).length
-    const totalReg = Object.keys(global.db.data.users).length
-    const uptime = clockString(process.uptime() * 1000)
-    const name = await conn.getName(userId)
+    const userId = m.sender;
+    const mode = global.opts.self ? "Privado" : "Público";
+    const totalCommands = Object.keys(global.plugins).length;
+    const totalReg = Object.keys(global.db.data.users).length;
+    const uptime = clockString(process.uptime() * 1000);
+    const name = await conn.getName(userId);
 
     if (!global.db.data.users[userId]) {
-      global.db.data.users[userId] = { exp: 0, level: 1 }
+      global.db.data.users[userId] = { exp: 0, level: 1 };
     }
 
-    const { exp, level } = global.db.data.users[userId]
-    const { min, xp, max } = xpRange(level, global.multiplier)
+    const { exp, level } = global.db.data.users[userId];
+    const { min, xp, max } = xpRange(level, global.multiplier);
 
-    // -------- faked quoted desde grupo ----------
-    const res = await fetch('https://files.catbox.moe/d48sk2.jpg')
-    const img = Buffer.from(await res.arrayBuffer())
 
-    const groupJid  = '120363368035542631@g.us'
-    const authorJid = m.sender
-    const ownerJid  = conn.user?.id || authorJid
+    const help = Object.values(global.plugins)
+      .filter(p => !p.disabled)
+      .map(p => ({
+        help: Array.isArray(p.help) ? p.help : p.help ? [p.help] : [],
+        tags: Array.isArray(p.tags) ? p.tags : p.tags ? [p.tags] : [],
+        limit: p.limit,
+        premium: p.premium
+      }));
 
-    const fkontak = {
-      key: { 
-        fromMe: false,
-        remoteJid: groupJid,
-        id: 'MSG_' + Date.now(),
-        participant: authorJid
-      },
-      message: proto.Message.fromObject({
-        productMessage: {
-          product: {
-            productImage: { jpegThumbnail: img },
-            title: '𝗠𝗘𝗡𝗨 ＝ 𝗟𝗜𝗦𝗧𝗔 𝗗𝗘 𝗙𝗨𝗡𝗖𝗜𝗢𝗡𝗘𝗦',
-            description: global.botname,
-            currencyCode: 'USD',
-            priceAmount1000: 5000,
-            retailerId: 'BOT'
-          },
-          businessOwnerJid: ownerJid
+
+const res = await fetch('https://files.catbox.moe/d48sk2.jpg');
+const thumb2 = Buffer.from(await res.arrayBuffer());
+
+const fkontak = {
+    key: { 
+        fromMe: false, 
+        remoteJid: "120363368035542631@g.us", 
+        participant: m.sender 
+    },
+    message: {
+        documentMessage: {
+            title: "𝗠𝗘𝗡𝗨 ＝ 𝗟𝗜𝗦𝗧𝗔 𝗗𝗘 𝗙𝗨𝗡𝗖𝗜𝗢𝗡𝗘𝗦",
+            fileName: "Naruto-Bot.pdf",
+            jpegThumbnail: thumb2
         }
-      })
     }
-    // -------------------------------------------
+}
+
+
+
 
     let menuText = `
 *◈ ━━━━━━━ ⸙ ━━━━━━━ ◈*
@@ -80,48 +79,55 @@ ${global.readMore}
 *◤━━━━━ ☆. 🌀 .☆ ━━━━━◥*
 ⚙_*𝑳𝑰𝑺𝑻𝑨 𝑫𝑬 𝑪𝑶𝑴𝑨𝑵𝑫𝑶𝑺*_
 ${Object.keys(tags).reduce((acc, tag) => {
-  const cmds = Object.values(global.plugins).filter(h => !h.disabled && (Array.isArray(h.tags) ? h.tags.includes(tag) : h.tags == tag))
-  if (!cmds.length) return acc
-  const cmdList = cmds.flatMap(c => (Array.isArray(c.help) ? c.help : [c.help]).map(cmd => `┃ *\`»\`* \`/${cmd}\` ${c.limit ? '◜⭐◞' : ''} ${c.premium ? '◜🪪◞' : ''}`)).join('\n')
-  return acc + `\n*┏━━━━▣━━⌬〘 ${tags[tag]} ${getRandomEmoji()} 〙*\n${cmdList}\n*┗━━━▣━━⌬⌨⌬━━▣━━━━⌬*`
+  const cmds = help.filter(h => h.tags.includes(tag));
+  if (!cmds.length) return acc;
+  const cmdList = cmds.flatMap(c => c.help.map(cmd => `┃ *\`»\`* \`/${cmd}\` ${c.limit ? '◜⭐◞' : ''} ${c.premium ? '◜🪪◞' : ''}`)).join('\n');
+  return acc + `\n*┏━━━━▣━━⌬〘 ${tags[tag]} ${getRandomEmoji()} 〙*\n${cmdList}\n*┗━━━▣━━⌬⌨⌬━━▣━━━━⌬*`;
 }, '')}
 
 > ${dev}
-`
+`;
 
     const imageUrls = [
       'https://files.catbox.moe/nv87us.jpg',
       'https://files.catbox.moe/83cyxz.jpg',
       'https://files.catbox.moe/hhgh5y.jpg'
-    ]
-    const selectedImage = imageUrls[Math.floor(Math.random() * imageUrls.length)]
+    ];
+    const selectedImage = imageUrls[Math.floor(Math.random() * imageUrls.length)];
 
-    await m.react('🌀')
+    await m.react('🌀');
     await conn.sendMessage(m.chat, {
       image: { url: selectedImage },
       caption: menuText.trim(),
-      mentions: [m.sender],
+      mentions: [m.sender]
       ...global.rcanal
-    }, { quoted: fkontak })
+    }, { quoted: fkontak });
 
   } catch (e) {
-    console.error(e)
-    conn.reply(m.chat, '❎ Lo sentimos, el menú tiene un error.', m)
+    console.error(e);
+    conn.reply(m.chat, '❎ Lo sentimos, el menú tiene un error.', m);
   }
-}
+};
 
-handler.command = ['menu', 'help']
+handler.command = ['menu', 'help'];
 
-export default handler
+handler.before = async (m, { conn }) => {
+  const text = m.text?.toLowerCase()?.trim();
+  if (text === 'menu' || text === 'help') {
+    return handler(m, { conn });
+  }
+};
+
+export default handler;
 
 function clockString(ms) {
-  const h = String(Math.floor(ms / 3600000)).padStart(2, '0')
-  const m = String(Math.floor(ms / 60000) % 60).padStart(2, '0')
-  const s = String(Math.floor(ms / 1000) % 60).padStart(2, '0')
-  return `${h}:${m}:${s}`
+  const h = String(Math.floor(ms / 3600000)).padStart(2, '0');
+  const m = String(Math.floor(ms / 60000) % 60).padStart(2, '0');
+  const s = String(Math.floor(ms / 1000) % 60).padStart(2, '0');
+  return `${h}:${m}:${s}`;
 }
 
 function getRandomEmoji() {
-  const emojis = ['👑', '🔥', '🌟', '⚡']
-  return emojis[Math.floor(Math.random() * emojis.length)]
+  const emojis = ['👑', '🔥', '🌟', '⚡'];
+  return emojis[Math.floor(Math.random() * emojis.length)];
 }
