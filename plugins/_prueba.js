@@ -1,98 +1,56 @@
-import { performance } from 'perf_hooks';
+import axios from 'axios'
+import cheerio from 'cheerio'
 
-const handler = async (m, { conn, text, participants }) => {
-  const start = performance.now();
-  const end = performance.now();
-  const executionTime = (end - start);
-
-  let target = m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.sender;
-  let phoneNumber = target.split('@')[0];
-
-  async function loading() {
-    const steps = [
-      "⚡ Iniciando conexión segura con el servidor...",
-      "🔍 Escaneando puertos abiertos...",
-      "📡 Handshake completado con dirección IP 192.168.25.93",
-      "📂 Extrayendo metadatos del dispositivo...",
-      `⏳ Progreso: ${getRandomInt(5, 15)}%`,
-      `⏳ Progreso: ${getRandomInt(20, 35)}%`,
-      "🔑 Obteniendo claves de autenticación...",
-      `⏳ Progreso: ${getRandomInt(40, 55)}%`,
-      "💾 Descargando registros del sistema...",
-      `⏳ Progreso: ${getRandomInt(60, 75)}%`,
-      "🛡 Eliminando rastros digitales...",
-      `⏳ Progreso: ${getRandomInt(80, 95)}%`,
-      "✅ HACKING COMPLETED",
-      "📡 Generando reporte final..."
-    ];
-
-    let { key } = await conn.sendMessage(
-      m.chat,
-      { text: `*☠ Iniciando proceso de doxxing...*` },
-      { quoted: m }
-    );
-
-    for (let i = 0; i < steps.length; i++) {
-      await new Promise(resolve => setTimeout(resolve, getRandomInt(700, 2000)));
-      await conn.sendMessage(m.chat, { text: steps[i], edit: key }, { quoted: m });
+function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1))
+        ;[arr[i], arr[j]] = [arr[j], arr[i]]
     }
-    let nombre = await conn.getName(target);
-
-    const fakeReport = `
-*\`☠ HACKED DATA ☠\`*
-👤 Nombre detectado: ${nombre}
-📱 Teléfono vinculado: +${phoneNumber}
-🌐 Dirección IP: 192.168.${getRandomInt(1,255)}.${getRandomInt(1,255)}
-🛰 Ubicación aproximada: ${getRandomInt(1,255)}.${getRandomInt(1,255)}.${getRandomInt(1,255)}.${getRandomInt(1,255)} (GeoIP)
-
-\`📧 Emails filtrados:\`
-- ${randomString(6)}@gmail.com
-- ${randomString(6)}@yahoo.com
-- ${randomString(6)}@proton.me
-
-\`🔑 Contraseñas expuestas:\`
-- ${randomString(10)}
-- ${randomString(10)}
-- ${randomString(10)}
-
-\`🍪 Cookies de sesión:\`
-- session_${randomString(12)}
-- auth_${randomString(12)}
-- token_${randomString(12)}
-
-\`📜 Historial de navegación:\`
-- facebook.com/${randomString(6)}
-- instagram.com/${randomString(6)}
-- tiktok.com/@${randomString(6)}
-- youtube.com/watch?v=${randomString(11)}
-
-\`🖥 Logs del sistema:\`
-[${new Date().toISOString()}] WARNING: Root access detected
-[${new Date().toISOString()}] ERROR: Unauthorized login bypass
-[${new Date().toISOString()}] INFO: Malware signature "trojan.fake" injected
-
-⚠️ Datos transmitidos al servidor remoto con éxito.
-`;
-
-    await conn.sendMessage(m.chat, { text: fakeReport }, { quoted: m });
-  }
-
-  loading();
-};
-
-handler.help = ['doxear <@tag>'];
-handler.tags = ['fun'];
-handler.command = ['doxxing', 'doxear'];
-handler.group = true;
-handler.register = true;
-
-export default handler;
-
-function getRandomInt(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+    return arr
 }
 
-function randomString(length) {
-  const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  return Array.from({ length }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+async function mfsearch(query) {
+    if (!query) throw new Error('Query is required')
+    const { data: html } = await axios.get(`https://mediafiretrend.com/?q=${encodeURIComponent(query)}&search=Search`)
+    const $ = cheerio.load(html)
+    const links = shuffle(
+        $('tbody tr a[href*="/f/"]').map((_, el) => $(el).attr('href')).get()
+    ).slice(0, 5)
+    const result = await Promise.all(links.map(async link => {
+        const { data } = await axios.get(`https://mediafiretrend.com${link}`)
+        const $ = cheerio.load(data)
+        const raw = $('div.info tbody tr:nth-child(4) td:nth-child(2) script').text()
+        const match = raw.match(/unescape\(['"`]([^'"`]+)['"`]\)/)
+        const decoded = cheerio.load(decodeURIComponent(match[1]))
+        return {
+            filename: $('tr:nth-child(2) td:nth-child(2) b').text().trim(),
+            filesize: $('tr:nth-child(3) td:nth-child(2)').text().trim(),
+            url: decoded('a').attr('href'),
+            source_url: $('tr:nth-child(5) td:nth-child(2)').text().trim(),
+            source_title: $('tr:nth-child(6) td:nth-child(2)').text().trim()
+        }
+    }))
+    return result
 }
+
+let handler = async (m, { text }) => {
+    if (!text) return m.reply('Contoh : .mfsearch epep config')
+    
+    m.reply('wett')
+    try {
+        let res = await mfsearch(text)
+        if (!res.length) return m.reply('Gaada nih coba yang lain')
+        let tekss = res.map((v, i) => 
+            `${i + 1}. ${v.filename}\nUkuran : ${v.filesize}\nLink : ${v.url}\nSource : ${v.source_title} (${v.source_url})`
+        ).join('\n\n')
+        await m.reply(tekss)
+    } catch (e) {
+        m.reply(`Eror kak : ${e.message}`)
+    }
+}
+
+handler.help = ['mediafiresearch <query>']
+handler.tags = ['search']
+handler.command = ['mfsearch', 'mediafiresearch']
+
+export default handler
