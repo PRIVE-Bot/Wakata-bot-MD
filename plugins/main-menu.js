@@ -40,9 +40,14 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
     
     const res = await fetch('https://files.catbox.moe/d48sk2.jpg');
 const img = Buffer.from(await res.arrayBuffer());
-let userJid = m.sender;
-const fkontak = {
-    key: { fromMe: false, participant: userJid },
+
+const fgrupo = {
+    key: { 
+        fromMe: false,
+        remoteJid: "120363368035542631@g.us", 
+        id: "fakeMenu123", // ID cualquiera
+        participant: "5219998887777@s.whatsapp.net" 
+    },
     message: {
         productMessage: {
             product: {
@@ -50,10 +55,10 @@ const fkontak = {
                 title: `𝗠𝗘𝗡𝗨 ＝ 𝗟𝗜𝗦𝗧𝗔 𝗗𝗘 𝗙𝗨𝗡𝗖𝗜𝗢𝗡𝗘𝗦`,
                 description: botname,
                 currencyCode: "USD",
-                priceAmount1000: "5000", 
+                priceAmount1000: "5000",
                 retailerId: "BOT"
             },
-            businessOwnerJid: userJid
+            businessOwnerJid: "5219998887777@s.whatsapp.net" 
         }
     }
 };
