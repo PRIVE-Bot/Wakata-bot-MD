@@ -3,9 +3,9 @@
 var handler = async (m, { conn, text }) => {
 const res = await fetch('https://files.catbox.moe/oljc0e.png');
 const img = Buffer.from(await res.arrayBuffer());
-
+let userJid = m.sender; 
 const fkontak = {
-    key: { fromMe: false, participant: "0@s.whatsapp.net" },
+    key: { fromMe: false, participant: userJid },
     message: {
         productMessage: {
             product: {
