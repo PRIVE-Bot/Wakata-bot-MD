@@ -52,7 +52,7 @@ Este código se desvanece como un clon de sombra en *5 segundos* ⏱️
 > *sɪɢᴜᴇ ᴇʟ ᴄᴀɴᴀʟ ᴏғɪᴄɪᴀʟ ᴛᴏᴄᴀ ᴀǫᴜɪ 👇*
 `
 
-let imagenUrl = global.icono
+let imagenUrl = 'https://files.catbox.moe/vhwafp.jpg'
 
     const res = await fetch('https://files.catbox.moe/oljc0e.png');
     const thumb2 = Buffer.from(await res.arrayBuffer());
