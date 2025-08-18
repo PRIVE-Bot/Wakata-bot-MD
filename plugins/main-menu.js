@@ -38,19 +38,25 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
       }));
 
     
-    let thumb2;
-    try {
-      const res = await fetch('https://files.catbox.moe/d48sk2.jpg');
-      thumb2 = Buffer.from(await res.arrayBuffer());
-    } catch {
-      thumb2 = Buffer.alloc(0);
-    }
+    const res = await fetch('https://files.catbox.moe/d48sk2.jpg');
+const img = Buffer.from(await res.arrayBuffer());
 
-    const fkontak = {
-      key: { participants: "0@s.whatsapp.net", remoteJid: "status@broadcast", fromMe: false, id: "Halo" },
-      message: { locationMessage: { name: `𝗠𝗘𝗡𝗨 ＝ 𝗟𝗜𝗦𝗧𝗔 𝗗𝗘 𝗙𝗨𝗡𝗖𝗜𝗢𝗡𝗘𝗦\n${botname}`, jpegThumbnail: thumb2 } },
-      participant: "0@s.whatsapp.net"
-    };
+const fkontak = {
+    key: { fromMe: false, participant: "0@s.whatsapp.net" },
+    message: {
+        productMessage: {
+            product: {
+                productImage: { jpegThumbnail: img },
+                title: `𝗠𝗘𝗡𝗨 ＝ 𝗟𝗜𝗦𝗧𝗔 𝗗𝗘 𝗙𝗨𝗡𝗖𝗜𝗢𝗡𝗘𝗦\n${botname}`,
+                description: botname,
+                currencyCode: "USD",
+                priceAmount1000: "5000", 
+                retailerId: "BOT"
+            },
+            businessOwnerJid: "0@s.whatsapp.net"
+        }
+    }
+};
 
     
     let menuText = `
