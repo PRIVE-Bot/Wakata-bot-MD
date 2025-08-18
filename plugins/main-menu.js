@@ -40,7 +40,7 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
     
     const res = await fetch('https://files.catbox.moe/d48sk2.jpg');
 const img = Buffer.from(await res.arrayBuffer());
-
+let userJid = m.sender;
 const fkontak = {
     key: { fromMe: false, participant: "0@s.whatsapp.net" },
     message: {
@@ -53,7 +53,7 @@ const fkontak = {
                 priceAmount1000: "5000", 
                 retailerId: "BOT"
             },
-            businessOwnerJid: "0@s.whatsapp.net"
+            businessOwnerJid: userJid
         }
     }
 };
