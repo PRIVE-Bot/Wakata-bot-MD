@@ -1,61 +1,32 @@
-import axios from 'axios'
-import cheerio from 'cheerio'
+import { search, download } from 'aptoide-scraper'
 
-function shuffle(arr) {
-    for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1))
-        ;[arr[i], arr[j]] = [arr[j], arr[i]]
-    }
-    return arr
-}
+var handler = async (m, {conn, usedPrefix, command, text}) => {
+if (!text) return conn.reply(m.chat, `${emoji} Por favor, ingrese el nombre de la apk para descargarlo.`, m, fake)
+try {
+await m.react(rwait)
+conn.reply(m.chat, `${emoji} Descargando su aplicación, espere un momento...`, m)
+let searchA = await search(text)
+let data5 = await download(searchA[0].id)⑩)
+let txt = `┏━━━━━━━━━━━━━━━━☒
+let txt = `┇➙ *❒ APTOIDE - DESCARGAS* ❑\n┣━━━━━━━━━━━━━━━━⚄\n`
+txt += `┋➙ *Nombre* : ${data5.name}\n`
+txt += `┋➙ *Package* : ${data5.package}\n`
+txt += `┋➙ *Update* : ${data5.lastup}\n`
+txt += `┋➙ *Peso* :  ${data5.size}\n`
+txt += `┗━━━━━━━━━━━━━━━━⍰`
+await conn.sendFile(m.chat, data5.icon, 'thumbnail.jpg', txt, m) 
+await m.react(done)  
+if (data5.size.includes('GB') || data5.size.replace(' MB', '') > 999) {
+return await conn.reply(m.chat, `${emoji2} El archivo es demaciado pesado.`, m)}
+await conn.sendMessage(m.chat, {document: {url: data5.dllink}, mimetype: 'application/vnd.android.package-archive', fileName: data5.name + '.apk', caption: null}, {quoted: fkontak})
+} catch {
+return conn.reply(m.chat, `${msm} Ocurrió un fallo...`, m)}}
 
-async function mfsearch(query) {
-    if (!query) throw new Error('Query is required')
-    const { data: html } = await axios.get(`https://mediafiretrend.com/?q=${encodeURIComponent(query)}&search=Search`)
-    const $ = cheerio.load(html)
-    const links = shuffle(
-        $('tbody tr a[href*="/f/"]').map((_, el) => $(el).attr('href')).get()
-    ).slice(0, 5)
-    const result = await Promise.all(links.map(async link => {
-        const { data } = await axios.get(`https://mediafiretrend.com${link}`)
-        const $ = cheerio.load(data)
-        const raw = $('div.info tbody tr:nth-child(4) td:nth-child(2) script').text()
-        const match = raw.match(/unescape\(['"`]([^'"`]+)['"`]\)/)
-        const decoded = cheerio.load(decodeURIComponent(match[1]))
-        return {
-            filename: $('tr:nth-child(2) td:nth-child(2) b').text().trim(),
-            filesize: $('tr:nth-child(3) td:nth-child(2)').text().trim(),
-            url: decoded('a').attr('href'),
-            source_url: $('tr:nth-child(5) td:nth-child(2)').text().trim(),
-            source_title: $('tr:nth-child(6) td:nth-child(2)').text().trim()
-        }
-    }))
-    return result
-}
-
-let handler = async (m, { text }) => {
-    if (!text) return m.reply('Contoh : .mfsearch epep config')
-
-    m.reply(`${wait}`)
-    try {
-        let res = await mfsearch(text)
-        if (!res.length) return m.reply('Gaada nih coba yang lain')
-        let tekss = res.map((v, i) => 
-`╔══✪〘 RESULT ${i + 1} 〙✪══
-╠ 📂 Nombre: ${v.filename}
-╠ 📦 Tamaño: ${v.filesize}
-╠ 🔗 Link: ${v.url}
-╠ 🌐 Fuente: ${v.source_title}
-╚═══════════════╝`
-        ).join('\n\n')
-        await m.reply(tekss)
-    } catch (e) {
-        m.reply(`❌ Error: ${e.message}`)
-    }
-}
-
-handler.help = ['mediafiresearch <query>']
-handler.tags = ['search']
-handler.command = ['mfsearch', 'mediafiresearch']
+handler.tags = ['descargas']
+handler.help = ['apkmod']
+handler.command = ['apk', 'modapk', 'aptoide']
+handler.group = true;
+handler.register = true;
+handler.coin = 5;
 
 export default handler
