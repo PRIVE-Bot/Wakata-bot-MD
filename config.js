@@ -80,7 +80,7 @@ global.rcanal1 = {
       title: "Naruto Uzumaki",
       body: "Contenido exclusivo 🔥",
       thumbnailUrl: icono1,
-      sourceUrl: redes
+      sourceUrl: global.redes
     }
   }
 };
