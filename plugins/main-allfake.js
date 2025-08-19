@@ -135,6 +135,7 @@ global.icono = [
 ].getRandom()
 
 /*global.rcanal = { contextInfo: { isForwarded: true, forwardedNewsletterMessageInfo: { newsletterJid: channelRD.id, serverMessageId: 100, newsletterName: channelRD.name, }, *//*externalAdReply: { showAdAttribution: true, title: textbot, body: dev, mediaUrl: null, description: null, previewType: "PHOTO", thumbnailUrl: icono, sourceUrl: redes, mediaType: 2/*, renderLargerThumbnail: false },*//* }, }}*/
+
 const resImg = await fetch(global.icono);
 const img = Buffer.from(await resImg.arrayBuffer());
 
@@ -145,7 +146,7 @@ global.rcanal = {
       title: "Naruto Uzumaki",
       body: "Contenido exclusivo 🔥",
       thumbnail: img,
-      sourceUrl: redes
+      sourceUrl: pickRandom(redes)
     }
   }
 };
