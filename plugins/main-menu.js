@@ -57,29 +57,22 @@ const fkontak = {
 }*/
 
 
-const res = await fetch('https://files.catbox.moe/oljc0e.png');
-const img = Buffer.from(await res.arrayBuffer());
+const res = await fetch('https://files.catbox.moe/91rqne.jpg');
+const thumb2 = Buffer.from(await res.arrayBuffer());
 
 const fkontak = {
-        key: { 
-        fromMe: false, 
-        remoteJid: "120363368035542631@g.us", 
-        participant: m.sender 
-    },
+    key: { fromMe: false, participant: "0@s.whatsapp.net" },
     message: {
-        productMessage: {
-            product: {
-                productImage: { jpegThumbnail: img },
-                title: "Membresía Naruto-Bot MD",
-                description: botname ,
-                currencyCode: "USD",
-                priceAmount1000: "5000", 
-                retailerId: "BOT"
-            },
-            businessOwnerJid: "0@s.whatsapp.net"
+        orderMessage: {
+            itemCount: 1,
+            status: 1,
+            surface: 1,
+            message: `𝗠𝗘𝗡𝗨 ＝ 𝗟𝗜𝗦𝗧𝗔 𝗗𝗘 𝗙𝗨𝗡𝗖𝗜𝗢𝗡𝗘𝗦\n${botname}`,
+            orderTitle: "Mejor Bot",
+            thumbnail: thumb2
         }
     }
-};
+}
 
 
 
