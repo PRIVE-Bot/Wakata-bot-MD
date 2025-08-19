@@ -82,10 +82,10 @@ const handler = async (m, { conn, text, command }) => {
     const thumbResized = await resizeImage(thumb, 300); 
     const thumb2 = Buffer.from(await thumb2Res.arrayBuffer());
 
-const res3 = await fetch('https://files.catbox.moe/oljc0e.png');
+const res3 = await fetch('https://files.catbox.moe/wfd0ze.jpg');
 const thumb3 = Buffer.from(await res3.arrayBuffer());
 
-const fkontak = {
+const fkontak2 = {
     key: { fromMe: false, participant: "0@s.whatsapp.net" },
     message: {
         documentMessage: {
@@ -185,7 +185,7 @@ const fkontak = {
             thumbnail: thumb,
             ...global.fake
           },
-          { quoted: fkontak }
+          { quoted: fkontak2 }
         );
 
       } catch (err) {
