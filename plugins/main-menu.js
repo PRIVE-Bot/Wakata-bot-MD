@@ -67,7 +67,7 @@ const fkontak = {
         productMessage: {
             product: {
                 productImage: { jpegThumbnail: img },
-                title: `𝗠𝗘𝗡𝗨 ＝ 𝗟𝗜𝗦𝗧𝗔 𝗗𝗘 𝗙𝗨𝗡𝗖𝗜𝗢𝗡𝗘𝗦\n${botname}`,
+                title: `𝗠𝗘𝗡𝗨 ＝ 𝗟𝗜𝗦𝗧𝗔 𝗗𝗘 𝗙𝗨𝗡𝗖𝗜𝗢𝗡𝗘𝗦`,
                 description: botname ,
                 currencyCode: "USD",
                 priceAmount1000: "5000", 
