@@ -123,9 +123,7 @@ ${Object.keys(tags).reduce((acc, tag) => {
   {
     image: { url: selectedImage },
     caption: menuText.trim(),
-    mentions: [m.sender],
-      }
-    }
+    mentions: [m.sender]
   },
   { quoted: fkontak }
 )
