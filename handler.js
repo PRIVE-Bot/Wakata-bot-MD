@@ -189,7 +189,7 @@ chat.detect2 = false
 if (!('antiBot' in chat))
 chat.antiBot = false
 if (!('antiBot2' in chat))
-chat.antiBot2 = false
+chat.antiBot2 = true
 if (!('antiver' in chat))
 chat.antiver = false 
 if (!('modoadmin' in chat))                     
