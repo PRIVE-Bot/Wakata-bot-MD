@@ -74,8 +74,11 @@ global.icono1 = [
 ]//.getRandom()
 
 global.rcanal1 = {
-  text: "¡Mira nuestro canal oficial!",
-  contextInfo: {
+    forwardedNewsletterMessageInfo: {
+      newsletterJid: channelRD.id,
+      newsletterName: channelRD.name,
+      serverMessageId: -1,
+          },
     externalAdReply: {
       title: "Naruto Uzumaki",
       body: "Contenido exclusivo 🔥",
