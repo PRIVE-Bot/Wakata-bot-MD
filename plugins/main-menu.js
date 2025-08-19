@@ -26,6 +26,7 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
 
     const { exp, level } = global.db.data.users[userId];
     const { min, xp, max } = xpRange(level, global.multiplier);
+    let tag = '@' + userId.split('@')[0]
 
 
     const help = Object.values(global.plugins)
@@ -80,10 +81,10 @@ const fkontak = {
     let menuText = `
 *◈ ━━━━━━━ ⸙ ━━━━━━━ ◈*
 
-Hola *@${userId.split('@')[0]}* soy *${global.botname}*
+Hola ${tag}* soy *${global.botname}*
 
 ┏╍╍╍╍╍╍╍╍╾『 𝑰 𝑵 𝑭 𝑶 』
-┃ ʕ˖͜͡˖ʔ *Cliente:* @${userId.split('@')[0]}
+┃ ʕ˖͜͡˖ʔ *Cliente:* ${tag}
 ┃ ۵卍 *Bot:* ${(conn.user.jid == global.conn.user.jid ? 'Principal 🅥' : 'Prem Bot 🅑')}
 ┃ ☒ *Modo:* ${mode}
 ┃ ஐ *Usuarios »* ${totalReg}
