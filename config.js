@@ -67,8 +67,11 @@ global.fetch = fetch
 global.axios = axios
 global.moment = moment   
 
-let resImg = await fetch(global.icono);
-let img = Buffer.from(await resImg.arrayBuffer());
+global.iconoq = [
+'https://i.postimg.cc/d3Q1g80b/IMG-20250803-WA0147.jpg',
+'https://i.postimg.cc/zBZH2bKN/IMG-20250803-WA0146.jpg',
+'https://i.postimg.cc/1RVYNL5N/IMG-20250803-WA0145.jpg',
+].getRandom()
 
 global.rcanal1 = {
   text: "¡Mira nuestro canal oficial!",
@@ -76,8 +79,8 @@ global.rcanal1 = {
     externalAdReply: {
       title: "Naruto Uzumaki",
       body: "Contenido exclusivo 🔥",
-      thumbnail: img,
-      sourceUrl: pickRandom(redes)
+      thumbnailUrl: icono1,
+      sourceUrl: redes
     }
   }
 };
