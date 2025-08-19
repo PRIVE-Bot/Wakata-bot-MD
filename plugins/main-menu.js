@@ -59,21 +59,24 @@ const fkontak = {
 
 
 const res = await fetch('https://files.catbox.moe/91rqne.jpg');
-const thumb2 = Buffer.from(await res.arrayBuffer());
+const img = Buffer.from(await res.arrayBuffer());
 
 const fkontak = {
     key: { fromMe: false, participant: "0@s.whatsapp.net" },
     message: {
-        orderMessage: {
-            itemCount: 1,
-            status: 1,
-            surface: 1,
-            message: `𝗠𝗘𝗡𝗨 ＝ 𝗟𝗜𝗦𝗧𝗔 𝗗𝗘 𝗙𝗨𝗡𝗖𝗜𝗢𝗡𝗘𝗦\n${botname}`,
-            orderTitle: "Mejor Bot",
-            thumbnail: thumb2
+        productMessage: {
+            product: {
+                productImage: { jpegThumbnail: img },
+                title: `𝗠𝗘𝗡𝗨 ＝ 𝗟𝗜𝗦𝗧𝗔 𝗗𝗘 𝗙𝗨𝗡𝗖𝗜𝗢𝗡𝗘𝗦\n${botname}`,
+                description: botname ,
+                currencyCode: "USD",
+                priceAmount1000: "5000", 
+                retailerId: "BOT"
+            },
+            businessOwnerJid: "0@s.whatsapp.net"
         }
     }
-}
+};
 
 
 
@@ -121,12 +124,6 @@ ${Object.keys(tags).reduce((acc, tag) => {
     image: { url: selectedImage },
     caption: menuText.trim(),
     mentions: [m.sender],
-    contextInfo: {
-      isForwarded: true,
-      forwardedNewsletterMessageInfo: {
-        newsletterJid: channelRD.id,
-        newsletterName: channelRD.name,
-        serverMessageId: -1
       }
     }
   },
