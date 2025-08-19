@@ -77,7 +77,7 @@ global.icono1 = [
 'https://i.postimg.cc/1RVYNL5N/IMG-20250803-WA0145.jpg',
 ]//.getRandom()
 
-global.rcanal1 = {
+global.rcanal = {
   contextInfo: {
     forwardedNewsletterMessageInfo: {
       newsletterJid: channelRD.id, 
