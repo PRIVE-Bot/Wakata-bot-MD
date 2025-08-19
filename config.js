@@ -78,17 +78,11 @@ global.icono1 = [
 ]//.getRandom()
 
 global.rcanal = {
-  contextInfo: {
-    forwardedNewsletterMessageInfo: {
-      newsletterJid: channelRD.id, 
-      newsletterName: channelRD.name,
-      serverMessageId: -1,
-    },
     externalAdReply: {
       title: "Naruto Uzumaki",
       body: "Contenido exclusivo 🔥",
       thumbnailUrl: icono1,
-      sourceUrl: global.redes,
+      sourceUrl: "https://naruto-bot.vercel.app/canal.html"
     }
   }
 }
