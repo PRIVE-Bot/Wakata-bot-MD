@@ -81,7 +81,7 @@ const fkontak = {
     let menuText = `
 *◈ ━━━━━━━ ⸙ ━━━━━━━ ◈*
 
-Hola ${tag}* soy *${global.botname}*
+Hola %name soy *${global.botname}*
 
 ┏╍╍╍╍╍╍╍╍╾『 𝑰 𝑵 𝑭 𝑶 』
 ┃ ʕ˖͜͡˖ʔ *Cliente:* ${tag}
