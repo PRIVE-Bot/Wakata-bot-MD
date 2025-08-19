@@ -134,7 +134,22 @@ global.icono = [
 'https://i.postimg.cc/1RVYNL5N/IMG-20250803-WA0145.jpg',
 ].getRandom()
 
-/*global.rcanal = { contextInfo: { isForwarded: true, forwardedNewsletterMessageInfo: { newsletterJid: channelRD.id, serverMessageId: 100, newsletterName: channelRD.name, }, *//*externalAdReply: { showAdAttribution: true, title: textbot, body: dev, mediaUrl: null, description: null, previewType: "PHOTO", thumbnailUrl: icono, sourceUrl: redes, mediaType: 2/*, renderLargerThumbnail: false },*/ }, }}
+/*global.rcanal = { contextInfo: { isForwarded: true, forwardedNewsletterMessageInfo: { newsletterJid: channelRD.id, serverMessageId: 100, newsletterName: channelRD.name, }, *//*externalAdReply: { showAdAttribution: true, title: textbot, body: dev, mediaUrl: null, description: null, previewType: "PHOTO", thumbnailUrl: icono, sourceUrl: redes, mediaType: 2/*, renderLargerThumbnail: false },*//* }, }}*/
+const resImg = await fetch(global.icono);
+const img = Buffer.from(await resImg.arrayBuffer());
+
+global.rcanal = {
+  text: "¡Mira nuestro canal oficial!",
+  contextInfo: {
+    externalAdReply: {
+      title: "Naruto Uzumaki",
+      body: "Contenido exclusivo 🔥",
+      thumbnail: img,
+      sourceUrl: redes
+    }
+  }
+};
+
 
 export default handler
 
