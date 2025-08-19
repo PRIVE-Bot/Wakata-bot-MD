@@ -80,9 +80,11 @@ global.icono1 = [
 global.rcanal = {
   contextInfo: {
     externalAdReply: {
-      title: "Naruto Uzumaki",
-      body: "Contenido exclusivo 🔥",
-      thumbnailUrl: icono1, // debe ser una URL o un buffer válido
+      showAdAttribution: true, 
+      title: botname,
+      body: dev,
+      mediaType: 2,         
+      thumbnailUrl: "https://i.postimg.cc/d3Q1g80b/IMG-20250803-WA0147.jpg",
       sourceUrl: "https://naruto-bot.vercel.app/canal.html"
     }
   }
