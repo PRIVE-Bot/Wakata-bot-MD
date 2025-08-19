@@ -307,7 +307,7 @@ const [thumbFileRes, thumb2Res] = await Promise.all([
       participant: "0@s.whatsapp.net"
     };
 
-    const fkontak2 = {
+   /* const fkontak2 = {
         key: {
             participants: "0@s.whatsapp.net",
             remoteJid: "status@broadcast",
@@ -321,7 +321,23 @@ const [thumbFileRes, thumb2Res] = await Promise.all([
             }
         },
         participant: "0@s.whatsapp.net"
-    };
+    };*/
+
+const fkontak = {
+    key: { fromMe: false, participant: "0@s.whatsapp.net" },
+    message: {
+        orderMessage: {
+            itemCount: 1,
+            status: 1,
+            surface: 1,
+            message: `𝗗𝗘𝗦𝗖𝗔𝗥𝗚𝗔 𝗖𝗢𝗠𝗣𝗟𝗘𝗧𝗔:\n「 ${title} 」`,
+            orderTitle: "Mejor Bot",
+            thumbnail: thumb
+        }
+    }
+}
+
+
 
 
     const vistas = formatViews(views);
