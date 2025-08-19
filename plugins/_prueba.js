@@ -1,37 +1,48 @@
 import fetch from "node-fetch";
+import { exec } from "child_process";
+import fs from "fs";
+import path from "path";
 
-// Handler para el comando .1
-let handler = async (m, { conn, command }) => {
+let handler = async (m, { conn }) => {
   try {
-    // Descargar imagen de miniatura
-    const resImg = await fetch("https://files.catbox.moe/f8qrut.png");
-    const img = Buffer.from(await resImg.arrayBuffer());
-
-    // Enviar audio con miniatura y metadata
+    const audioUrl = "https://files.catbox.moe/ktilca.mp3";
+    const imgUrl = "https://files.catbox.moe/f8qrut.png";
+    const tmpDir = "./tmp";
+    if (!fs.existsSync(tmpDir)) fs.mkdirSync(tmpDir);
+    const audioPath = path.join(tmpDir, "audio.mp3");
+    const opusPath = path.join(tmpDir, "audio.opus");
+    const imgPath = path.join(tmpDir, "cover.png");
+    const resAudio = await fetch(audioUrl);
+    const audioBuffer = Buffer.from(await resAudio.arrayBuffer());
+    fs.writeFileSync(audioPath, audioBuffer);
+    const resImg = await fetch(imgUrl);
+    const imgBuffer = Buffer.from(await resImg.arrayBuffer());
+    fs.writeFileSync(imgPath, imgBuffer);
+    await new Promise((resolve, reject) => {
+      exec(`ffmpeg -i "${audioPath}" -c:a libopus -b:a 64k -vbr on -metadata title="Naruto Audio" -attach "${imgPath}" -metadata:s:t mimetype=image/png "${opusPath}"`, (err) => {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+    const audioFinal = fs.readFileSync(opusPath);
     await conn.sendMessage(
       m.chat,
       {
-        audio: { url: "https://files.catbox.moe/ktilca.mp3" }, // audio de prueba
-        mimetype: "audio/mpeg",
+        audio: audioFinal,
+        mimetype: "audio/ogg; codecs=opus",
         ptt: true,
-        fileName: "Naruto-Audio.mp3",
-        contextInfo: {
-          externalAdReply: {
-            title: "Naruto Uzumaki",             // título del audio
-            body: "Audio exclusivo 🔥",          // subtítulo
-            thumbnail: img,                      // miniatura fija
-            sourceUrl: "https://whatsapp.com/channel/0029VbB46nl2ER6dZac6Nd1o" // link opcional
-          }
-        }
+        fileName: "Naruto-Audio.opus"
       },
       { quoted: m }
     );
-  } catch (error) {
-    console.error("Error enviando audio:", error);
+    fs.unlinkSync(audioPath);
+    fs.unlinkSync(opusPath);
+    fs.unlinkSync(imgPath);
+  } catch (e) {
+    console.error(e);
     await conn.sendMessage(m.chat, { text: "Ocurrió un error al enviar el audio." }, { quoted: m });
   }
 };
 
-// Configurar el comando
-handler.command = /^1$/i; // activa con ".1"
+handler.command = /^1$/i;
 export default handler;
