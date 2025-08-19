@@ -128,17 +128,27 @@ global.fkontak = { key: {participant: `0@s.whatsapp.net`, ...(m.chat ? { remoteJ
 global.fake = { contextInfo: { isForwarded: true, forwardedNewsletterMessageInfo: { newsletterJid: channelRD.id, newsletterName: channelRD.name, serverMessageId: -1 }
 }}, { quoted: m }
 
-global.icono = [
+global.icono1 = [
 'https://i.postimg.cc/d3Q1g80b/IMG-20250803-WA0147.jpg',
 'https://i.postimg.cc/zBZH2bKN/IMG-20250803-WA0146.jpg',
 'https://i.postimg.cc/1RVYNL5N/IMG-20250803-WA0145.jpg',
-].getRandom()
+]//.getRandom()
 
-global.rcanal = global.rcanal1
-
-
-
-
+global.rcanal1 = {
+  contextInfo: {
+    forwardedNewsletterMessageInfo: {
+      newsletterJid: global.channelRD,
+      newsletterName: global.canalNombreM,
+      serverMessageId: -1,
+    },
+    externalAdReply: {
+      title: "Naruto Uzumaki",
+      body: "Contenido exclusivo 🔥",
+      thumbnailUrl: icono1,
+      sourceUrl: global.redes,
+    }
+  }
+}
 
 export default handler
 
