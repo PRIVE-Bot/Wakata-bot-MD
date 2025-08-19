@@ -78,10 +78,11 @@ global.icono1 = [
 ]//.getRandom()
 
 global.rcanal = {
+  contextInfo: {
     externalAdReply: {
       title: "Naruto Uzumaki",
       body: "Contenido exclusivo 🔥",
-      thumbnailUrl: icono1,
+      thumbnailUrl: icono1, // debe ser una URL o un buffer válido
       sourceUrl: "https://naruto-bot.vercel.app/canal.html"
     }
   }
