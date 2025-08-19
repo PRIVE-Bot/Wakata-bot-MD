@@ -117,7 +117,11 @@ ${Object.keys(tags).reduce((acc, tag) => {
     await conn.sendMessage(m.chat, {
       image: { url: selectedImage },
       caption: menuText.trim(),
-      mentions: [m.sender]
+      mentions: [m.sender],
+      contextInfo: { isForwarded: true,  
+      forwardedNewsletterMessageInfo: { newsletterJid: channelRD.id, 
+       newsletterName: channelRD.name, 
+       serverMessageId: -1 }
     }, { quoted: fkontak });
 
   } catch (e) {
