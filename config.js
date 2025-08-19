@@ -40,6 +40,10 @@ global.sessions = 'Sessions'
 global.jadi = 'JadiBots' 
 global.Jadibts = true
 
+global.canalIdM = ["120363403593951965@newsletter", "120363403593951965@newsletter"]
+global.canalNombreM = ["𖤐 𝐍𝐚𝐫𝐮𝐭𝐨-𝐁𝐨𝐭 - 𝐮𝐩𝐝𝐚𝐭𝐞𝐬 ⚡", "𖤐 𝐍𝐚𝐫𝐮𝐭𝐨-𝐁𝐨𝐭 - 𝐚𝐯𝐢𝐬𝐨𝐬 ☀️"]
+global.channelRD = await getRandomChannel()
+
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
 
 global.packname = '𝑵𝒂𝒓𝒖𝒕𝒐 - 𝑩𝒐𝒕 𝑴𝑫';
@@ -76,8 +80,8 @@ global.icono1 = [
 global.rcanal1 = {
   contextInfo: {
     forwardedNewsletterMessageInfo: {
-      newsletterJid: global.channelRD,
-      newsletterName: global.canalNombreM,
+      newsletterJid: channelRD.id, 
+      newsletterName: channelRD.name,
       serverMessageId: -1,
     },
     externalAdReply: {
