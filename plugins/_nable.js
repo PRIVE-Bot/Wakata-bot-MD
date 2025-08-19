@@ -111,7 +111,7 @@ const handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, i
       if (m.isGroup) {
         if (!(isAdmin || isOwner)) {
           global.dfail('admin', m, conn);
-          throw false;
+          throw true;
         }
       }
       isEnable = chat.antiBot2 = !chat.antiBot2;
