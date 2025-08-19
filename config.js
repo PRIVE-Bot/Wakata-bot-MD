@@ -76,8 +76,8 @@ global.icono1 = [
 global.rcanal1 = {
   contextInfo: {
     forwardedNewsletterMessageInfo: {
-      newsletterJid: channelRD.id,
-      newsletterName: channelRD.name,
+      newsletterJid: global.channelRD.id,
+      newsletterName: global.canalNombreM,
       serverMessageId: -1,
     },
     externalAdReply: {
@@ -87,7 +87,7 @@ global.rcanal1 = {
       sourceUrl: global.redes,
     }
   }
-};
+}
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
 
