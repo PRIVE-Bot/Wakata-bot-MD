@@ -114,15 +114,23 @@ ${Object.keys(tags).reduce((acc, tag) => {
     const selectedImage = imageUrls[Math.floor(Math.random() * imageUrls.length)];
 
     await m.react('🌀');
-    await conn.sendMessage(m.chat, {
-      image: { url: selectedImage },
-      caption: menuText.trim(),
-      mentions: [m.sender],
-      contextInfo: { isForwarded: true,  
-      forwardedNewsletterMessageInfo: { newsletterJid: channelRD.id, 
-       newsletterName: channelRD.name, 
-       serverMessageId: -1 }
-    }, { quoted: fkontak });
+    await conn.sendMessage(
+  m.chat,
+  {
+    image: { url: selectedImage },
+    caption: menuText.trim(),
+    mentions: [m.sender],
+    contextInfo: {
+      isForwarded: true,
+      forwardedNewsletterMessageInfo: {
+        newsletterJid: channelRD.id,
+        newsletterName: channelRD.name,
+        serverMessageId: -1
+      }
+    }
+  },
+  { quoted: fkontak }
+)
 
   } catch (e) {
     console.error(e);
