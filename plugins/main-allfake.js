@@ -136,8 +136,8 @@ global.icono = [
 
 /*global.rcanal = { contextInfo: { isForwarded: true, forwardedNewsletterMessageInfo: { newsletterJid: channelRD.id, serverMessageId: 100, newsletterName: channelRD.name, }, *//*externalAdReply: { showAdAttribution: true, title: textbot, body: dev, mediaUrl: null, description: null, previewType: "PHOTO", thumbnailUrl: icono, sourceUrl: redes, mediaType: 2/*, renderLargerThumbnail: false },*//* }, }}*/
 
-const resImg = await fetch(global.icono);
-const img = Buffer.from(await resImg.arrayBuffer());
+let resImg = await fetch(global.icono);
+let img = Buffer.from(await resImg.arrayBuffer());
 
 global.rcanal = {
   text: "¡Mira nuestro canal oficial!",
