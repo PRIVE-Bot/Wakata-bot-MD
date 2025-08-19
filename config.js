@@ -84,7 +84,7 @@ global.rcanal = {
       title: botname,
       body: dev,
       mediaType: 2,         
-      thumbnailUrl: "https://i.postimg.cc/d3Q1g80b/IMG-20250803-WA0147.jpg",
+      thumbnailUrl: global.icono,
       sourceUrl: "https://naruto-bot.vercel.app/canal.html"
     }
   }
