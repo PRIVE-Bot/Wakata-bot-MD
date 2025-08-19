@@ -76,7 +76,7 @@ global.icono1 = [
 global.rcanal1 = {
   contextInfo: {
     forwardedNewsletterMessageInfo: {
-      newsletterJid: global.channelRD.id,
+      newsletterJid: global.channelRD,
       newsletterName: global.canalNombreM,
       serverMessageId: -1,
     },
