@@ -139,7 +139,7 @@ const fkontak2 = {
           }
         }
       },
-      { quoted: fkontak }
+      { quoted: fkontak2 }
     );
 
     // Audio
@@ -151,15 +151,7 @@ const fkontak2 = {
           audio: { url: api.downloadUrl },
           mimetype: "audio/mpeg",
           fileName: `${title}.mp3`,
-          ptt: true,
-          contextInfo: {
-            isForwarded: true,
-            forwardedNewsletterMessageInfo: {
-              newsletterJid: channelRD.id,
-              newsletterName: channelRD.name,
-              serverMessageId: -1,
-            },
-          },
+          ptt: true
         },
         { quoted: fkontak }
       );
@@ -182,8 +174,7 @@ const fkontak2 = {
             video: { url: json.res.url },
             fileName: `${json.res.title || title}.mp4`,
             mimetype: "video/mp4",
-            thumbnail: thumb,
-            ...global.fake
+            thumbnail: thumb
           },
           { quoted: fkontak2 }
         );
