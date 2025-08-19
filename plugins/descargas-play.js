@@ -106,6 +106,22 @@ const handler = async (m, { conn, text }) => {
         participant: "0@s.whatsapp.net"
     };
 
+
+
+const fkontak = {
+    key: { fromMe: false, participant: "0@s.whatsapp.net" },
+    message: {
+        orderMessage: {
+            itemCount: 1,
+            status: 1,
+            surface: 1,
+            message: `𝗗𝗘𝗦𝗖𝗔𝗥𝗚𝗔 𝗖𝗢𝗠𝗣𝗟𝗘𝗧𝗔:\n「 ${title} 」`,
+            orderTitle: "Mejor Bot",
+            thumbnail: thumbFileRes.data
+        }
+    }
+}
+
     const vistas = formatViews(views);
 
     const infoMessage = `★ ${global.botname || 'Bot'} ★
@@ -142,14 +158,14 @@ export default handler;
 
 
 setActionCallback('audio', async (conn, chat, data) => {
-  const { url, title, fkontak2 } = data;
+  const { url, title, fkontak } = data;
   try {
     const api = await ddownr.download(url, "mp3");
     await conn.sendMessage(chat, {
       audio: { url: api.downloadUrl },
       mimetype: 'audio/mpeg',
       fileName: `${title}.mp3`
-    }, { quoted: fkontak2 });
+    }, { quoted: fkontak });
   } catch (err) {
     await conn.sendMessage(chat, { text: `❌ Error al descargar el audio: ${err.message}` });
   }
