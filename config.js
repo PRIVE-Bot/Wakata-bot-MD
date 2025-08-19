@@ -67,6 +67,21 @@ global.fetch = fetch
 global.axios = axios
 global.moment = moment   
 
+let resImg = await fetch(global.icono);
+let img = Buffer.from(await resImg.arrayBuffer());
+
+global.rcanal1 = {
+  text: "¡Mira nuestro canal oficial!",
+  contextInfo: {
+    externalAdReply: {
+      title: "Naruto Uzumaki",
+      body: "Contenido exclusivo 🔥",
+      thumbnail: img,
+      sourceUrl: pickRandom(redes)
+    }
+  }
+};
+
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
 
 let file = fileURLToPath(import.meta.url)
