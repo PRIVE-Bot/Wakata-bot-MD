@@ -79,10 +79,24 @@ const handler = async (m, { conn, text, command }) => {
     ]);
 
     const thumb = thumbFileRes.data;
-    const thumbResized = await resizeImage(thumb, 300); // 🔥 Miniatura compatible con orderMessage
+    const thumbResized = await resizeImage(thumb, 300); 
     const thumb2 = Buffer.from(await thumb2Res.arrayBuffer());
 
-    // Mensaje de estilo
+const res3 = await fetch('https://files.catbox.moe/oljc0e.png');
+const thumb3 = Buffer.from(await res3.arrayBuffer());
+
+const fkontak = {
+    key: { fromMe: false, participant: "0@s.whatsapp.net" },
+    message: {
+        documentMessage: {
+            title: "𝗗𝗘𝗦𝗖𝗔𝗥𝗚𝗔𝗡𝗗𝗢",
+            fileName: "play_Naruto-Bot.mp3",
+            jpegThumbnail: thumb3
+        }
+    }
+}
+
+    
     const fkontak = {
       key: { fromMe: false, participant: "0@s.whatsapp.net" },
       message: {
@@ -90,9 +104,9 @@ const handler = async (m, { conn, text, command }) => {
           itemCount: 1,
           status: 1,
           surface: 1,
-          message: `𝗗𝗘𝗦𝗖𝗔𝗥𝗚𝗔 𝗖𝗢𝗠𝗣𝗟𝗘𝗧𝗔:\n「 ${title} 」`,
+          message: `「 ${title} 」`,
           orderTitle: "Mejor Bot",
-          thumbnail: thumbResized // ✅ ya redimensionada
+          thumbnail: thumbResized 
         }
       }
     };
