@@ -5,21 +5,26 @@ import { webp2png } from '../lib/webp2mp4.js';
 
 let handler = async (m, { conn, args, usedPrefix, command }) => {
 const res = await fetch('https://files.catbox.moe/p87uei.jpg');
-const thumb2 = Buffer.from(await res.arrayBuffer());
+const img = Buffer.from(await res.arrayBuffer());
 
 const fkontak = {
     key: { fromMe: false, participant: "0@s.whatsapp.net" },
     message: {
-        orderMessage: {
-            itemCount: 1,
-            status: 1,
-            surface: 1,
-            message: `𝗦𝗧𝗜𝗞𝗘𝗥 𝗚𝗘𝗡𝗘𝗥𝗔𝗗𝗢 𝗖𝗢𝗡 𝗘𝗫𝗜𝗧𝗢`,
-            orderTitle: "Mejor Bot",
-            thumbnail: thumb2
+        productMessage: {
+            product: {
+                productImage: { jpegThumbnail: img },
+                title: "𝗦𝗧𝗜𝗞𝗘𝗥 𝗚𝗘𝗡𝗘𝗥𝗔𝗗𝗢 𝗖𝗢𝗡 𝗘𝗫𝗜𝗧𝗢",
+                description: '𝗦𝗧𝗜𝗞𝗘𝗥',
+                currencyCode: "USD",
+                priceAmount1000: "5000", 
+                retailerId: "BOT"
+            },
+            businessOwnerJid: "0@s.whatsapp.net"
         }
     }
-}
+};
+
+
   let stiker = false;
   try {
     let q = m.quoted ? m.quoted : m;
