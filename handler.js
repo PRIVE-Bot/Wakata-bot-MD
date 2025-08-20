@@ -24,22 +24,6 @@ if (!m)
 return;
 
 
-if (!m || !m.sender) return; // <-- evita errores si m no está definido
-
-let numero = m.sender.split('@')[0];
-let isOwner = [conn.decodeJid(global.conn.user.id), ...global.owner.map(([number]) => number)]
-                  .map(v => v.replace(/[^0-9]/g, '') + '@s.whatsapp.net')
-                  .includes(m.sender) || m.fromMe;
-
-// Bloquear mensajes si modoDev está activo y el usuario no es owner
-if (global.modoDevActivo && !isOwner) return;
-
-
-
-
-
-
-
 this.processedMessages = this.processedMessages || new Map()
 const id = m.key.id
 const now = Date.now()
