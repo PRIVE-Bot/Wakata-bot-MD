@@ -228,7 +228,7 @@ if (chat) {
     detect: true,
     detect2: false,
     antiBot: false,
-    antiBot2: false,
+    antiBot2: true,
     modoadmin: false,
     antiLink: true,
     antiLink2: false,
