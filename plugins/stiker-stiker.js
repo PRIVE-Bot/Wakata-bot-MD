@@ -4,16 +4,16 @@ import uploadImage from '../lib/uploadImage.js';
 import { webp2png } from '../lib/webp2mp4.js';
 
 let handler = async (m, { conn, args, usedPrefix, command }) => {
-const res = await fetch('https://files.catbox.moe/p87uei.jpg');
-const thumb2 = Buffer.from(await res.arrayBuffer());
+const res1 = await fetch('https://files.catbox.moe/p87uei.jpg');
+const thumb5 = Buffer.from(await res1.arrayBuffer());
 
 const fkontak = {
     key: { fromMe: false, participant: "0@s.whatsapp.net" },
     message: {
         documentMessage: {
-            title: "𝗦𝗧𝗜𝗞𝗘𝗥',
-            fileName: "𝗦𝗧𝗜𝗞𝗘𝗥 𝗚𝗘𝗡𝗘𝗥𝗔𝗗𝗢 𝗖𝗢𝗡 𝗘𝗫𝗜𝗧𝗢",
-            jpegThumbnail: thumb2
+            title: '𝗦𝗧𝗜𝗞𝗘𝗥',
+            fileName: `𝗦𝗧𝗜𝗞𝗘𝗥 𝗚𝗘𝗡𝗘𝗥𝗔𝗗𝗢 𝗖𝗢𝗡 𝗘𝗫𝗜𝗧𝗢`,
+            jpegThumbnail: thumb5
         }
     }
 }
