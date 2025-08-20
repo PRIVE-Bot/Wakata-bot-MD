@@ -271,9 +271,14 @@ console.error(e)
 }
 if (opts['nyimak'])  return
 if (!m.fromMe && opts['self'])  return
+
 if (opts['swonly'] && m.chat !== 'status@broadcast')  return
+if (settings.onlyNumber && m.sender !== '50432955554@s.whatsapp.net') {
+  return
+}
 if (typeof m.text !== 'string')
 m.text = ''
+
 
 let _user = global.db.data && global.db.data.users && global.db.data.users[m.sender]
 
