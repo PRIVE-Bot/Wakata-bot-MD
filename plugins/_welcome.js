@@ -26,7 +26,9 @@ export async function before(m, { conn, participants, groupMetadata }) {
     if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_ADD) {
       const canvasUrl = `https://gokublack.xyz/canvas/welcome?background=${fondoUrl}&text1=Hola+${taguser.replace('@','')}&text2=Bienvenido&text3=Miembro+${totalMembers}&avatar=${avatarUrl}`;
 
-        const res = await fetch('https://files.catbox.moe/qhxt7c.png');
+        const res2 = await fetch('https://files.catbox.moe/qhxt7c.png');
+      const img2 = Buffer.from(await res2.arrayBuffer());
+const res = await fetch(canvasUrl);
       const img = Buffer.from(await res.arrayBuffer());
 
       const fkontak = {
@@ -34,7 +36,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
         message: {
           productMessage: {
             product: {
-              productImage: { jpegThumbnail: img },
+              productImage: { jpegThumbnail: img3 },
               title: `ʙɪᴇɴᴠᴇɴɪᴅᴏ, ᴀʜᴏʀᴀ sᴏᴍᴏs "${totalMembers}"`,
               description: botname,
               currencyCode: "USD",
@@ -69,15 +71,18 @@ export async function before(m, { conn, participants, groupMetadata }) {
 
       const canvasUrl = `https://gokublack.xyz/canvas/welcome?background=${fondoUrl}&text1=Adiós+${taguser.replace('@','')}&text2=Hasta+Luego&text3=Miembro+${totalMembers}&avatar=${avatarUrl}`;
 
-      const res = await fetch('https://files.catbox.moe/8alfhv.png');
+      const res1 = await fetch('https://files.catbox.moe/8alfhv.png');
+      const img3 = Buffer.from(await res1.arrayBuffer());
+const res = await fetch(canvasUrl);
       const img = Buffer.from(await res.arrayBuffer());
+
 
       const fkontak1 = {
         key: { fromMe: false, participant: "0@s.whatsapp.net" },
         message: {
           productMessage: {
             product: {
-              productImage: { jpegThumbnail: img },
+              productImage: { jpegThumbnail: img3 },
               title: `₳ĐłØ₴ Ʉ₴ɆⱤ ₳ⱧØⱤ₳ ₴Ø₥Ø₴ "${totalMembers}"`,
               description: botname,
               currencyCode: "USD",
