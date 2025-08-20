@@ -163,109 +163,117 @@ level: 0,
 premium: false,
 premiumTime: 0,                 
 }
-let chat = global.db.data.chats[m.chat]
+let chat = global.db.data.chats[m.chat];
 if (typeof chat !== 'object')
-global.db.data.chats[m.chat] = {}
+  global.db.data.chats[m.chat] = {};
 if (chat) {
-if (!('isBanned' in chat))
-chat.isBanned = false
-if (!('sAutoresponder' in chat))
-chat.sAutoresponder = ''
-if (!('welcome' in chat))
-chat.welcome = true
-if (!('autolevelup' in chat))
-chat.autolevelup = false
-if (!('autoAceptar' in chat))
-chat.autoAceptar = false
-if (!('autosticker' in chat))
-chat.autosticker = false
-if (!('autoRechazar' in chat))
-chat.autoRechazar = false
-if (!('autoresponder' in chat))
-chat.autoresponder = false
-if (!('detect' in chat))
-chat.detect = true
-if (!('detect2' in chat))
-chat.detect2 = false
-if (!('antiBot' in chat))
-chat.antiBot = false
-if (!('antiBot2' in chat))
-chat.antiBot2 = true
-if (!('antiver' in chat))
-chat.antiver = false 
-if (!('modoadmin' in chat))                     
-chat.modoadmin = false   
-if (!('antiLink' in chat))
-chat.antiLink = true
-if (!('antiLink2' in chat))
-chat.antiLink2 = false
-if (!('reaction' in chat))
-chat.reaction = false
-if (!('nsfw' in chat))
-chat.reaction = false
-if (!('simi' in chat))
-chat.simi = false
-if (!('antifake' in chat))
-chat.antifake = false
-if (!('antiTraba' in chat))
-chat.antiTraba = false
-if (!('antitoxic' in chat))
-chat.antitoxic = false
-if (!('delete' in chat))
-chat.delete = false
-if (!isNumber(chat.expired))
-chat.expired = 0
-if (!('onlyNumber' in settings)) 
-settings.onlyNumber = false
+  if (!('isBanned' in chat))
+    chat.isBanned = false;
+  if (!('sAutoresponder' in chat))
+    chat.sAutoresponder = '';
+  if (!('welcome' in chat))
+    chat.welcome = true;
+  if (!('autolevelup' in chat))
+    chat.autolevelup = false;
+  if (!('autoAceptar' in chat))
+    chat.autoAceptar = false;
+  if (!('autosticker' in chat))
+    chat.autosticker = false;
+  if (!('autoRechazar' in chat))
+    chat.autoRechazar = false;
+  if (!('autoresponder' in chat))
+    chat.autoresponder = false;
+  if (!('detect' in chat))
+    chat.detect = true;
+  if (!('detect2' in chat))
+    chat.detect2 = false;
+  if (!('antiBot' in chat))
+    chat.antiBot = false;
+  if (!('antiBot2' in chat))
+    chat.antiBot2 = true;
+  if (!('antiver' in chat))
+    chat.antiver = false;
+  if (!('modoadmin' in chat))
+    chat.modoadmin = false;
+  if (!('antiLink' in chat))
+    chat.antiLink = true;
+  if (!('antiLink2' in chat))
+    chat.antiLink2 = false;
+  if (!('reaction' in chat))
+    chat.reaction = false;
+  if (!('nsfw' in chat))
+    chat.reaction = false;
+  if (!('simi' in chat))
+    chat.simi = false;
+  if (!('antifake' in chat))
+    chat.antifake = false;
+  if (!('antiTraba' in chat))
+    chat.antiTraba = false;
+  if (!('antitoxic' in chat))
+    chat.antitoxic = false;
+  if (!('delete' in chat))
+    chat.delete = false;
+  if (!isNumber(chat.expired))
+    chat.expired = 0;
 } else
-global.db.data.chats[m.chat] = {
-isBanned: false,
-sAutoresponder: '',
-welcome: true,
-autolevelup: false,
-autoresponder: false,
-delete: false,
-autoAceptar: false,
-autoRechazar: false,
-detect: true,
-detect2: false,
-antiBot: false,
-antiBot2: false,
-modoadmin: false,
-antiLink: true,
-antiLink2: false,
-simi: false,
-antiver: false,
-antifake: false,
-antitoxic: false, 
-antiTraba: false,
-reaction: false,
-nsfw: false,
-autosticker: false,
-onlyNumber: false,
-status: 0
-expired: 0, 
-}
-var settings = global.db.data.settings[this.user.jid]
-if (typeof settings !== 'object') global.db.data.settings[this.user.jid] = {}
+  global.db.data.chats[m.chat] = {
+    isBanned: false,
+    sAutoresponder: '',
+    welcome: true,
+    autolevelup: false,
+    autoresponder: false,
+    delete: false,
+    autoAceptar: false,
+    autoRechazar: false,
+    detect: true,
+    detect2: false,
+    antiBot: false,
+    antiBot2: false,
+    modoadmin: false,
+    antiLink: true,
+    antiLink2: false,
+    simi: false,
+    antiver: false,
+    antifake: false,
+    antitoxic: false,
+    antiTraba: false,
+    reaction: false,
+    nsfw: false,
+    autosticker: false,
+    expired: 0,
+  };
+var settings = global.db.data.settings[this.user.jid];
+if (typeof settings !== 'object')
+  global.db.data.settings[this.user.jid] = {};
 if (settings) {
-if (!('self' in settings)) settings.self = false
-if (!('restrict' in settings)) settings.restrict = true
-if (!('jadibotmd' in settings)) settings.jadibotmd = true
-if (!('antiPrivate' in settings)) settings.antiPrivate = false
-if (!('autoread' in settings)) settings.autoread = false
-if (!('autoread2' in settings)) settings.autoread2 = false
-if (!('antiSpam' in settings)) settings.antiSpam = false
-} else global.db.data.settings[this.user.jid] = {
-self: false,
-restrict: true,
-jadibotmd: true,
-antiPrivate: false,
-autoread: false,
-autoread2: false,
-antiSpam: false,
-status: 0
-}
+  if (!('self' in settings))
+    settings.self = false;
+  if (!('restrict' in settings))
+    settings.restrict = true;
+  if (!('jadibotmd' in settings))
+    settings.jadibotmd = true;
+  if (!('antiPrivate' in settings))
+    settings.antiPrivate = false;
+  if (!('autoread' in settings))
+    settings.autoread = false;
+  if (!('autoread2' in settings))
+    settings.autoread2 = false;
+  if (!('antiSpam' in settings))
+    settings.antiSpam = false;
+  if (!('onlyNumber' in settings))
+    settings.onlyNumber = false;
+} else
+  global.db.data.settings[this.user.jid] = {
+    self: false,
+    restrict: true,
+    jadibotmd: true,
+    antiPrivate: false,
+    autoread: false,
+    autoread2: false,
+    antiSpam: false,
+    onlyNumber: false,
+    status: 0,
+  }
 } catch (e) {
 console.error(e)
 }
