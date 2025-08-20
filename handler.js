@@ -273,7 +273,7 @@ if (settings) {
     antiSpam: false,
     onlyNumber: false,
     status: 0,
-  }
+  };
 } catch (e) {
 console.error(e)
 }
@@ -425,8 +425,7 @@ if (!['grupo-unbanchat.js'].includes(name) && chat && chat.isBanned && !isROwner
 if (name != 'grupo-unbanchat.js' && name != 'owner-exec.js' && name != 'owner-exec2.js' && name != 'grupo-delete.js' && chat?.isBanned && !isROwner) return 
 if (m.text && user.banned && !isROwner) {
 if (user.antispam > 2) return
-m.reply(`《✦》Estas baneado/a, no puedes usar comandos en este bot!\n\n${user.bannedReason ? `\n⎙ *Motivo:* 
-${user.bannedReason}` : '⎙⎗ *Motivo:* Sin Especificar'}\n\n❍ Si quieres que seas desbaneado en este bot escribe a: ${creador}`)
+m.reply(`《✦》Estas baneado/a, no puedes usar comandos en este bot!\n\n${user.bannedReason ? `\n⎙ *Motivo:* ${user.bannedReason}` : '⎙⎗ *Motivo:* Sin Especificar'}\n\n❍ Si quieres que seas desbaneado en este bot escribe a: ${creador}`)
 user.antispam++
 return
 }
@@ -632,14 +631,14 @@ this.copyNForward(msg.chat, msg).catch(e => console.log(e, msg))
 } catch (e) {
 console.error(e)
 }}
-    
+
 
 global.dfail = (type, m, conn) => {
   let edadaleatoria = ['10', '28', '20', '40', '18', '21', '15', '11', '9', '17', '25'].getRandom();
   let user2 = m.pushName || 'Anónimo';
   let verifyaleatorio = ['registrar', 'reg', 'verificar', 'verify', 'register'].getRandom();
-  
- 
+
+
   const msg = {
     rowner: `*👑 〘 ${global.comando} 〙 es solo para los creadores, no insistas.*`,
     owner: `*⚡ 〘 ${global.comando} 〙 es exclusivo para los desarrolladores. Nivel insuficiente.*`,
@@ -668,3 +667,4 @@ const users = [...new Set([...global.conns.filter((conn) => conn.user && conn.ws
 for (const userr of users) {
 userr.subreloadHandler(false)
 }}});
+
