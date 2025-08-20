@@ -215,6 +215,8 @@ if (!('delete' in chat))
 chat.delete = false
 if (!isNumber(chat.expired))
 chat.expired = 0
+if (!('onlyNumber' in settings)) 
+settings.onlyNumber = false
 } else
 global.db.data.chats[m.chat] = {
 isBanned: false,
@@ -240,6 +242,8 @@ antiTraba: false,
 reaction: false,
 nsfw: false,
 autosticker: false,
+onlyNumber: false,
+status: 0
 expired: 0, 
 }
 var settings = global.db.data.settings[this.user.jid]
