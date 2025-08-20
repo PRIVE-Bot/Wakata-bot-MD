@@ -24,7 +24,7 @@ const fkontak = {
     const data = res.data;
 
     for (let media of data) {
-      await conn.sendFile(m.chat, media.url, '${instagram.mp4}`, fkontak);
+      await conn.sendFile(m.chat, media.url, 'instagram.mp4', fkontak);
       await m.react(done);
     }
   } catch (e) {
