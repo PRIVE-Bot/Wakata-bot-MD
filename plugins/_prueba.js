@@ -1,62 +1,31 @@
-import fs from 'fs';
-import path from 'path';
 
-var handler = async (m, { conn }) => {
+let modoDevActivo = false; 
 
-const ignoredFolders = ['node_modules', '.git']
-const ignoredFiles = ['package-lock.json'];
+const handler = async (m, { conn, args }) => {
+    const numero = m.sender.split('@')[0]; 
+    const isOwner = global.owner.some(o => o[0] === numero || o === numero);
 
-async function getAllJSFiles(dir) {
-let jsFiles = [];
-const items = fs.readdirSync(dir, { withFileTypes: true });
+    // Comando para activar el modo desarrollador
+    if (m.text.toLowerCase() === '.mododev') {
+        if (!isOwner) return conn.reply(m.chat, '❌ Solo los desarrolladores pueden activar esto.', m);
+        modoDevActivo = true;
+        return conn.reply(m.chat, '✅ Modo desarrollador activado. El bot solo responderá a los developers.', m);
+    }
 
-for (const item of items) {
-const fullPath = path.join(dir, item.name);
+    
+    if (m.text.toLowerCase() === '.unmododev') {
+        if (!isOwner) return conn.reply(m.chat, '❌ Solo los desarrolladores pueden desactivar esto.', m);
+        modoDevActivo = false;
+        return conn.reply(m.chat, '✅ Modo desarrollador desactivado. El bot responde normalmente.', m);
+    }
 
-if (ignoredFolders.includes(item.name) || ignoredFiles.includes(item.name)) continue;
+    
+    if (modoDevActivo && !isOwner) {
+        return; 
+    }
 
-if (item.isDirectory()) {
-jsFiles = jsFiles.concat(await getAllJSFiles(fullPath));
-} else if (item.isFile() && fullPath.endsWith('.js')) {
-jsFiles.push(fullPath);
-}}
+    
+};
 
-return jsFiles
-}
-
-try {
-await m.react('🕒')
-        conn.sendPresenceUpdate('composing', m.chat);
-
-const baseDir = path.resolve('./')
-const jsFiles = await getAllJSFiles(baseDir)
-
-let response = `📦 *Revisión de Syntax Errors En ${jsFiles.length} archivos:*\n\n`
-let hasErrors = false
-
-for (const file of jsFiles) {
-try {
-await import(`file://${file}`);
-} catch (error) {
-hasErrors = true;
-response += `🚩 *Error en:* ${file.replace(baseDir + '/', '')}\n${error.message}\n\n`
-}}
-
-if (!hasErrors) {
-response += '🪐 ¡Todo está en orden! No se detectaron errores de sintaxis.'
-}
-
-await conn.reply(m.chat, response, m);
-await m.react('✅');
-
-} catch (err) {
-conn.reply(m.chat, `*Error:* ${err.message}`, m);
-}}
-
-handler.command = ['revsall'];
-handler.help = ['revsall'];
-handler.tags = ['tools'];
-handler.owner = true;
-// handler.private = true
-
-export default handler
+handler.command = ['mododev', 'unmododev'];
+export default handler;
