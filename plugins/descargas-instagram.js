@@ -26,7 +26,7 @@ const fkontak = {
     for (let media of data) {
       await conn.sendFile(m.chat, media.url, 'instagram.mp4', ` *Tipo:* ${media.type || 'Desconocido'}
  *URL:* ${args[0]}
-`, );
+`, fkontak);
       await m.react(done);
     }
   } catch (e) {
