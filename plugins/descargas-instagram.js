@@ -14,7 +14,7 @@ const fkontak = {
     message: {
         documentMessage: {
             title: botname,
-            fileName: ".m4",
+            fileName: "𝗗𝗘𝗦𝗖𝗔𝗥𝗚𝗔𝗗𝗢 𝗗𝗘 ✦ 𝗜𝗡𝗦𝗧𝗔𝗚𝗥𝗔𝗠",
             jpegThumbnail: thumb2
         }
     }
