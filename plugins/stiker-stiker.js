@@ -4,6 +4,22 @@ import uploadImage from '../lib/uploadImage.js';
 import { webp2png } from '../lib/webp2mp4.js';
 
 let handler = async (m, { conn, args, usedPrefix, command }) => {
+const res = await fetch('https://files.catbox.moe/p87uei.jpg');
+const thumb2 = Buffer.from(await res.arrayBuffer());
+
+const fkontak = {
+    key: { fromMe: false, participant: "0@s.whatsapp.net" },
+    message: {
+        orderMessage: {
+            itemCount: 1,
+            status: 1,
+            surface: 1,
+            message: `𝗦𝗧𝗜𝗞𝗘𝗥 𝗚𝗘𝗡𝗘𝗥𝗔𝗗𝗢 𝗖𝗢𝗡 𝗘𝗫𝗜𝗧𝗢`,
+            orderTitle: "Mejor Bot",
+            thumbnail: thumb2
+        }
+    }
+}
   let stiker = false;
   try {
     let q = m.quoted ? m.quoted : m;
@@ -50,7 +66,7 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
       await conn.sendMessage(
         m.chat, 
         { sticker: stiker }, 
-        { quoted: m, rcanal, contextInfo: rcanal }
+        { quoted: fkontak }
       );
     } else {
       return conn.reply(m.chat, `${emoji} *Por favor, envía una imagen o video para hacer un sticker.*`, m, rcanal);
