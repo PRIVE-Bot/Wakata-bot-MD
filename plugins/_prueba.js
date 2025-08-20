@@ -1,4 +1,4 @@
-export async function before(m, { conn }) {
+let handler = async (m, { conn }) => {
     const numero = m.sender.split('@')[0];
     const isOwner = [conn.decodeJid(global.conn.user.id), ...global.owner.map(([number]) => number)]
                         .map(v => v.replace(/[^0-9]/g, '') + '@s.whatsapp.net')
