@@ -3,15 +3,15 @@ import { WAMessageStubType } from '@whiskeysockets/baileys'
 export async function before(m, { conn, participants, groupMetadata }) {
   if (!m.messageStubType || !m.isGroup) return !0;
 
-const res = await fetch('https://files.catbox.moe/qhxt7c.png');
-const img = Buffer.from(await res.arrayBuffer());
+const res1 = await fetch('https://files.catbox.moe/qhxt7c.png');
+const img1 = Buffer.from(await res1.arrayBuffer());
 
 const fkontak = {
     key: { fromMe: false, participant: "0@s.whatsapp.net" },
     message: {
         productMessage: {
             product: {
-                productImage: { jpegThumbnail: img },
+                productImage: { jpegThumbnail: img1 },
                 title: `ʙɪᴇɴᴠᴇɴɪᴅᴏ, ᴀʜᴏʀᴀ sᴏᴍᴏs ${totalMembers + 1}`,
                 description: botname ,
                 currencyCode: "USD",
@@ -23,15 +23,15 @@ const fkontak = {
     }
 };
 
-const res = await fetch('https://files.catbox.moe/8alfhv.png');
-const img = Buffer.from(await res.arrayBuffer());
+const res2 = await fetch('https://files.catbox.moe/8alfhv.png');
+const img2 = Buffer.from(await res2.arrayBuffer());
 
 const fkontak1 = {
     key: { fromMe: false, participant: "0@s.whatsapp.net" },
     message: {
         productMessage: {
             product: {
-                productImage: { jpegThumbnail: img },
+                productImage: { jpegThumbnail: img2 },
                 title: `₳ĐłØ₴ Ʉ₴ɆⱤ ₳ⱧØⱤ₳ ₴Ø₥Ø₴ ${totalMembers - 1}`,
                 description: botname ,
                 currencyCode: "USD",
