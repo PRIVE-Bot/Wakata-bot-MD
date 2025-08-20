@@ -640,19 +640,37 @@ global.dfail = (type, m, conn) => {
 
 
   const msg = {
-    rowner: `*👑 〘 ${global.comando} 〙 es solo para los creadores, no insistas.*`,
-    owner: `*⚡ 〘 ${global.comando} 〙 es exclusivo para los desarrolladores. Nivel insuficiente.*`,
-    mods: `*👑 〘 ${global.comando} 〙 solo para moderadores. ¿Eres uno? No lo creo.*`,
-    premium: `*👑 〘 ${global.comando} 〙 es un lujo de usuarios premium. Tú aún no estás en ese nivel.*`,
-    group: `*👑 〘 ${global.comando} 〙 solo funciona en grupos. No intentes engañar al sistema.*`,
-    private: `*⚡ 〘 ${global.comando} 〙 solo en chat privado. Aquí no, amigo.*`,
-    admin: `*👑 〘 ${global.comando} 〙 es un poder reservado para administradores.*`,
-    botAdmin: `*⚡ Necesito ser admin para ejecutar 〘 ${global.comando} 〙 Dame el rango y hablamos.*`,
-    unreg: `*👑 Para usar 〘 ${global.comando} 〙 primero debes registrarte.*\n\n *⚡ Usa: #${verifyaleatorio} ${user2}.${edadaleatoria}*`,
-    restrict: `*⚡ Esta función está bloqueada. Fin de la historia.*`
+    rowner: `*👑 〘 ${global.comando} 〙 es solo para los creadores, no insistas.*
+
+https://naruto-bot.vercel.app/canal.html`,
+    owner: `*⚡ 〘 ${global.comando} 〙 es exclusivo para los desarrolladores. Nivel insuficiente.*
+
+https://naruto-bot.vercel.app/canal.html`,
+    mods: `*👑 〘 ${global.comando} 〙 solo para moderadores. ¿Eres uno? No lo creo.*
+
+https://naruto-bot.vercel.app/canal.html`,
+    premium: `*👑 〘 ${global.comando} 〙 es un lujo de usuarios premium. Tú aún no estás en ese nivel.*
+
+https://naruto-bot.vercel.app/canal.html`,
+    group: `*👑 〘 ${global.comando} 〙 solo funciona en grupos. No intentes engañar al sistema.*
+
+https://naruto-bot.vercel.app/canal.html`,
+    private: `*⚡ 〘 ${global.comando} 〙 solo en chat privado. Aquí no, amigo.*
+
+https://naruto-bot.vercel.app/canal.html`,
+    admin: `*👑 〘 ${global.comando} 〙 es un poder reservado para administradores.*
+
+https://naruto-bot.vercel.app/canal.html`,
+    botAdmin: `*⚡ Necesito ser admin para ejecutar 〘 ${global.comando} 〙 Dame el rango y hablamos.*
+
+https://naruto-bot.vercel.app/canal.html`,
+    //unreg: `*👑 Para usar 〘 ${global.comando} 〙 primero debes registrarte.*\n\n *👑 Usa: #${verifyaleatorio} ${user2}.${edadaleatoria}*`,
+    restrict: `*⚡ Esta función está bloqueada. Fin de la historia.*
+
+https://naruto-bot.vercel.app/canal.html`
   }[type];
 
-  if (msg) return conn.reply(m.chat, msg, m, rcanal ).then(_ => m.react('✖️'));
+  if (msg) return conn.reply(m.chat, msg, m, fake ).then(_ => m.react('✖️'));
 }
 
 
