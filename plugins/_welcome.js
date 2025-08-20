@@ -21,7 +21,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
       productMessage: {
         product: {
           productImage: { jpegThumbnail: img1 },
-          title: `ʙɪᴇɴᴠᴇɴɪᴅᴏ, ᴀʜᴏʀᴀ sᴏᴍᴏs ${totalMembers + 1}`,
+          title: `ʙɪᴇɴᴠᴇɴɪᴅᴏ, ᴀʜᴏʀᴀ sᴏᴍᴏs "${totalMembers}"`,
           description: botname,
           currencyCode: "USD",
           priceAmount1000: "5000",
@@ -41,7 +41,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
       productMessage: {
         product: {
           productImage: { jpegThumbnail: img2 },
-          title: `₳ĐłØ₴ Ʉ₴ɆⱤ ₳ⱧØⱤ₳ ₴Ø₥Ø₴ ${totalMembers - 1}`,
+          title: `₳ĐłØ₴ Ʉ₴ɆⱤ ₳ⱧØⱤ₳ ₴Ø₥Ø₴ "${totalMembers}"`,
           description: botname,
           currencyCode: "USD",
           priceAmount1000: "5000",
@@ -63,7 +63,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
 ┃ 
 ┃  ✎ *Usuario:* ${taguser}  
 ┃  ✎ *Grupo:* ${groupMetadata.subject}  
-┃  ✎ *Miembros:* ${totalMembers + 1}  
+┃  ✎ *Miembros:* ${totalMembers}  
 ┃  ✎ *Fecha:* ${date}  
 ┃    
 ┗╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍⚁
@@ -83,7 +83,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
 ┃ 
 ┃  ✎ *Usuario:* ${taguser}  
 ┃  ✎ *Grupo:* ${groupMetadata.subject}  
-┃  ✎ *Miembros:* ${totalMembers - 1}  
+┃  ✎ *Miembros:* ${totalMembers}  
 ┃  ✎ *Fecha:* ${date}  
 ┃    
 ┗╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍⚁
