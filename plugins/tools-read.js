@@ -9,7 +9,7 @@ const fkontak = {
     message: {
         documentMessage: {
             title: '𝗗𝗘𝗦𝗕𝗟𝗢𝗤𝗨𝗘𝗔𝗗𝗢',
-            fileName: `${botname}.mp3`,
+            fileName: `𝗗𝗘𝗦𝗕𝗟𝗢𝗤𝗨𝗘𝗔𝗗𝗢`,
             jpegThumbnail: thumb2
         }
     }
