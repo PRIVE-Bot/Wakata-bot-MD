@@ -37,12 +37,12 @@ if (global.modoDevActivo && !isOwner) return;
 
 if (m.text?.toLowerCase() === '.mododev' && isOwner) {
     global.modoDevActivo = true;
-    return conn.reply(m.chat, '✅ Modo desarrollador activado.', m);
+    return conn.reply(m.chat, '⚡ Modo desarrollador activado.', m);
 }
 
 if (m.text?.toLowerCase() === '.unmododev' && isOwner) {
     global.modoDevActivo = false;
-    return conn.reply(m.chat, '✅ Modo desarrollador desactivado.', m);
+    return conn.reply(m.chat, '🔥 Modo desarrollador desactivado.', m);
 }
 
 //++++---
