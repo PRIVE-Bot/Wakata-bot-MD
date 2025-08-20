@@ -29,7 +29,7 @@ await conn.reply(m.chat, `${emoji2} La carpeta esta vacía.`, m, fake);
 } else {
 m.react(done)
 await conn.reply(m.chat, `${emojis} Se eliminaron ${filesDeleted} archivos de sesión, excepto el archivo creds.json.`, m, rcanal);
-conn.reply(m.chat, `${emojis} *¡Hola! ¿logras verme?*`, m, rcanal);
+//conn.reply(m.chat, `${emojis} *¡Hola! ¿logras verme?*`, m, rcanal);
 
 }
 } catch (err) {
