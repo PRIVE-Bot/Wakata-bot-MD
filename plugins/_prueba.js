@@ -1,30 +1,29 @@
+// plugins/mododev.js
+let modoDevActivo = false; // estado inicial
 
-let modoDevActivo = false; 
-
-const handler = async (m, { conn, args }) => {
-    const numero = m.sender.split('@')[0]; 
+export async function before(m, { conn }) {
+    const numero = m.sender.split('@')[0];
     const isOwner = global.owner.some(o => o[0] === numero || o === numero);
 
-    // Comando para activar el modo desarrollador
+    // Bloquear todo si modo dev está activo y el remitente NO es owner
+    if (modoDevActivo && !isOwner) return true; // true cancela el mensaje para otros handlers
+}
+
+const handler = async (m, { conn }) => {
+    const numero = m.sender.split('@')[0];
+    const isOwner = global.owner.some(o => o[0] === numero || o === numero);
+
+    if (!isOwner) return; // solo los developers pueden ejecutar estos comandos
+
     if (m.text.toLowerCase() === '.mododev') {
-        if (!isOwner) return conn.reply(m.chat, '❌ Solo los desarrolladores pueden activar esto.', m);
         modoDevActivo = true;
-        return conn.reply(m.chat, '✅ Modo desarrollador activado. El bot solo responderá a los developers.', m);
+        return conn.reply(m.chat, '✅ Modo desarrollador activado.', m);
     }
 
-    
     if (m.text.toLowerCase() === '.unmododev') {
-        if (!isOwner) return conn.reply(m.chat, '❌ Solo los desarrolladores pueden desactivar esto.', m);
         modoDevActivo = false;
-        return conn.reply(m.chat, '✅ Modo desarrollador desactivado. El bot responde normalmente.', m);
+        return conn.reply(m.chat, '✅ Modo desarrollador desactivado.', m);
     }
-
-    
-    if (modoDevActivo && !isOwner) {
-        return; 
-    }
-
-    
 };
 
 handler.command = ['mododev', 'unmododev'];
