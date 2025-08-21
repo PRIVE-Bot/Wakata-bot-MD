@@ -3,27 +3,27 @@ import fetch from 'node-fetch';
 import FormData from 'form-data';
 import fs from 'fs';
 
-// 🔹 Subir imagen a telegra.ph (hosting gratis y rápido)
+// 🔹 Subir imagen a Catbox (más estable que telegra.ph)
 async function uploadImage(buffer) {
   const form = new FormData();
-  form.append('file', buffer, 'file.jpg');
+  form.append('fileToUpload', buffer, 'file.jpg');
+  form.append('reqtype', 'fileupload');
 
-  const res = await fetch('https://telegra.ph/upload', {
+  const res = await fetch('https://catbox.moe/user/api.php', {
     method: 'POST',
     body: form
   });
 
-  const json = await res.json();
-  if (json.error) throw new Error(json.error);
-
-  return 'https://telegra.ph' + json[0].src;
+  const url = await res.text();
+  if (!url.startsWith('http')) throw new Error('Error al subir imagen a Catbox');
+  return url.trim();
 }
 
 let handler = async (m, { text, conn, usedPrefix, command }) => {
   let url, prompt;
 
   try {
-    // 🔹 Caso 1: Responder una imagen
+    // 🔹 Caso 1: Responder a una imagen
     if (m.quoted && /image/.test(m.quoted.mimetype || '')) {
       if (!text) return m.reply(`Formato:\nResponde una imagen con:\n${usedPrefix + command} <prompt>\n\nEjemplo:\n${usedPrefix + command} ponele en color negro`);
       const mediaPath = await conn.downloadAndSaveMediaMessage(m.quoted);
@@ -39,7 +39,7 @@ let handler = async (m, { text, conn, usedPrefix, command }) => {
       prompt = text.trim();
     }
 
-    // 🔹 Caso 3: Texto con url | prompt
+    // 🔹 Caso 3: url | prompt
     else if (text && text.includes('|')) {
       const [link, pr] = text.split('|').map(v => v.trim());
       if (!link || !pr) return m.reply(`Formato incorrecto!\nEjemplo:\n${usedPrefix + command} https://files.catbox.moe/1zw3ek.jpeg | Ubah rambutnya jadi putih`);
@@ -52,7 +52,7 @@ let handler = async (m, { text, conn, usedPrefix, command }) => {
       return m.reply(`Formato:\n${usedPrefix + command} <url> | <prompt>\nO responde/envía imagen con:\n${usedPrefix + command} <prompt>\n\nEjemplo:\n${usedPrefix + command} https://files.catbox.moe/1zw3ek.jpeg | Ubah rambutnya jadi putih`);
     }
 
-    // ✨ Llamar a la API
+    // ✨ Procesar con la API
     await m.react('✨');
     const apiUrl = `https://api-faa-skuarta.vercel.app/faa/editfoto?url=${encodeURIComponent(url)}&prompt=${encodeURIComponent(prompt)}`;
     const res = await axios.get(apiUrl, { responseType: 'arraybuffer' });
