@@ -93,7 +93,7 @@ let handler = async (m, { conn, args, command }) => {
       const botname = conn.user.name || 'El bot';
 
       await conn.sendMessage(jid, {
-        text: `👋 Hola a todos, *${botname}* se despide de este grupo.\nGracias por todo. ¡Hasta pronto! ✨`,
+        text: `*Tu tiempo termino*, *${botname}* saliendo...`,
         mentions: mencionados
       }, { quoted: fkontak });
 
@@ -121,7 +121,7 @@ let handler = async (m, { conn, args, command }) => {
       const mencionados = metadata.participants?.map(u => u.id) || [];
       const botname = conn.user.name || 'El bot';
 
-      const textMessage = `👋 Hola a todos, *${botname}* tiene un aviso para ustedes:\n\n${mensaje}`;
+      const textMessage = `${mensaje}`;
 
       await conn.sendMessage(jid, {
         text: textMessage,
