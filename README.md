@@ -73,7 +73,7 @@ const fkontak = {
 # **ESTILO DOCUMENTO**
 ```
 const res = await fetch('url');
-const thumb = Buffer.from(await res1.arrayBuffer());
+const thumb2 = Buffer.from(await res1.arrayBuffer());
 
 const fkontak = {
     key: { fromMe: false, participant: "0@s.whatsapp.net" },
@@ -81,10 +81,30 @@ const fkontak = {
         documentMessage: {
             title: botname,
             fileName: `texto`,
-            jpegThumbnail: thumb5
+            jpegThumbnail: thumb2
         }
     }
 }
+```
+
+# **ESTILO ORDEN DE PRODUCTO**
+```
+const res = await fetch('url');
+const thumb2 = Buffer.from(await res1.arrayBuffer());
+
+    const fkontak = {
+      key: { fromMe: false, participant: "0@s.whatsapp.net" },
+      message: {
+        orderMessage: {
+          itemCount: 1,
+          status: 1,
+          surface: 1,
+          message: `texto`,
+          orderTitle: "Mejor Bot",
+          jpegThumbnail: thumb2
+        }
+      }
+    };
 ```
 
 
