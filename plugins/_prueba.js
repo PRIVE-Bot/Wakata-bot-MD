@@ -8,7 +8,7 @@ const fkontak = {
     message: {
         documentMessage: {
             title: 'botname',
-            fileName: `texto`,
+            text: `texto`,
             jpegThumbnail: thumb2
         }
     }
