@@ -45,24 +45,31 @@
 <img src="https://capsule-render.vercel.app/api?type=waving&height=140&section=footer&color=0:000000,50:1B2A49,100:F68512" width="100%"/>
 
 
-```
-const res = await fetch('https://files.catbox.moe/oljc0e.png'); 
-const thumb3 = Buffer.from(await res.arrayBuffer());
 
-let fkontak = {
-    key: { 
-        fromMe: false, 
-        remoteJid: "120363368035542631@g.us", 
-        participant: m.sender 
-    },
+# **ESTILO PRODUCTO**
+```
+const res = await fetch('https://files.catbox.moe/91rqne.jpg');
+const img = Buffer.from(await res.arrayBuffer());
+
+const fkontak = {
+    key: { fromMe: false, participant: "0@s.whatsapp.net" },
     message: {
-        imageMessage: {
-            mimetype: 'image/jpeg',
-            caption: botname,
-            jpegThumbnail: thumb3
+        productMessage: {
+            product: {
+                productImage: { jpegThumbnail: img },
+                title: `𝗠𝗘𝗡𝗨 ＝ 𝗟𝗜𝗦𝗧𝗔 𝗗𝗘 𝗙𝗨𝗡𝗖𝗜𝗢𝗡𝗘𝗦`,
+                description: botname ,
+                currencyCode: "USD",
+                priceAmount1000: "5000", 
+                retailerId: "BOT"
+            },
+            businessOwnerJid: "0@s.whatsapp.net"
         }
     }
 };
 ```
+
+
+
 
 
