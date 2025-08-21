@@ -18,10 +18,12 @@ let fkontak = {
       },
       businessOwnerJid: "50432955554@s.whatsapp.net" 
         }
-      };
+      }
+    }
 
     
-retunt
+return conn.reply(m.chat, `Hola`, fkontak);
+};
 
 
 handler.command = ['producto', 'compra', '1'];
@@ -31,20 +33,3 @@ export default handler;
 
 
 
-const res = await fetch('https://files.catbox.moe/oljc0e.png'); 
-const thumb3 = Buffer.from(await res.arrayBuffer());
-
-let fkontak = {
-    key: { 
-        fromMe: false, 
-        remoteJid: "120363368035542631@g.us", 
-        participant: m.sender 
-    },
-    message: {
-        imageMessage: {
-            mimetype: 'image/jpeg',
-            caption: botname,
-            jpegThumbnail: thumb3
-        }
-    }
-};
