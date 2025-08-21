@@ -3,32 +3,27 @@ import fetch from 'node-fetch';
 import FormData from 'form-data';
 import fs from 'fs';
 
-// 🔹 Función para subir imágenes a telegra.ph
+// 🔹 Subir imagen a telegra.ph (hosting gratis y rápido)
 async function uploadImage(buffer) {
-  try {
-    const form = new FormData();
-    form.append('file', buffer, 'file.jpg');
+  const form = new FormData();
+  form.append('file', buffer, 'file.jpg');
 
-    const res = await fetch('https://telegra.ph/upload', {
-      method: 'POST',
-      body: form
-    });
+  const res = await fetch('https://telegra.ph/upload', {
+    method: 'POST',
+    body: form
+  });
 
-    const json = await res.json();
-    if (json.error) throw json.error;
+  const json = await res.json();
+  if (json.error) throw new Error(json.error);
 
-    return 'https://telegra.ph' + json[0].src;
-  } catch (err) {
-    console.error('❌ Error subiendo imagen:', err);
-    throw err;
-  }
+  return 'https://telegra.ph' + json[0].src;
 }
 
 let handler = async (m, { text, conn, usedPrefix, command }) => {
   let url, prompt;
 
   try {
-    // 🔹 Caso 1: Responder a una imagen
+    // 🔹 Caso 1: Responder una imagen
     if (m.quoted && /image/.test(m.quoted.mimetype || '')) {
       if (!text) return m.reply(`Formato:\nResponde una imagen con:\n${usedPrefix + command} <prompt>\n\nEjemplo:\n${usedPrefix + command} ponele en color negro`);
       const mediaPath = await conn.downloadAndSaveMediaMessage(m.quoted);
@@ -36,14 +31,7 @@ let handler = async (m, { text, conn, usedPrefix, command }) => {
       prompt = text.trim();
     }
 
-    // 🔹 Caso 2: Texto con <url>|<prompt>
-    else if (text && text.includes('|')) {
-      const parts = text.split('|').map(v => v.trim());
-      url = parts[0];
-      prompt = parts[1];
-    }
-
-    // 🔹 Caso 3: Imagen enviada directamente
+    // 🔹 Caso 2: Enviar imagen con caption
     else if (m.message?.imageMessage) {
       if (!text) return m.reply(`Formato:\nEnvía una imagen con:\n${usedPrefix + command} <prompt>\n\nEjemplo:\n${usedPrefix + command} ponele en color negro`);
       const mediaPath = await conn.downloadAndSaveMediaMessage(m);
@@ -51,12 +39,20 @@ let handler = async (m, { text, conn, usedPrefix, command }) => {
       prompt = text.trim();
     }
 
-    // 🔹 Caso 4: Nada válido → mensaje de ayuda
+    // 🔹 Caso 3: Texto con url | prompt
+    else if (text && text.includes('|')) {
+      const [link, pr] = text.split('|').map(v => v.trim());
+      if (!link || !pr) return m.reply(`Formato incorrecto!\nEjemplo:\n${usedPrefix + command} https://files.catbox.moe/1zw3ek.jpeg | Ubah rambutnya jadi putih`);
+      url = link;
+      prompt = pr;
+    }
+
+    // 🔹 Ningún caso válido
     else {
       return m.reply(`Formato:\n${usedPrefix + command} <url> | <prompt>\nO responde/envía imagen con:\n${usedPrefix + command} <prompt>\n\nEjemplo:\n${usedPrefix + command} https://files.catbox.moe/1zw3ek.jpeg | Ubah rambutnya jadi putih`);
     }
 
-    // ✨ Procesar en la API
+    // ✨ Llamar a la API
     await m.react('✨');
     const apiUrl = `https://api-faa-skuarta.vercel.app/faa/editfoto?url=${encodeURIComponent(url)}&prompt=${encodeURIComponent(prompt)}`;
     const res = await axios.get(apiUrl, { responseType: 'arraybuffer' });
