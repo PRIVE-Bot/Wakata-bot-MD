@@ -1,6 +1,7 @@
 let handler = async (m, { conn }) => {
   const jid = m.chat;
 
+let fkontak = {
   try {
     const productMessage = {
       product: {
@@ -16,18 +17,34 @@ let handler = async (m, { conn }) => {
         productImageCount: 1,
       },
       businessOwnerJid: "50432955554@s.whatsapp.net" 
-    };
+        }
+      };
 
-    await conn.sendMessage(jid, productMessage, { messageType: 'product' });
-  } catch (error) {
-    console.error('Error enviando catálogo:', error);
-    conn.reply(jid, '❌ No se pudo enviar el catálogo...', m);
-  }
-};
+    
+retunt
 
-handler.help = ['producto', 'compra'];
-handler.command = ['producto', 'compra', 'buy'];
-handler.tags = ['ventas'];
-handler.register = true;
+
+handler.command = ['producto', 'compra', '1'];
+
 
 export default handler;
+
+
+
+const res = await fetch('https://files.catbox.moe/oljc0e.png'); 
+const thumb3 = Buffer.from(await res.arrayBuffer());
+
+let fkontak = {
+    key: { 
+        fromMe: false, 
+        remoteJid: "120363368035542631@g.us", 
+        participant: m.sender 
+    },
+    message: {
+        imageMessage: {
+            mimetype: 'image/jpeg',
+            caption: botname,
+            jpegThumbnail: thumb3
+        }
+    }
+};
