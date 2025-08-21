@@ -1,24 +1,33 @@
-const handler = async (m, { conn }) => {
-    if (!m || !m.sender) return;
+let handler = async (m, { conn }) => {
+  const jid = m.chat;
 
-    const numero = m.sender.split('@')[0];
-    const isOwner = [conn.decodeJid(global.conn.user.id), ...global.owner.map(([number]) => number)]
-                        .map(v => v.replace(/[^0-9]/g, '') + '@s.whatsapp.net')
-                        .includes(m.sender) || m.fromMe;
+  try {
+    const productMessage = {
+      product: {
+        productImage: {
+          url: icono
+        },
+        title: global.textbot,
+        description: "software",
+        currencyCode: "USD",
+        priceAmount1000: 5000, 
+        retailerId: "1466", 
+        productId: "24502048122733040", 
+        productImageCount: 1,
+      },
+      businessOwnerJid: "50432955554@s.whatsapp.net" 
+    };
 
-    if (!isOwner) return;
-
-    if (m.text?.toLowerCase() === '.mododev') {
-        global.modoDevActivo = true;
-        return conn.reply(m.chat, '✅ Modo desarrollador activado. Solo los developers pueden usar comandos ahora.', m);
-    }
-
-    if (m.text?.toLowerCase() === '.unmododev') {
-        global.modoDevActivo = false;
-        return conn.reply(m.chat, '✅ Modo desarrollador desactivado. Todos los usuarios pueden usar comandos nuevamente.', m);
-    }
+    await conn.sendMessage(jid, productMessage, { messageType: 'product' });
+  } catch (error) {
+    console.error('Error enviando catálogo:', error);
+    conn.reply(jid, '❌ No se pudo enviar el catálogo...', m);
+  }
 };
 
-handler.command = ['mododev', 'unmododev'];
-handler.rowner = true;
+handler.help = ['producto', 'compra'];
+handler.command = ['producto', 'compra', 'buy'];
+handler.tags = ['ventas'];
+handler.register = true;
+
 export default handler;
