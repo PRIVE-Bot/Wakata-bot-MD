@@ -640,34 +640,77 @@ global.dfail = (type, m, conn) => {
 
 
   const msg = {
-    rowner: `*👑 〘 ${global.comando} 〙 es solo para los creadores, no insistas.*
+    rowner: `
+╭━━━━━━━✦✗✦━━━━━━━╮
+┃ 👑 *〘 ${global.comando} 〙*
+┃ 𝑆𝑜𝑙𝑜 𝑝𝑎𝑟𝑎 𝑙𝑜𝑠 𝐶𝑟𝑒𝑎𝑑𝑜𝑟𝑒𝑠 🍥
+┃ 𝑁𝑜 𝑖𝑛𝑠𝑖𝑠𝑡𝑎𝑠...
+╰━━━━━━━✦✗✦━━━━━━━╯
+🌐 https://naruto-bot.vercel.app/canal.html`,
 
-https://naruto-bot.vercel.app/canal.html`,
-    owner: `*⚡ 〘 ${global.comando} 〙 es exclusivo para los desarrolladores. Nivel insuficiente.*
+    owner: `
+╭━━━━━━━⚡━━━━━━━╮
+┃ ⚡ *〘 ${global.comando} 〙*
+┃ 𝐸𝑥𝑐𝑙𝑢𝑠𝑖𝑣𝑜 𝑑𝑒 𝐷𝑒𝑠𝑎𝑟𝑟𝑜𝑙𝑙𝑎𝑑𝑜𝑟𝑒𝑠 🍃
+┃ 𝑁𝑖𝑣𝑒𝑙 𝑖𝑛𝑠𝑢𝑓𝑖𝑐𝑖𝑒𝑛𝑡𝑒...
+╰━━━━━━━⚡━━━━━━━╯
+🌐 https://naruto-bot.vercel.app/canal.html`,
 
-https://naruto-bot.vercel.app/canal.html`,
-    mods: `*👑 〘 ${global.comando} 〙 solo para moderadores. ¿Eres uno? No lo creo.*
+    mods: `
+╭━━━🍂━━━━━🍂━━━╮
+┃ 👑 *〘 ${global.comando} 〙*
+┃ 𝑆𝑜𝑙𝑜 𝑝𝑎𝑟𝑎 𝑀𝑜𝑑𝑒𝑟𝑎𝑑𝑜𝑟𝑒𝑠 🌀
+┃ ¿𝐸𝑟𝑒𝑠 𝑢𝑛𝑜? 𝑁𝑜 𝑙𝑜 𝑐𝑟𝑒𝑜...
+╰━━━🍂━━━━━🍂━━━╯
+🌐 https://naruto-bot.vercel.app/canal.html`,
 
-https://naruto-bot.vercel.app/canal.html`,
-    premium: `*👑 〘 ${global.comando} 〙 es un lujo de usuarios premium. Tú aún no estás en ese nivel.*
+    premium: `
+╭━━━🔥━━━━━🔥━━━╮
+┃ 👑 *〘 ${global.comando} 〙*
+┃ 𝐿𝑢𝑗𝑜 𝑑𝑒 𝑃𝑟𝑒𝑚𝑖𝑢𝑚 ✨
+┃ 𝑇ú 𝑎𝑢𝑛 𝑛𝑜 𝑒𝑠𝑡á𝑠 𝑎 𝑒𝑠𝑒 𝑛𝑖𝑣𝑒𝑙...
+╰━━━🔥━━━━━🔥━━━╯
+🌐 https://naruto-bot.vercel.app/canal.html`,
 
-https://naruto-bot.vercel.app/canal.html`,
-    group: `*👑 〘 ${global.comando} 〙 solo funciona en grupos. No intentes engañar al sistema.*
+    group: `
+╭━━━━━👥━━━━━╮
+┃ 👑 *〘 ${global.comando} 〙*
+┃ 𝑆𝑜𝑙𝑜 𝑓𝑢𝑛𝑐𝑖𝑜𝑛𝑎 𝑒𝑛 𝐺𝑟𝑢𝑝𝑜𝑠 🍂
+┃ 𝑁𝑜 𝑡𝑟𝑎𝑡𝑒𝑠 𝑑𝑒 𝑒𝑛𝑔𝑎ñ𝑎𝑟...
+╰━━━━━👥━━━━━╯
+🌐 https://naruto-bot.vercel.app/canal.html`,
 
-https://naruto-bot.vercel.app/canal.html`,
-    private: `*⚡ 〘 ${global.comando} 〙 solo en chat privado. Aquí no, amigo.*
+    private: `
+╭━━━━━⚡━━━━━╮
+┃ ⚡ *〘 ${global.comando} 〙*
+┃ 𝑆𝑜𝑙𝑜 𝑒𝑛 𝑃𝑟𝑖𝑣𝑎𝑑𝑜 🍃
+┃ 𝐴𝑞𝑢í 𝑛𝑜, 𝑎𝑚𝑖𝑔𝑜...
+╰━━━━━⚡━━━━━╯
+🌐 https://naruto-bot.vercel.app/canal.html`,
 
-https://naruto-bot.vercel.app/canal.html`,
-    admin: `*👑 〘 ${global.comando} 〙 es un poder reservado para administradores.*
+    admin: `
+╭━━━👑━━━━━👑━━━╮
+┃ 👑 *〘 ${global.comando} 〙*
+┃ 𝑃𝑜𝑑𝑒𝑟 𝑟𝑒𝑠𝑒𝑟𝑣𝑎𝑑𝑜 𝑎 𝐴𝑑𝑚𝑖𝑛𝑠 🌀
+┃ 𝑅𝑒𝑠𝑝𝑒𝑡𝑎 𝑒𝑠𝑎 𝑟𝑒𝑔𝑙𝑎...
+╰━━━👑━━━━━👑━━━╯
+🌐 https://naruto-bot.vercel.app/canal.html`,
 
-https://naruto-bot.vercel.app/canal.html`,
-    botAdmin: `*⚡ Necesito ser admin para ejecutar 〘 ${global.comando} 〙 Dame el rango y hablamos.*
+    botAdmin: `
+╭━━━⚡━━━━━⚡━━━╮
+┃ ⚡ *〘 ${global.comando} 〙*
+┃ 𝑁𝑒𝑐𝑒𝑠𝑖𝑡𝑜 𝑠𝑒𝑟 𝐴𝑑𝑚𝑖𝑛 👊
+┃ 𝐷𝑎𝑚𝑒 𝑒𝑙 𝑟𝑎𝑛𝑔𝑜 𝑦 𝘩𝑎𝑏𝑙𝑎𝑚𝑜𝑠...
+╰━━━⚡━━━━━⚡━━━╯
+🌐 https://naruto-bot.vercel.app/canal.html`,
 
-https://naruto-bot.vercel.app/canal.html`,
-    //unreg: `*👑 Para usar 〘 ${global.comando} 〙 primero debes registrarte.*\n\n *👑 Usa: #${verifyaleatorio} ${user2}.${edadaleatoria}*`,
-    restrict: `*⚡ Esta función está bloqueada. Fin de la historia.*
-
-https://naruto-bot.vercel.app/canal.html`
+    restrict: `
+╭━━━🚫━━━━━🚫━━━╮
+┃ ⚡ *〘 ${global.comando} 〙*
+┃ 𝐹𝑢𝑛𝑐𝑖ó𝑛 𝐵𝑙𝑜𝑞𝑢𝑒𝑎𝑑𝑎 ❌
+┃ 𝐹𝑖𝑛 𝑑𝑒 𝑙𝑎 ℎ𝑖𝑠𝑡𝑜𝑟𝑖𝑎...
+╰━━━🚫━━━━━🚫━━━╯
+🌐 https://naruto-bot.vercel.app/canal.html`
   }[type];
 
   if (msg) return conn.reply(m.chat, msg, m, fake ).then(_ => m.react('✖️'));
