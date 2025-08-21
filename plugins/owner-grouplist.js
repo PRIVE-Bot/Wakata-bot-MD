@@ -31,33 +31,25 @@ const generarFkontak = async () => {
 let handler = async (m, { conn, args, command }) => {
   if (['listg', 'grouplist'].includes(command)) {
     global.listadoGrupos = [];
-  }
 
-  if (['listg', 'grouplist'].includes(command)) {
     let txt = '';
-    const groups = Object.values(conn.chats).filter(chat => chat.id.endsWith('@g.us') && chat.isChats);
+    let groups = await conn.groupFetchAllParticipating();
+    groups = Object.values(groups);
     const totalGroups = groups.length;
 
     if (totalGroups === 0) {
-      return m.reply('❌ No se encontraron grupos. Asegúrate de que el bot esté en al menos un grupo.');
+      return m.reply('❌ No se encontraron grupos.');
     }
 
     for (let i = 0; i < totalGroups; i++) {
-      const group = groups[i];
-      const jid = group.id;
-
-      let metadata;
-      try {
-        metadata = await conn.groupMetadata(jid);
-      } catch (error) {
-        metadata = {};
-      }
-
+      const metadata = groups[i];
+      const jid = metadata.id;
       const participants = metadata.participants || [];
-      const bot = participants.find(u => conn.decodeJid(u.id) === conn.user.jid) || {};
-      const isBotAdmin = bot?.admin === 'admin';
-      const totalParticipants = participants.length;
-      const groupName = metadata.subject || group.name || 'Sin nombre';
+
+      // Verificar admin correctamente
+      const botId = conn.user.id.split(':')[0] + '@s.whatsapp.net';
+      const bot = participants.find(u => u.id === botId);
+      const isBotAdmin = bot?.admin !== null && bot?.admin !== undefined;
 
       let groupLink = '(No disponible: el bot no es admin)';
       if (isBotAdmin) {
@@ -67,6 +59,9 @@ let handler = async (m, { conn, args, command }) => {
           groupLink = '(Error al generar el enlace)';
         }
       }
+
+      const groupName = metadata.subject || 'Sin nombre';
+      const totalParticipants = participants.length;
 
       global.listadoGrupos.push({ jid, nombre: groupName });
 
@@ -79,14 +74,14 @@ let handler = async (m, { conn, args, command }) => {
 ╚════════════════════╝\n\n`;
     }
 
-    m.reply(`📋 *Lista de grupos del bot*\n\nTotal: ${totalGroups} grupos encontrados.\n\n${txt}`.trim());
+    return m.reply(`📋 *Lista de grupos del bot*\n\nTotal: ${totalGroups} grupos encontrados.\n\n${txt}`.trim());
   } 
-  
+
   else if (command === 'salirg') {
     const num = parseInt(args[0]);
 
     if (isNaN(num) || num < 1 || num > global.listadoGrupos.length) {
-      return m.reply('❌ Número de grupo inválido. Usa *.listg* para ver la lista y el número de grupo.');
+      return m.reply('❌ Número de grupo inválido. Usa *.listg* para ver la lista.');
     }
 
     const { jid, nombre } = global.listadoGrupos[num - 1];
@@ -108,7 +103,7 @@ let handler = async (m, { conn, args, command }) => {
       m.reply(`❌ Hubo un error al intentar salir del grupo *${nombre}*.`);
     }
   } 
-  
+
   else if (command === 'aviso') {
     const [numStr, ...mensajeParts] = args.join(' ').split('|');
     const numero = parseInt(numStr.trim());
