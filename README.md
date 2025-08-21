@@ -70,10 +70,10 @@ const fkontak = {
 ```
 
 
-# ****
+# **ESTILO DOCUMENTO**
 ```
-const res1 = await fetch('url');
-const thumb5 = Buffer.from(await res1.arrayBuffer());
+const res = await fetch('url');
+const thumb = Buffer.from(await res1.arrayBuffer());
 
 const fkontak = {
     key: { fromMe: false, participant: "0@s.whatsapp.net" },
