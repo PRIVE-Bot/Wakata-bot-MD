@@ -18,9 +18,11 @@ let fkontak = {
     }
 };
 
-return conn.reply(m.chat, `Por favor, envía un enlace de TikTok para descargar el video.`, m, rcanal);
+return conn.reply(m.chat, `2`, fkontak, rcanal);
     };
 
 
 
-handler.commad = [''] 
+handler.command = ['1'] 
+
+export default handler
