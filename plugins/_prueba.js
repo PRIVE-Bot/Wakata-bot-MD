@@ -1,32 +1,31 @@
 let handler = async (m, { conn }) => {
   const jid = m.chat;
 
-  
-  const res = await fetch(icono);
-  const img = Buffer.from(await res.arrayBuffer());
-
-  let fkontak = {
-    key: { fromMe: false, participant: "0@s.whatsapp.net" },
-    message: {
-      productMessage: {
-        product: {
-          productImage: { jpegThumbnail: img }, 
-          title: global.textbot || "Mi Producto",
-          description: "software",
-          currencyCode: "USD",
-          priceAmount1000: 5000, 
-          retailerId: "1466",
-          productId: "24502048122733040",
+  try {
+    const productMessage = {
+      product: {
+        productImage: {
+          url: icono
         },
-        businessOwnerJid: "50432955554@s.whatsapp.net"
-      }
-    }
-  };
+        title: global.textbot,
+        description: "software",
+        currencyCode: "USD",
+        priceAmount1000: 5000, 
+        retailerId: "1466", 
+        productId: "24502048122733040", 
+        productImageCount: 1,
+      },
+      businessOwnerJid: "50433191934@s.whatsapp.net" 
+    };
 
-  
-  return await conn.sendMessage(m.chat, { text: "Hola" }, { quoted: fkontak });
+    await conn.sendMessage(jid, productMessage, { messageType: 'product' });
+  } catch (error) {
+    console.error('Error enviando catálogo:', error);
+    conn.reply(jid, '❌ No se pudo enviar el catálogo...', m);
+  }
 };
 
-handler.command = ['producto', 'compra', '1'];
+
+handler.command = ['1'];
 
 export default handler;
