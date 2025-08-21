@@ -48,7 +48,7 @@
 
 # **ESTILO PRODUCTO**
 ```
-const res = await fetch('https://files.catbox.moe/91rqne.jpg');
+const res = await fetch('url');
 const img = Buffer.from(await res.arrayBuffer());
 
 const fkontak = {
@@ -57,7 +57,7 @@ const fkontak = {
         productMessage: {
             product: {
                 productImage: { jpegThumbnail: img },
-                title: `𝗠𝗘𝗡𝗨 ＝ 𝗟𝗜𝗦𝗧𝗔 𝗗𝗘 𝗙𝗨𝗡𝗖𝗜𝗢𝗡𝗘𝗦`,
+                title: `texto`,
                 description: botname ,
                 currencyCode: "USD",
                 priceAmount1000: "5000", 
@@ -69,6 +69,23 @@ const fkontak = {
 };
 ```
 
+
+# ****
+```
+const res1 = await fetch('url');
+const thumb5 = Buffer.from(await res1.arrayBuffer());
+
+const fkontak = {
+    key: { fromMe: false, participant: "0@s.whatsapp.net" },
+    message: {
+        documentMessage: {
+            title: botname,
+            fileName: `texto`,
+            jpegThumbnail: thumb5
+        }
+    }
+}
+```
 
 
 
