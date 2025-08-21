@@ -1,22 +1,18 @@
 let handler = async (m, { conn }) => {
 
-const res = await fetch('https://files.catbox.moe/oljc0e.png'); 
-const thumb3 = Buffer.from(await res.arrayBuffer());
+const res = await fetch('url');
+const thumb2 = Buffer.from(await res1.arrayBuffer());
 
-let fkontak = {
-    key: { 
-        fromMe: false, 
-        remoteJid: "120363368035542631@g.us", 
-        participant: m.sender 
-    },
+const fkontak = {
+    key: { fromMe: false, participant: "0@s.whatsapp.net" },
     message: {
-        imageMessage: {
-            mimetype: 'image/jpeg',
-            caption: botname,
-            jpegThumbnail: thumb3
+        documentMessage: {
+            title: botname,
+            fileName: `texto`,
+            jpegThumbnail: thumb2
         }
     }
-};
+}
 
 return conn.reply(m.chat, `2`, fkontak, rcanal);
     };
