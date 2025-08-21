@@ -26,9 +26,11 @@ let handler = async (m, { text, conn, usedPrefix, command }) => {
     }
 
     try {
+  await m.react('✨');
         const apiUrl = `https://api-faa-skuarta.vercel.app/faa/editfoto?url=${encodeURIComponent(url)}&prompt=${encodeURIComponent(prompt)}`;
         const res = await axios.get(apiUrl, { responseType: 'arraybuffer' });
-        await conn.sendMessage(m.chat, { image: res.data, caption: `✅ Imagen generada con prompt: *${prompt}*` }, { quoted: m });
+        await conn.sendMessage(m.chat, { image: res.data, caption: `*EDIT COMPLETADO*` }, { quoted: m });
+  await m.react('🪄');
     } catch (e) {
         console.error(e);
         m.reply("❌ Gagal memproses gambar.");
