@@ -1,6 +1,4 @@
-import fs from 'fs';
-import { toAudio } from '../lib/converter.js'; 
-import fetch from 'node-fetch';
+import { toAudio } from '../lib/converter.js';
 
 let handler = async (m, { conn, usedPrefix, command }) => {
   let q = m.quoted ? m.quoted : m;
@@ -11,14 +9,16 @@ let handler = async (m, { conn, usedPrefix, command }) => {
     let audio = await q.download();
     if (!audio) throw new Error("No se pudo descargar el audio.");
 
-    
+    // 🔹 Convertir a nota de voz
     if (/tovoz/i.test(command)) {
-      await conn.sendMessage(m.chat, { audio, mimetype: 'audio/ogg; codecs=opus', ptt: true }, { quoted: m });
+      let voice = await toAudio(audio, 'mp3', 'opus');
+      await conn.sendMessage(m.chat, { audio: voice, mimetype: 'audio/ogg; codecs=opus', ptt: true }, { quoted: m });
     }
 
-    
+    // 🔹 Convertir a música mp3
     else if (/tomp3/i.test(command)) {
-      await conn.sendMessage(m.chat, { audio, mimetype: 'audio/mpeg', fileName: 'audio.mp3' }, { quoted: m });
+      let music = await toAudio(audio, 'ogg', 'mp3');
+      await conn.sendMessage(m.chat, { audio: music, mimetype: 'audio/mpeg', fileName: 'audio.mp3' }, { quoted: m });
     }
 
   } catch (e) {
