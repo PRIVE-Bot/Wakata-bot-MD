@@ -1,34 +1,43 @@
-import { toAudio } from '../lib/converter.js';
+import { toPTT, toAudio } from '../lib/converter.js'
 
-let handler = async (m, { conn, usedPrefix, command }) => {
-  let q = m.quoted ? m.quoted : m;
-  let mime = (q.msg || q).mimetype || '';
-  if (!/audio/.test(mime)) return m.reply(`🎵 Responde a una música o nota de voz con:\n\n${usedPrefix + command}`);
-
+let handler = async (m, { conn }) => {
   try {
-    let audio = await q.download();
-    if (!audio) throw new Error("No se pudo descargar el audio.");
+    if (!m.quoted) throw `✳️ Responde a una *nota de voz* o *música*`
 
-    // 🔹 Convertir a nota de voz
-    if (/tovoz/i.test(command)) {
-      let voice = await toAudio(audio, 'mp3', 'opus');
-      await conn.sendMessage(m.chat, { audio: voice, mimetype: 'audio/ogg; codecs=opus', ptt: true }, { quoted: m });
+    let q = m.quoted
+    let mime = (q.msg || q).mimetype || ''
+    if (!/audio/.test(mime)) throw `❌ Solo funciona con *audios*`
+
+    let media = await q.download()
+    if (!media) throw `⚠️ No pude descargar el audio`
+
+    let result, filename, mimetype, type
+
+    if (/ogg/.test(mime) && /opus/.test(mime)) {
+      // 📌 Si es nota de voz -> convertir a música
+      result = await toAudio(media, 'ogg')
+      filename = 'audio.opus'
+      mimetype = 'audio/ogg; codecs=opus'
+      type = { audio: result.data, mimetype }
+      await conn.sendMessage(m.chat, type, { quoted: m })
+    } else {
+      // 📌 Si es música -> convertir a nota de voz
+      result = await toPTT(media, mime.split('/')[1])
+      filename = 'ptt.ogg'
+      mimetype = 'audio/ogg; codecs=opus'
+      type = { audio: result.data, mimetype, ptt: true }
+      await conn.sendMessage(m.chat, type, { quoted: m })
     }
 
-    // 🔹 Convertir a música mp3
-    else if (/tomp3/i.test(command)) {
-      let music = await toAudio(audio, 'ogg', 'mp3');
-      await conn.sendMessage(m.chat, { audio: music, mimetype: 'audio/mpeg', fileName: 'audio.mp3' }, { quoted: m });
-    }
-
+    await result.delete?.()
   } catch (e) {
-    console.error(e);
-    m.reply("❌ Error al procesar el audio.");
+    console.error(e)
+    m.reply('⚠️ Error al procesar el audio.')
   }
-};
+}
 
-handler.command = ['tovoz', 'tomp3']; 
-handler.help = ['tovoz (convierte a nota de voz)', 'tomp3 (convierte a música)'];
-handler.tags = ['tools'];
+handler.help = ['cambiar']
+handler.tags = ['audio']
+handler.command = /^cambiar$/i
 
-export default handler;
+export default handler
