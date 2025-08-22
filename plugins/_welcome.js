@@ -20,7 +20,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
   if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_ADD) {
     tipo = 'Bienvenido'
     tipo1 = 'al grupo'
-    tipo2 = 'https://i.postimg.cc/mg9qcS2y/1755899533176.jpg'
+    tipo2 = 'https://i.postimg.cc/Nfy97Mnp/1755901990459.jpg'
   }
 
   if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_LEAVE || 
