@@ -63,7 +63,7 @@ let handler = async (m, { conn }) => {
 };
 
 
-handler.command = /^Prueba$/i;
+handler.command = /^Prueba1$/i;
 handler.rowner = false; 
 
 export default handler;
