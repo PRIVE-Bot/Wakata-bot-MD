@@ -79,6 +79,6 @@ let handler = async (m, { conn, participants, groupMetadata }) => {
   }
 }
 
-handler.command = ['bienvenida']
+handler.command = ['bienvenida1']
 handler.register = true
 export default handler
