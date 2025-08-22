@@ -55,7 +55,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
       }
     }
 
-   / avatarUrl = encodeURIComponent(await conn.profilePictureUrl(who, 'image'))
+   /* avatarUrl = encodeURIComponent(await conn.profilePictureUrl(who, 'image'))
   } catch {}*/
 
   /*const canvasUrl = `https://gokublack.xyz/canvas/welcome?background=${fondoUrl}&text1=${encodeURIComponent(tipo)}&text2=${encodeURIComponent(tipo1)}&text3=Miembro+${totalMembers}&avatar=${avatarUrl}`*/
