@@ -59,7 +59,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
 
   const productMessage = {
     product: {
-      productImage: { url: https://i.postimg.cc/CxTJQ26c/1755893742976.jpg },
+      productImage: { url: `https://i.postimg.cc/CxTJQ26c/1755893742976.jpg` },
       title: `${tipo}, ahora somos ${totalMembers}`,
       description: `
 ✎ Usuario: ${taguser}
