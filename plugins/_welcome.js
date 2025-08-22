@@ -10,51 +10,60 @@ export async function before(m, { conn, participants, groupMetadata }) {
   let chat = global.db.data.chats[m.chat];
   let botname = global.botname || "Bot";
 
-  
   const icono = "https://files.catbox.moe/oa0hg3.jpg"; 
 
   if (chat.welcome) {
     if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_ADD) {
       
       const productMessage = {
-        product: {
-          productImage: {
-            url: icono
-          },
-          title: `¡Bienvenido a ${groupMetadata.subject}!`,
-          description: `Hola ${taguser}, ahora somos ${totalMembers} miembros.`,
-          currencyCode: "USD",
-          priceAmount1000: 5000, 
-          retailerId: "BOT", 
-          productId: "1", 
-          productImageCount: 1,
+        message: { 
+          productMessage: {
+            product: {
+              productImage: {
+                url: icono
+              },
+              title: `¡Bienvenido a ${groupMetadata.subject}!`,
+              description: `Hola ${taguser}, ahora somos ${totalMembers} miembros.`,
+              currencyCode: "USD",
+              priceAmount1000: 5000, 
+              retailerId: "BOT", 
+              productId: "1", 
+              productImageCount: 1,
+            },
+            businessOwnerJid: conn.user.jid
+          }
         },
-        businessOwnerJid: conn.user.jid 
+        mentions: [who]
       };
 
-      await conn.sendMessage(m.chat, { product: productMessage, mentions: [who] });
+      await conn.sendMessage(m.chat, productMessage);
     }
 
     if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_LEAVE ||
         m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_REMOVE) {
 
       const productMessage = {
-        product: {
-          productImage: {
-            url: icono
-          },
-          title: `¡Adiós de ${groupMetadata.subject}!`,
-          description: `Hasta luego ${taguser}, ahora somos ${totalMembers} miembros.`,
-          currencyCode: "USD",
-          priceAmount1000: 5000,
-          retailerId: "BOT", 
-          productId: "1", 
-          productImageCount: 1,
+        message: { 
+          productMessage: {
+            product: {
+              productImage: {
+                url: icono
+              },
+              title: `¡Adiós de ${groupMetadata.subject}!`,
+              description: `Hasta luego ${taguser}, ahora somos ${totalMembers} miembros.`,
+              currencyCode: "USD",
+              priceAmount1000: 5000,
+              retailerId: "BOT", 
+              productId: "1", 
+              productImageCount: 1,
+            },
+            businessOwnerJid: conn.user.jid
+          }
         },
-        businessOwnerJid: conn.user.jid
+        mentions: [who]
       };
 
-      await conn.sendMessage(m.chat, { product: productMessage, mentions: [who] });
+      await conn.sendMessage(m.chat, productMessage);
     }
   }
 }
