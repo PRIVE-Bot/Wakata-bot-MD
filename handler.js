@@ -23,6 +23,7 @@ let m = chatUpdate.messages[chatUpdate.messages.length - 1]
 if (!m)
 return;
 
+
 this.processedMessages = this.processedMessages || new Map()
 const id = m.key.id
 const now = Date.now()
@@ -40,6 +41,7 @@ if (this.processedMessages.has(id)) return
 
 
 this.processedMessages.set(id, now)
+
 
 if (global.db.data == null)
 await global.loadDatabase()       
@@ -272,7 +274,6 @@ m.text = ''
 
 let _user = global.db.data && global.db.data.users && global.db.data.users[m.sender]
 
-const detectwhat = m.sender.includes('@lid') ? '@lid' : '@s.whatsapp.net';
 const isROwner = [conn.decodeJid(global.conn.user.id), ...global.owner.map(([number]) => number)].map(v => v.replace(/[^0-9]/g, '') + '@s.whatsapp.net').includes(m.sender)
 const isOwner = isROwner || m.fromMe
 const isMods = isOwner || global.mods.map(v => v.replace(/[^0-9]/g, '') + '@s.whatsapp.net').includes(m.sender)
@@ -295,24 +296,13 @@ m.exp += Math.ceil(Math.random() * 10)
 
 let usedPrefix
 
-
-
-async function getLidFromJid(id, conn) {
-if (id.endsWith('@lid')) return id
-const res = await conn.onWhatsApp(id).catch(() => [])
-return res[0]?.lid || id
-}
-const senderLid = await getLidFromJid(m.sender, conn)
-const botLid = await getLidFromJid(conn.user.jid, conn)
-const senderJid = m.sender
-const botJid = conn.user.jid
-const groupMetadata = m.isGroup ? ((conn.chats[m.chat] || {}).metadata || await this.groupMetadata(m.chat).catch(_ => null)) : {}
-const participants = m.isGroup ? (groupMetadata.participants || []) : []
-const user = participants.find(p => p.id === senderLid || p.id === senderJid) || {}
-const bot = participants.find(p => p.id === botLid || p.id === botJid) || {}
-const isRAdmin = user?.admin === "superadmin"
-const isAdmin = isRAdmin || user?.admin === "admin"
-const isBotAdmin = !!bot?.admin
+const groupMetadata = (m.isGroup ? ((conn.chats[m.chat] || {}).metadata || await this.groupMetadata(m.chat).catch(_ => null)) : {}) || {}
+const participants = (m.isGroup ? groupMetadata.participants : []) || []
+const user = (m.isGroup ? participants.find(u => conn.decodeJid(u.id) === m.sender) : {}) || {}
+const bot = (m.isGroup ? participants.find(u => conn.decodeJid(u.id) == this.user.jid) : {}) || {}
+const isRAdmin = user?.admin == 'superadmin' || false
+const isAdmin = isRAdmin || user?.admin == 'admin' || false
+const isBotAdmin = bot?.admin || false
 
 const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './plugins')
 for (let name in global.plugins) {
@@ -586,7 +576,7 @@ if (settingsREAD.autoread2) await this.readMessages([m.key])
 // await conn.sendPresenceUpdate('composing', m.chat)
 // this.sendPresenceUpdate('recording', m.chat)
 
-if (db.data.chats[m.chat].reaction && m.text.match(/(ción|dad|aje|oso|izar|mente|pero|tion|age|ous|ate|and|but|ify|ai|ñ|a|s)/gi)) {
+if (db.data.chats[m.chat].reaction && m.text.match(/(ción|dad|aje|oso|izar|mente|pero|tion|age|ous|ate|and|but|ify|ai|yuki|a|s)/gi)) {
 let emot = pickRandom(["🍟", "😃", "😄", "😁", "😆", "🍓", "😅", "😂", "🤣", "🥲", "☺️", "😊", "😇", "🙂", "🙃", "😉", "😌", "😍", "🥰", "😘", "😗", "😙", "🌺", "🌸", "😚", "😋", "😛", "😝", "😜", "🤪", "🤨", "🌟", "🤓", "😎", "🥸", "🤩", "🥳", "😏", "💫", "😞", "😔", "😟", "😕", "🙁", "☹️", "😣", "😖", "😫", "😩", "🥺", "😢", "😭", "😤", "😠", "😡", "🤬", "🤯", "😳", "🥵", "🥶", "😶‍🌫️", "😱", "😨", "😰", "😥", "😓", "🤗", "🤔", "🫣", "🤭", "🤖", "🍭", "🤫", "🫠", "🤥", "😶", "📇", "😐", "💧", "😑", "🫨", "😬", "🙄", "😯", "😦", "😧", "😮", "😲", "🥱", "😴", "🤤", "😪", "😮‍💨", "😵", "😵‍💫", "🤐", "🥴", "🤢", "🤮", "🤧", "😷", "🤒", "🤕", "🤑", "🤠", "😈", "👿", "👺", "🧿", "🌩", "👻", "😺", "😸", "😹", "😻", "😼", "😽", "🙀", "😿", "😾", "🫶", "👍", "✌️", "🙏", "🫵", "🤏", "🤌", "☝️", "🖕", "🙏", "🫵", "🫂", "🐱", "🤹‍♀️", "🤹‍♂️", "🗿", "✨", "⚡", "🔥", "🌈", "🩷", "❤️", "🧡", "💛", "💚", "🩵", "💙", "💜", "🖤", "🩶", "🤍", "🤎", "💔", "❤️‍🔥", "❤️‍🩹", "❣️", "💕", "💞", "💓", "💗", "💖", "💘", "💝", "🚩", "👊", "⚡️", "💋", "🫰", "💅", "👑", "🐣", "🐤", "🐈"])
 if (!m.fromMe) return this.sendMessage(m.chat, { react: { text: emot, key: m.key }})
 }
@@ -615,21 +605,17 @@ this.copyNForward(msg.chat, msg).catch(e => console.log(e, msg))
 console.error(e)
 }}
 
-
 global.dfail = (type, m, conn) => {
-  let edadaleatoria = ['10', '28', '20', '40', '18', '21', '15', '11', '9', '17', '25'].getRandom();
-  let user2 = m.pushName || 'Anónimo';
-  let verifyaleatorio = ['registrar', 'reg', 'verificar', 'verify', 'register'].getRandom();
 
 
-    const msg = {
+      const msg = {
     rowner: `
 ╭━━━━━━━✦✗✦━━━━━━━╮
 ┃ 👑 *〘 ${global.comando} 〙*
 ┃ 𝑆𝑜𝑙𝑜 𝑝𝑎𝑟𝑎 𝑙𝑜𝑠 𝐶𝑟𝑒𝑎𝑑𝑜𝑟𝑒𝑠 🍥
 ┃ 𝑁𝑜 𝑖𝑛𝑠𝑖𝑠𝑡𝑎𝑠...
 ╰━━━━━━━✦✗✦━━━━━━━╯
-🌐 https://naruto-bot.vercel.app/canal.html`,
+🌐 https://naruto-bot.vercel.app/canal`,
 
     owner: `
 ╭━━━━━━━⚡━━━━━━━╮
@@ -637,7 +623,7 @@ global.dfail = (type, m, conn) => {
 ┃ 𝐸𝑥𝑐𝑙𝑢𝑠𝑖𝑣𝑜 𝑑𝑒 𝐷𝑒𝑠𝑎𝑟𝑟𝑜𝑙𝑙𝑎𝑑𝑜𝑟𝑒𝑠 🍃
 ┃ 𝑁𝑖𝑣𝑒𝑙 𝑖𝑛𝑠𝑢𝑓𝑖𝑐𝑖𝑒𝑛𝑡𝑒...
 ╰━━━━━━━⚡━━━━━━━╯
-🌐 https://naruto-bot.vercel.app/canal.html`,
+🌐 https://naruto-bot.vercel.app/canal`,
 
     mods: `
 ╭━━━🍂━━━━━🍂━━━╮
@@ -645,7 +631,7 @@ global.dfail = (type, m, conn) => {
 ┃ 𝑆𝑜𝑙𝑜 𝑝𝑎𝑟𝑎 𝑀𝑜𝑑𝑒𝑟𝑎𝑑𝑜𝑟𝑒𝑠 🌀
 ┃ ¿𝐸𝑟𝑒𝑠 𝑢𝑛𝑜? 𝑁𝑜 𝑙𝑜 𝑐𝑟𝑒𝑜...
 ╰━━━🍂━━━━━🍂━━━╯
-🌐 https://naruto-bot.vercel.app/canal.html`,
+🌐 https://naruto-bot.vercel.app/canal`,
 
     premium: `
 ╭━━━🔥━━━━━🔥━━━╮
@@ -653,7 +639,7 @@ global.dfail = (type, m, conn) => {
 ┃ 𝐿𝑢𝑗𝑜 𝑑𝑒 𝑃𝑟𝑒𝑚𝑖𝑢𝑚 ✨
 ┃ 𝑇ú 𝑎𝑢𝑛 𝑛𝑜 𝑒𝑠𝑡á𝑠 𝑎 𝑒𝑠𝑒 𝑛𝑖𝑣𝑒𝑙...
 ╰━━━🔥━━━━━🔥━━━╯
-🌐 https://naruto-bot.vercel.app/canal.html`,
+🌐 https://naruto-bot.vercel.app/canal`,
 
     group: `
 ╭━━━━━👥━━━━━╮
@@ -661,7 +647,7 @@ global.dfail = (type, m, conn) => {
 ┃ 𝑆𝑜𝑙𝑜 𝑓𝑢𝑛𝑐𝑖𝑜𝑛𝑎 𝑒𝑛 𝐺𝑟𝑢𝑝𝑜𝑠 🍂
 ┃ 𝑁𝑜 𝑡𝑟𝑎𝑡𝑒𝑠 𝑑𝑒 𝑒𝑛𝑔𝑎ñ𝑎𝑟...
 ╰━━━━━👥━━━━━╯
-🌐 https://naruto-bot.vercel.app/canal.html`,
+🌐 https://naruto-bot.vercel.app/canal`,
 
     private: `
 ╭━━━━━⚡━━━━━╮
@@ -669,7 +655,7 @@ global.dfail = (type, m, conn) => {
 ┃ 𝑆𝑜𝑙𝑜 𝑒𝑛 𝑃𝑟𝑖𝑣𝑎𝑑𝑜 🍃
 ┃ 𝐴𝑞𝑢í 𝑛𝑜, 𝑎𝑚𝑖𝑔𝑜...
 ╰━━━━━⚡━━━━━╯
-🌐 https://naruto-bot.vercel.app/canal.html`,
+🌐 https://naruto-bot.vercel.app/canal`,
 
     admin: `
 ╭━━━👑━━━━━👑━━━╮
@@ -677,7 +663,7 @@ global.dfail = (type, m, conn) => {
 ┃ 𝑃𝑜𝑑𝑒𝑟 𝑟𝑒𝑠𝑒𝑟𝑣𝑎𝑑𝑜 𝑎 𝐴𝑑𝑚𝑖𝑛𝑠 🌀
 ┃ 𝑅𝑒𝑠𝑝𝑒𝑡𝑎 𝑒𝑠𝑎 𝑟𝑒𝑔𝑙𝑎...
 ╰━━━👑━━━━━👑━━━╯
-🌐 https://naruto-bot.vercel.app/canal.html`,
+🌐 https://naruto-bot.vercel.app/canal`,
 
     botAdmin: `
 ╭━━━⚡━━━━━⚡━━━╮
@@ -685,7 +671,7 @@ global.dfail = (type, m, conn) => {
 ┃ 𝑁𝑒𝑐𝑒𝑠𝑖𝑡𝑜 𝑠𝑒𝑟 𝐴𝑑𝑚𝑖𝑛 👊
 ┃ 𝐷𝑎𝑚𝑒 𝑒𝑙 𝑟𝑎𝑛𝑔𝑜 𝑦 𝘩𝑎𝑏𝑙𝑎𝑚𝑜𝑠...
 ╰━━━⚡━━━━━⚡━━━╯
-🌐 https://naruto-bot.vercel.app/canal.html`,
+🌐 https://naruto-bot.vercel.app/canal`,
 
     restrict: `
 ╭━━━🚫━━━━━🚫━━━╮
@@ -693,12 +679,11 @@ global.dfail = (type, m, conn) => {
 ┃ 𝐹𝑢𝑛𝑐𝑖ó𝑛 𝐵𝑙𝑜𝑞𝑢𝑒𝑎𝑑𝑎 ❌
 ┃ 𝐹𝑖𝑛 𝑑𝑒 𝑙𝑎 ℎ𝑖𝑠𝑡𝑜𝑟𝑖𝑎...
 ╰━━━🚫━━━━━🚫━━━╯
-🌐 https://naruto-bot.vercel.app/canal.html`
+🌐 https://naruto-bot.vercel.app/canal`
   }[type];
 
   if (msg) return conn.reply(m.chat, msg, m, fake ).then(_ => m.react('✖️'));
 }
-
 
 let file = global.__filename(import.meta.url, true)
 watchFile(file, async () => {
