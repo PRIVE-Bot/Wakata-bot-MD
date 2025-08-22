@@ -108,5 +108,23 @@ const thumb2 = Buffer.from(await res1.arrayBuffer());
 ```
 
 
+# **ESTILO SIMULACIÓN DE ETIQUETA A MENSAJE NORMAL**
+```
+const res = await fetch('URL');
+  const thumb2 = Buffer.from(await res.arrayBuffer());
+
+  
+  const fkontak = {
+    key: { fromMe: false, participant: "0@s.whatsapp.net" },
+    message: {
+      imageMessage: {
+        mimetype: 'image/jpeg',
+        caption: 'TEXTO',
+        jpegThumbnail: thumb2
+      }
+    }
+  };
+```
+
 
 
