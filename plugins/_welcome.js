@@ -40,7 +40,7 @@ const fkontak = {
           productMessage: {
             product: {
               productImage: { jpegThumbnail: img3 },
-              title: `ʙɪᴇɴᴠᴇɴɪᴅᴏ, ᴀʜᴏʀᴀ sᴏᴍᴏs "${totalMembers}"`,
+              title: `${encodeURIComponent(tipo)} ${encodeURIComponent(tipo1)} grupo`,
               description: botname,
               currencyCode: "USD",
               priceAmount1000: "5000",
@@ -53,7 +53,6 @@ const fkontak = {
     avatarUrl = encodeURIComponent(await conn.profilePictureUrl(who, 'image'));
   } catch {}
 
-  // Usamos directamente el canvasUrl en productImage.url (sin subir a Catbox)
   const canvasUrl = `https://gokublack.xyz/canvas/welcome?background=${fondoUrl}&text1=${encodeURIComponent(tipo)}&text2=${encodeURIComponent(tipo1)}&text3=Miembro+${totalMembers}&avatar=${avatarUrl}`;
 
   const productMessage = {
