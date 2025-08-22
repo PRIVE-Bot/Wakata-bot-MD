@@ -39,20 +39,18 @@ export async function before(m, { conn, participants, groupMetadata }) {
 
   const productMessage = {
     product: {
-      productImage: { url: canvasUrl }, // ✅ directo, sin upload
+      productImage: { url: canvasUrl }, 
       title: `${tipo}, ahora somos ${totalMembers}`,
       description: `
 ✎ Usuario: ${taguser}
 ✎ Grupo: ${groupMetadata.subject}
 ✎ Miembros: ${totalMembers}
 ✎ Fecha: ${date}
-
-> Sigue el canal oficial: whatsapp.com/channel/0029VbAzn9GGU3BQw830eA0F
       `,
       currencyCode: "USD",
       priceAmount1000: 5000,
       retailerId: "1466",
-      productId: "2462829354346367",
+      productId: "24628293543463627",
       productImageCount: 1,
     },
     businessOwnerJid: "50432955554@s.whatsapp.net"
