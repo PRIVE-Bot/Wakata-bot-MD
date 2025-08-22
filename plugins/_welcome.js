@@ -26,7 +26,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
   }
   if (!tipo) return
 
-  const fondoUrl = encodeURIComponent('https://files.catbox.moe/ijud3n.jpg')
+  const fondoUrl = encodeURIComponent('https://i.postimg.cc/t4CMCHnW/1755897530475.jpg')
   const defaultAvatar = encodeURIComponent('https://files.catbox.moe/6al8um.jpg')
 
   let avatarUrl = defaultAvatar
