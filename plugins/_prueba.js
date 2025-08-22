@@ -32,16 +32,16 @@ export default handler;*/
 
 
 
+// prueba1.js
 import { generateWelcomeImage } from './welcomeImage.js';
 
 let handler = async (m, { conn }) => {
     try {
-        
         const username = m.pushName || 'Usuario';
         const userProfilePicUrl = 'https://i.postimg.cc/CxTJQ26c/1755893742976.jpg'; 
         const backgroundUrl = 'https://i.postimg.cc/CxTJQ26c/1755893742976.jpg';
 
-        
+        // Generar la imagen de bienvenida
         const buffer = await generateWelcomeImage({
             backgroundUrl,
             avatarUrl: userProfilePicUrl,
@@ -49,21 +49,25 @@ let handler = async (m, { conn }) => {
             welcomeText: '¡Bienvenido al grupo!'
         });
 
-        
+        // Enviar la imagen asegurando que sea un objeto tipo 'image'
         await conn.sendMessage(
             m.chat,
-            { image: buffer, caption: `Hola @${username.split(' ')[0]} 👋` },
+            {
+                image: buffer,
+                mimetype: 'image/png', // importante
+                caption: `Hola @${username.split(' ')[0]} 👋`
+            },
             { quoted: m }
         );
 
     } catch (err) {
-        console.error(err);
-        await m.reply('Ocurrió un error al generar la imagen de bienvenida.');
+        console.error('Error generando la bienvenida:', err);
+        await conn.sendMessage(m.chat, { text: 'Ocurrió un error al generar la imagen de bienvenida.' }, { quoted: m });
     }
 };
 
-
-handler.command = /^Prueba1$/i;
-handler.rowner = false; 
+handler.command = ['Prueba1'];
+handler.rowner = false;
+handler.group = false;
 
 export default handler;
