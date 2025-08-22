@@ -42,14 +42,16 @@ export async function before(m, { conn, participants, groupMetadata }) {
           product: {
             productImage: { jpegThumbnail: img3 },
             title: `${tipo} ${tipo1} grupo`,
-            description: botname,
+            description: `${botname} da la bienvenida a ${taguser}`,
             currencyCode: "USD",
             priceAmount1000: 5000,
             retailerId: "BOT"
           },
           businessOwnerJid: "0@s.whatsapp.net"
         }
-      }
+      },
+      
+      contextInfo: { mentionedJid: [who] }
     };
 
     avatarUrl = encodeURIComponent(await conn.profilePictureUrl(who, 'image'));
