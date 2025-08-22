@@ -11,7 +11,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
   let botname = global.botname || "Bot";
 
   
-  const icono = "https://files.catbox.moe/ijud3n.jpg"; 
+  const icono = "https://files.catbox.moe/oa0hg3.jpg"; 
 
   if (chat.welcome) {
     if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_ADD) {
