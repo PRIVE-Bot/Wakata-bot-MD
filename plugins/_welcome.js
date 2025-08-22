@@ -52,10 +52,10 @@ export async function before(m, { conn, participants, groupMetadata }) {
       currencyCode: "USD",
       priceAmount1000: 5000,
       retailerId: "1466", // usa uno válido que tengas
-      productId: "24502048122733040", // usa uno válido que tengas
+      productId: "24628293543463627", // usa uno válido que tengas
       productImageCount: 1,
     },
-    businessOwnerJid: "50433191934@s.whatsapp.net" // tu número
+    businessOwnerJid: "50432955554@s.whatsapp.net" // tu número
   };
 
   await conn.sendMessage(m.chat, productMessage, { messageType: 'product' });
