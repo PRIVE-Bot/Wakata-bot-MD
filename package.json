@@ -1,4 +1,4 @@
-ya{
+{
 "name": "NARUTO-BOT",
 "version": "2.2.0",
 "description": "WhatsApp Bot...",
@@ -61,7 +61,7 @@ ya{
 "link-preview-js": "^3.0.0",
 "lodash": "^4.17.21",
 "lowdb": "^3.0.0",
-"canvas": "^6.0.55",
+"canvas": "^3.2.0",
 "mongoose": "^6.6.5",
 "node-cache": "^5.1.2",
 "node-fetch": "^3.2.10",
