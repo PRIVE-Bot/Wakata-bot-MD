@@ -15,14 +15,17 @@ export async function before(m, { conn, participants, groupMetadata }) {
 
   let tipo = ''
   let tipo1 = ''
+  let tipo2 = ''
   if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_ADD) {
     tipo = 'Bienvenido'
     tipo1 = 'al grupo'
+    tipo2 = 'https://i.postimg.cc/mg9qcS2y/1755899533176.jpg'
   }
   if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_LEAVE || 
       m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_REMOVE) {
     tipo = 'Adiós'
     tipo1 = 'del grupo'
+    tipo2 = 'https://i.postimg.cc/pXmV63qV/1755899696460.jpg'
   }
   if (!tipo) return
 
@@ -52,14 +55,14 @@ export async function before(m, { conn, participants, groupMetadata }) {
       }
     }
 
-    avatarUrl = encodeURIComponent(await conn.profilePictureUrl(who, 'image'))
-  } catch {}
+   / avatarUrl = encodeURIComponent(await conn.profilePictureUrl(who, 'image'))
+  } catch {}*/
 
-  const canvasUrl = `https://gokublack.xyz/canvas/welcome?background=${fondoUrl}&text1=${encodeURIComponent(tipo)}&text2=${encodeURIComponent(tipo1)}&text3=Miembro+${totalMembers}&avatar=${avatarUrl}`
+  /*const canvasUrl = `https://gokublack.xyz/canvas/welcome?background=${fondoUrl}&text1=${encodeURIComponent(tipo)}&text2=${encodeURIComponent(tipo1)}&text3=Miembro+${totalMembers}&avatar=${avatarUrl}`*/
 
   const productMessage = {
     product: {
-      productImage: { url: canvasUrl },
+      productImage: { url: tipo2 },
       title: `${tipo}, ahora somos ${totalMembers}`,
       description: `
 ✎ Usuario: ${taguser}
