@@ -14,16 +14,17 @@ export async function before(m, { conn, participants, groupMetadata }) {
   if (!chat.welcome) return;
 
   let tipo = '';
-  if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_ADD) tipo = 'Bienvenido';
+  let tipo1 = '';
+  if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_ADD) {
+    tipo = 'Bienvenido';
+    tipo1 = 'al grupo';
+  }
   if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_LEAVE || 
-      m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_REMOVE) tipo = 'Adiós';
+      m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_REMOVE) {
+    tipo = 'Adiós';
+    tipo1 = 'del grupo';
+  }
   if (!tipo) return;
-
-let tipo1 = '';
-  if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_ADD) tipo = 'al grupo';
-  if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_LEAVE || 
-      m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_REMOVE) tipo = 'del grupo';
-  if (!tipo1) return;
 
   const fondoUrl = encodeURIComponent('https://files.catbox.moe/ijud3n.jpg');
   const defaultAvatar = encodeURIComponent('https://files.catbox.moe/6al8um.jpg');
@@ -31,20 +32,14 @@ let tipo1 = '';
   let avatarUrl = defaultAvatar;
   try {
     avatarUrl = encodeURIComponent(await conn.profilePictureUrl(who, 'image'));
-  } catch (e) {}
+  } catch {}
 
+  // Usamos directamente el canvasUrl en productImage.url (sin subir a Catbox)
   const canvasUrl = `https://gokublack.xyz/canvas/welcome?background=${fondoUrl}&text1=${encodeURIComponent(tipo)}&text2=${encodeURIComponent(tipo1)}&text3=Miembro+${totalMembers}&avatar=${avatarUrl}`;
-
-  
-  const res = await fetch("https://catbox.moe/user/api.php", {
-    method: "POST",
-    body: new URLSearchParams({ reqtype: "urlupload", url: canvasUrl })
-  });
-  const imageUrl = await res.text(); 
 
   const productMessage = {
     product: {
-      productImage: { url: imageUrl },
+      productImage: { url: canvasUrl }, // ✅ directo, sin upload
       title: `${tipo}, ahora somos ${totalMembers}`,
       description: `
 ✎ Usuario: ${taguser}
@@ -56,11 +51,11 @@ let tipo1 = '';
       `,
       currencyCode: "USD",
       priceAmount1000: 5000,
-      retailerId: "1466", 
-      productId: "24628293543463627", 
+      retailerId: "1466",
+      productId: "24628293543463627",
       productImageCount: 1,
     },
-    businessOwnerJid: "50432955554@s.whatsapp.net" 
+    businessOwnerJid: "50432955554@s.whatsapp.net"
   };
 
   await conn.sendMessage(m.chat, productMessage, { messageType: 'product' });
