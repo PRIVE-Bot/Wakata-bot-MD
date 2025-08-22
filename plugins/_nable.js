@@ -15,7 +15,7 @@ const handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, i
     case 'bienvenida':
       if (!m.isGroup) {
        if (!(isAdmin || isOwner)) {
-          global.dfail('group', m, conn);
+          global.dfail('group', 'rowner', m, conn);
           throw false;
         }
       } else if (!isAdmin) {
