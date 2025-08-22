@@ -32,7 +32,11 @@ export async function before(m, { conn, participants, groupMetadata }) {
   const res = await fetch(canvasUrl);
   const img = Buffer.from(await res.arrayBuffer());
 
-  // Generar el productMessage
+  // Generar IDs únicos
+  const productId = `id-${Date.now()}`;
+  const retailerId = `rid-${Date.now()}`;
+
+  // Preparar mensaje tipo catálogo
   const productMessage = {
     product: {
       productImage: { jpegThumbnail: img },
@@ -47,16 +51,21 @@ export async function before(m, { conn, participants, groupMetadata }) {
       `,
       currencyCode: 'USD',
       priceAmount1000: 1000,
-      retailerId: 'BOT',
-      productId: '12345'
+      retailerId,
+      productId
     },
     businessOwnerJid: '0@s.whatsapp.net'
   };
 
-  // Enviar mensaje como catálogo
+  // Enviar mensaje
   await conn.sendMessage(m.chat, {
     productMessage
-  }, { quoted: { key: { fromMe: false, participant: '0@s.whatsapp.net', remoteJid: m.chat }, message: {} } });
+  }, {
+    quoted: {
+      key: { fromMe: false, participant: '0@s.whatsapp.net', remoteJid: m.chat },
+      message: { conversation: '' }
+    }
+  });
 }
 
 
