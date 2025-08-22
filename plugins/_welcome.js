@@ -11,59 +11,58 @@ export async function before(m, { conn, participants, groupMetadata }) {
   let botname = global.botname || "Bot";
 
   const icono = "https://files.catbox.moe/oa0hg3.jpg"; 
+  const res = await fetch(icono);
+  const buffer = Buffer.from(await res.arrayBuffer());
 
   if (chat.welcome) {
     if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_ADD) {
-      
-      const productMessage = {
-        message: { 
-          productMessage: {
-            product: {
-              productImage: {
-                url: icono
-              },
-              title: `¡Bienvenido a ${groupMetadata.subject}!`,
-              description: `Hola ${taguser}, ahora somos ${totalMembers} miembros.`,
-              currencyCode: "USD",
-              priceAmount1000: 5000, 
-              retailerId: "BOT", 
-              productId: "1", 
-              productImageCount: 1,
-            },
-            businessOwnerJid: conn.user.jid
-          }
-        },
-        mentions: [who]
-      };
+      // Mencion
+      await conn.sendMessage(m.chat, { 
+          text: `¡Hola ${taguser}, bienvenido a ${groupMetadata.subject}! Ahora somos ${totalMembers} miembros.`,
+          mentions: [who]
+      });
 
-      await conn.sendMessage(m.chat, productMessage);
+      // Producto
+      await conn.sendMessage(m.chat, {
+        productMessage: {
+          product: {
+            productImage: { url: buffer },
+            title: `Bienvenido a ${groupMetadata.subject}`,
+            description: "Disfruta tu estadía en el grupo",
+            currencyCode: "USD",
+            priceAmount1000: 5000,
+            retailerId: "BOT",
+            productId: "1",
+            productImageCount: 1
+          },
+          businessOwnerJid: conn.user.jid
+        }
+      });
     }
 
     if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_LEAVE ||
         m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_REMOVE) {
 
-      const productMessage = {
-        message: { 
-          productMessage: {
-            product: {
-              productImage: {
-                url: icono
-              },
-              title: `¡Adiós de ${groupMetadata.subject}!`,
-              description: `Hasta luego ${taguser}, ahora somos ${totalMembers} miembros.`,
-              currencyCode: "USD",
-              priceAmount1000: 5000,
-              retailerId: "BOT", 
-              productId: "1", 
-              productImageCount: 1,
-            },
-            businessOwnerJid: conn.user.jid
-          }
-        },
-        mentions: [who]
-      };
+      await conn.sendMessage(m.chat, { 
+          text: `¡Adiós ${taguser}! Ahora somos ${totalMembers} miembros.`,
+          mentions: [who]
+      });
 
-      await conn.sendMessage(m.chat, productMessage);
+      await conn.sendMessage(m.chat, {
+        productMessage: {
+          product: {
+            productImage: { url: buffer },
+            title: `Adiós de ${groupMetadata.subject}`,
+            description: "Te extrañaremos",
+            currencyCode: "USD",
+            priceAmount1000: 5000,
+            retailerId: "BOT",
+            productId: "1",
+            productImageCount: 1
+          },
+          businessOwnerJid: conn.user.jid
+        }
+      });
     }
   }
 }
