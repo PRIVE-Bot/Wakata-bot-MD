@@ -54,9 +54,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
         }
       }
     }
-  } catch (e) {
-    console.log('Error al generar fkontak:', e)
-  }
+  
 
   const productMessage = {
     product: {
@@ -70,11 +68,11 @@ export async function before(m, { conn, participants, groupMetadata }) {
       `,
       currencyCode: "USD",
       priceAmount1000: 5000,
-      retailerId: "BOT",
+      retailerId: "1677",
       productId: "24628293543463627",
       productImageCount: 1,
     },
-    businessOwnerJid: "0@s.whatsapp.net"
+    businessOwnerJid: "50432955554@s.whatsapp.net"
   }
 
   await conn.sendMessage(m.chat, productMessage, { 
