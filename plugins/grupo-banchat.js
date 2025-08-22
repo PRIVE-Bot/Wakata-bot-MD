@@ -6,7 +6,7 @@ conn.reply(m.chat, `${emoji} 𝗘𝗹 𝗕𝗼𝘁 𝗛𝗮 𝗦𝗶𝗱𝗼 �
 }
 handler.help = ['banchat']
 handler.tags = ['owner']
-handler.command = ['banchat']
+handler.command = ['banchat1']
 handler.admin = true 
 handler.botadmin = true
 handler.group = true
