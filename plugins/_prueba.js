@@ -1,6 +1,6 @@
  const handler = async (m, { conn, text, command }) => {
 
-const res = await fetch('https://files.catbox.moe/cd6i4q.jpg');
+const res = await fetch('https://i.postimg.cc/pdCvMMvP/1755841606616.jpg');
   const thumb2 = Buffer.from(await res.arrayBuffer());
 
   
