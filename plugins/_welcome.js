@@ -4,23 +4,20 @@ import fetch from 'node-fetch';
 export async function before(m, { conn, participants, groupMetadata }) {
   if (!m.messageStubType || !m.isGroup) return true;
 
-  let totalMembers = participants.length;
-  let date = new Date().toLocaleString('es-ES', { timeZone: 'America/Mexico_City' });
-  let who = m.messageStubParameters[0];
-  let taguser = `@${who.split('@')[0]}`;
-  let chat = global.db.data.chats[m.chat];
-  let botname = global.botname || "Bot";
+  const totalMembers = participants.length;
+  const date = new Date().toLocaleString('es-ES', { timeZone: 'America/Mexico_City' });
+  const who = m.messageStubParameters[0];
+  const taguser = `@${who.split('@')[0]}`;
+  const chat = global.db.data.chats[m.chat];
+  const botname = global.botname || "Bot";
 
   const fondoUrl = encodeURIComponent('https://files.catbox.moe/ijud3n.jpg');
   const defaultAvatar = encodeURIComponent('https://files.catbox.moe/6al8um.jpg');
 
   let avatarUrl = defaultAvatar;
   try {
-    const userProfilePic = await conn.profilePictureUrl(who, 'image');
-    avatarUrl = encodeURIComponent(userProfilePic);
-  } catch (e) {
-    avatarUrl = defaultAvatar; 
-  }
+    avatarUrl = encodeURIComponent(await conn.profilePictureUrl(who, 'image'));
+  } catch (e) {}
 
   if (!chat.welcome) return;
 
@@ -28,7 +25,6 @@ export async function before(m, { conn, participants, groupMetadata }) {
   if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_ADD) tipo = 'Bienvenido';
   if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_LEAVE || 
       m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_REMOVE) tipo = 'Adiós';
-
   if (!tipo) return;
 
   // Generar canvas
@@ -36,37 +32,39 @@ export async function before(m, { conn, participants, groupMetadata }) {
   const res = await fetch(canvasUrl);
   const img = Buffer.from(await res.arrayBuffer());
 
-  // Thumbnail del catálogo
-  const fkontak = {
-    key: { fromMe: false, participant: "0@s.whatsapp.net" },
-    message: {
-      productMessage: {
-        product: {
-          productImage: { jpegThumbnail: img },
-          title: `${tipo}, ahora somos ${totalMembers}`,
-          description: `
+  // Generar el productMessage
+  const productMessage = {
+    product: {
+      productImage: { jpegThumbnail: img },
+      title: `${tipo}, ahora somos ${totalMembers}`,
+      description: `
 ✎ Usuario: ${taguser}
 ✎ Grupo: ${groupMetadata.subject}
 ✎ Miembros: ${totalMembers}
 ✎ Fecha: ${date}
 
 > Sigue el canal oficial: whatsapp.com/channel/0029VbAzn9GGU3BQw830eA0F
-          `,
-          currencyCode: "USD",
-          priceAmount1000: 1000,
-          retailerId: "BOT",
-          productId: "12345"
-        },
-        businessOwnerJid: "0@s.whatsapp.net"
-      }
-    }
+      `,
+      currencyCode: 'USD',
+      priceAmount1000: 1000,
+      retailerId: 'BOT',
+      productId: '12345'
+    },
+    businessOwnerJid: '0@s.whatsapp.net'
   };
 
-  await conn.sendMessage(m.chat, { 
-    product: fkontak.message.productMessage.product,
-    businessOwnerJid: "0@s.whatsapp.net"
-  }, { quoted: fkontak });
+  // Enviar mensaje como catálogo
+  await conn.sendMessage(m.chat, {
+    productMessage
+  }, { quoted: { key: { fromMe: false, participant: '0@s.whatsapp.net', remoteJid: m.chat }, message: {} } });
 }
+
+
+
+
+
+
+
 
 
 
