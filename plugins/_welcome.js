@@ -1,39 +1,39 @@
-import { WAMessageStubType } from '@whiskeysockets/baileys';
-import fetch from 'node-fetch';
+import { WAMessageStubType } from '@whiskeysockets/baileys'
+import fetch from 'node-fetch'
 
 export async function before(m, { conn, participants, groupMetadata }) {
-  if (!m.messageStubType || !m.isGroup) return true;
+  if (!m.messageStubType || !m.isGroup) return true
 
-  const totalMembers = participants.length;
-  const date = new Date().toLocaleString('es-ES', { timeZone: 'America/Mexico_City' });
-  const who = m.messageStubParameters[0];
-  const taguser = `@${who.split('@')[0]}`;
-  const chat = global.db.data.chats[m.chat];
-  const botname = global.botname || "Bot";
+  const totalMembers = participants.length
+  const date = new Date().toLocaleString('es-ES', { timeZone: 'America/Mexico_City' })
+  const who = m.messageStubParameters[0]
+  const taguser = `@${who.split('@')[0]}`
+  const chat = global.db.data.chats[m.chat]
+  const botname = global.botname || "Bot"
 
-  if (!chat.welcome) return;
+  if (!chat.welcome) return
 
-  let tipo = '';
-  let tipo1 = '';
+  let tipo = ''
+  let tipo1 = ''
   if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_ADD) {
-    tipo = 'Bienvenido';
-    tipo1 = 'al grupo';
+    tipo = 'Bienvenido'
+    tipo1 = 'al grupo'
   }
   if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_LEAVE || 
       m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_REMOVE) {
-    tipo = 'Adiós';
-    tipo1 = 'del grupo';
+    tipo = 'Adiós'
+    tipo1 = 'del grupo'
   }
-  if (!tipo) return;
+  if (!tipo) return
 
-  const fondoUrl = encodeURIComponent('https://files.catbox.moe/ijud3n.jpg');
-  const defaultAvatar = encodeURIComponent('https://files.catbox.moe/6al8um.jpg');
+  const fondoUrl = encodeURIComponent('https://files.catbox.moe/ijud3n.jpg')
+  const defaultAvatar = encodeURIComponent('https://files.catbox.moe/6al8um.jpg')
 
-  let avatarUrl = defaultAvatar;
-  let fkontak;
+  let avatarUrl = defaultAvatar
+  let fkontak
   try {
-    const res2 = await fetch('https://files.catbox.moe/qhxt7c.png');
-    const img3 = Buffer.from(await res2.arrayBuffer());
+    const res2 = await fetch('https://files.catbox.moe/qhxt7c.png')
+    const img3 = Buffer.from(await res2.arrayBuffer())
 
     fkontak = {
       key: { fromMe: false, participant: "0@s.whatsapp.net" },
@@ -49,19 +49,17 @@ export async function before(m, { conn, participants, groupMetadata }) {
           },
           businessOwnerJid: "0@s.whatsapp.net"
         }
-      },
-      
-      contextInfo: { mentionedJid: [who] }
-    };
+      }
+    }
 
-    avatarUrl = encodeURIComponent(await conn.profilePictureUrl(who, 'image'));
+    avatarUrl = encodeURIComponent(await conn.profilePictureUrl(who, 'image'))
   } catch {}
 
-  const canvasUrl = `https://gokublack.xyz/canvas/welcome?background=${fondoUrl}&text1=${encodeURIComponent(tipo)}&text2=${encodeURIComponent(tipo1)}&text3=Miembro+${totalMembers}&avatar=${avatarUrl}`;
+  const canvasUrl = `https://gokublack.xyz/canvas/welcome?background=${fondoUrl}&text1=${encodeURIComponent(tipo)}&text2=${encodeURIComponent(tipo1)}&text3=Miembro+${totalMembers}&avatar=${avatarUrl}`
 
   const productMessage = {
     product: {
-      productImage: { url: canvasUrl }, 
+      productImage: { url: canvasUrl },
       title: `${tipo}, ahora somos ${totalMembers}`,
       description: `
 ✎ Usuario: ${taguser}
@@ -76,9 +74,12 @@ export async function before(m, { conn, participants, groupMetadata }) {
       productImageCount: 1,
     },
     businessOwnerJid: "50432955554@s.whatsapp.net"
-  };
+  }
 
-  await conn.sendMessage(m.chat, productMessage, { quoted: fkontak });
+  await conn.sendMessage(m.chat, productMessage, { 
+    quoted: fkontak,
+    contextInfo: { mentionedJid: [who] }
+  })
 }
 
 
