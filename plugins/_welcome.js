@@ -1,82 +1,61 @@
-import { WAMessageStubType } from '@whiskeysockets/baileys'
-import fetch from 'node-fetch'
+import { WAMessageStubType } from '@whiskeysockets/baileys';
+import fetch from 'node-fetch';
 
-export async function before(m, { conn, groupMetadata }) {
-  if (!m.messageStubType || !m.isGroup) return true
+export async function before(m, { conn, participants, groupMetadata }) {
+  if (!m.messageStubType || !m.isGroup) return true;
 
-  const jid = m.chat
-  const who = m.messageStubParameters[0]
-  const taguser = `@${who.split('@')[0]}`
-  const fondoUrl = encodeURIComponent('https://files.catbox.moe/ijud3n.jpg')
-  const defaultAvatar = 'https://files.catbox.moe/6al8um.jpg'
-
-  let avatarUrl = defaultAvatar
-  try {
-    const userPic = await conn.profilePictureUrl(who, 'image')
-    if (userPic) avatarUrl = userPic
-  } catch {
-    avatarUrl = defaultAvatar
-  }
+  let totalMembers = participants.length;
+  let who = m.messageStubParameters[0];
+  let taguser = `@${who.split('@')[0]}`;
+  let chat = global.db.data.chats[m.chat];
+  let botname = global.botname || "Bot";
 
   
-  const getImageBuffer = async (type) => {
-    let canvasUrl = `https://gokublack.xyz/canvas/welcome?background=${fondoUrl}&text1=${encodeURIComponent(type === 'add' ? 'Bienvenido' : 'Adiós')}+${taguser.replace('@','')}&text2=${encodeURIComponent(type === 'add' ? 'Al grupo' : 'Del grupo')}&text3=${encodeURIComponent(groupMetadata.subject)}&avatar=${encodeURIComponent(avatarUrl)}`
-    try {
-      const res = await fetch(canvasUrl)
-      if (res.ok) return Buffer.from(await res.arrayBuffer())
-      throw new Error("API fallo")
-    } catch {
-      try {
-        const res = await fetch(avatarUrl)
-        return Buffer.from(await res.arrayBuffer())
-      } catch {
-        const res = await fetch(defaultAvatar)
-        return Buffer.from(await res.arrayBuffer())
-      }
-    }
-  }
+  const icono = "https://files.catbox.moe/ijud3n.jpg"; 
 
-  try {
+  if (chat.welcome) {
     if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_ADD) {
       
-      const img = await getImageBuffer('add')
       const productMessage = {
         product: {
-          productImage: { jpegThumbnail: img },
-          title: 'Bienvenido al grupo',
-          description: "Alquila o compra Pikachu Bot para tus grupos.",
+          productImage: {
+            url: icono
+          },
+          title: `¡Bienvenido a ${groupMetadata.subject}!`,
+          description: `Hola ${taguser}, ahora somos ${totalMembers} miembros.`,
           currencyCode: "USD",
-          priceAmount1000: 5000, // 5.00 USD
-          retailerId: "1466",
-          productId: "24502048122733040",
+          priceAmount1000: 5000, 
+          retailerId: "BOT", 
+          productId: "1", 
           productImageCount: 1,
         },
-        businessOwnerJid: "50433191934@s.whatsapp.net"
-      }
-      await conn.sendMessage(jid, { productMessage }, { messageType: 'product' })
+        businessOwnerJid: conn.user.jid 
+      };
+
+      await conn.sendMessage(m.chat, { product: productMessage, mentions: [who] });
     }
 
     if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_LEAVE ||
         m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_REMOVE) {
-      
-      const img = await getImageBuffer('leave')
+
       const productMessage = {
         product: {
-          productImage: { jpegThumbnail: img },
-          title: 'Adiós del grupo',
-          description: "Alquila o compra Pikachu Bot para tus grupos.",
+          productImage: {
+            url: icono
+          },
+          title: `¡Adiós de ${groupMetadata.subject}!`,
+          description: `Hasta luego ${taguser}, ahora somos ${totalMembers} miembros.`,
           currencyCode: "USD",
-          priceAmount1000: 5000, // 5.00 USD
-          retailerId: "1466",
-          productId: "24502048122733040",
+          priceAmount1000: 5000,
+          retailerId: "BOT", 
+          productId: "1", 
           productImageCount: 1,
         },
-        businessOwnerJid: "50433191934@s.whatsapp.net"
-      }
-      await conn.sendMessage(jid, { productMessage }, { messageType: 'product' })
+        businessOwnerJid: conn.user.jid
+      };
+
+      await conn.sendMessage(m.chat, { product: productMessage, mentions: [who] });
     }
-  } catch (e) {
-    console.error("Error en catálogo:", e)
   }
 }
 
