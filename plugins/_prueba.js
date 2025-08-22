@@ -43,37 +43,53 @@ async function generateWelcomeImage({ backgroundUrl, avatarUrl, username, welcom
     const ctx = canvas.getContext('2d');
 
     // Cargar fondo
-    const bgResp = await fetch(backgroundUrl);
-    const bgBuffer = Buffer.from(await bgResp.arrayBuffer());
-    const background = await loadImage(bgBuffer);
-    ctx.drawImage(background, 0, 0, width, height);
+    try {
+        const bgResp = await fetch(backgroundUrl);
+        const bgBuffer = Buffer.from(await bgResp.arrayBuffer());
+        const background = await loadImage(bgBuffer);
+        ctx.drawImage(background, 0, 0, width, height);
+    } catch (e) {
+        console.error('Error loading background image:', e);
+        // Fallback to a solid color if the image fails to load
+        ctx.fillStyle = '#1e1e1e';
+        ctx.fillRect(0, 0, width, height);
+    }
 
     // Cargar avatar
-    const avatarResp = await fetch(avatarUrl);
-    const avatarBuffer = Buffer.from(await avatarResp.arrayBuffer());
-    const avatar = await loadImage(avatarBuffer);
-    const avatarSize = 150;
-    const avatarX = 50;
-    const avatarY = height/2 - avatarSize/2;
+    let avatar;
+    try {
+        const avatarResp = await fetch(avatarUrl);
+        const avatarBuffer = Buffer.from(await avatarResp.arrayBuffer());
+        avatar = await loadImage(avatarBuffer);
+    } catch (e) {
+        console.error('Error loading avatar image:', e);
+        // Fallback or handle error
+        // You could draw a default placeholder avatar here
+    }
 
-    ctx.save();
-    ctx.beginPath();
-    ctx.arc(avatarX + avatarSize/2, avatarY + avatarSize/2, avatarSize/2, 0, Math.PI*2, true);
-    ctx.closePath();
-    ctx.clip();
-    ctx.drawImage(avatar, avatarX, avatarY, avatarSize, avatarSize);
-    ctx.restore();
+    if (avatar) {
+        const avatarSize = 150;
+        const avatarX = 50;
+        const avatarY = height / 2 - avatarSize / 2;
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(avatarX + avatarSize / 2, avatarY + avatarSize / 2, avatarSize / 2, 0, Math.PI * 2, true);
+        ctx.closePath();
+        ctx.clip();
+        ctx.drawImage(avatar, avatarX, avatarY, avatarSize, avatarSize);
+        ctx.restore();
+    }
 
     // Texto principal
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 40px Sans';
     ctx.textAlign = 'center';
-    ctx.fillText(welcomeText || `¡Bienvenido, ${username}!`, width/2 + 100, height/2);
+    ctx.fillText(welcomeText || `¡Bienvenido, ${username}!`, width / 2 + 100, height / 2);
 
     // Texto secundario
     ctx.fillStyle = '#ffd700';
     ctx.font = '28px Sans';
-    ctx.fillText('¡Disfruta tu estadía!', width/2 + 100, height/2 + 50);
+    ctx.fillText('¡Disfruta tu estadía!', width / 2 + 100, height / 2 + 50);
 
     return canvas.toBuffer('image/png');
 }
@@ -81,8 +97,10 @@ async function generateWelcomeImage({ backgroundUrl, avatarUrl, username, welcom
 let handler = async (m, { conn }) => {
     try {
         const username = m.pushName || 'Usuario';
-        const userProfilePicUrl = 'https://i.postimg.cc/CxTJQ26c/1755893742976.jpg';
-        const backgroundUrl = 'https://i.postimg.cc/CxTJQ26c/1755893742976.jpg';
+        // Use a valid, working URL for the avatar
+        const userProfilePicUrl = 'https://picsum.photos/200';
+        // Use a valid, working URL for the background
+        const backgroundUrl = 'https://picsum.photos/800/400';
 
         const buffer = await generateWelcomeImage({
             backgroundUrl,
