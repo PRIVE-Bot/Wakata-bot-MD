@@ -39,9 +39,9 @@ global.listo = '🍥 *Aquí tienes, shinobi ❛‿˂̵✧*'
 global.fotoperfil = await conn.profilePictureUrl(m.sender, 'image').catch(_ => 'https://files.catbox.moe/nv87us.jpg')
 
 // Ids channel
-/*global.canalIdM = ["120363403593951965@newsletter", "120363403593951965@newsletter"]
+global.canalIdM = ["120363403593951965@newsletter", "120363403593951965@newsletter"]
 global.canalNombreM = ["𖤐 𝐍𝐚𝐫𝐮𝐭𝐨-𝐁𝐨𝐭 - 𝐮𝐩𝐝𝐚𝐭𝐞𝐬 ⚡", "𖤐 𝐍𝐚𝐫𝐮𝐭𝐨-𝐁𝐨𝐭 - 𝐚𝐯𝐢𝐬𝐨𝐬 ☀️"]
-global.channelRD = await getRandomChannel()*/
+global.channelRD = await getRandomChannel()
 
 //fechas
 global.d = new Date(new Date + 3600000)
