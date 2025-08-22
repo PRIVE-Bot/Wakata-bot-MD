@@ -2,75 +2,6 @@ import { WAMessageStubType } from '@whiskeysockets/baileys';
 import fetch from 'node-fetch';
 
 export async function before(m, { conn, participants, groupMetadata }) {
-    if (!m.messageStubType || !m.isGroup) return true;
-
-    const totalMembers = participants.length;
-    const who = m.messageStubParameters[0];
-    const taguser = `@${who.split('@')[0]}`;
-    const chat = global.db.data.chats[m.chat];
-    const botname = global.botname || "Bot";
-
-    // Configura aquí tu número WhatsApp Business y productId reales
-    const businessOwnerJid = "50433191934@s.whatsapp.net"; // tu número Business
-    const productIdAdd = "24502048122733040"; // ID del producto para bienvenida
-    const productIdLeave = "24502048122733041"; // ID del producto para despedida
-
-    // Imagen de portada del catálogo (puede ser URL)
-    const icono = "https://files.catbox.moe/oa0hg3.jpg";
-    const res = await fetch(icono);
-    const buffer = Buffer.from(await res.arrayBuffer());
-
-    if (!chat.welcome) return true;
-
-    // 🚪 Bienvenida
-    if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_ADD) {
-        const productMessage = {
-            product: {
-                productImage: { url: buffer },
-                title: `¡Bienvenido a ${groupMetadata.subject}!`,
-                description: `Hola ${taguser}, ahora somos ${totalMembers} miembros.`,
-                currencyCode: "USD",
-                priceAmount1000: 5000,
-                retailerId: "BOT",
-                productId: productIdAdd,
-                productImageCount: 1
-            },
-            businessOwnerJid
-        };
-        await conn.sendMessage(m.chat, productMessage, { messageType: 'product' });
-    }
-
-    // 👋 Despedida
-    if (
-        m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_LEAVE ||
-        m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_REMOVE
-    ) {
-        const productMessage = {
-            product: {
-                productImage: { url: buffer },
-                title: `¡Adiós de ${groupMetadata.subject}!`,
-                description: `Hasta luego ${taguser}, ahora somos ${totalMembers} miembros.`,
-                currencyCode: "USD",
-                priceAmount1000: 5000,
-                retailerId: "BOT",
-                productId: productIdLeave,
-                productImageCount: 1
-            },
-            businessOwnerJid
-        };
-        await conn.sendMessage(m.chat, productMessage, { messageType: 'product' });
-    }
-}
-
-
-
-
-
-
-/*import { WAMessageStubType } from '@whiskeysockets/baileys';
-import fetch from 'node-fetch';
-
-export async function before(m, { conn, participants, groupMetadata }) {
   if (!m.messageStubType || !m.isGroup) return true;
 
   let totalMembers = participants.length;
@@ -181,7 +112,7 @@ const res = await fetch(canvasUrl);
       await conn.sendMessage(m.chat, { image: img, caption: despedida, mentions: [who] }, { quoted: fkontak1 });
     }
   }
-}*/
+}
 
 
 
