@@ -1,28 +1,41 @@
 import fetch from 'node-fetch'
 
 let handler = async (m, { conn }) => {
+  const jid = m.chat
 
-  
-  const res = await fetch('https://files.catbox.moe/cd6i4q.jpg');
-  const thumb2 = Buffer.from(await res.arrayBuffer());
+  try {
+    // Intentar obtener la foto de perfil del grupo
+    let ppUrl
+    try {
+      ppUrl = await conn.profilePictureUrl(jid, 'image')
+    } catch {
+      ppUrl = 'https://files.catbox.moe/8vxwld.jpg' // imagen por defecto
+    }
 
-  
-  const fkontak = {
-    key: { fromMe: false, participant: "0@s.whatsapp.net" },
-    message: {
-      imageMessage: {
-        mimetype: 'image/jpeg',
-        caption: 'POR AQUÍ ',
-        jpegThumbnail: thumb2
+    const res = await fetch(ppUrl)
+    const buffer = await res.buffer()
+
+    const productMessage = {
+      productMessage: {
+        product: {
+          productImage: { imageMessage: (await conn.prepareMessageMedia(buffer, 'image')).imageMessage },
+          title: 'Bienvenido al grupo',
+          description: "✨ Alquila o compra Pikachu Bot para tus grupos ✨",
+          currencyCode: "USD",
+          priceAmount1000: 5000, // 5.00 USD
+          retailerId: "1466",
+          productId: "24502048122733040"
+        },
+        businessOwnerJid: "50433191934@s.whatsapp.net"
       }
     }
-  };
 
-  
-  return conn.reply(m.chat, `Hola, soy ${botname}`, m, { quoted: fkontak });
-
-};
-
-handler.command = ['1'] 
+    await conn.relayMessage(jid, productMessage, {})
+  } catch (e) {
+    console.error(e)
+    m.reply('❌ Error al enviar el mensaje.')
+  }
+}
+handler.command = /^testwelcome$/i
 
 export default handler
