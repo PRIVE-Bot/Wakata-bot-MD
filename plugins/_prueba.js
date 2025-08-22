@@ -33,7 +33,7 @@ export default handler;*/
 
 
 // plugins/welcomeImage.js
-import { createCanvas, loadImage, registerFont } from 'canvas';
+import { createCanvas, loadImage } from '@napi-rs/canvas';
 import fetch from 'node-fetch';
 import path from 'path';
 
