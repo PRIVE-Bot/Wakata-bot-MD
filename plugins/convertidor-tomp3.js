@@ -1,7 +1,7 @@
 import {toAudio} from '../lib/converter.js';
 
 const handler = async (m, {conn, usedPrefix, command}) => {
-const res = await fetch('https://files.catbox.moe/s8cte4.jpg'); 
+const res = await fetch('https://i.postimg.cc/pdCvMMvP/1755841606616.jpg'); 
 const thumb3 = Buffer.from(await res.arrayBuffer());
 
 let fkontak = {
