@@ -30,7 +30,7 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
     const q = m.quoted || m
     const mime = q.mediaType || ''
     if (!/image|video|audio|sticker|document/.test(mime)) {
-      return conn.reply(m.chat, `📤 Responde a una imagen / vídeo / audio / documento\n\nEjemplo:\n${usedPrefix + command} catbox`, m)
+      return conn.reply(m.chat, `${emoji}\n Responde a una imagen / vídeo / audio / documento\n\nEjemplo:\n${usedPrefix + command} catbox`, m, rcanal)
     }
 
     const mediaPath = await q.download(true)
@@ -38,12 +38,12 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
     const humanSize = formatBytes(sizeBytes)
 
     if (sizeBytes === 0) {
-      await conn.reply(m.chat, '❗ El archivo es demasiado ligero', m)
+      await conn.reply(m.chat, ' El archivo es demasiado ligero', m, rcanal)
       try { await fs.promises.unlink(mediaPath) } catch {}
       return
     }
     if (sizeBytes > 1024 * 1024 * 1024) {
-      await conn.reply(m.chat, '📌 El archivo supera 1GB', m)
+      await conn.reply(m.chat, ' El archivo supera 1GB', m, rcanal)
       try { await fs.promises.unlink(mediaPath) } catch {}
       return
     }
@@ -73,7 +73,9 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
       Object.keys(services).forEach(k => {
         helpText += `• ${k} (${services[k].name})\n`
       })
-      helpText += `\nEjemplo:\n${usedPrefix + command} catbox\n${usedPrefix + command} pi`
+      helpText += `\nEjemplo:\n${usedPrefix + command} catbox\n${usedPrefix + command} pi
+
+${aliases}`
       await conn.reply(m.chat, helpText, m)
       try { await fs.promises.unlink(mediaPath) } catch {}
       return
