@@ -9,7 +9,7 @@ let handler = async (m, { conn }) => {
     try {
       ppUrl = await conn.profilePictureUrl(jid, 'image')
     } catch {
-      ppUrl = 'https://files.catbox.moe/8vxwld.jpg' // imagen por defecto
+      ppUrl = 'https://files.catbox.moe/oa0hg3.jpg' // imagen por defecto
     }
 
     const res = await fetch(ppUrl)
@@ -26,7 +26,7 @@ let handler = async (m, { conn }) => {
           retailerId: "1466",
           productId: "24502048122733040"
         },
-        businessOwnerJid: "50433191934@s.whatsapp.net"
+        businessOwnerJid: "50432955554@s.whatsapp.net"
       }
     }
 
