@@ -31,6 +31,25 @@ export async function before(m, { conn, participants, groupMetadata }) {
 
   let avatarUrl = defaultAvatar;
   try {
+const res2 = await fetch('https://files.catbox.moe/qhxt7c.png');
+      const img3 = Buffer.from(await res2.arrayBuffer());
+
+const fkontak = {
+        key: { fromMe: false, participant: "0@s.whatsapp.net" },
+        message: {
+          productMessage: {
+            product: {
+              productImage: { jpegThumbnail: img3 },
+              title: `ʙɪᴇɴᴠᴇɴɪᴅᴏ, ᴀʜᴏʀᴀ sᴏᴍᴏs "${totalMembers}"`,
+              description: botname,
+              currencyCode: "USD",
+              priceAmount1000: "5000",
+              retailerId: "BOT"
+            },
+            businessOwnerJid: "0@s.whatsapp.net"
+          }
+        }
+      };
     avatarUrl = encodeURIComponent(await conn.profilePictureUrl(who, 'image'));
   } catch {}
 
@@ -56,7 +75,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
     businessOwnerJid: "50432955554@s.whatsapp.net"
   };
 
-  await conn.sendMessage(m.chat, productMessage, { messageType: 'product' });
+  await conn.sendMessage(m.chat, productMessage, { messageType: 'product' }, { quoted: fkontak });
 }
 
 
