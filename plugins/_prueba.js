@@ -32,7 +32,6 @@ export default handler;*/
 
 
 
-// prueba1.js
 import { createCanvas, loadImage } from 'canvas';
 import fetch from 'node-fetch';
 
@@ -42,35 +41,28 @@ async function generateWelcomeImage({ backgroundUrl, avatarUrl, username, welcom
     const canvas = createCanvas(width, height);
     const ctx = canvas.getContext('2d');
 
-    // Cargar fondo
+    // Cargar y dibujar el fondo
     try {
         const bgResp = await fetch(backgroundUrl);
-        const bgBuffer = Buffer.from(await bgResp.arrayBuffer());
-        const background = await loadImage(bgBuffer);
+        if (!bgResp.ok) throw new Error(`HTTP error! status: ${bgResp.status}`);
+        const background = await loadImage(Buffer.from(await bgResp.arrayBuffer()));
         ctx.drawImage(background, 0, 0, width, height);
     } catch (e) {
-        console.error('Error loading background image:', e);
-        // Fallback to a solid color if the image fails to load
+        console.error('Error al cargar la imagen de fondo:', e);
+        // Fallback a un color sólido
         ctx.fillStyle = '#1e1e1e';
         ctx.fillRect(0, 0, width, height);
     }
 
-    // Cargar avatar
-    let avatar;
+    // Cargar y dibujar el avatar con un fallback
+    const avatarSize = 150;
+    const avatarX = 50;
+    const avatarY = height / 2 - avatarSize / 2;
     try {
         const avatarResp = await fetch(avatarUrl);
-        const avatarBuffer = Buffer.from(await avatarResp.arrayBuffer());
-        avatar = await loadImage(avatarBuffer);
-    } catch (e) {
-        console.error('Error loading avatar image:', e);
-        // Fallback or handle error
-        // You could draw a default placeholder avatar here
-    }
+        if (!avatarResp.ok) throw new Error(`HTTP error! status: ${avatarResp.status}`);
+        const avatar = await loadImage(Buffer.from(await avatarResp.arrayBuffer()));
 
-    if (avatar) {
-        const avatarSize = 150;
-        const avatarX = 50;
-        const avatarY = height / 2 - avatarSize / 2;
         ctx.save();
         ctx.beginPath();
         ctx.arc(avatarX + avatarSize / 2, avatarY + avatarSize / 2, avatarSize / 2, 0, Math.PI * 2, true);
@@ -78,15 +70,22 @@ async function generateWelcomeImage({ backgroundUrl, avatarUrl, username, welcom
         ctx.clip();
         ctx.drawImage(avatar, avatarX, avatarY, avatarSize, avatarSize);
         ctx.restore();
+    } catch (e) {
+        console.error('Error al cargar la imagen del avatar:', e);
+        // Fallback: dibujar un círculo gris
+        ctx.fillStyle = '#888888';
+        ctx.beginPath();
+        ctx.arc(avatarX + avatarSize / 2, avatarY + avatarSize / 2, avatarSize / 2, 0, Math.PI * 2, true);
+        ctx.fill();
+        ctx.closePath();
     }
 
-    // Texto principal
+    // Dibujar el texto
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 40px Sans';
     ctx.textAlign = 'center';
     ctx.fillText(welcomeText || `¡Bienvenido, ${username}!`, width / 2 + 100, height / 2);
 
-    // Texto secundario
     ctx.fillStyle = '#ffd700';
     ctx.font = '28px Sans';
     ctx.fillText('¡Disfruta tu estadía!', width / 2 + 100, height / 2 + 50);
@@ -97,9 +96,7 @@ async function generateWelcomeImage({ backgroundUrl, avatarUrl, username, welcom
 let handler = async (m, { conn }) => {
     try {
         const username = m.pushName || 'Usuario';
-        // Use a valid, working URL for the avatar
         const userProfilePicUrl = 'https://picsum.photos/200';
-        // Use a valid, working URL for the background
         const backgroundUrl = 'https://picsum.photos/800/400';
 
         const buffer = await generateWelcomeImage({
@@ -109,7 +106,6 @@ let handler = async (m, { conn }) => {
             welcomeText: '¡Bienvenido al grupo!'
         });
 
-        // Enviar imagen
         await conn.sendMessage(
             m.chat,
             { image: buffer, caption: `Hola @${username.split(' ')[0]} 👋`, mimetype: 'image/png' },
@@ -117,7 +113,7 @@ let handler = async (m, { conn }) => {
         );
 
     } catch (err) {
-        console.error('Error generando imagen:', err);
+        console.error('Error en el handler principal:', err);
         await conn.sendMessage(m.chat, { text: 'Ocurrió un error al generar la imagen de bienvenida.' }, { quoted: m });
     }
 };
