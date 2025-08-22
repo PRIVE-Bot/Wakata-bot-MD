@@ -58,23 +58,22 @@ export async function before(m, { conn, participants, groupMetadata }) {
   const canvasUrl = `https://gokublack.xyz/canvas/welcome?background=${fondoUrl}&text1=${encodeURIComponent(tipo)}&text2=${encodeURIComponent(tipo1)}&text3=Miembro+${totalMembers}&avatar=${avatarUrl}`;
 
   const productMessage = {
-    productMessage: {
-      product: {
-        productImage: { url: canvasUrl }, 
-        title: `${tipo}, ahora somos ${totalMembers}`,
-        description: `
+    product: {
+      productImage: { url: canvasUrl }, 
+      title: `${tipo}, ahora somos ${totalMembers}`,
+      description: `
 ✎ Usuario: ${taguser}
 ✎ Grupo: ${groupMetadata.subject}
 ✎ Miembros: ${totalMembers}
 ✎ Fecha: ${date}
-        `,
-        currencyCode: "USD",
-        priceAmount1000: 5000,
-        retailerId: "1466",
-        productId: "24628293543463627",
-      },
-      businessOwnerJid: "50432955554@s.whatsapp.net"
-    }
+      `,
+      currencyCode: "USD",
+      priceAmount1000: 5000,
+      retailerId: "1466",
+      productId: "24628293543463627",
+      productImageCount: 1,
+    },
+    businessOwnerJid: "50432955554@s.whatsapp.net"
   };
 
   await conn.sendMessage(m.chat, productMessage, { quoted: fkontak });
