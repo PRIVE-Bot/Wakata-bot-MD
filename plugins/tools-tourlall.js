@@ -30,7 +30,7 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
     const q = m.quoted || m
     const mime = q.mediaType || ''
     if (!/image|video|audio|sticker|document/.test(mime)) {
-      return conn.reply(m.chat, `${emoji}\n Responde a una imagen / vídeo / audio / documento\n\nEjemplo:\n${usedPrefix + command} catbox`, m, rcanal)
+      return conn.reply(m.chat, `${emoji}\n Responde a una imagen / vídeo / audio / documento\n\nEjemplo:\n${usedPrefix + command} catbox\n\n${aliases + \n}`, m, rcanal)
     }
 
     const mediaPath = await q.download(true)
