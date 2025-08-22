@@ -16,23 +16,23 @@ export async function before(m, { conn, participants, groupMetadata }) {
   let tipo = ''
   let tipo1 = ''
   let tipo2 = ''
+  
   if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_ADD) {
     tipo = 'Bienvenido'
     tipo1 = 'al grupo'
     tipo2 = 'https://i.postimg.cc/mg9qcS2y/1755899533176.jpg'
   }
+
   if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_LEAVE || 
       m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_REMOVE) {
     tipo = 'Adiós'
     tipo1 = 'del grupo'
     tipo2 = 'https://i.postimg.cc/pXmV63qV/1755899696460.jpg'
   }
+
   if (!tipo) return
 
-  const fondoUrl = encodeURIComponent('https://i.postimg.cc/VLcjFBYN/1755898126336.jpg')
-  const defaultAvatar = encodeURIComponent('https://files.catbox.moe/6al8um.jpg')
-
-  let avatarUrl = defaultAvatar
+  
   let fkontak
   try {
     const res2 = await fetch('https://files.catbox.moe/qhxt7c.png')
@@ -54,11 +54,9 @@ export async function before(m, { conn, participants, groupMetadata }) {
         }
       }
     }
-
-   /* avatarUrl = encodeURIComponent(await conn.profilePictureUrl(who, 'image'))
-  } catch {}*/
-
-  /*const canvasUrl = `https://gokublack.xyz/canvas/welcome?background=${fondoUrl}&text1=${encodeURIComponent(tipo)}&text2=${encodeURIComponent(tipo1)}&text3=Miembro+${totalMembers}&avatar=${avatarUrl}`*/
+  } catch (e) {
+    console.log('Error al generar fkontak:', e)
+  }
 
   const productMessage = {
     product: {
@@ -72,11 +70,11 @@ export async function before(m, { conn, participants, groupMetadata }) {
       `,
       currencyCode: "USD",
       priceAmount1000: 5000,
-      retailerId: "1466",
+      retailerId: "BOT",
       productId: "24628293543463627",
       productImageCount: 1,
     },
-    businessOwnerJid: "50432955554@s.whatsapp.net"
+    businessOwnerJid: "0@s.whatsapp.net"
   }
 
   await conn.sendMessage(m.chat, productMessage, { 
