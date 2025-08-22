@@ -26,7 +26,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
   }
   if (!tipo) return
 
-  const fondoUrl = encodeURIComponent('https://i.postimg.cc/t4CMCHnW/1755897530475.jpg')
+  const fondoUrl = encodeURIComponent('https://i.postimg.cc/VLcjFBYN/1755898126336.jpg')
   const defaultAvatar = encodeURIComponent('https://files.catbox.moe/6al8um.jpg')
 
   let avatarUrl = defaultAvatar
@@ -59,7 +59,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
 
   const productMessage = {
     product: {
-      productImage: { url: `https://i.postimg.cc/CxTJQ26c/1755893742976.jpg` },
+      productImage: { url: canvasUrl },
       title: `${tipo}, ahora somos ${totalMembers}`,
       description: `
 ✎ Usuario: ${taguser}
