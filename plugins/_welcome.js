@@ -27,7 +27,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
       m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_REMOVE) {
     tipo = 'Adiós'
     tipo1 = 'del grupo'
-    tipo2 = 'https://i.postimg.cc/pXmV63qV/1755899696460.jpg'
+    tipo2 = 'https://i.postimg.cc/ncPDm7cd/1755903292584.jpg'
   }
 
   if (!tipo) return
@@ -43,7 +43,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
         productMessage: {
           product: {
             productImage: { jpegThumbnail: img3 },
-            title: `${tipo} ${tipo1} grupo`,
+            title: `${tipo} ${tipo1}`,
             description: `${botname} da la bienvenida a ${taguser}`,
             currencyCode: "USD",
             priceAmount1000: 5000,
