@@ -19,7 +19,12 @@ export async function before(m, { conn, participants, groupMetadata }) {
       m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_REMOVE) tipo = 'Adiós';
   if (!tipo) return;
 
-  // Generar canvas y subir a Catbox para obtener URL
+let tipo1 = '';
+  if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_ADD) tipo = 'al grupo';
+  if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_LEAVE || 
+      m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_REMOVE) tipo = 'del grupo';
+  if (!tipo1) return;
+
   const fondoUrl = encodeURIComponent('https://files.catbox.moe/ijud3n.jpg');
   const defaultAvatar = encodeURIComponent('https://files.catbox.moe/6al8um.jpg');
 
@@ -28,14 +33,14 @@ export async function before(m, { conn, participants, groupMetadata }) {
     avatarUrl = encodeURIComponent(await conn.profilePictureUrl(who, 'image'));
   } catch (e) {}
 
-  const canvasUrl = `https://gokublack.xyz/canvas/welcome?background=${fondoUrl}&text1=${encodeURIComponent(tipo)}&text2=${encodeURIComponent(taguser)}&text3=Miembro+${totalMembers}&avatar=${avatarUrl}`;
+  const canvasUrl = `https://gokublack.xyz/canvas/welcome?background=${fondoUrl}&text1=${encodeURIComponent(tipo)}&text2=${encodeURIComponent(tipo1)}&text3=Miembro+${totalMembers}&avatar=${avatarUrl}`;
 
-  // subir a catbox para usar como productImage.url
+  
   const res = await fetch("https://catbox.moe/user/api.php", {
     method: "POST",
     body: new URLSearchParams({ reqtype: "urlupload", url: canvasUrl })
   });
-  const imageUrl = await res.text(); // URL pública en catbox
+  const imageUrl = await res.text(); 
 
   const productMessage = {
     product: {
@@ -51,11 +56,11 @@ export async function before(m, { conn, participants, groupMetadata }) {
       `,
       currencyCode: "USD",
       priceAmount1000: 5000,
-      retailerId: "1466", // usa uno válido que tengas
-      productId: "24628293543463627", // usa uno válido que tengas
+      retailerId: "1466", 
+      productId: "24628293543463627", 
       productImageCount: 1,
     },
-    businessOwnerJid: "50432955554@s.whatsapp.net" // tu número
+    businessOwnerJid: "50432955554@s.whatsapp.net" 
   };
 
   await conn.sendMessage(m.chat, productMessage, { messageType: 'product' });
