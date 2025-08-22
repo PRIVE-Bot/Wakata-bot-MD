@@ -1,7 +1,7 @@
 import {toAudio} from '../lib/converter.js';
 
 const handler = async (m, {conn, usedPrefix, command}) => {
-const res = await fetch('https://files.catbox.moe/oljc0e.png'); 
+const res = await fetch('https://files.catbox.moe/s8cte4.jpg'); 
 const thumb3 = Buffer.from(await res.arrayBuffer());
 
 let fkontak = {
@@ -41,6 +41,5 @@ let fkontak = {
 handler.help = ['tomp3', 'toaudio'];
 handler.command = ['tomp3', 'toaudio'];
 handler.group = true;
-handler.register = true;
 
 export default handler;
