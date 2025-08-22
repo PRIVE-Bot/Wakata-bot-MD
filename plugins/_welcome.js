@@ -16,7 +16,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
   let tipo = ''
   let tipo1 = ''
   let tipo2 = ''
-  
+
   if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_ADD) {
     tipo = 'Bienvenido'
     tipo1 = 'al grupo'
@@ -32,7 +32,6 @@ export async function before(m, { conn, participants, groupMetadata }) {
 
   if (!tipo) return
 
-  
   let fkontak
   try {
     const res2 = await fetch('https://files.catbox.moe/qhxt7c.png')
@@ -54,7 +53,9 @@ export async function before(m, { conn, participants, groupMetadata }) {
         }
       }
     }
-  
+  } catch (e) {
+    console.error("Error al generar fkontak:", e)
+  }
 
   const productMessage = {
     product: {
