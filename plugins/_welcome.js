@@ -11,14 +11,6 @@ export async function before(m, { conn, participants, groupMetadata }) {
   const chat = global.db.data.chats[m.chat];
   const botname = global.botname || "Bot";
 
-  const fondoUrl = encodeURIComponent('https://files.catbox.moe/ijud3n.jpg');
-  const defaultAvatar = encodeURIComponent('https://files.catbox.moe/6al8um.jpg');
-
-  let avatarUrl = defaultAvatar;
-  try {
-    avatarUrl = encodeURIComponent(await conn.profilePictureUrl(who, 'image'));
-  } catch (e) {}
-
   if (!chat.welcome) return;
 
   let tipo = '';
@@ -27,19 +19,27 @@ export async function before(m, { conn, participants, groupMetadata }) {
       m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_REMOVE) tipo = 'Adiós';
   if (!tipo) return;
 
-  // Generar canvas
+  // Generar canvas y subir a Catbox para obtener URL
+  const fondoUrl = encodeURIComponent('https://files.catbox.moe/ijud3n.jpg');
+  const defaultAvatar = encodeURIComponent('https://files.catbox.moe/6al8um.jpg');
+
+  let avatarUrl = defaultAvatar;
+  try {
+    avatarUrl = encodeURIComponent(await conn.profilePictureUrl(who, 'image'));
+  } catch (e) {}
+
   const canvasUrl = `https://gokublack.xyz/canvas/welcome?background=${fondoUrl}&text1=${encodeURIComponent(tipo)}&text2=${encodeURIComponent(taguser)}&text3=Miembro+${totalMembers}&avatar=${avatarUrl}`;
-  const res = await fetch(canvasUrl);
-  const img = Buffer.from(await res.arrayBuffer());
 
-  // Generar IDs únicos
-  const productId = `id-${Date.now()}`;
-  const retailerId = `rid-${Date.now()}`;
+  // subir a catbox para usar como productImage.url
+  const res = await fetch("https://catbox.moe/user/api.php", {
+    method: "POST",
+    body: new URLSearchParams({ reqtype: "urlupload", url: canvasUrl })
+  });
+  const imageUrl = await res.text(); // URL pública en catbox
 
-  // Preparar mensaje tipo catálogo
   const productMessage = {
     product: {
-      productImage: { jpegThumbnail: img },
+      productImage: { url: imageUrl },
       title: `${tipo}, ahora somos ${totalMembers}`,
       description: `
 ✎ Usuario: ${taguser}
@@ -49,23 +49,16 @@ export async function before(m, { conn, participants, groupMetadata }) {
 
 > Sigue el canal oficial: whatsapp.com/channel/0029VbAzn9GGU3BQw830eA0F
       `,
-      currencyCode: 'USD',
-      priceAmount1000: 1000,
-      retailerId,
-      productId
+      currencyCode: "USD",
+      priceAmount1000: 5000,
+      retailerId: "1466", // usa uno válido que tengas
+      productId: "24502048122733040", // usa uno válido que tengas
+      productImageCount: 1,
     },
-    businessOwnerJid: '0@s.whatsapp.net'
+    businessOwnerJid: "50433191934@s.whatsapp.net" // tu número
   };
 
-  // Enviar mensaje
-  await conn.sendMessage(m.chat, {
-    productMessage
-  }, {
-    quoted: {
-      key: { fromMe: false, participant: '0@s.whatsapp.net', remoteJid: m.chat },
-      message: { conversation: '' }
-    }
-  });
+  await conn.sendMessage(m.chat, productMessage, { messageType: 'product' });
 }
 
 
