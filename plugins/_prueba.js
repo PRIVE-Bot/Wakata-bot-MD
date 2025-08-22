@@ -1,28 +1,25 @@
-import fetch from 'node-fetch'
+import { generateWAMessageFromContent, proto } from "@whiskeysockets/baileys"
 
 let handler = async (m, { conn }) => {
   const jid = m.chat
-
   try {
-    // Intentar obtener la foto de perfil del grupo
-    let ppUrl
+    // Sacar foto de perfil del grupo o del usuario
+    let pp
     try {
-      ppUrl = await conn.profilePictureUrl(jid, 'image')
+      pp = await conn.profilePictureUrl(jid, 'image')
     } catch {
-      ppUrl = 'https://files.catbox.moe/oa0hg3.jpg' // imagen por defecto
+      pp = 'https://files.catbox.moe/oa0hg3.jpg' // imagen por defecto
     }
 
-    const res = await fetch(ppUrl)
-    const buffer = await res.buffer()
-
+    // Crear el mensaje tipo producto
     const productMessage = {
       productMessage: {
         product: {
-          productImage: { imageMessage: (await conn.prepareMessageMedia(buffer, 'image')).imageMessage },
-          title: 'Bienvenido al grupo',
-          description: "✨ Alquila o compra Pikachu Bot para tus grupos ✨",
+          productImage: { url: pp },
+          title: "✨ Bienvenido al grupo ✨",
+          description: "Alquila o compra Pikachu Bot para tus grupos.",
           currencyCode: "USD",
-          priceAmount1000: 5000, // 5.00 USD
+          priceAmount1000: 5000,
           retailerId: "1466",
           productId: "24502048122733040"
         },
@@ -30,12 +27,13 @@ let handler = async (m, { conn }) => {
       }
     }
 
-    await conn.relayMessage(jid, productMessage, {})
+    const msg = generateWAMessageFromContent(jid, proto.Message.fromObject(productMessage), { userJid: conn.user.id })
+    await conn.relayMessage(jid, msg.message, { messageId: msg.key.id })
+
   } catch (e) {
-    console.error(e)
-    m.reply('❌ Error al enviar el mensaje.')
+    console.error("❌ Error al enviar el mensaje.", e)
+    await m.reply("❌ Error al enviar el mensaje.")
   }
 }
-handler.command = /^testwelcome$/i
 
 export default handler
