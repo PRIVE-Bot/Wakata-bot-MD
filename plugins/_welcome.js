@@ -52,7 +52,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
       currencyCode: "USD",
       priceAmount1000: 5000,
       retailerId: "1466",
-      productId: "24628293543463627",
+      productId: "2462829354346367",
       productImageCount: 1,
     },
     businessOwnerJid: "50432955554@s.whatsapp.net"
