@@ -27,10 +27,20 @@ function formatBytes(bytes) {
 
 let handler = async (m, { conn, args, usedPrefix, command }) => {
   try {
+    const aliases = {
+      ct: 'catbox',
+      pi: 'postimages',
+      lt: 'litterbox',
+      tf: 'tmpfiles',
+      cg: 'cloudguru'
+    }
+const aliasesText = Object.entries(aliases)
+  .map(([key, value]) => `${key} → ${value}`)
+  .join('\n');
     const q = m.quoted || m
     const mime = q.mediaType || ''
     if (!/image|video|audio|sticker|document/.test(mime)) {
-      return conn.reply(m.chat, `${emoji}\n Responde a una imagen / vídeo / audio / documento\n\nEjemplo:\n${usedPrefix + command} catbox\n\n${aliases + \n}`, m, rcanal)
+      return conn.reply(m.chat, `${emoji}\n Responde a una imagen / vídeo / audio / documento\n\nEjemplo:\n${usedPrefix + command} catbox\n\n${aliasesText}`, m, rcanal)
     }
 
     const mediaPath = await q.download(true)
@@ -57,13 +67,13 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
     }
 
     
-    const aliases = {
+   /* const aliases = {
       ct: 'catbox',
       pi: 'postimages',
       lt: 'litterbox',
       tf: 'tmpfiles',
       cg: 'cloudguru'
-    }
+    }*/
 
     const choice = (args[0] || '').toLowerCase()
     const serviceKey = services[choice] ? choice : (aliases[choice] ? aliases[choice] : null)
