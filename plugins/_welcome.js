@@ -17,10 +17,20 @@ export async function before(m, { conn, participants, groupMetadata }) {
   if (chat.welcome) {
     if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_ADD) {
       // Mencion
-      await conn.sendMessage(m.chat, { 
-          text: `¡Hola ${taguser}, bienvenido a ${groupMetadata.subject}! Ahora somos ${totalMembers} miembros.`,
-          mentions: [who]
-      });
+      await conn.sendMessage(m.chat, {
+    image: { url: buffer },
+    caption: `¡Hola ${taguser}, bienvenido a ${groupMetadata.subject}! Ahora somos ${totalMembers} miembros.`,
+    mentions: [who],
+    contextInfo: {
+        externalAdReply: {
+            title: "Bienvenido",
+            body: "Disfruta tu estadía",
+            mediaType: 2,
+            thumbnail: buffer,
+            sourceUrl: "https://wa.me/" + conn.user.jid.split(":")[0]
+        }
+    }
+});
 
       // Producto
       await conn.sendMessage(m.chat, {
