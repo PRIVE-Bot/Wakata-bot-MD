@@ -25,17 +25,6 @@ const handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, i
       isEnable = chat.welcome = !chat.welcome;
       break;
 
-    case 'solonumero':
-    case 'onlynumber':
-      isAll = true;
-      if (!isOwner) {
-        global.dfail('rowner', m, conn);
-        throw false;
-       }
-    isEnable = bot.onlyNumber = !bot.onlyNumber;
-    break;
-
-
     case 'antiprivado':
     case 'antipriv':
     case 'antiprivate':
