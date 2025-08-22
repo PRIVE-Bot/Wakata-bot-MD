@@ -33,8 +33,12 @@ export default handler;*/
 
 
 // plugins/welcomeImage.js
-import { createCanvas, loadImage } from 'canvas';
+import { createCanvas, loadImage, registerFont } from 'canvas';
 import fetch from 'node-fetch';
+import path from 'path';
+
+// Opcional: registrar fuente local
+// registerFont(path.join(process.cwd(), 'fonts', 'Arial-Bold.ttf'), { family: 'Arial' });
 
 async function generateWelcomeImage({ backgroundUrl, avatarUrl, username, welcomeText }) {
     const width = 800;
@@ -45,33 +49,38 @@ async function generateWelcomeImage({ backgroundUrl, avatarUrl, username, welcom
     // --- Fondo ---
     try {
         const bgResp = await fetch(backgroundUrl);
-        if (!bgResp.ok) throw new Error(`HTTP error! status: ${bgResp.status}`);
-        const background = await loadImage(await bgResp.buffer());
+        const bgBuffer = await bgResp.buffer();
+        const background = await loadImage(bgBuffer);
         ctx.drawImage(background, 0, 0, width, height);
     } catch (e) {
-        console.error('Error al cargar el fondo:', e);
+        console.error('Error cargando fondo:', e);
         ctx.fillStyle = '#1e1e1e';
         ctx.fillRect(0, 0, width, height);
     }
 
-    // --- Avatar ---
+    // --- Avatar circular ---
     const avatarSize = 150;
     const avatarX = 50;
     const avatarY = height / 2 - avatarSize / 2;
     try {
         const avatarResp = await fetch(avatarUrl);
-        if (!avatarResp.ok) throw new Error(`HTTP error! status: ${avatarResp.status}`);
-        const avatar = await loadImage(await avatarResp.buffer());
+        const avatarBuffer = await avatarResp.buffer();
+        const avatar = await loadImage(avatarBuffer);
 
         ctx.save();
         ctx.beginPath();
         ctx.arc(avatarX + avatarSize / 2, avatarY + avatarSize / 2, avatarSize / 2, 0, Math.PI * 2, true);
         ctx.closePath();
         ctx.clip();
+
+        // Opcional: borde del avatar
+        ctx.lineWidth = 5;
+        ctx.strokeStyle = '#ffffff';
+        ctx.stroke();
         ctx.drawImage(avatar, avatarX, avatarY, avatarSize, avatarSize);
         ctx.restore();
     } catch (e) {
-        console.error('Error al cargar el avatar:', e);
+        console.error('Error cargando avatar:', e);
         ctx.fillStyle = '#888888';
         ctx.beginPath();
         ctx.arc(avatarX + avatarSize / 2, avatarY + avatarSize / 2, avatarSize / 2, 0, Math.PI * 2, true);
@@ -79,25 +88,28 @@ async function generateWelcomeImage({ backgroundUrl, avatarUrl, username, welcom
         ctx.closePath();
     }
 
-    // --- Texto ---
+    // --- Texto principal ---
     ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 40px Sans';
+    ctx.font = 'bold 40px Arial';
     ctx.textAlign = 'center';
+    ctx.shadowColor = '#000000';
+    ctx.shadowBlur = 5;
     ctx.fillText(welcomeText || `¡Bienvenido, ${username}!`, width / 2 + 100, height / 2 - 20);
 
+    // --- Subtexto ---
     ctx.fillStyle = '#ffd700';
-    ctx.font = '28px Sans';
+    ctx.font = '28px Arial';
     ctx.fillText('¡Disfruta tu estadía!', width / 2 + 100, height / 2 + 40);
 
     return canvas.toBuffer('image/png');
 }
 
-// --- Handler principal ---
+// --- Handler ---
 let handler = async (m, { conn }) => {
     try {
         const username = m.pushName || 'Usuario';
-        const userProfilePicUrl = 'https://picsum.photos/200';
-        const backgroundUrl = 'https://picsum.photos/800/400';
+        const userProfilePicUrl = 'https://i.pravatar.cc/150?img=3'; // Avatar random
+        const backgroundUrl = 'https://picsum.photos/800/400';       // Fondo random
 
         const buffer = await generateWelcomeImage({
             backgroundUrl,
@@ -112,12 +124,12 @@ let handler = async (m, { conn }) => {
             { quoted: m }
         );
     } catch (err) {
-        console.error('Error en el handler principal:', err);
-        await conn.sendMessage(m.chat, { text: 'Ocurrió un error al generar la imagen de bienvenida.' }, { quoted: m });
+        console.error('Error generando imagen de bienvenida:', err);
+        await conn.sendMessage(m.chat, { text: 'Ocurrió un error al generar la imagen.' }, { quoted: m });
     }
 };
 
-handler.command = ['Prueba1', '.Prueba1']; // Se puede invocar con Prueba1 o .Prueba1
+handler.command = ['Prueba1', '.Prueba1'];
 handler.rowner = false;
 handler.group = false;
 
