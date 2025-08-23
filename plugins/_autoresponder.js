@@ -19,10 +19,17 @@ handler.all = async function (m, { conn }) {
 
   if (!chat.isBanned && chat.autoresponder) {
     if (m.fromMe) return
-    await this.sendPresenceUpdate('composing', m.chat)
 
     let query = m.text || ''
     let username = m.pushName || 'Usuario'
+
+    let isNarutoOrBot = /naruto|bot/i.test(query)
+    let isReply = !!m.quoted
+    let isMention = m.mentionedJid && m.mentionedJid.includes(this.user.jid)
+
+    if (!(isNarutoOrBot || isReply || isMention)) return
+
+    await this.sendPresenceUpdate('composing', m.chat)
 
     let txtDefault = `
 Eres ${botname}, una inteligencia artificial avanzada creada por ${etiqueta} para WhatsApp. Tu propósito es brindar respuestas claras, pero con una actitud empática y comprensiva.
