@@ -24,9 +24,8 @@ handler.all = async function (m, { conn }) {
     let username = m.pushName || 'Usuario'
 
     let isNarutoOrBot = /naruto|bot/i.test(query)
-    let isReply = !!m.quoted
-    let mentioned = m.message?.extendedTextMessage?.contextInfo?.mentionedJid || []
-    let isMention = mentioned.includes(this.user.jid)
+    let isReply = m.quoted && m.quoted.sender === this.user.jid
+    let isMention = m.mentionedJid && m.mentionedJid.includes(this.user.jid)
 
     if (!(isNarutoOrBot || isReply || isMention)) return
 
