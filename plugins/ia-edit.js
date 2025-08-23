@@ -3,14 +3,18 @@ import fetch from 'node-fetch'
 import FormData from 'form-data'
 
 async function uploadCatboxBuffer(buffer) {
+  const FormData = await import('form-data').then(m => m.default)
+  const fetch = await import('node-fetch').then(m => m.default)
+
   const form = new FormData()
   form.append('reqtype', 'fileupload')
-  form.append('fileToUpload', buffer, 'file.jpg')
+  form.append('fileToUpload', buffer, { filename: 'file.jpg', contentType: 'image/jpeg' })
 
   const res = await fetch('https://catbox.moe/user/api.php', {
     method: 'POST',
     body: form
   })
+
   const url = await res.text()
   if (!url.startsWith('http')) throw new Error('Error al subir imagen a Catbox')
   return url.trim()
