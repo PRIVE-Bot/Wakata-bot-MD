@@ -19,7 +19,6 @@ handler.all = async function (m, { conn }) {
 
   if (!chat.isBanned && chat.autoresponder) {
     if (m.fromMe) return
-
     await this.sendPresenceUpdate('composing', m.chat)
 
     let query = m.text || ''
@@ -34,16 +33,14 @@ Eres ${botname}, una inteligencia artificial avanzada creada por ${etiqueta} par
     try {
       const apiUrl = `https://g-mini-ia.vercel.app/api/mode-ia?prompt=${encodeURIComponent(query)}&id=${encodeURIComponent(username)}&logic=${encodeURIComponent(logic)}`
       const res = await fetch(apiUrl)
-      if (!res.ok) throw new Error(`Error en la API: ${res.status} ${res.statusText}`)
-
       const data = await res.json()
-      let result = data.result || data.answer || null
-
+      let result = data.result || data.answer || data.response || null
       if (result && result.trim().length > 0) {
         await this.reply(m.chat, result, m)
       }
     } catch (e) {
-      console.error('Error en API personalizada:', e)
+      console.error(e)
+      await this.reply(m.chat, '⚠️ Ocurrió un error con la IA.', m)
     }
   }
   return true
