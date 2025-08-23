@@ -1,5 +1,5 @@
-import axios from 'axios'
 import fetch from 'node-fetch'
+import { sticker } from '../lib/sticker.js'
 
 let handler = m => m
 
@@ -12,67 +12,39 @@ handler.all = async function (m, { conn }) {
           || m.id.startsWith('B24E') && m.id.length === 20
   if (m.isBot) return 
 
-  // ignorar comandos con prefijo
   let prefixRegex = new RegExp('^[' + (opts?.prefix || '‎z/i!#$%+£¢€¥^°=¶∆×÷π√✓©®:;?&.,\\-').replace(/[|\\{}()[\]^$+*?.\-\^]/g, '\\$&') + ']')
   if (prefixRegex.test(m.text)) return true
 
   if (m.sender?.toLowerCase().includes('bot')) return true
 
-  if (!chat.isBanned) {
-    async function luminsesi(q, username, logic) {
-      try {
-        const response = await axios.post("https://luminai.my.id", {
-          content: q,
-          user: username,
-          prompt: logic,
-          webSearchMode: true
-        })
-        console.log("🔹 LuminAI response:", response.data)
-        return response.data.result
-      } catch (error) {
-        console.error("❌ Error en LuminAI:", error)
-        return null
-      }
-    }
+  if (!chat.isBanned && chat.autoresponder) {
+    if (m.fromMe) return
 
-    async function geminiProApi(q, logic) {
-      try {
-        const response = await fetch(`https://api.ryzendesu.vip/api/ai/gemini-pro?text=${encodeURIComponent(q)}&prompt=${encodeURIComponent(logic)}`)
-        if (!response.ok) throw new Error(`Error en la solicitud: ${response.statusText}`)
-        const result = await response.json()
-        console.log("🔹 Gemini response:", result)
-        return result.answer
-      } catch (error) {
-        console.error('❌ Error en Gemini Pro:', error)
-        return null
-      }
-    }
-
-    let txtDefault = `
-Eres ${botname}, una inteligencia artificial avanzada creada por ${etiqueta} para WhatsApp. Tu propósito es brindar respuestas claras, pero con una actitud empática y comprensiva...
-`.trim()
+    await this.sendPresenceUpdate('composing', m.chat)
 
     let query = m.text || ''
     let username = m.pushName || 'Usuario'
-    let syms1 = chat.sAutoresponder ? chat.sAutoresponder : txtDefault
 
-    if (m.fromMe) return
-    await this.sendPresenceUpdate('composing', m.chat)
+    let txtDefault = `
+Eres ${botname}, una inteligencia artificial avanzada creada por ${etiqueta} para WhatsApp. Tu propósito es brindar respuestas claras, pero con una actitud empática y comprensiva.
+`.trim()
 
-    // 🚀 primero intenta Gemini
-    let result = await geminiProApi(query, syms1)
+    let logic = chat.sAutoresponder ? chat.sAutoresponder : txtDefault
 
-    // 🚑 si no hay respuesta, intenta LuminAI
-    if (!result || result.trim().length === 0) {
-      result = await luminsesi(query, username, syms1)
+    try {
+      const apiUrl = `https://g-mini-ia.vercel.app/api/mode-ia?prompt=${encodeURIComponent(query)}&id=${encodeURIComponent(username)}&logic=${encodeURIComponent(logic)}`
+      const res = await fetch(apiUrl)
+      if (!res.ok) throw new Error(`Error en la API: ${res.status} ${res.statusText}`)
+
+      const data = await res.json()
+      let result = data.result || data.answer || null
+
+      if (result && result.trim().length > 0) {
+        await this.reply(m.chat, result, m)
+      }
+    } catch (e) {
+      console.error('Error en API personalizada:', e)
     }
-
-    // 🚨 si sigue sin respuesta, devuelve algo por defecto
-    if (!result || result.trim().length === 0) {
-      result = "Lo siento, no pude generar una respuesta 😔."
-    }
-
-    await this.reply(m.chat, result, m)
   }
   return true
 }
