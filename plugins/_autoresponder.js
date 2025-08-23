@@ -1,6 +1,5 @@
 import axios from 'axios'
 import fetch from 'node-fetch'
-import { sticker } from '../lib/sticker.js'
 
 let handler = m => m
 
@@ -13,13 +12,12 @@ handler.all = async function (m, { conn }) {
           || m.id.startsWith('B24E') && m.id.length === 20
   if (m.isBot) return 
 
- 
+  // ignorar comandos con prefijo
   let prefixRegex = new RegExp('^[' + (opts?.prefix || '‎z/i!#$%+£¢€¥^°=¶∆×÷π√✓©®:;?&.,\\-').replace(/[|\\{}()[\]^$+*?.\-\^]/g, '\\$&') + ']')
   if (prefixRegex.test(m.text)) return true
 
   if (m.sender?.toLowerCase().includes('bot')) return true
 
-  
   if (!chat.isBanned) {
     async function luminsesi(q, username, logic) {
       try {
@@ -29,9 +27,10 @@ handler.all = async function (m, { conn }) {
           prompt: logic,
           webSearchMode: true
         })
+        console.log("🔹 LuminAI response:", response.data)
         return response.data.result
       } catch (error) {
-        console.error("Error en LuminAI:", error)
+        console.error("❌ Error en LuminAI:", error)
         return null
       }
     }
@@ -41,9 +40,10 @@ handler.all = async function (m, { conn }) {
         const response = await fetch(`https://api.ryzendesu.vip/api/ai/gemini-pro?text=${encodeURIComponent(q)}&prompt=${encodeURIComponent(logic)}`)
         if (!response.ok) throw new Error(`Error en la solicitud: ${response.statusText}`)
         const result = await response.json()
+        console.log("🔹 Gemini response:", result)
         return result.answer
       } catch (error) {
-        console.error('Error en Gemini Pro:', error)
+        console.error('❌ Error en Gemini Pro:', error)
         return null
       }
     }
@@ -56,20 +56,23 @@ Eres ${botname}, una inteligencia artificial avanzada creada por ${etiqueta} par
     let username = m.pushName || 'Usuario'
     let syms1 = chat.sAutoresponder ? chat.sAutoresponder : txtDefault
 
-    if (chat.autoresponder) {
-      if (m.fromMe) return
-      await this.sendPresenceUpdate('composing', m.chat)
+    if (m.fromMe) return
+    await this.sendPresenceUpdate('composing', m.chat)
 
-      let result = await geminiProApi(query, syms1)
+    // 🚀 primero intenta Gemini
+    let result = await geminiProApi(query, syms1)
 
-      if (!result || result.trim().length === 0) {
-        result = await luminsesi(query, username, syms1)
-      }
-
-      if (result && result.trim().length > 0) {
-        await this.reply(m.chat, result, m)
-      }
+    // 🚑 si no hay respuesta, intenta LuminAI
+    if (!result || result.trim().length === 0) {
+      result = await luminsesi(query, username, syms1)
     }
+
+    // 🚨 si sigue sin respuesta, devuelve algo por defecto
+    if (!result || result.trim().length === 0) {
+      result = "Lo siento, no pude generar una respuesta 😔."
+    }
+
+    await this.reply(m.chat, result, m)
   }
   return true
 }
