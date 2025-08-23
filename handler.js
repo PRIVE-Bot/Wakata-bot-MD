@@ -873,7 +873,10 @@ export async function handler(chatUpdate) {
         const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './plugins');
         for (let name in global.plugins) {
             let plugin = global.plugins[name];
-            if (!plugin || plugin.disabled) continue;
+            if (!plugin) continue;
+            if (plugin.disabled) {
+                continue;
+            }
 
             const __filename = join(___dirname, name);
             if (typeof plugin.all === 'function') {
