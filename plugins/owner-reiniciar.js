@@ -1,7 +1,7 @@
 let handler = async (m, { conn, usedPrefix, command }) => {
 
     try {
-        m.reply('👑 ʀᴇɪɴɪᴄɪᴀɴᴅᴏ ᴇʟ ʙᴏᴛ....')
+        conn.reply(m.chat, ` ʀᴇɪɴɪᴄɪᴀɴᴅᴏ ᴇʟ ʙᴏᴛ...\nᴘᴏʀ ғᴀᴠᴏʀ ᴇsᴘᴇʀᴀ.`, m, fake)
         setTimeout(() => {
             process.exit(0)
         }, 3000) 
