@@ -183,27 +183,22 @@ const isROwner = [...global.owner.map(([number]) => number)].map(v => v.replace(
         let usedPrefix;
 
 
-        let _user = global.db.data && global.db.data.users && global.db.data.users[m.sender];
-let groupMetadata = {};
-let participants = [];
-let numBot = (conn.user.lid || '').replace(/:.*/, '') || false;
-let detectwhat2 = m.sender.includes('@lid') ? `${numBot}@lid` : conn.user.jid;
-let user = {};
-let bot = {};
-let isRAdmin = false;
-let isAdmin = false;
-let isBotAdmin = false;
-
-if (m.isGroup) {
-  groupMetadata = (conn.chats[m.chat] || {}).metadata || await this.groupMetadata(m.chat).catch(_ => null);
-  participants = groupMetadata.participants || [];
-  user = participants.find(u => conn.decodeJid(u.id) === m.sender) || {};
-  bot = participants.find(u => conn.decodeJid(u.id) == detectwhat2) || {};
-  isRAdmin = user?.admin == 'superadmin';
-  isAdmin = isRAdmin || user?.admin == 'admin';
-  isBotAdmin = bot?.admin || false;
+        async function getLidFromJid(id, conn) {
+if (id.endsWith('@lid')) return id
+const res = await conn.onWhatsApp(id).catch(() => [])
+return res[0]?.lid || id
 }
-
+const senderLid = await getLidFromJid(m.sender, conn)
+const botLid = await getLidFromJid(conn.user.jid, conn)
+const senderJid = m.sender
+const botJid = conn.user.jid
+const groupMetadata = m.isGroup ? ((conn.chats[m.chat] || {}).metadata || await this.groupMetadata(m.chat).catch(_ => null)) : {}
+const participants = m.isGroup ? (groupMetadata.participants || []) : []
+const user = participants.find(p => p.id === senderLid || p.jid === senderJid) || {}
+const bot = participants.find(p => p.id === botLid || p.id === botJid) || {}
+const isRAdmin = user?.admin === "superadmin"
+const isAdmin = isRAdmin || user?.admin === "admin"
+const isBotAdmin = !!bot?.admin
 
 
 
