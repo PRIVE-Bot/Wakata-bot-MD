@@ -1,7 +1,11 @@
 let handler = async (m, { conn, usedPrefix, command }) => {
 
     try {
-        conn.reply(m.chat, ` ʀᴇɪɴɪᴄɪᴀɴᴅᴏ ᴇʟ ʙᴏᴛ...\nᴘᴏʀ ғᴀᴠᴏʀ ᴇsᴘᴇʀᴀ.`, m, fake)
+       return conn.reply(m.chat, `
+╭╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍⌼
+┣⌬ »ʀᴇɪɴɪᴄɪᴀɴᴅᴏ ᴇʟ ʙᴏᴛ« *↻*
+┣⌬ ᴘᴏʀ ғᴀᴠᴏʀ ᴇsᴘᴇʀᴀ ⇔
+╰╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍⌼`, m, fake)
         setTimeout(() => {
             process.exit(0)
         }, 3000) 
