@@ -5,7 +5,7 @@ let handler = async (m, { conn, usedPrefix, command }) => {
 ╭╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍⌼
 ┣⌬ »ʀᴇɪɴɪᴄɪᴀɴᴅᴏ ᴇʟ ʙᴏᴛ« *↻*
 ┣⌬ ᴘᴏʀ ғᴀᴠᴏʀ ᴇsᴘᴇʀᴀ ⇔
-╰╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍⌼`, m, fake)
+╰╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍⌼`, m, fake, rcanal)
         setTimeout(() => {
             process.exit(0)
         }, 3000) 
