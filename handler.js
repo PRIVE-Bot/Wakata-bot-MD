@@ -187,15 +187,7 @@ export async function handler(chatUpdate) {
         const bot = participants.find(p => p.id === this.user.jid) || {};
         const isRAdmin = user?.admin === "superadmin";
         const isAdmin = isRAdmin || user?.admin === "admin";
-
-        // VERIFICACIÓN DEFINITIVA DEL ESTADO DE ADMINISTRADOR DEL BOT
-        let isBotAdmin = false;
-        if (m.isGroup) {
-            const botParticipant = participants.find(p => p.id === this.user.jid);
-            if (botParticipant && (botParticipant.admin === 'admin' || botParticipant.admin === 'superadmin')) {
-                isBotAdmin = true;
-            }
-        }
+        const isBotAdmin = !!bot?.admin;
 
         const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './plugins');
         for (let name in global.plugins) {
@@ -303,7 +295,7 @@ export async function handler(chatUpdate) {
                 if (adminMode && !isOwner && !isROwner && m.isGroup && !isAdmin && mini) {
                     return;
                 }
-                
+
                 if (plugin.rowner && plugin.owner && !(isROwner || isOwner)) {
                     fail('owner', m, this);
                     continue;
