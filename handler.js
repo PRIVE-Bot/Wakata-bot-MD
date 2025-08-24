@@ -188,10 +188,19 @@ export async function handler(chatUpdate) {
         }
         const participants = m.isGroup ? (groupMetadata.participants || []) : [];
         const user = participants.find(p => p.id === m.sender) || {};
-        const bot = participants.find(p => p.id === this.user.jid) || {};
-        const isRAdmin = user?.admin === "superadmin";
-        const isAdmin = isRAdmin || user?.admin === "admin";
-        const isBotAdmin = !!bot?.admin;
+        // CÓDIGO NUEVO Y CORREGIDO
+const bot = participants.find(p => p.id === this.user.jid) || {};
+const isRAdmin = user?.admin === "superadmin";
+const isAdmin = isRAdmin || user?.admin === "admin";
+let isBotAdmin = false;
+if (m.isGroup) {
+    const groupParticipants = await this.groupParticipantsUpdate(m.chat, ['all']);
+    const botParticipant = groupParticipants.find(p => p.id === this.user.jid);
+    if (botParticipant && (botParticipant.admin === 'admin' || botParticipant.admin === 'superadmin')) {
+        isBotAdmin = true;
+    }
+}
+
 
         const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './plugins');
         for (let name in global.plugins) {
