@@ -181,17 +181,40 @@ const isROwner = [...global.owner.map(([number]) => number)].map(v => v.replace(
         }
 
         let usedPrefix;
+
+
         let _user = global.db.data && global.db.data.users && global.db.data.users[m.sender]
 
-const groupMetadata = (m.isGroup ? ((conn.chats[m.chat] || {}).metadata || await this.groupMetadata(m.chat).catch(_ => null)) : {}) || {}
-const participants = (m.isGroup ? groupMetadata.participants : []) || []
-let numBot = (conn.user.lid || '').replace(/:.*/, '') || false
-const detectwhat2 = m.sender.includes('@lid') ? `${numBot}@lid` : conn.user.jid
-const user = (m.isGroup ? participants.find(u => conn.decodeJid(u.id) === m.sender) : {}) || {}
-const bot = (m.isGroup ? participants.find(u => conn.decodeJid(u.id) == detectwhat2) : {}) || {}
-const isRAdmin = user?.admin == 'superadmin' || false
-const isAdmin = isRAdmin || user?.admin == 'admin' || false //user admins? 
-const isBotAdmin = bot?.admin || false //Detecta sin el bot es admin
+async function checkAdmins(m, conn) {
+  if (!m.isGroup) return { isRAdmin: false, isAdmin: false, isBotAdmin: false }
+
+  try {
+    const groupMetadata = await conn.groupMetadata(m.chat)
+    const participants = groupMetadata.participants || []
+    const user = participants.find(u => conn.decodeJid(u.id) === m.sender)
+    const bot = participants.find(u => conn.decodeJid(u.id) === conn.user.jid)
+    
+    const isRAdmin = user?.admin === 'superadmin'
+    const isAdmin = isRAdmin || user?.admin === 'admin'
+    const isBotAdmin = bot?.admin === 'admin' || bot?.admin === 'superadmin'
+    
+    return { isRAdmin, isAdmin, isBotAdmin }
+  } catch (e) {
+    return { isRAdmin: false, isAdmin: false, isBotAdmin: false }
+  }
+}
+
+
+(async () => {
+  const adminStatus = await checkAdmins(m, conn)
+  const { isRAdmin, isAdmin, isBotAdmin } = adminStatus
+  
+  if (isBotAdmin) {
+  } else {
+  }
+})();
+
+
 
         const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './plugins');
         for (let name in global.plugins) {
