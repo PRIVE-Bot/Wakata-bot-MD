@@ -25,7 +25,7 @@ export async function handler(chatUpdate) {
     this.processedMessages = this.processedMessages || new Map();
     const id = m.key.id;
     const now = Date.now();
-    const lifeTime = 5000;
+    const lifeTime = 9000;
 
     for (let [msgId, time] of this.processedMessages) {
         if (now - time > lifeTime) {
