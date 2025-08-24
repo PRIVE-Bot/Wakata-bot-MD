@@ -181,13 +181,23 @@ export async function handler(chatUpdate) {
         }
 
         let usedPrefix;
-        const groupMetadata = m.isGroup ? ((this.chats[m.chat] || {}).metadata || await this.groupMetadata(m.chat).catch(_ => null)) : {};
-        const participants = m.isGroup ? (groupMetadata.participants || []) : [];
-        const user = participants.find(p => p.id === m.sender) || {};
-        const bot = participants.find(p => p.id === this.user.jid) || {};
-        const isRAdmin = user?.admin === "superadmin";
-        const isAdmin = isRAdmin || user?.admin === "admin";
-        const isBotAdmin = !!bot?.admin;
+        const groupMetadata = (m.isGroup ? ((conn.chats[m.chat] || {}).metadata || await this.groupMetadata(m.chat).catch(_ => null)) : {}) || {}
+const participants = (m.isGroup ? groupMetadata.participants : []) || []
+
+const normalizeJid = jid => jid?.replace(/[^0-9]/g, '')
+const cleanJid = jid => jid?.split(':')[0] || ''
+const senderNum = normalizeJid(m.sender)
+const botNums = [this.user?.jid, this.user?.lid].map(j => normalizeJid(cleanJid(j)))
+const user = m.isGroup 
+  ? participants.find(u => normalizeJid(u.jid) === senderNum) 
+  : {}
+const bot = m.isGroup 
+  ? participants.find(u => botNums.includes(normalizeJid(u.id))) 
+  : {}
+
+const isRAdmin = user?.admin === 'superadmin'
+const isAdmin = isRAdmin || user?.admin === 'admin'
+const isBotAdmin = !!bot?.admin || bot?.admin === 'admin'
 
         const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './plugins');
         for (let name in global.plugins) {
