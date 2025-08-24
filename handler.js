@@ -183,36 +183,27 @@ const isROwner = [...global.owner.map(([number]) => number)].map(v => v.replace(
         let usedPrefix;
 
 
-        let _user = global.db.data && global.db.data.users && global.db.data.users[m.sender]
+        let _user = global.db.data && global.db.data.users && global.db.data.users[m.sender];
+let groupMetadata = {};
+let participants = [];
+let numBot = (conn.user.lid || '').replace(/:.*/, '') || false;
+let detectwhat2 = m.sender.includes('@lid') ? `${numBot}@lid` : conn.user.jid;
+let user = {};
+let bot = {};
+let isRAdmin = false;
+let isAdmin = false;
+let isBotAdmin = false;
 
-async function checkAdmins(m, conn) {
-  if (!m.isGroup) return { isRAdmin: false, isAdmin: false, isBotAdmin: false }
-
-  try {
-    const groupMetadata = await conn.groupMetadata(m.chat)
-    const participants = groupMetadata.participants || []
-    const user = participants.find(u => conn.decodeJid(u.id) === m.sender)
-    const bot = participants.find(u => conn.decodeJid(u.id) === conn.user.jid)
-    
-    const isRAdmin = user?.admin === 'superadmin'
-    const isAdmin = isRAdmin || user?.admin === 'admin'
-    const isBotAdmin = bot?.admin === 'admin' || bot?.admin === 'superadmin'
-    
-    return { isRAdmin, isAdmin, isBotAdmin }
-  } catch (e) {
-    return { isRAdmin: false, isAdmin: false, isBotAdmin: false }
-  }
+if (m.isGroup) {
+  groupMetadata = (conn.chats[m.chat] || {}).metadata || await this.groupMetadata(m.chat).catch(_ => null);
+  participants = groupMetadata.participants || [];
+  user = participants.find(u => conn.decodeJid(u.id) === m.sender) || {};
+  bot = participants.find(u => conn.decodeJid(u.id) == detectwhat2) || {};
+  isRAdmin = user?.admin == 'superadmin';
+  isAdmin = isRAdmin || user?.admin == 'admin';
+  isBotAdmin = bot?.admin || false;
 }
 
-
-(async () => {
-  const adminStatus = await checkAdmins(m, conn)
-  const { isRAdmin, isAdmin, isBotAdmin } = adminStatus
-  
-  if (isBotAdmin) {
-  } else {
-  }
-})();
 
 
 
