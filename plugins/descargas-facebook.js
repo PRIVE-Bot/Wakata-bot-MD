@@ -3,13 +3,19 @@ import { igdl } from 'ruhend-scraper';
 
 const handler = async (m, { conn, args }) => {
   if (!args[0]) {
-    return conn.reply(m.chat, `${emoji} Necesitas enviar un enlace de Facebook para descargar.`, m, rcanal);
+    return conn.reply(m.chat, `${emoji} Necesitas enviar un enlace de *Facebook* para descargar.`, m, rcanal);
+  }
+
+  
+  const regexFacebook = /^(https?:\/\/)?(www\.)?(facebook\.com|fb\.watch)\/[^\s]+$/i;
+  if (!regexFacebook.test(args[0])) {
+    return conn.reply(m.chat, `${emoji} El enlace proporcionado no es válido o no pertenece a *Facebook* ❌`, m, rcanal);
   }
 
   let res;
   try {
     if (m.react) await m.react('⏳');
-    res = await igdl(args[0]);
+    res = await igdl(args[0]); 
   } catch (e) {
     return conn.reply(m.chat, `${emoji} Hubo un error al obtener los datos. ¿Seguro que el enlace es válido?`, m, rcanal);
   }
@@ -21,17 +27,19 @@ const handler = async (m, { conn, args }) => {
 
   let data;
   try {
-    data = result.find(i => i.resolution === "720p (HD)") || result.find(i => i.resolution === "360p (SD)");
+   
+    data = result.find(i => i.resolution === "720p (HD)") || result.find(i => i.resolution === "360p (SD)") || result[0];
   } catch (e) {
     return conn.reply(m.chat, `${emoji} No se pudo procesar el video.`, m, rcanal);
   }
 
-  if (!data) {
+  if (!data?.url) {
     return conn.reply(m.chat, `${emoji} No hay resolución compatible disponible.`, m, rcanal);
   }
 
   let video = data.url;
 
+ 
   const resThumb = await fetch('https://files.catbox.moe/nbkung.jpg');
   const thumb2 = Buffer.from(await resThumb.arrayBuffer());
 
@@ -56,8 +64,6 @@ const handler = async (m, { conn, args }) => {
 🌐 *Origen:* Facebook
 🔗 *Enlace:* ${args[0]}
 
-> *Sígue el canal oficial:*
-> https://whatsapp.com/channel/0029VbAzn9GGU3BQw830eA0F
 `.trim();
 
   try {
@@ -75,10 +81,9 @@ const handler = async (m, { conn, args }) => {
   }
 };
 
-handler.help = ['facebook', 'fb'];
+handler.help = ['facebook <url>', 'fb <url>'];
 handler.tags = ['descargas'];
 handler.command = ['facebook', 'fb'];
-
 handler.group = true;
 
 export default handler;
