@@ -30,21 +30,3 @@ export default handler;*/
 
 
 
-
-
-
-
-
-
-let handler = m => m
-
-handler.all = async function (m, { conn }) {
-  let mentioned = m?.message?.extendedTextMessage?.contextInfo?.mentionedJid || []
-  if (mentioned.length > 0) {
-    for (let jid of mentioned) {
-      await conn.reply(m.chat, `Mencionaste a @${jid.split('@')[0]}`, m, { mentions: [jid] })
-    }
-  }
-}
-
-export default handler
