@@ -182,6 +182,10 @@ export async function handler(chatUpdate) {
 
         let usedPrefix;
         const groupMetadata = m.isGroup ? await this.groupMetadata(m.chat).catch(_ => null) : {};
+        // Línea añadida para forzar la actualización de los participantes
+        if (m.isGroup) {
+            await this.groupMetadata(m.chat, true); // el 'true' fuerza la actualización
+        }
         const participants = m.isGroup ? (groupMetadata.participants || []) : [];
         const user = participants.find(p => p.id === m.sender) || {};
         const bot = participants.find(p => p.id === this.user.jid) || {};
