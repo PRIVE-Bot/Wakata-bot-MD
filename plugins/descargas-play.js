@@ -121,8 +121,6 @@ const fkontak2 = {
 ⍰ *Duración:* ${timestamp}
 ⍰ *Publicado:* ${ago}
 
-> *Sigue el canal oficial:*
-> whatsapp.com/channel/0029VbAzn9GGU3BQw830eA0F
 `;
 
     await conn.sendMessage(
