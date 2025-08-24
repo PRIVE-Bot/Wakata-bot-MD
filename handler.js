@@ -46,17 +46,6 @@ export async function handler(chatUpdate) {
         if (!m) {
             return;
         }
-        
-        // CÓDIGO AÑADIDO: Verificación de entrada de grupo
-        if (m.mtype === 'group-update' && m.fromMe) {
-            const update = m.groupUpdate;
-            if (update.action === 'add' && update.participants.includes(this.user.jid)) {
-                await this.groupMetadata(m.chat).then(metadata => {
-                    this.chats[m.chat] = { ...this.chats[m.chat], metadata: metadata };
-                });
-                console.log(`Bot añadido al grupo: ${m.chat}`);
-            }
-        }
 
         try {
             let chat = global.db.data.chats[m.chat];
@@ -192,7 +181,7 @@ export async function handler(chatUpdate) {
         }
 
         let usedPrefix;
-        const groupMetadata = m.isGroup ? ((this.chats[m.chat] || {}).metadata || await this.groupMetadata(m.chat).catch(_ => null)) : {};
+        const groupMetadata = m.isGroup ? await this.groupMetadata(m.chat).catch(_ => null) : {};
         const participants = m.isGroup ? (groupMetadata.participants || []) : [];
         const user = participants.find(p => p.id === m.sender) || {};
         const bot = participants.find(p => p.id === this.user.jid) || {};
