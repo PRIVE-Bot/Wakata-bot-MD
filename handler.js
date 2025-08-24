@@ -181,26 +181,21 @@ export async function handler(chatUpdate) {
         }
 
         let usedPrefix;
-        const groupMetadata = m.isGroup ? await this.groupMetadata(m.chat).catch(_ => null) : {};
-        // Línea añadida para forzar la actualización de los participantes
-        if (m.isGroup) {
-            await this.groupMetadata(m.chat, true); // el 'true' fuerza la actualización
-        }
+        const groupMetadata = m.isGroup ? ((this.chats[m.chat] || {}).metadata || await this.groupMetadata(m.chat).catch(_ => null)) : {};
         const participants = m.isGroup ? (groupMetadata.participants || []) : [];
         const user = participants.find(p => p.id === m.sender) || {};
-        // CÓDIGO NUEVO Y CORREGIDO
-const bot = participants.find(p => p.id === this.user.jid) || {};
-const isRAdmin = user?.admin === "superadmin";
-const isAdmin = isRAdmin || user?.admin === "admin";
-let isBotAdmin = false;
-if (m.isGroup) {
-    const groupParticipants = await this.groupParticipantsUpdate(m.chat, ['all']);
-    const botParticipant = groupParticipants.find(p => p.id === this.user.jid);
-    if (botParticipant && (botParticipant.admin === 'admin' || botParticipant.admin === 'superadmin')) {
-        isBotAdmin = true;
-    }
-}
+        const bot = participants.find(p => p.id === this.user.jid) || {};
+        const isRAdmin = user?.admin === "superadmin";
+        const isAdmin = isRAdmin || user?.admin === "admin";
 
+        // VERIFICACIÓN DEFINITIVA DEL ESTADO DE ADMINISTRADOR DEL BOT
+        let isBotAdmin = false;
+        if (m.isGroup) {
+            const botParticipant = participants.find(p => p.id === this.user.jid);
+            if (botParticipant && (botParticipant.admin === 'admin' || botParticipant.admin === 'superadmin')) {
+                isBotAdmin = true;
+            }
+        }
 
         const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './plugins');
         for (let name in global.plugins) {
@@ -308,7 +303,7 @@ if (m.isGroup) {
                 if (adminMode && !isOwner && !isROwner && m.isGroup && !isAdmin && mini) {
                     return;
                 }
-
+                
                 if (plugin.rowner && plugin.owner && !(isROwner || isOwner)) {
                     fail('owner', m, this);
                     continue;
