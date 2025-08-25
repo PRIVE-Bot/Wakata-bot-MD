@@ -83,7 +83,7 @@ global.rcanal = {
       body: dev,
       mediaType: 2,         
       thumbnailUrl: icono1,
-      sourceUrl: "https://naruto-bot.vercel.app/canal.html"
+      sourceUrl: "https://deylin.vercel.app"
     }
   }
 }
