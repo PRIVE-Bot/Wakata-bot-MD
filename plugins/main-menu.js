@@ -66,27 +66,32 @@ const fkontak = {
 
 
     let menuText = `
-*◈ ━━━━━━━ ⸙ ━━━━━━━ ◈*
+*⚡◈ ━━━━━━━ SPARK ━━━━━━━ ◈⚡*
 
-Hola ${tag} soy *${global.botname}*
+👋 Hola ${tag}  
+Soy tu asistente *${global.botname}* ⚡
 
-┏╍╍╍╍╍╍╍╍╾『 𝑰 𝑵 𝑭 𝑶 』
-┃ ʕ˖͜͡˖ʔ *Cliente:* ${tag}
-┃ ۵卍 *Bot:* ${(conn.user.jid == global.conn.user.jid ? 'Principal 🅥' : 'Prem Bot 🅑')}
-┃ ☒ *Modo:* ${mode}
-┃ ஐ *Usuarios »* ${totalReg}
-┃ ✎ *Tiempo Activo:* ${uptime}
-┃ 〄 *Comandos »* ${totalCommands}
-┗╍╍╍╍╍╍╍ ♢.💥.♢ ━━━━━━➤
+┏━⚡『 𝑰 𝑵 𝑭 𝑶 』⚡━┓
+┃ ✦ *Cliente:* ${tag}
+┃ ✦ *Bot:* ${(conn.user.jid == global.conn.user.jid ? 'Principal 🅥' : 'Prem Bot 🅑')}
+┃ ✦ *Modo:* ${mode}
+┃ ✦ *Usuarios:* ${totalReg}
+┃ ✦ *Activo:* ${uptime}
+┃ ✦ *Comandos:* ${totalCommands}
+┗━━━━━━━━━━━━━━━⚡
 
 ${global.readMore}
-*◤━━━━━ ☆. 🌀 .☆ ━━━━━◥*
-⚙_*𝑳𝑰𝑺𝑻𝑨 𝑫𝑬 𝑪𝑶𝑴𝑨𝑵𝑫𝑶𝑺*_
+*◤━━━━━━━━━⌼━━━━━━━━━◥*
+⚙️ *LISTA DE COMANDOS*
 ${Object.keys(tags).reduce((acc, tag) => {
   const cmds = help.filter(h => h.tags.includes(tag));
   if (!cmds.length) return acc;
-  const cmdList = cmds.flatMap(c => c.help.map(cmd => `┃ *\`»\`* \`/${cmd}\` ${c.limit ? '◜⭐◞' : ''} ${c.premium ? '◜🪪◞' : ''}`)).join('\n');
-  return acc + `\n*┏━━━━▣━━⌬〘 ${tags[tag]} ${getRandomEmoji()} 〙*\n${cmdList}\n*┗━━━▣━━⌬⌨⌬━━▣━━━━⌬*`;
+  const cmdList = cmds.flatMap(c => 
+    c.help.map(cmd => 
+      `┃ ⚡ \`/${cmd}\` ${c.limit ? '⭐' : ''} ${c.premium ? '💎' : ''}`
+    )
+  ).join('\n');
+  return acc + `\n*┏━⚡〘 ${tags[tag]} ${getRandomEmoji()} 〙⚡━*\n${cmdList}\n*┗━━━━━━━⚡━━━━━━━*`;
 }, '')}
 
 > ${dev}
