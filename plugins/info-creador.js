@@ -19,11 +19,10 @@ let handler = async (m, { conn }) => {
     return imageMessage
   }
 
-  // Lista de owners
   const owners = [
     {
       name: 'Deylin',
-      desc: '👑 Creador Principal de Naruto-MD',
+      desc: `👑 Creador Principal de ${botname}`,
       image: 'https://files.catbox.moe/51epch.jpg',
       footer: '✨ Apóyame en mis proyectos y descubre más en mis redes.',
       buttons: [
@@ -99,7 +98,7 @@ let handler = async (m, { conn }) => {
           },
           interactiveMessage: proto.Message.InteractiveMessage.fromObject({
             body: proto.Message.InteractiveMessage.Body.create({
-              text: '👑 Creadores de Naruto-MD'
+              text: `👑 Creadores de ${botname}`
             }),
             footer: proto.Message.InteractiveMessage.Footer.create({
               text: 'Conoce a los desarrolladores del bot'
