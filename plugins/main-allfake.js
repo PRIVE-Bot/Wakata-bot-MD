@@ -31,16 +31,12 @@ console.log(`Error : ${e}`)
 global.creador = 'Wa.me/50432955554'
 global.ofcbot = `${conn.user.jid.split('@')[0]}`
 global.asistencia = 'Wa.me/50432955554'
-global.namechannel = '𖤐 𝐍𝐚𝐫𝐮𝐭𝐨-𝐁𝐨𝐭 - 𝐮𝐩𝐝𝐚𝐭𝐞𝐬 ⚡'
-global.namechannel2 = '𖤐 𝐍𝐚𝐫𝐮𝐭𝐨-𝐁𝐨𝐭 - 𝐚𝐯𝐢𝐬𝐨𝐬 ☀️'
-global.namegrupo = '✦ 𝐍𝐀𝐑𝐔𝐓𝐎 - 𝐁𝐎𝐓 𝐌𝐃 🍥'
-global.namecomu = '✭ 𝐍𝐀𝐑𝐔𝐓𝐎 𝐂𝐨𝐦𝐮𝐧𝐢𝐭𝐲 ✪'
-global.listo = '🍥 *Aquí tienes, shinobi ❛‿˂̵✧*'
+global.listo = '⚡ *Aquí tienes, shinobi ❛‿˂̵✧*'
 global.fotoperfil = await conn.profilePictureUrl(m.sender, 'image').catch(_ => 'https://files.catbox.moe/nv87us.jpg')
 
 // Ids channel
 /*global.canalIdM = ["120363403593951965@newsletter", "120363403593951965@newsletter"]
-global.canalNombreM = ["𖤐 𝐍𝐚𝐫𝐮𝐭𝐨-𝐁𝐨𝐭 - 𝐮𝐩𝐝𝐚𝐭𝐞𝐬 ⚡", "𖤐 𝐍𝐚𝐫𝐮𝐭𝐨-𝐁𝐨𝐭 - 𝐚𝐯𝐢𝐬𝐨𝐬 ☀️"]
+global.canalNombreM = ["𝐒𝐏𝐀𝐑𝐊-𝐁𝐎𝐓 ✦ ᴀᴠɪsᴏ⚡", "𝐒𝐏𝐀𝐑𝐊-𝐁𝐎𝐓 ✦ ᴜᴘᴅᴀᴛᴇ⚡"]
 global.channelRD = await getRandomChannel()*/
 
 //fechas
@@ -58,12 +54,12 @@ global.done = '✅'
 global.error = '✖️'
 global.msm = '⚠︎'
 
-global.emoji0 = '*🦊🍥「 ¡Modo Sabio Activado! 」*\n'
-global.emoji1 = '*🔥👊「 ¡Dattebayo! Naruto está listo 」*\n'
-global.emoji2 = '*⚡🌀「 ¡Rasengan del Hokage! 」*\n'
-global.emoji3 = '*🍃👀「 ¡Oculto entre las hojas! 」*\n'
-global.emoji4 = '*💥🦅「 ¡El espíritu ninja no muere! 」*\n'
-global.emoji5 = '*🌌🔱「 ¡El destino del shinobi continúa! 」*\n'
+global.emoji0 = '*✎*'
+global.emoji1 = '*✧*'
+global.emoji2 = '*♛*'
+global.emoji3 = '*✰*'
+global.emoji4 = '*⍰*'
+global.emoji5 = '*⌬*'
 
 global.emojis = [emoji0, emoji1, emoji2, emoji3, emoji4, emoji5].getRandom()
 global.emoji = [emoji0, emoji1, emoji2, emoji3, emoji4, emoji5].getRandom()
