@@ -32,7 +32,7 @@ if (m.chat === '120363402601912509@newsletter') return !0
     await m.reply(
 `
 █████████████████████████
-█     🔴 𝐍𝐀𝐑𝐔𝐓𝐎 𝐁𝐎𝐓 🔴     
+█     ${botname}     
 █████████████████████████
 
 👋 Hola @${m.sender.split`@`[0]},
@@ -41,7 +41,7 @@ if (m.chat === '120363402601912509@newsletter') return !0
 Serás *bloqueado* inmediatamente.
 
 🔥 Usa mis funciones en el  grupo principal:  
-🌐 https://naruto-bot.vercel.app/grupo
+
 █████████████████████████
 `, fkontak, { mentions: [m.sender] });
     await this.updateBlockStatus(m.chat, 'block');
