@@ -34,8 +34,7 @@ global.baileys = 'V 6.7.16'
 global.languaje = 'Español'
 global.vs = '2.2.0'
 global.vsJB = '5.0'
-global.nameqr = 'ɴᴀʀᴜᴛᴏ-ʙᴏᴛ ᴍᴅ'
-global.namebot = '𝕹𝖆𝖗𝖚𝖙𝖔 - 𝕭𝖔𝖙 𝕸𝕯'
+global.nameqr = '𝚂𝙿𝙰𝚁𝙺-𝙱𝙾𝚃'
 global.sessions = 'Sessions'
 global.jadi = 'JadiBots' 
 global.Jadibts = true
@@ -46,11 +45,11 @@ global.channelRD = await getRandomChannel()
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
 
-global.packname = '𝑵𝒂𝒓𝒖𝒕𝒐 - 𝑩𝒐𝒕 𝑴𝑫';
-global.botname = '𝑵𝒂𝒓𝒖𝒕𝒐 - 𝑩𝒐𝒕 𝑴𝑫'
+global.packname = '𝑺𝑷𝑨𝑹𝑲 - 𝑩𝑶𝑻';
+global.botname = '𝑺𝒑𝒂𝒓𝒌 - 𝑩𝒐𝒕'
 global.author = 'Made By 𝐃𝐞𝐲𝐥𝐢𝐧'
 global.dev = '© ⍴᥆ᥕᥱrᥱძ ᑲᥡ 𝑫𝒆𝒚𝒍𝒊𝒏'
-global.textbot = '𝑵𝒂𝒓𝒖𝒕𝒐 - 𝐁𝐨𝐭 𝑴𝑫 • Powered By 𝑫𝒆𝒚𝒍𝒊𝒏'
+global.textbot = '𝑺𝒑𝒂𝒓𝒌 - 𝐁𝐨𝐭 • Powered By 𝑫𝒆𝒚𝒍𝒊𝒏'
 global.etiqueta = '𝑫𝒆𝒚𝒍𝒊𝒏'
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
