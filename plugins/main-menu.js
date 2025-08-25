@@ -108,14 +108,10 @@ ${Object.keys(tags).reduce((acc, tag) => {
 > ${dev}
 `;
 
-    const imageUrls = [
-      'https://files.catbox.moe/nv87us.jpg',
-      'https://files.catbox.moe/83cyxz.jpg',
-      'https://files.catbox.moe/hhgh5y.jpg'
-    ];
+    const imageUrls = global.img
     const selectedImage = imageUrls[Math.floor(Math.random() * imageUrls.length)];
 
-    await m.react('🌀');
+    await m.react('⚡');
     await conn.sendMessage(
   m.chat,
   {
