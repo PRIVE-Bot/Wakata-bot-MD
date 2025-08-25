@@ -34,7 +34,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
 
   let fkontak
   try {
-    const res2 = await fetch('https://files.catbox.moe/qhxt7c.png')
+    const res2 = await fetch('https://i.postimg.cc/c4t9wwCw/1756162596829.jpg')
     const img3 = Buffer.from(await res2.arrayBuffer())
 
     fkontak = {
