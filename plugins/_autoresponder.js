@@ -23,11 +23,11 @@ handler.all = async function (m, { conn }) {
     let query = m.text || ''
     let username = m.pushName || 'Usuario'
 
-    let isNarutoOrBot = /naruto|bot/i.test(query)
+    let isOrBot = /bot/i.test(query)
     let isReply = m.quoted && m.quoted.sender === this.user.jid
         let isMention = m.mentionedJid && m.mentionedJid.includes(this.user.jid) 
 
-    if (!(isNarutoOrBot || isReply || isMention)) return
+    if (!(isOrBot || isReply || isMention)) return
 
     await this.sendPresenceUpdate('composing', m.chat)
 
