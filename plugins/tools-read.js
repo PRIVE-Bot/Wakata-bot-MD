@@ -14,8 +14,8 @@ const fkontak = {
         }
     }
 }
-if (!m.quoted) return conn.reply(m.chat, `${emoji} Responde a una imagen ViewOnce.`, m, rcanal);
-if (!m?.quoted || !m?.quoted?.viewOnce) return conn.reply(m.chat, `${emoji} Responde a una imagen ViewOnce.`, m, rcanal);
+if (m.quoted) return conn.reply(m.chat, `${emoji} Responde a una imagen ViewOnce.`, m, rcanal);
+if (m?.quoted || !m?.quoted?.viewOnce) return conn.reply(m.chat, `${emoji} Responde a una imagen ViewOnce.`, m, rcanal);
 let buffer = await m.quoted.download(false);
 if (/videoMessage/.test(m.quoted.mtype)) {
 return conn.sendFile(m.chat, buffer, 'media.mp4', m.quoted.caption || '', fkontak);
