@@ -90,7 +90,7 @@ const fkontak2 = {
     message: {
         documentMessage: {
             title: "𝗗𝗘𝗦𝗖𝗔𝗥𝗚𝗔𝗡𝗗𝗢",
-            fileName: "play_Naruto-Bot.mp3",
+            fileName: botname,
             jpegThumbnail: thumb3
         }
     }
