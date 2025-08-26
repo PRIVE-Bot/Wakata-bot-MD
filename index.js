@@ -827,6 +827,44 @@ setInterval(() => {
     process.exit(0);
 }, 10800000);
 
+global.rutaJadiBot = join(__dirname, './JadiBots')
+
+if (global.pikaJadibts) {
+
+
+  if (!existsSync(global.rutaJadiBot)) {
+    mkdirSync(global.rutaJadiBot, { recursive: true })
+    console.log(chalk.bold.cyan(`📁 Carpeta creada: ${global.rutaJadiBot}`))
+  } else {
+    console.log(chalk.bold.cyan(`📁 Carpeta ya existente: ${global.rutaJadiBot}`))
+  }
+
+  const subbots = readdirSync(global.rutaJadiBot, { withFileTypes: true })
+    .filter(dirent => dirent.isDirectory())
+    .map(dirent => dirent.name)
+
+  for (const nombreSubbot of subbots) {
+    const pathSubbot = join(global.rutaJadiBot, nombreSubbot)
+    const archivosSubbot = readdirSync(pathSubbot)
+
+    if (archivosSubbot.includes('creds.json')) {
+      try {
+        pikaJadiBot({
+          pathpikaJadiBot: pathSubbot,
+          m: null,
+          conn,
+          args: '',
+          usedPrefix: '/',
+          command: 'serbot'
+        })
+        console.log(chalk.green(`✅ Subbot cargado: ${nombreSubbot}`))
+      } catch (e) {
+        console.error(chalk.red(`❌ Error cargando subbot: ${nombreSubbot}`), e)
+      }
+    }
+  }
+}
+
 const pluginFolder = global.__dirname(join(__dirname, './plugins/index'));
 const pluginFilter = (filename) => /\.js$/.test(filename);
 global.plugins = {};
