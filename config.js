@@ -70,19 +70,23 @@ global.axios = axios
 global.moment = moment   
 
 global.icono1 = [
-'https://i.postimg.cc/c4t9wwCw/1756162596829.jpg',
-'https://i.postimg.cc/c4MvC5Wz/1756167144046.jpg',
-'https://i.postimg.cc/qMdtkHPn/1756167135980.jpg',
-]//.getRandom()
+  'https://i.postimg.cc/c4t9wwCw/1756162596829.jpg',
+  'https://i.postimg.cc/c4MvC5Wz/1756167144046.jpg',
+  'https://i.postimg.cc/qMdtkHPn/1756167135980.jpg',
+]
+
+function getRandomIcon() {
+  return global.icono1[Math.floor(Math.random() * global.icono1.length)]
+}
 
 global.rcanal = {
   contextInfo: {
     externalAdReply: {
-      showAdAttribution: true, 
+      showAdAttribution: true,
       title: botname,
       body: dev,
-      mediaType: 2,         
-      thumbnailUrl: icono1,
+      mediaType: 2,
+      thumbnailUrl: getRandomIcon(), // <- aquí se usa aleatorio
       sourceUrl: "https://deylin.vercel.app"
     }
   }
