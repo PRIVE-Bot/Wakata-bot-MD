@@ -101,7 +101,7 @@ ${Object.keys(tags).reduce((acc, tag) => {
     await conn.sendMessage(
   m.chat,
   {
-    url: img,
+    image: { url: global.img },
     caption: menuText.trim(),
     mentions: [m.sender]
   },
@@ -110,7 +110,7 @@ ${Object.keys(tags).reduce((acc, tag) => {
 
   } catch (e) {
     console.error(e);
-    conn.reply(m.chat, '❎ Lo sentimos, el menú tiene un error.' e, m);
+    conn.reply(m.chat, '❎ Lo sentimos, el menú tiene un error.', m);
   }
 };
 
