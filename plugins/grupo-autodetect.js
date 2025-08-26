@@ -21,7 +21,7 @@ const fkontak = {
   }
 };
 
-const res2 = await fetch('url');
+const res2 = await fetch('https://files.catbox.moe/z5vrl1.jpg');
 const thumb3 = Buffer.from(await res2.arrayBuffer());
 
 const fkontak2 = {
