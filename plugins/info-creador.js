@@ -10,7 +10,6 @@ let handler = async (m, { conn }) => {
   const proses = `✨\n *Obteniendo información de mis creadores...*`
   await conn.sendMessage(m.chat, { text: proses }, { quoted: m })
 
-  // Función para crear imagen
   async function createImage(url) {
     const { imageMessage } = await generateWAMessageContent(
       { image: { url } },
@@ -23,7 +22,7 @@ let handler = async (m, { conn }) => {
     {
       name: 'Deylin',
       desc: `👑 Creador Principal de ${botname}`,
-      image: 'https://files.catbox.moe/ubensh.mp4',
+      image: 'https://i.postimg.cc/nzt0Jht5/1756185471053.jpg',
       footer: '✨ Apóyame en mis proyectos y descubre más en mis redes.',
       buttons: [
         { name: 'WhatsApp', url: 'https://wa.me/50432955554' },
@@ -56,7 +55,6 @@ let handler = async (m, { conn }) => {
     }
   ]
 
-  // Generar tarjetas
   let cards = []
   for (let owner of owners) {
     const imageMsg = await createImage(owner.image)
@@ -86,7 +84,6 @@ let handler = async (m, { conn }) => {
     })
   }
 
-  // Crear el carrusel
   const slideMessage = generateWAMessageFromContent(
     m.chat,
     {
