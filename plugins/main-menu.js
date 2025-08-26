@@ -101,7 +101,7 @@ ${Object.keys(tags).reduce((acc, tag) => {
     await conn.sendMessage(
   m.chat,
   {
-    image: img,
+    url: img,
     caption: menuText.trim(),
     mentions: [m.sender]
   },
