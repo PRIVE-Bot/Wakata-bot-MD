@@ -97,14 +97,11 @@ ${Object.keys(tags).reduce((acc, tag) => {
 > ${dev}
 `;
 
-    const imageUrls = global.img
-    const selectedImage = imageUrls[Math.floor(Math.random() * imageUrls.length)];
-
     await m.react('⚡');
     await conn.sendMessage(
   m.chat,
   {
-    image: { url: selectedImage },
+    image: img,
     caption: menuText.trim(),
     mentions: [m.sender]
   },
