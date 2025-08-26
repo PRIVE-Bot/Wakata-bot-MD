@@ -34,7 +34,7 @@ let fkontak = {
             m.reply(`${emojis} Me he unido exitosamente al grupo.`);
 
 
-            await conn.sendMessage(groupId, { text: `Hola, soy ${botname}` }, { quoted: fkontak });
+            //await conn.sendMessage(groupId, { text: `Hola, soy ${botname}` }, { quoted: fkontak });
 
         } catch (err) {
             console.error('[ERROR AL UNIRSE AL GRUPO]', err);
