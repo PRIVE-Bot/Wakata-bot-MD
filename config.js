@@ -70,9 +70,9 @@ global.axios = axios
 global.moment = moment   
 
 global.icono1 = [
-'https://i.postimg.cc/d3Q1g80b/IMG-20250803-WA0147.jpg',
-'https://i.postimg.cc/zBZH2bKN/IMG-20250803-WA0146.jpg',
-'https://i.postimg.cc/1RVYNL5N/IMG-20250803-WA0145.jpg',
+'https://i.postimg.cc/c4t9wwCw/1756162596829.jpg',
+'https://i.postimg.cc/c4MvC5Wz/1756167144046.jpg',
+'https://i.postimg.cc/qMdtkHPn/1756167135980.jpg',
 ]//.getRandom()
 
 global.rcanal = {
