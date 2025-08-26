@@ -566,6 +566,7 @@ import { spawn, execSync } from 'child_process';
 import lodash from 'lodash';
 import chalk from 'chalk';
 import syntaxerror from 'syntax-error';
+import { pikaJadiBot } from './plugins/jadibot-serbot.js';
 import { tmpdir } from 'os';
 import { format } from 'util';
 import P from 'pino';
