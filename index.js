@@ -849,7 +849,7 @@ if (global.Jadibts) {
 
     if (archivosSubbot.includes('creds.json')) {
       try {
-        pikaJadiBot({
+        JadiBot({
           pathJadiBot: pathSubbot,
           m: null,
           conn,
