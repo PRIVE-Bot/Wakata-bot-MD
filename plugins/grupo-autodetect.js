@@ -2,37 +2,144 @@ let WAMessageStubType = (await import('@whiskeysockets/baileys')).default
 
 export async function before(m, { conn, participants, groupMetadata }) {
   if (!m.messageStubType || !m.isGroup) return
-  const fkontak = { 
-    key: { 
-      participants: "0@s.whatsapp.net", 
-      remoteJid: "status@broadcast", 
-      fromMe: false, 
-      id: "Halo" 
-    }, 
-    message: { 
-      contactMessage: { 
-        vcard: `BEGIN:VCARD
-VERSION:3.0
-N:Sy;Bot;;;
-FN:y
-item1.TEL;waid=${m.sender.split('@')[0]}:${m.sender.split('@')[0]}
-item1.X-ABLabel:Ponsel
-END:VCARD` 
+  
+
+const res = await fetch('url');
+const thumb2 = Buffer.from(await res.arrayBuffer());
+
+    const fkontak = {
+      key: { fromMe: false, participant: "0@s.whatsapp.net" },
+      message: {
+        orderMessage: {
+          itemCount: 1,
+          status: 1,
+          surface: 1,
+          message: `𝗘𝗡𝗟𝗔𝗖𝗘 𝗔𝗖𝗧𝗨𝗔𝗟𝗜𝗭𝗔𝗗𝗢`,
+          orderTitle: "Mejor Bot",
+          jpegThumbnail: thumb2
+        }
       }
-    }, 
-    participant: "0@s.whatsapp.net"
-  }
+    };
+
+const res2 = await fetch('url');
+const thumb3 = Buffer.from(await res2.arrayBuffer());
+
+    const fkontak2 = {
+      key: { fromMe: false, participant: "0@s.whatsapp.net" },
+      message: {
+        orderMessage: {
+          itemCount: 1,
+          status: 1,
+          surface: 1,
+          message: `𝗜𝗠𝗔𝗚𝗘𝗡 𝗔𝗖𝗧𝗨𝗔𝗟𝗜𝗭𝗔𝗗𝗔`,
+          orderTitle: "Mejor Bot",
+          jpegThumbnail: thumb3
+        }
+      }
+    };
+
+const res3 = await fetch('url');
+const thumb4 = Buffer.from(await res3.arrayBuffer());
+
+    const fkontak3 = {
+      key: { fromMe: false, participant: "0@s.whatsapp.net" },
+      message: {
+        orderMessage: {
+          itemCount: 1,
+          status: 1,
+          surface: 1,
+          message: `𝗡𝗢𝗠𝗕𝗥𝗘 𝗔𝗖𝗧𝗨𝗔𝗟𝗜𝗭𝗔𝗗𝗢`,
+          orderTitle: "Mejor Bot",
+          jpegThumbnail: thumb4
+        }
+      }
+    };
+
+const res4 = await fetch('url');
+const thumb5 = Buffer.from(await res4.arrayBuffer());
+
+    const fkontak4 = {
+      key: { fromMe: false, participant: "0@s.whatsapp.net" },
+      message: {
+        orderMessage: {
+          itemCount: 1,
+          status: 1,
+          surface: 1,
+          message: `texto`,
+          orderTitle: "Mejor Bot",
+          jpegThumbnail: thumb5
+        }
+      }
+    };
+
+const res5 = await fetch('url');
+const thumb6 = Buffer.from(await res5.arrayBuffer());
+
+    const fkontak5 = {
+      key: { fromMe: false, participant: "0@s.whatsapp.net" },
+      message: {
+        orderMessage: {
+          itemCount: 1,
+          status: 1,
+          surface: 1,
+          message: `texto`,
+          orderTitle: "Mejor Bot",
+          jpegThumbnail: thumb6
+        }
+      }
+    };
+
+const res6 = await fetch('url');
+const thumb7 = Buffer.from(await res6.arrayBuffer());
+
+    const fkontak6 = {
+      key: { fromMe: false, participant: "0@s.whatsapp.net" },
+      message: {
+        orderMessage: {
+          itemCount: 1,
+          status: 1,
+          surface: 1,
+          message: `texto`,
+          orderTitle: "Mejor Bot",
+          jpegThumbnail: thumb7
+        }
+      }
+    };
+
+const res7 = await fetch('url');
+const thumb8 = Buffer.from(await res7.arrayBuffer());
+
+    const fkontak7 = {
+      key: { fromMe: false, participant: "0@s.whatsapp.net" },
+      message: {
+        orderMessage: {
+          itemCount: 1,
+          status: 1,
+          surface: 1,
+          message: `texto`,
+          orderTitle: "Mejor Bot",
+          jpegThumbnail: thumb8
+        }
+      }
+    };
+
 
   let chat = global.db.data.chats[m.chat]
   let usuario = `@${m.sender.split`@`[0]}`
   let pp = await conn.profilePictureUrl(m.chat, 'image').catch(_ => null) || 'https://files.catbox.moe/xr2m6u.jpg'
 
   let nombre = `📛 El nombre del grupo fue cambiado a: *${m.messageStubParameters[0]}*\n👤 Por: ${usuario}`
+
   let foto = `🖼️ La foto del grupo ha sido actualizada.\n👤 Por: ${usuario}`
+
   let edit = `🔧 La configuración del grupo ha sido modificada.\n👤 Por: ${usuario}\n📋 Permisos: ${m.messageStubParameters[0] == 'on' ? 'Solo administradores' : 'Todos los miembros'}`
+
   let newlink = `🔗 El enlace del grupo ha sido restablecido.\n👤 Por: ${usuario}`
+
   let status = `🔒 El grupo ahora está ${m.messageStubParameters[0] == 'on' ? '*cerrado*' : '*abierto*'}.\n👤 Por: ${usuario}`
+
   let admingp = `🆙 *@${m.messageStubParameters[0].split`@`[0]}* ha sido ascendido a administrador.\n👤 Acción realizada por: ${usuario}`
+
   let noadmingp = `⬇️ *@${m.messageStubParameters[0].split`@`[0]}* ha sido removido como administrador.\n👤 Acción realizada por: ${usuario}`
 
   if (chat.detect && m.messageStubType == 21) {
