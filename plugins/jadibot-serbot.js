@@ -60,7 +60,7 @@ let rtx2 = `
 
 let imagenUrl = 'https://i.postimg.cc/25y2jZs1/1756163690161.jpg'
 
-    const res = await fetch('https://files.catbox.moe/oljc0e.png');
+    const res = await fetch('https://i.postimg.cc/vHqc5x17/1756169140993.jpg');
     const thumb2 = Buffer.from(await res.arrayBuffer());
 
     const fkontak = {
