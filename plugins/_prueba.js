@@ -1,32 +1,48 @@
-/* const handler = async (m, { conn, text, command }) => {
+import fs from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url'
 
-const res = await fetch('https://i.postimg.cc/pdCvMMvP/1755841606616.jpg');
-  const thumb2 = Buffer.from(await res.arrayBuffer());
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
-  
-  const fkontak = {
-    key: {
-            participants: "0@s.whatsapp.net",
-            remoteJid: "status@broadcast",
-            fromMe: false,
-            id: "Halo"
-        },
-    message: {
-      imageMessage: {
-        mimetype: 'image/jpeg',
-        caption: 'PRUEBA',
-        jpegThumbnail: thumb2
-      }
+let mensajesUsados = []
+
+let handler = async (m, { conn }) => {
+  try {
+    const mensajesPath = path.join(__dirname, '../src/database/motivacion.json')
+    const rawData = fs.readFileSync(mensajesPath, 'utf-8')
+    const data = JSON.parse(rawData)
+    const mensajes = data.mensajes
+
+    if (mensajesUsados.length >= mensajes.length) {
+      mensajesUsados = []
     }
-  };
 
-   return conn.reply(m.chat, `2 o 3?`, fkontak, rcanal);
+    const mensajesDisponibles = mensajes.filter(m => !mensajesUsados.includes(m))
+    const mensaje = mensajesDisponibles[Math.floor(Math.random() * mensajesDisponibles.length)]
 
-};
+    mensajesUsados.push(mensaje)
 
-handler.command = ['1'];
+    await conn.sendMessage(m.chat, {
+      text: `🌟 *Mensaje para ti:*\n\n"${mensaje}"`,
+      footer: 'Toca el botón para otro consejo',
+const buttons = [
+    {
+      buttonId: '.p',
+      buttonText: { displayText: '1' },
+      type: 1,
+    }
+   ],
+   headerType: 1
+    }, { quoted: m })
 
-export default handler;*/
+  } catch (e) {
+    await conn.reply(m.chat, '⚠️ Ocurrió un error al leer los mensajes.', m)
+    console.error(e)
+  }
+}
+
+handler.command = ['1']
 
 
-
+export default handler
