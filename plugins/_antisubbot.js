@@ -20,8 +20,7 @@ export async function before(m, { participants, conn }) {
 > Ya hay un bot principal activo en el grupo, por lo tanto no responderé comandos para evitar interferencias.
 ¡Gracias por su comprensión!
 
-> *sɪɢᴜᴇ ᴇʟ ᴄᴀɴᴀʟ ᴏғɪᴄɪᴀʟ:*
-> whatsapp.com/channel/0029VbAzn9GGU3BQw830eA0F`, m, rcanal)
+`, m, rcanal)
           
         }, 5000) 
       }
