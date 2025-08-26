@@ -10,7 +10,7 @@ let handler = async (m, { conn, text, isOwner }) => {
 
     if (isOwner) {
         try {
-const res = await fetch('https://files.catbox.moe/oljc0e.png'); 
+const res = await fetch('https://i.postimg.cc/BbKzXWkP/1756247840666.jpg'); 
 const thumb3 = Buffer.from(await res.arrayBuffer());
 
 let userJid = m.sender; 
