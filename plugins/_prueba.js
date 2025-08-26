@@ -1,17 +1,18 @@
-
-
 let handler = async (m, { conn }) => {
-      await conn.sendMessage(m.chat, {
+  try {
+    let mensaje = "Este es un consejo de prueba" 
+
+    await conn.sendMessage(m.chat, {
       text: `🌟 *Mensaje para ti:*\n\n"${mensaje}"`,
       footer: 'Toca el botón para otro consejo',
-const buttons = [
-    {
-      buttonId: '.p',
-      buttonText: { displayText: '1' },
-      type: 1,
-    }
-   ],
-   headerType: 1
+      buttons: [
+        {
+          buttonId: '.p',
+          buttonText: { displayText: '1' },
+          type: 1,
+        }
+      ],
+      headerType: 1
     }, { quoted: m })
 
   } catch (e) {
@@ -21,6 +22,5 @@ const buttons = [
 }
 
 handler.command = ['1']
-
 
 export default handler
