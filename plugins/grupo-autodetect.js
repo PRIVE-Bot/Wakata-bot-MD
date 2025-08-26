@@ -7,121 +7,121 @@ export async function before(m, { conn, participants, groupMetadata }) {
 const res = await fetch('url');
 const thumb2 = Buffer.from(await res.arrayBuffer());
 
-    const fkontak = {
-      key: { fromMe: false, participant: "0@s.whatsapp.net" },
-      message: {
-        orderMessage: {
-          itemCount: 1,
-          status: 1,
-          surface: 1,
-          message: `𝗘𝗡𝗟𝗔𝗖𝗘 𝗔𝗖𝗧𝗨𝗔𝗟𝗜𝗭𝗔𝗗𝗢`,
-          orderTitle: "Mejor Bot",
-          jpegThumbnail: thumb2
-        }
-      }
-    };
+const fkontak = {
+  key: { fromMe: false, participant: "0@s.whatsapp.net" },
+  message: {
+    orderMessage: {
+      itemCount: 1,
+      status: 1,
+      surface: 1,
+      message: `𝗘𝗡𝗟𝗔𝗖𝗘 𝗔𝗖𝗧𝗨𝗔𝗟𝗜𝗭𝗔𝗗𝗢`,
+      orderTitle: "Mejor Bot",
+      jpegThumbnail: thumb2
+    }
+  }
+};
 
 const res2 = await fetch('url');
 const thumb3 = Buffer.from(await res2.arrayBuffer());
 
-    const fkontak2 = {
-      key: { fromMe: false, participant: "0@s.whatsapp.net" },
-      message: {
-        orderMessage: {
-          itemCount: 1,
-          status: 1,
-          surface: 1,
-          message: `𝗜𝗠𝗔𝗚𝗘𝗡 𝗔𝗖𝗧𝗨𝗔𝗟𝗜𝗭𝗔𝗗𝗔`,
-          orderTitle: "Mejor Bot",
-          jpegThumbnail: thumb3
-        }
-      }
-    };
+const fkontak2 = {
+  key: { fromMe: false, participant: "0@s.whatsapp.net" },
+  message: {
+    orderMessage: {
+      itemCount: 1,
+      status: 1,
+      surface: 1,
+      message: `𝗜𝗠𝗔𝗚𝗘𝗡 𝗔𝗖𝗧𝗨𝗔𝗟𝗜𝗭𝗔𝗗𝗔`,
+      orderTitle: "Mejor Bot",
+      jpegThumbnail: thumb3
+    }
+  }
+};
 
 const res3 = await fetch('url');
 const thumb4 = Buffer.from(await res3.arrayBuffer());
 
-    const fkontak3 = {
-      key: { fromMe: false, participant: "0@s.whatsapp.net" },
-      message: {
-        orderMessage: {
-          itemCount: 1,
-          status: 1,
-          surface: 1,
-          message: `𝗡𝗢𝗠𝗕𝗥𝗘 𝗔𝗖𝗧𝗨𝗔𝗟𝗜𝗭𝗔𝗗𝗢`,
-          orderTitle: "Mejor Bot",
-          jpegThumbnail: thumb4
-        }
-      }
-    };
+const fkontak3 = {
+  key: { fromMe: false, participant: "0@s.whatsapp.net" },
+  message: {
+    orderMessage: {
+      itemCount: 1,
+      status: 1,
+      surface: 1,
+      message: `𝗡𝗢𝗠𝗕𝗥𝗘 𝗔𝗖𝗧𝗨𝗔𝗟𝗜𝗭𝗔𝗗𝗢`,
+      orderTitle: "Mejor Bot",
+      jpegThumbnail: thumb4
+    }
+  }
+};
 
 const res4 = await fetch('url');
 const thumb5 = Buffer.from(await res4.arrayBuffer());
 
-    const fkontak4 = {
-      key: { fromMe: false, participant: "0@s.whatsapp.net" },
-      message: {
-        orderMessage: {
-          itemCount: 1,
-          status: 1,
-          surface: 1,
-          message: `𝗘𝗗𝗜𝗧 𝗔𝗖𝗧𝗨𝗔𝗟𝗜𝗭𝗔𝗗𝗢`,
-          orderTitle: "Mejor Bot",
-          jpegThumbnail: thumb5
-        }
-      }
-    };
+const fkontak4 = {
+  key: { fromMe: false, participant: "0@s.whatsapp.net" },
+  message: {
+    orderMessage: {
+      itemCount: 1,
+      status: 1,
+      surface: 1,
+      message: `𝗘𝗗𝗜𝗧 𝗔𝗖𝗧𝗨𝗔𝗟𝗜𝗭𝗔𝗗𝗢`,
+      orderTitle: "Mejor Bot",
+      jpegThumbnail: thumb5
+    }
+  }
+};
 
 const res5 = await fetch('url');
 const thumb6 = Buffer.from(await res5.arrayBuffer());
 
-    const fkontak5 = {
-      key: { fromMe: false, participant: "0@s.whatsapp.net" },
-      message: {
-        orderMessage: {
-          itemCount: 1,
-          status: 1,
-          surface: 1,
-          message: `𝗦𝗧𝗔𝗧𝗨𝗦 𝗗𝗘𝗟 𝗚𝗥𝗨𝗣𝗢`,
-          orderTitle: "Mejor Bot",
-          jpegThumbnail: thumb6
-        }
-      }
-    };
+const fkontak5 = {
+  key: { fromMe: false, participant: "0@s.whatsapp.net" },
+  message: {
+    orderMessage: {
+      itemCount: 1,
+      status: 1,
+      surface: 1,
+      message: `𝗘𝗦𝗧𝗔𝗗𝗢 𝗗𝗘𝗟 𝗚𝗥𝗨𝗣𝗢`, 
+      orderTitle: "Mejor Bot",
+      jpegThumbnail: thumb6
+    }
+  }
+};
 
 const res6 = await fetch('url');
 const thumb7 = Buffer.from(await res6.arrayBuffer());
 
-    const fkontak6 = {
-      key: { fromMe: false, participant: "0@s.whatsapp.net" },
-      message: {
-        orderMessage: {
-          itemCount: 1,
-          status: 1,
-          surface: 1,
-          message: `𝗡𝗨𝗘𝗩𝗢 𝗔𝗗𝗠𝗜𝗡`,
-          orderTitle: "Mejor Bot",
-          jpegThumbnail: thumb7
-        }
-      }
-    };
+const fkontak6 = {
+  key: { fromMe: false, participant: "0@s.whatsapp.net" },
+  message: {
+    orderMessage: {
+      itemCount: 1,
+      status: 1,
+      surface: 1,
+      message: `𝗡𝗨𝗘𝗩𝗢 𝗔𝗗𝗠𝗜𝗡`,
+      orderTitle: "Mejor Bot",
+      jpegThumbnail: thumb7
+    }
+  }
+};
 
 const res7 = await fetch('url');
 const thumb8 = Buffer.from(await res7.arrayBuffer());
 
-    const fkontak7 = {
-      key: { fromMe: false, participant: "0@s.whatsapp.net" },
-      message: {
-        orderMessage: {
-          itemCount: 1,
-          status: 1,
-          surface: 1,
-          message: `𝗨𝗡 𝗔𝗗𝗠𝗜𝗡 𝗠𝗘𝗡𝗢𝗦`,
-          orderTitle: "Mejor Bot",
-          jpegThumbnail: thumb8
-        }
-      }
-    };
+const fkontak7 = {
+  key: { fromMe: false, participant: "0@s.whatsapp.net" },
+  message: {
+    orderMessage: {
+      itemCount: 1,
+      status: 1,
+      surface: 1,
+      message: `𝗨𝗡 𝗔𝗗𝗠𝗜𝗡 𝗠𝗘𝗡𝗢𝗦`,
+      orderTitle: "Mejor Bot",
+      jpegThumbnail: thumb8
+    }
+  }
+};
 
 
   let chat = global.db.data.chats[m.chat]
