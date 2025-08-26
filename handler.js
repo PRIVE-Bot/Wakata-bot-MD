@@ -19,9 +19,22 @@ this.uptime = this.uptime || Date.now()
 if (!chatUpdate)
 return
 this.pushMessage(chatUpdate.messages).catch(console.error)
+
+
 let m = chatUpdate.messages[chatUpdate.messages.length - 1]
 if (!m)
 return;
+if (m && m.key && typeof m.key.remoteJid !== 'string') {
+    console.warn('⚠️ Mensaje defectuoso.');
+    return;
+}
+
+
+if (global.db.data == null)
+
+
+
+
 if (global.db.data == null)
 await global.loadDatabase()       
 try {
