@@ -23,7 +23,7 @@ let handler = async (m, { conn }) => {
     {
       name: 'Deylin',
       desc: `👑 Creador Principal de ${botname}`,
-      image: 'https://files.catbox.moe/51epch.jpg',
+      image: 'https://files.catbox.moe/ubensh.mp4',
       footer: '✨ Apóyame en mis proyectos y descubre más en mis redes.',
       buttons: [
         { name: 'WhatsApp', url: 'https://wa.me/50432955554' },
