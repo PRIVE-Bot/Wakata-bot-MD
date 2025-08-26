@@ -89,7 +89,7 @@ let handler = async (m, { conn }) => {
 
     await conn.sendMessage(m.chat, { text: r.text }, { quoted: m })
   }
-}
+
 
 handler.customPrefix = new RegExp(`^(${Object.keys(respuestas).map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})$`, 'i')
 handler.command = new RegExp
