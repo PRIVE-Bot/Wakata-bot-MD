@@ -89,7 +89,7 @@ const fkontak5 = {
   }
 };
 
-const res6 = await fetch('url');
+const res6 = await fetch('https://i.postimg.cc/sDxKyS7b/1756180619692.jpg');
 const thumb7 = Buffer.from(await res6.arrayBuffer());
 
 const fkontak6 = {
@@ -106,7 +106,7 @@ const fkontak6 = {
   }
 };
 
-const res7 = await fetch('url');
+const res7 = await fetch('https://i.postimg.cc/sDxKyS7b/1756180619692.jpg');
 const thumb8 = Buffer.from(await res7.arrayBuffer());
 
 const fkontak7 = {
