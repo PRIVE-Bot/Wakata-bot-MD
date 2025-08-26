@@ -38,7 +38,7 @@ const fkontak2 = {
   }
 };
 
-const res3 = await fetch('url');
+const res3 = await fetch('https://files.catbox.moe/vjx6r8.jpg');
 const thumb4 = Buffer.from(await res3.arrayBuffer());
 
 const fkontak3 = {
