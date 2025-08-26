@@ -1,20 +1,13 @@
 <!-- Banner superior -->
-<img src="https://capsule-render.vercel.app/api?type=waving&height=260&section=header&text=Naruto-Bot%20MD&fontSize=60&fontAlign=50&fontAlignY=35&color=0:F68512,50:1B2A49,100:000000&stroke=000000&strokeWidth=1&fontColor=FFFFFF&textBg=true" width="100%"/>
+<img src="https://capsule-render.vercel.app/api?type=waving&height=260&section=header&text=SPARK-BOT%20MD&fontSize=60&fontAlign=50&fontAlignY=35&color=0:F68512,50:1B2A49,100:000000&stroke=000000&strokeWidth=1&fontColor=FFFFFF&textBg=true" width="100%"/>
 
-> [!TIP]
-> ## **`🚧 En desarrollo... ↻`**
-> Este proyecto está en constante mejora y optimización.  
-> Próximamente más funciones, mejor rendimiento y nuevos comandos.
-
-<h1 align="center"> 🌀 Naruto-Bot-MD 🌀 </h1>
 
 ---
 
 > [!NOTE]
 > <p align="center">
->   <img src="https://files.catbox.moe/0183v7.png" alt="Menú Principal" width="85%">
+>   <img src="https://i.postimg.cc/8kWYFx5N/1756189788406.jpg" alt="Menú Principal" width="85%">
 > </p>
-> Bot de WhatsApp basado en **Baileys MD** con estilo **Naruto** — estable, rápido y con comandos avanzados.
 
 ---
 
