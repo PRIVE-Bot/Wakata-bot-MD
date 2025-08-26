@@ -17,23 +17,6 @@
 
 ---
 
-<!-- Texto animado -->
-<p align="center">
-  <img src="https://readme-typing-svg.herokuapp.com?size=26&duration=2300&pause=600&center=true&vCenter=true&width=900&lines=Bienvenido+al+mundo+shinobi;Conexi%C3%B3n+por+QR+y+Emparejamiento;Comandos+avanzados+y+veloces;By+Deylin" />
-</p>
-
-<!-- Badges -->
-<p align="center">
-  <a href="https://whatsapp.com/channel/0029VbB46nl2ER6dZac6Nd1o">
-    <img src="https://img.shields.io/badge/Canal%20Oficial-WhatsApp-25D366?logo=whatsapp&logoColor=white" />
-  </a>
-  <img src="https://img.shields.io/badge/Naruto%20Style-F68512?logo=firefox&logoColor=white" />
-  <img src="https://img.shields.io/badge/Baileys-WhatsApp%20MD-1B2A49?logo=whatsapp&logoColor=white" />
-  <a href="https://ko-fi.com/naruto_bot">
-    <img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="Apóyame en Ko-fi"/>
-  </a>
-</p>
-
 <!-- Banner inferior -->
 <img src="https://capsule-render.vercel.app/api?type=waving&height=140&section=footer&color=0:000000,50:1B2A49,100:F68512" width="100%"/>
 
