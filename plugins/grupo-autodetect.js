@@ -4,7 +4,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
   if (!m.messageStubType || !m.isGroup) return
   
 
-const res = await fetch('url');
+const res = await fetch('https://files.catbox.moe/rq6xiz.jpg');
 const thumb2 = Buffer.from(await res.arrayBuffer());
 
 const fkontak = {
@@ -143,19 +143,19 @@ const fkontak7 = {
   let noadmingp = `⬇️ *@${m.messageStubParameters[0].split`@`[0]}* ha sido removido como administrador.\n👤 Acción realizada por: ${usuario}`
 
   if (chat.detect && m.messageStubType == 21) {
-    await conn.sendMessage(m.chat, { text: nombre, mentions: [m.sender] }, { quoted: fkontak })
+    await conn.sendMessage(m.chat, { text: nombre, mentions: [m.sender] }, { quoted: fkontak3 })
   } else if (chat.detect && m.messageStubType == 22) {
-    await conn.sendMessage(m.chat, { image: { url: pp }, caption: foto, mentions: [m.sender] }, { quoted: fkontak })
+    await conn.sendMessage(m.chat, { image: { url: pp }, caption: foto, mentions: [m.sender] }, { quoted: fkontak2 })
   } else if (chat.detect && m.messageStubType == 23) {
     await conn.sendMessage(m.chat, { text: newlink, mentions: [m.sender] }, { quoted: fkontak })
   } else if (chat.detect && m.messageStubType == 25) {
-    await conn.sendMessage(m.chat, { text: edit, mentions: [m.sender] }, { quoted: fkontak })
+    await conn.sendMessage(m.chat, { text: edit, mentions: [m.sender] }, { quoted: fkontak4 })
   } else if (chat.detect && m.messageStubType == 26) {
-    await conn.sendMessage(m.chat, { text: status, mentions: [m.sender] }, { quoted: fkontak })
+    await conn.sendMessage(m.chat, { text: status, mentions: [m.sender] }, { quoted: fkontak5 })
   } else if (chat.detect && m.messageStubType == 29) {
-    await conn.sendMessage(m.chat, { text: admingp, mentions: [`${m.sender}`, `${m.messageStubParameters[0]}`] }, { quoted: fkontak })
+    await conn.sendMessage(m.chat, { text: admingp, mentions: [`${m.sender}`, `${m.messageStubParameters[0]}`] }, { quoted: fkontak6 })
     return
   } else if (chat.detect && m.messageStubType == 30) {
-    await conn.sendMessage(m.chat, { text: noadmingp, mentions: [`${m.sender}`, `${m.messageStubParameters[0]}`] }, { quoted: fkontak })
+    await conn.sendMessage(m.chat, { text: noadmingp, mentions: [`${m.sender}`, `${m.messageStubParameters[0]}`] }, { quoted: fkontak7 })
   }
 }
