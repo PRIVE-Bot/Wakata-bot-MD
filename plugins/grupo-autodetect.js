@@ -65,7 +65,7 @@ const thumb5 = Buffer.from(await res4.arrayBuffer());
           itemCount: 1,
           status: 1,
           surface: 1,
-          message: `texto`,
+          message: `𝗘𝗗𝗜𝗧 𝗔𝗖𝗧𝗨𝗔𝗟𝗜𝗭𝗔𝗗𝗢`,
           orderTitle: "Mejor Bot",
           jpegThumbnail: thumb5
         }
@@ -82,7 +82,7 @@ const thumb6 = Buffer.from(await res5.arrayBuffer());
           itemCount: 1,
           status: 1,
           surface: 1,
-          message: `texto`,
+          message: `𝗦𝗧𝗔𝗧𝗨𝗦 𝗗𝗘𝗟 𝗚𝗥𝗨𝗣𝗢`,
           orderTitle: "Mejor Bot",
           jpegThumbnail: thumb6
         }
@@ -99,7 +99,7 @@ const thumb7 = Buffer.from(await res6.arrayBuffer());
           itemCount: 1,
           status: 1,
           surface: 1,
-          message: `texto`,
+          message: `𝗡𝗨𝗘𝗩𝗢 𝗔𝗗𝗠𝗜𝗡`,
           orderTitle: "Mejor Bot",
           jpegThumbnail: thumb7
         }
@@ -116,7 +116,7 @@ const thumb8 = Buffer.from(await res7.arrayBuffer());
           itemCount: 1,
           status: 1,
           surface: 1,
-          message: `texto`,
+          message: `𝗨𝗡 𝗔𝗗𝗠𝗜𝗡 𝗠𝗘𝗡𝗢𝗦`,
           orderTitle: "Mejor Bot",
           jpegThumbnail: thumb8
         }
