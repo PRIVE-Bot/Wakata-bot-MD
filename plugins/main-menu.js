@@ -113,7 +113,7 @@ ${Object.keys(tags).reduce((acc, tag) => {
 
   } catch (e) {
     console.error(e);
-    conn.reply(m.chat, '❎ Lo sentimos, el menú tiene un error.', m);
+    conn.reply(m.chat, '❎ Lo sentimos, el menú tiene un error.' e, m);
   }
 };
 
