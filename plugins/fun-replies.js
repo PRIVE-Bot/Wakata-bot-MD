@@ -1,7 +1,5 @@
 import fetch from 'node-fetch' 
 
-const icono = 'https://i.postimg.cc/d3Q1g80b/IMG-20250803-WA0147.jpg'
-
 const respuestas = {
   'hola': {
     text: 'Hola 👋, ¡qué gusto saludarte!'
