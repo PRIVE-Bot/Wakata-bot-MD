@@ -79,6 +79,24 @@ let imagenUrl = 'https://i.postimg.cc/25y2jZs1/1756163690161.jpg'
         participant: "0@s.whatsapp.net"
     };
 
+const res1 = await fetch('url');
+const thumb3 = Buffer.from(await res1.arrayBuffer());
+
+    const fkontak1 = {
+      key: { fromMe: false, participant: "0@s.whatsapp.net" },
+      message: {
+        orderMessage: {
+          itemCount: 1,
+          status: 1,
+          surface: 1,
+          message: `𝗖𝗢𝗡𝗘𝗖𝗧𝗔𝗗𝗢 𝗖𝗢𝗡 𝗪𝗛𝗔𝗧𝗦𝗔𝗣𝗣`,
+          orderTitle: "Mejor Bot",
+          jpegThumbnail: thumb3
+        }
+      }
+    };
+
+
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const JBOptions = {}
@@ -292,7 +310,7 @@ m?.chat ? await conn.sendMessage(m.chat, {text: args[0] ? `@${m.sender.split('@'
 ┋
 ┣━━━━━━━━━━━━━━━━━━⌬
 ┇ ${dev}
-╰━━━━━━━━━━━━━━━━━━━━━━━━⌼`, mentions: [m.sender]}, { quoted: fkontak }) : ''
+╰━━━━━━━━━━━━━━━━━━━━━━━━⌼`, mentions: [m.sender]}, { quoted: fkontak1 }) : ''
 
 }}
 setInterval(async () => {
