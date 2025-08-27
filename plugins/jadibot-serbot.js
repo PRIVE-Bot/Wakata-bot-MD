@@ -79,7 +79,7 @@ let imagenUrl = 'https://i.postimg.cc/25y2jZs1/1756163690161.jpg'
         participant: "0@s.whatsapp.net"
     };
 
-const res1 = await fetch('url');
+const res1 = await fetch('https://files.catbox.moe/dz34fo.jpg');
 const thumb3 = Buffer.from(await res1.arrayBuffer());
 
     const fkontak1 = {
