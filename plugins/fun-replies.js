@@ -137,6 +137,8 @@ const respuestas = {
   'lmao': { text: 'LMAO 😆🔥' },
   'haha': { text: 'Hahahah 🤭' },
   'eh': { text: 'Ehhhh 👀' },
+  'no': {si 😼},
+  'si': {no},
   'na': { text: 'Naaa 😏' },
   'ya no': { text: 'Ok, entendido 🙌' },
   'ya dije que no': { text: 'Ok tranquilo ✌️' },
