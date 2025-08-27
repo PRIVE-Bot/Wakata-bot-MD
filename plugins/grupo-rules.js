@@ -4,7 +4,7 @@ let metadata = await conn.groupMetadata(m.chat)
 return conn.reply(m.chat, `${reglas}`, m, rcanal);
 }
 
-handler.command = handler.help = ['reglas', 'Rules', 'descripcion', 'description']
+handler.command = handler.help = ['reglas', 'rules', 'descripcion', 'description']
 handler.tags = ['group']
 handler.group = true;
 
