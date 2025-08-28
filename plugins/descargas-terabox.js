@@ -5,13 +5,13 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     
 
     if (!text) {
-        return m.reply(`${emoji} Por favor, ingresa un enlace de *Terabox*.`);
+        return m.reply(`${emoji2} Por favor, ingresa un enlace de *Terabox*.`);
     }
 
     try {
         new URL(text);
     } catch (e) {
-        return m.reply(`${emoji} Por favor, ingresa una URL válida.`);
+        return m.reply(`${emoji2} Por favor, ingresa una URL válida.`);
     }
 
     await m.react('🕓');
@@ -19,7 +19,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     try {
         const result = await terabox(text);
         if (!result.length) {
-            return m.reply(`${emoji} No se encontraron archivos para descargar en el enlace proporcionado.`);
+            return m.reply(`${emoji2} No se encontraron archivos para descargar en el enlace proporcionado.`);
         }
 
         for (let i = 0; i < result.length; i++) {
@@ -37,7 +37,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 ┇ URL: ${url}
 ┗━━━━━━━━━━━━━━━━⍰
 `;
-            
+
             try {
                 await conn.sendFile(m.chat, url, fileName, caption, m, false, {
                     thumbnail: thumb ? await getBuffer(thumb) : null
@@ -64,43 +64,23 @@ handler.coin = 5;
 export default handler;
 
 async function terabox(url) {
-    const fileDataResponse = await axios.post('https://teradl-api.dapuntaratya.com/generate_file', {
-        mode: 1,
-        url: url
-    });
-
+    const fileDataResponse = await axios.get(`https://api.dapuhy.my.id/api/downloader/terabox?url=${url}`);
     const data = fileDataResponse.data;
 
-    if (!data.list || data.list.length === 0) {
-        throw new Error('No se encontró la lista de archivos en la respuesta de la API.');
+    if (data.status !== 200 || !data.result || data.result.length === 0) {
+        throw new Error('No se encontraron archivos en el enlace de Terabox.');
     }
 
     const files = [];
 
-    for (const file of data.list) {
-        try {
-            const downloadLinkResponse = await axios.post('https://teradl-api.dapuntaratya.com/generate_link', {
-                js_token: data.js_token,
-                cookie: data.cookie,
-                sign: data.sign,
-                timestamp: data.timestamp,
-                shareid: data.shareid,
-                uk: data.uk,
-                fs_id: file.fs_id
+    for (const file of data.result) {
+        if (file.url) {
+            files.push({
+                fileName: file.fileName || 'desconocido',
+                type: file.fileType || 'desconocido',
+                thumb: file.thumb || null,
+                url: file.url
             });
-
-            const downloadData = downloadLinkResponse.data;
-
-            if (downloadData.download_link && downloadData.download_link.url_1) {
-                files.push({
-                    fileName: file.name,
-                    type: file.type,
-                    thumb: file.image,
-                    url: downloadData.download_link.url_1
-                });
-            }
-        } catch (linkError) {
-            console.error(`Error al generar el enlace para el archivo "${file.name}".`);
         }
     }
 
