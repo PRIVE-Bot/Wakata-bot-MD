@@ -1,43 +1,57 @@
 import axios from 'axios';
+import { URL } from 'url';
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
-  if (!text) return m.reply(`${emoji} Por favor, ingresa un enlace de *Terabox*.`);
-  await m.react('🕓');
+    
 
-  try {
-    const result = await terabox(text);
-    if (!result.length) return m.reply(`${emoji2} ingresa una URL válida.`);
+    if (!text) {
+        return m.reply(`${emoji} Por favor, ingresa un enlace de *Terabox*.`);
+    }
 
-    for (let i = 0; i < result.length; i++) {
-      const { fileName, type, thumb, url } = result[i];
-      if (!fileName || !url) {
-        console.error('Error: Datos del archivo incompletos', { fileName, url });
-        continue;
-      }
+    try {
+        new URL(text);
+    } catch (e) {
+        return m.reply(`${emoji} Por favor, ingresa una URL válida.`);
+    }
 
-      const caption = `
+    await m.react('🕓');
+
+    try {
+        const result = await terabox(text);
+        if (!result.length) {
+            return m.reply(`${emoji} No se encontraron archivos para descargar en el enlace proporcionado.`);
+        }
+
+        for (let i = 0; i < result.length; i++) {
+            const { fileName, type, thumb, url } = result[i];
+
+            if (!fileName || !url) {
+                console.error('Error: Datos del archivo incompletos', { fileName, url });
+                continue;
+            }
+
+            const caption = `
 ┏━━━━━━━━━━━━━━━━⌼
 ┇ *Nombre File:* ${fileName}
 ┇ *Formato:* ${type}
-┇  URL: ${url}
+┇ URL: ${url}
 ┗━━━━━━━━━━━━━━━━⍰
 `;
-      console.log(`Enviando archivo: ${fileName}, URL: ${url}`);
-
-      try {
-        await conn.sendFile(m.chat, url, fileName, caption, m, false, {
-          thumbnail: thumb ? await getBuffer(thumb) : null
-        });
-        await m.react('✅');
-      } catch (error) {
-        console.error('Error al enviar el archivo:', error);
-        m.reply(`${msm} Error al enviar el archivo: ${fileName}`);
-      }
+            
+            try {
+                await conn.sendFile(m.chat, url, fileName, caption, m, false, {
+                    thumbnail: thumb ? await getBuffer(thumb) : null
+                });
+                await m.react(emoji);
+            } catch (error) {
+                console.error('Error al enviar el archivo:', error);
+                m.reply(`${emoji2} Error al enviar el archivo: ${fileName}`);
+            }
+        }
+    } catch (err) {
+        console.error('Error general:', err.message);
+        m.reply(`${emoji2} Ocurrió un error al descargar el archivo.`);
     }
-  } catch (err) {
-    console.error('Error general:', err);
-    m.reply('Error al descargar el archivo.');
-  }
 };
 
 handler.help = ["terabox *<url>*"];
@@ -50,59 +64,59 @@ handler.coin = 5;
 export default handler;
 
 async function terabox(url) {
-  return new Promise(async (resolve, reject) => {
-    await axios
-      .post('https://teradl-api.dapuntaratya.com/generate_file', {
+    const fileDataResponse = await axios.post('https://teradl-api.dapuntaratya.com/generate_file', {
         mode: 1,
         url: url
-      })
-      .then(async (a) => {
-        const array = [];
-        for (let x of a.data.list) {
-          let dl = await axios
-            .post('https://teradl-api.dapuntaratya.com/generate_link', {
-              js_token: a.data.js_token,
-              cookie: a.data.cookie,
-              sign: a.data.sign,
-              timestamp: a.data.timestamp,
-              shareid: a.data.shareid,
-              uk: a.data.uk,
-              fs_id: x.fs_id
-            })
-            .then((i) => i.data)
-            .catch((e) => e.response);
+    });
 
-          if (!dl.download_link || !dl.download_link.url_1) {
-            console.error('Error: Enlace de descarga no encontrado', dl);
-            continue;
-          }
+    const data = fileDataResponse.data;
 
-          array.push({
-            fileName: x.name,
-            type: x.type,
-            thumb: x.image,
-            url: dl.download_link.url_1
-          });
+    if (!data.list || data.list.length === 0) {
+        throw new Error('No se encontró la lista de archivos en la respuesta de la API.');
+    }
+
+    const files = [];
+
+    for (const file of data.list) {
+        try {
+            const downloadLinkResponse = await axios.post('https://teradl-api.dapuntaratya.com/generate_link', {
+                js_token: data.js_token,
+                cookie: data.cookie,
+                sign: data.sign,
+                timestamp: data.timestamp,
+                shareid: data.shareid,
+                uk: data.uk,
+                fs_id: file.fs_id
+            });
+
+            const downloadData = downloadLinkResponse.data;
+
+            if (downloadData.download_link && downloadData.download_link.url_1) {
+                files.push({
+                    fileName: file.name,
+                    type: file.type,
+                    thumb: file.image,
+                    url: downloadData.download_link.url_1
+                });
+            }
+        } catch (linkError) {
+            console.error(`Error al generar el enlace para el archivo "${file.name}".`);
         }
-        resolve(array);
-      })
-      .catch((e) => {
-        console.error('Error en la API Terabox:', e.response.data);
-        reject(e.response.data);
-      });
-  });
+    }
+
+    return files;
 }
 
 async function getBuffer(url) {
-  try {
-    const res = await axios({
-      method: 'get',
-      url,
-      responseType: 'arraybuffer'
-    });
-    return res.data;
-  } catch (err) {
-    console.error('Error al obtener el buffer:', err);
-    return null;
-  }
+    try {
+        const res = await axios({
+            method: 'get',
+            url,
+            responseType: 'arraybuffer'
+        });
+        return res.data;
+    } catch (err) {
+        console.error('Error al obtener el buffer:', err);
+        return null;
+    }
 }
