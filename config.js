@@ -97,20 +97,18 @@ const res = await fetch(inc);
 const img = Buffer.from(await res.arrayBuffer());
 
 global.rcanal = {
-    key: { fromMe: false, participant: "0@s.whatsapp.net" },
-    message: {
-        productMessage: {
-            product: {
-                productImage: { jpegThumbnail: img },
-                title: textbot,
-                description: textbot,
-                currencyCode: "USD",
-                priceAmount1000: "10000", 
-                retailerId: "BOT"
-            },
-            businessOwnerJid: "0@s.whatsapp.net"
-        }
+  key: { fromMe: false, participant: "0@s.whatsapp.net" },
+  message: {
+    orderMessage: {
+      itemCount: 1,
+      status: 1,
+      surface: 1,
+      message: textbot, 
+      orderTitle: "Spark-Bot",
+      thumbnail: img, 
+      sellerJid: "0@s.whatsapp.net"
     }
+  }
 };
 
 async function getRandomChannel() {
