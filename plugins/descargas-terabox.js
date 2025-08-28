@@ -110,6 +110,7 @@ async function getBuffer(url) {
 
 
 import axios from "axios";
+import * as cheerio from "cheerio";
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
   if (!text) return m.reply(`⚠️ Ingresa un enlace de *Terabox*.\n\nEjemplo:\n${usedPrefix + command} https://terabox.com/s/1abcdXYZ`);
@@ -117,24 +118,21 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
   await m.react('🕓');
 
   try {
-    const result = await terabox(text);
+    const result = await teraboxScraper(text);
 
     if (!result.length) {
       await m.react('❌');
       return m.reply("⚠️ No se pudieron obtener archivos, revisa el enlace.");
     }
 
-    for (let i = 0; i < result.length; i++) {
-      const { fileName, size, url } = result[i];
-
+    for (let { fileName, size, url } of result) {
       let caption = `
 ┏━━━━━━━━━━━━━━━━⌼
 ┇ *Nombre:* ${fileName}
-┇ *Tamaño:* ${(size / (1024 * 1024)).toFixed(2)} MB
+┇ *Tamaño:* ${size}
 ┇ *Descarga:* ${url}
 ┗━━━━━━━━━━━━━━━━⍰
 `;
-
       await conn.sendMessage(m.chat, { text: caption }, { quoted: m });
     }
 
@@ -153,27 +151,43 @@ handler.command = ["terabox", "tb"];
 export default handler;
 
 /* ================================
-   Scraper Terabox real
+   Scraper Terabox funcional
    ================================ */
-async function terabox(url) {
+async function teraboxScraper(url) {
   try {
-    
-    let surl = url.match(/surl=([a-zA-Z0-9_-]+)/)?.[1];
-    if (!surl) throw new Error("Enlace inválido");
-
-    const { data } = await axios.get(`https://www.terabox.com/wap/share/filelist?surl=${surl}&page=1&num=100`, {
-      headers: { "User-Agent": "Mozilla/5.0" }
+    const { data } = await axios.get(url, {
+      headers: {
+        "User-Agent": "Mozilla/5.0",
+      },
     });
 
-    if (!data.list) return [];
+    const $ = cheerio.load(data);
 
-    return data.list.map(file => ({
+    // Buscar scripts donde Terabox guarda la info
+    const script = $("script").filter((i, el) => $(el).html().includes("window.__PRELOADED_STATE__")).html();
+    if (!script) return [];
+
+    const json = JSON.parse(script.match(/window\.__PRELOADED_STATE__\s*=\s*(\{.*\});/)[1]);
+
+    if (!json.shareCommon || !json.fileList) return [];
+
+    const files = json.fileList.list.map((file) => ({
       fileName: file.server_filename,
-      size: file.size,
-      url: `https://d.terabox.com/file/${file.fs_id}` // link directo aproximado
+      size: formatBytes(file.size),
+      url: `https://d.terabox.com/download/${file.fs_id}`, // aproximado
     }));
+
+    return files;
   } catch (err) {
     console.error("Error en scraper Terabox:", err.message);
     return [];
   }
+}
+
+function formatBytes(bytes) {
+  if (!+bytes) return "0 B";
+  const k = 1024,
+    sizes = ["B", "KB", "MB", "GB", "TB"],
+    i = Math.floor(Math.log(bytes) / Math.log(k));
+  return `${(bytes / Math.pow(k, i)).toFixed(2)} ${sizes[i]}`;
 }
