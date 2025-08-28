@@ -110,7 +110,6 @@ async function getBuffer(url) {
 
 
 import axios from "axios";
-import * as cheerio from "cheerio";
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
   if (!text) return m.reply(`⚠️ Ingresa un enlace de *Terabox*.\n\nEjemplo:\n${usedPrefix + command} https://terabox.com/s/1abcdXYZ`);
@@ -120,17 +119,17 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
   try {
     const result = await teraboxScraper(text);
 
-    if (!result.length) {
+    if (!result || !result.length) {
       await m.react('❌');
       return m.reply("⚠️ No se pudieron obtener archivos, revisa el enlace.");
     }
 
-    for (let { fileName, size, url } of result) {
+    for (let file of result) {
       let caption = `
 ┏━━━━━━━━━━━━━━━━⌼
-┇ *Nombre:* ${fileName}
-┇ *Tamaño:* ${size}
-┇ *Descarga:* ${url}
+┇ *Nombre:* ${file.fileName}
+┇ *Tamaño:* ${file.size}
+┇ *Descarga:* ${file.downloadLink}
 ┗━━━━━━━━━━━━━━━━⍰
 `;
       await conn.sendMessage(m.chat, { text: caption }, { quoted: m });
@@ -151,33 +150,34 @@ handler.command = ["terabox", "tb"];
 export default handler;
 
 /* ================================
-   Scraper Terabox funcional
+   Scraper Terabox actualizado
    ================================ */
 async function teraboxScraper(url) {
   try {
+    // Normalizar enlace
+    url = url.replace("www.", "").replace("teraboxapp.com", "terabox.com");
+
+    // Pedir página
     const { data } = await axios.get(url, {
       headers: {
         "User-Agent": "Mozilla/5.0",
       },
     });
 
-    const $ = cheerio.load(data);
+    // Extraer JSON incrustado
+    const match = data.match(/window\.__PRELOADED_STATE__\s*=\s*(\{.*?\});/);
+    if (!match) return [];
 
-    // Buscar scripts donde Terabox guarda la info
-    const script = $("script").filter((i, el) => $(el).html().includes("window.__PRELOADED_STATE__")).html();
-    if (!script) return [];
+    const json = JSON.parse(match[1]);
+    const list = json?.fileList?.list || [];
 
-    const json = JSON.parse(script.match(/window\.__PRELOADED_STATE__\s*=\s*(\{.*\});/)[1]);
-
-    if (!json.shareCommon || !json.fileList) return [];
-
-    const files = json.fileList.list.map((file) => ({
-      fileName: file.server_filename,
-      size: formatBytes(file.size),
-      url: `https://d.terabox.com/download/${file.fs_id}`, // aproximado
+    // Mapear archivos
+    return list.map((f) => ({
+      fileName: f.server_filename,
+      size: formatBytes(f.size),
+      // El link de descarga requiere token, aquí devolvemos el link público
+      downloadLink: `https://terabox.com/web/share/file?shareid=${json.shareCommon.shareid}&uk=${json.shareCommon.uk}`,
     }));
-
-    return files;
   } catch (err) {
     console.error("Error en scraper Terabox:", err.message);
     return [];
