@@ -112,19 +112,21 @@ async function getBuffer(url) {
 import axios from "axios";
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
+  // Validar que haya enlace
   if (!text) return m.reply(`⚠️ Ingresa un enlace de *Terabox*.\n\nEjemplo:\n${usedPrefix + command} https://terabox.com/s/1abcdXYZ`);
 
-  await m.react('🕓');
+  await m.react('🕓'); // emoji de reloj mientras procesa
 
   try {
-    const result = await teraboxScraper(text);
+    const files = await teraboxScraper(text);
 
-    if (!result || !result.length) {
+    if (!files || !files.length) {
       await m.react('❌');
       return m.reply("⚠️ No se pudieron obtener archivos, revisa el enlace.");
     }
 
-    for (let file of result) {
+    // Enviar cada archivo como mensaje
+    for (let file of files) {
       let caption = `
 ┏━━━━━━━━━━━━━━━━⌼
 ┇ *Nombre:* ${file.fileName}
@@ -136,8 +138,8 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     }
 
     await m.react('✅');
-  } catch (e) {
-    console.error("Error general:", e);
+  } catch (err) {
+    console.error("Error general:", err);
     await m.react('❌');
     m.reply("❌ Ocurrió un error al procesar el enlace.");
   }
@@ -150,14 +152,14 @@ handler.command = ["terabox", "tb"];
 export default handler;
 
 /* ================================
-   Scraper Terabox actualizado
+   Scraper Terabox funcional
    ================================ */
 async function teraboxScraper(url) {
   try {
-    // Normalizar enlace
-    url = url.replace("www.", "").replace("teraboxapp.com", "terabox.com");
+    // Normalizar URL
+    url = url.replace("www.", "");
 
-    // Pedir página
+    // Solicitar página
     const { data } = await axios.get(url, {
       headers: {
         "User-Agent": "Mozilla/5.0",
@@ -169,25 +171,28 @@ async function teraboxScraper(url) {
     if (!match) return [];
 
     const json = JSON.parse(match[1]);
-    const list = json?.fileList?.list || [];
 
-    // Mapear archivos
-    return list.map((f) => ({
+    if (!json?.fileList?.list || !json?.shareCommon) return [];
+
+    const files = json.fileList.list.map(f => ({
       fileName: f.server_filename,
       size: formatBytes(f.size),
-      // El link de descarga requiere token, aquí devolvemos el link público
-      downloadLink: `https://terabox.com/web/share/file?shareid=${json.shareCommon.shareid}&uk=${json.shareCommon.uk}`,
+      // Link de descarga público desde el shareid y uk
+      downloadLink: `https://terabox.com/web/share/file?shareid=${json.shareCommon.shareid}&uk=${json.shareCommon.uk}`
     }));
+
+    return files;
   } catch (err) {
     console.error("Error en scraper Terabox:", err.message);
     return [];
   }
 }
 
+// Función para mostrar tamaño en MB, KB, etc.
 function formatBytes(bytes) {
   if (!+bytes) return "0 B";
   const k = 1024,
-    sizes = ["B", "KB", "MB", "GB", "TB"],
-    i = Math.floor(Math.log(bytes) / Math.log(k));
+        sizes = ["B", "KB", "MB", "GB", "TB"],
+        i = Math.floor(Math.log(bytes) / Math.log(k));
   return `${(bytes / Math.pow(k, i)).toFixed(2)} ${sizes[i]}`;
 }
