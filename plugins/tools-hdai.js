@@ -32,7 +32,7 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
 
 handler.help = ['enhance [method] [quality]']
 handler.tags = ['tools']
-handler.command = ['enhance', 'ihancer', 'hd', 'remini'] 
+handler.command = ['enhance2', 'ihancer2', 'hd2', 'remini2'] 
 
 export default handler
 
