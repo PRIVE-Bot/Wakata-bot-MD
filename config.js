@@ -80,7 +80,7 @@ let icono1 = [
 }*/
 global.inc = icono1[Math.floor(Math.random() * icono1.length)];
 
-global.rcanal = {
+/*global.rcanal = {
   contextInfo: {
     externalAdReply: {
       showAdAttribution: true,
@@ -91,7 +91,27 @@ global.rcanal = {
       sourceUrl: "https://deylin.vercel.app"
     }
   }
-}
+}*/
+
+const res = await fetch(inc);
+const img = Buffer.from(await res.arrayBuffer());
+
+global.rcanal = {
+    key: { fromMe: false, participant: "0@s.whatsapp.net" },
+    message: {
+        productMessage: {
+            product: {
+                productImage: { jpegThumbnail: img },
+                title: texbot,
+                description: texbot,
+                currencyCode: "USD",
+                priceAmount1000: "10000", 
+                retailerId: "BOT"
+            },
+            businessOwnerJid: "0@s.whatsapp.net"
+        }
+    }
+};
 
 async function getRandomChannel() {
 let randomIndex = Math.floor(Math.random() * canalIdM.length)
