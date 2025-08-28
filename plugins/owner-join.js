@@ -10,22 +10,22 @@ let handler = async (m, { conn, text, isOwner }) => {
 
     if (isOwner) {
         try {
-const res = await fetch('https://i.postimg.cc/GtNf8H7Q/1756347323271.jpg');
-const thumb2 = Buffer.from(await res.arrayBuffer());
+const res = await fetch("https://i.postimg.cc/GtNf8H7Q/1756347323271.jpg")
+const thumb2 = Buffer.from(await res.arrayBuffer())
 
-    const fkontak = {
-      key: { fromMe: false, participant: "0@s.whatsapp.net" },
-      message: {
-        orderMessage: {
-          itemCount: 1,
-          status: 1,
-          surface: 1,
-          message: botname,
-          orderTitle: "Mejor Bot",
-          jpegThumbnail: thumb2
-        }
-      }
-    };
+const fkontak = {
+  key: { fromMe: false, participant: "0@s.whatsapp.net", remoteJid: "status@broadcast" },
+  message: {
+    contactMessage: {
+      displayName: botname,
+      vcard: `BEGIN:VCARD\nVERSION:3.0\nN:;${botname};;;\nFN:${botname}\nitem1.TEL;waid=521999999999:+521999999999\nEND:VCARD`,
+      jpegThumbnail: thumb2,
+      thumbnailDirectPath: "/v/t62.7118-24/…", 
+      mediaType: 2,
+      thumbnail: thumb2
+    }
+  }
+}
             let groupId = await conn.groupAcceptInvite(code);
             m.reply(`${emojis} Me he unido exitosamente al grupo.`);
 
