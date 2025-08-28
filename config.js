@@ -102,8 +102,8 @@ global.rcanal = {
         productMessage: {
             product: {
                 productImage: { jpegThumbnail: img },
-                title: texbot,
-                description: texbot,
+                title: textbot,
+                description: textbot,
                 currencyCode: "USD",
                 priceAmount1000: "10000", 
                 retailerId: "BOT"
