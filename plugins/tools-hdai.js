@@ -23,7 +23,7 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
             image: enhancedBuffer,
             caption: `✅ Imagen mejorada\n- Método: ${method}\n- Calidad: ${quality}`,
             fileName: 'enhanced.jpg'
-        }, { quoted: metaai })        
+        }, { quoted: m })        
     } catch (error) {
         console.error(error)
         conn.sendMessage(m.chat, { text: `❌ Error: ${error.message}` }, { quoted: m })
