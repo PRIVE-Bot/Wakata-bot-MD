@@ -106,30 +106,32 @@ async function getBuffer(url) {
     return null;
   }
 }*/
+
+
+
 import axios from "axios";
-import * as cheerio from "cheerio";
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
-  if (!text) return m.reply(`⚠️ Ingresa un enlace de *Terabox*.\n\nEjemplo:\n${usedPrefix + command} https://www.terabox.com/wap/share/filelist?surl=XXXX`);
+  if (!text) return m.reply(`⚠️ Ingresa un enlace de *Terabox*.\n\nEjemplo:\n${usedPrefix + command} https://terabox.com/s/1abcdXYZ`);
 
   await m.react('🕓');
 
   try {
-    const result = await teraboxScraper(text);
+    const result = await terabox(text);
 
     if (!result.length) {
       await m.react('❌');
-      return m.reply("No se pudieron obtener archivos, revisa el enlace.");
+      return m.reply("⚠️ No se pudieron obtener archivos, revisa el enlace.");
     }
 
     for (let i = 0; i < result.length; i++) {
-      const { fileName, size } = result[i];
+      const { fileName, size, url } = result[i];
 
       let caption = `
 ┏━━━━━━━━━━━━━━━━⌼
 ┇ *Nombre:* ${fileName}
-┇ *Tamaño:* ${(size / (1024*1024)).toFixed(2)} MB
-┇ *Link directo:* próximamente 🔒
+┇ *Tamaño:* ${(size / (1024 * 1024)).toFixed(2)} MB
+┇ *Descarga:* ${url}
 ┗━━━━━━━━━━━━━━━━⍰
 `;
 
@@ -140,7 +142,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
   } catch (e) {
     console.error("Error general:", e);
     await m.react('❌');
-    m.reply("Ocurrió un error al procesar el enlace.");
+    m.reply("❌ Ocurrió un error al procesar el enlace.");
   }
 };
 
@@ -151,45 +153,27 @@ handler.command = ["terabox", "tb"];
 export default handler;
 
 /* ================================
-   Scraper Terabox (HTML + API oficial)
+   Scraper Terabox real
    ================================ */
-async function teraboxScraper(url) {
+async function terabox(url) {
   try {
-    // 1. Obtener HTML
-    const { data: html } = await axios.get(url, {
+    
+    let surl = url.match(/surl=([a-zA-Z0-9_-]+)/)?.[1];
+    if (!surl) throw new Error("Enlace inválido");
+
+    const { data } = await axios.get(`https://www.terabox.com/wap/share/filelist?surl=${surl}&page=1&num=100`, {
       headers: { "User-Agent": "Mozilla/5.0" }
     });
 
-    // 2. Extraer tokens del script
-    const $ = cheerio.load(html);
-    const script = $("script").html();
-
-    const sign = script?.match(/"sign":"(.*?)"/)?.[1];
-    const timestamp = script?.match(/"timestamp":(\d+)/)?.[1];
-    const shareid = script?.match(/"shareid":"(.*?)"/)?.[1];
-    const uk = script?.match(/"uk":"(.*?)"/)?.[1];
-
-    if (!sign || !timestamp || !shareid || !uk) {
-      throw new Error("No se pudieron extraer tokens.");
-    }
-
-    // 3. Llamar al endpoint oficial
-    const { data } = await axios.get(
-      `https://www.terabox.com/share/list?shareid=${shareid}&uk=${uk}&sign=${sign}&timestamp=${timestamp}&page=1&num=100&order=other&desc=1`,
-      { headers: { "User-Agent": "Mozilla/5.0" } }
-    );
-
     if (!data.list) return [];
 
-    // 4. Mapear resultados
     return data.list.map(file => ({
       fileName: file.server_filename,
       size: file.size,
-      isDir: file.isdir,
-      fs_id: file.fs_id
+      url: `https://d.terabox.com/file/${file.fs_id}` // link directo aproximado
     }));
   } catch (err) {
-    console.error("Error en el scraper:", err.message);
+    console.error("Error en scraper Terabox:", err.message);
     return [];
   }
 }
