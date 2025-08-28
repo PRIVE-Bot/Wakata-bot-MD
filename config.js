@@ -97,19 +97,18 @@ const res = await fetch(inc);
 const img = Buffer.from(await res.arrayBuffer());
 
 global.rcanal = {
-  key: { fromMe: false, participant: "0@s.whatsapp.net" },
-  message: {
-    orderMessage: {
-      itemCount: 1,
-      status: 1,
-      surface: 1,
-      message: textbot, 
-      orderTitle: "Spark-Bot",
-      thumbnail: img, 
-      sellerJid: "0@s.whatsapp.net"
-    }
-  }
-};
+      key: { fromMe: false, participant: "0@s.whatsapp.net" },
+      message: {
+        orderMessage: {
+          itemCount: 1,
+          status: 1,
+          surface: 1,
+          message: textbot,
+          orderTitle: "Mejor Bot",
+          jpegThumbnail: img
+        }
+      }
+    };
 
 async function getRandomChannel() {
 let randomIndex = Math.floor(Math.random() * canalIdM.length)
