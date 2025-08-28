@@ -15,7 +15,13 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
         continue;
       }
 
-      const caption = `📄 *Nombre File:* ${fileName}\n📂 *Formato:* ${type}\n🔗 URL: ${url}`;
+      const caption = `
+┏━━━━━━━━━━━━━━━━⌼
+┇ *Nombre File:* ${fileName}
+┇ *Formato:* ${type}
+┇  URL: ${url}
+┗━━━━━━━━━━━━━━━━⍰
+`;
       console.log(`Enviando archivo: ${fileName}, URL: ${url}`);
 
       try {
