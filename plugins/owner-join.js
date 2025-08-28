@@ -19,7 +19,7 @@ const fkontak = {
         productMessage: {
             product: {
                 productImage: { jpegThumbnail: img },
-                title: `texto`,
+                title: botname,
                 description: botname,
                 currencyCode: "USD",
                 priceAmount1000: "5000", 
