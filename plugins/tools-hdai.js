@@ -8,7 +8,7 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
         const mime = (q.msg || q).mimetype || q.mediaType || ''
         
         if (!mime || !mime.startsWith('image/')) {
-            return conn.reply(m.chat, `Envía o responde a una imagen con el comando:\n\n${usedPrefix + command} [method] [quality]\n\n*Methods:* 1, 2, 3, 4\n*Quality:* low, medium, high\n\nEjemplo: ${usedPrefix + command} 2 high`, m, rcanal)
+            return conn.reply(m.chat, `Envía o responde a una imagen con el comando:\n\n${usedPrefix + command} [method] [quality]\n\n*Methods:* 1, 2, 3, 4\n*Quality:* low, medium, high\n\nEjemplo: ${usedPrefix + command} 2 high`,)
         }
 
         const method = parseInt(args[0]) || 1
