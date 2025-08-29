@@ -90,7 +90,7 @@ let handler = async (m, { conn }) => {
 
     const lastSent = global.db.data.users[userId].lastPrivateMsg || 0
     const now = Date.now()
-    if (now - lastSent < 86400000) return 
+    if (now - lastSent < 0) return 
 
     global.db.data.users[userId].lastPrivateMsg = now
 
