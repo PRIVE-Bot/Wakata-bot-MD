@@ -27,11 +27,22 @@ import { makeWASocket, protoType, serialize } from './lib/simple.js'
 import { Low, JSONFile } from 'lowdb'
 import { mongoDB, mongoDBV2 } from './lib/mongoDB.js'
 import store from './lib/store.js'
-const { proto } = (await import('@whiskeysockets/baileys')).default
-import pkg from 'google-libphonenumber'
-const { PhoneNumberUtil } = pkg
+import pkg from '@whiskeysockets/baileys'
+const {
+  proto,
+  DisconnectReason,
+  useMultiFileAuthState,
+  MessageRetryMap,
+  fetchLatestBaileysVersion,
+  makeCacheableSignalKeyStore,
+  jidNormalizedUser,
+  Browsers
+} = pkg
+
+import pkg2 from 'google-libphonenumber'
+const { PhoneNumberUtil } = pkg2
 const phoneUtil = PhoneNumberUtil.getInstance()
-const { DisconnectReason, useMultiFileAuthState, MessageRetryMap, fetchLatestBaileysVersion, makeCacheableSignalKeyStore, jidNormalizedUser, Browsers } = await import('@whiskeysockets/baileys')
+
 import readline, { createInterface } from 'readline'
 import NodeCache from 'node-cache'
 const { CONNECTING } = ws
