@@ -233,17 +233,18 @@ const respuestas = {
 }
 
 function normalize(text) {
-  return text
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '') 
-    .trim()
+  return text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim()
 }
 
 let handler = async (m, { conn }) => {
   if (!m.text) return
   if (m.fromMe) return
-  let chat = global.db.data.chats[m.chat] || {}
+  let chat = global.db.data.chats[m.chat]
+  if (!chat) {
+    global.db.data.chats[m.chat] = { autoresponder2: false, isBanned: false }
+    chat = global.db.data.chats[m.chat]
+  }
+
   if (!chat.autoresponder2) return
   if (chat.isBanned) return
 
@@ -253,7 +254,6 @@ let handler = async (m, { conn }) => {
   if (!key) return
 
   let r = respuestas[key]
-
   await conn.sendMessage(m.chat, { text: r.text }, { quoted: m })
 }
 
