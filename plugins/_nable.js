@@ -314,11 +314,9 @@ const handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, i
           throw false;
         }
         if (!bot.soloParaJid) {
-          // Activar la función
           bot.soloParaJid = m.sender;
           isEnable = true;
         } else {
-          // Desactivar la función
           bot.soloParaJid = false;
           isEnable = false;
         }
