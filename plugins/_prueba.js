@@ -80,33 +80,49 @@ export default handler*/
 
 
 import { generateWAMessageFromContent } from '@whiskeysockets/baileys'
-import fs from 'fs'
 
-const filePath = './lastDailyMessage.json'
-let lastDailyMessage = {}
-if (fs.existsSync(filePath)) {
-  lastDailyMessage = JSON.parse(fs.readFileSync(filePath, 'utf-8'))
-}
+// Registro en memoria (temporal) de quién ya recibió el mensaje
+const welcomeSent = {}
+const lastMessageTime = {}
 
 let handler = async (m, { conn }) => {
   const now = Date.now()
-  const lastSent = lastDailyMessage[m.sender] || 0
+  const user = m.sender
 
-  if (now - lastSent < 2000) return // 2 segundos para prueba
+  // Solo en chats privados
+  if (m.isGroup) return
 
+  // Ya recibió el mensaje
+  if (welcomeSent[user]) return
+
+  // Solo si pasó al menos 2 segundos desde el último mensaje del usuario
+  if (lastMessageTime[user] && now - lastMessageTime[user] < 2000) {
+    lastMessageTime[user] = now
+    return
+  }
+  lastMessageTime[user] = now
+
+  // Construcción del mensaje de bienvenida interactivo
   const content = {
-    templateMessage: {
-      hydratedTemplate: {
-        hydratedContentText: "¿Te gusta Spark-Bot? 🚀\n¡Compártelo con tus amigos!",
-        hydratedFooterText: "SPARK-BOT Official ©",
-        hydratedButtons: [
-          {
-            urlButton: {
-              displayText: "📢 Compartir Spark-Bot",
-              url: "https://wa.me/?text=🔥+Prueba+SPARK-BOT+ahora!+Entra+al+grupo:+https://chat.whatsapp.com/HuMh41LJftl4DH7G5MWcHP"
-            }
+    viewOnceMessage: {
+      message: {
+        interactiveMessage: {
+          body: { text: "¿Te gusta Spark-Bot? 🚀\n¡Compártelo con tus amigos!" },
+          footer: { text: "SPARK-BOT Official ©" },
+          header: { title: "🔥 SPARK-BOT 🔥", hasMediaAttachment: false },
+          nativeFlowMessage: {
+            buttons: [
+              {
+                name: "cta_url",
+                buttonParamsJson: JSON.stringify({
+                  display_text: "📢 Compartir Spark-Bot",
+                  url: `https://wa.me/?text=🔥+Prueba+SPARK-BOT+ahora!+Entra+al+grupo:+https://chat.whatsapp.com/HuMh41LJftl4DH7G5MWcHP`, 
+                  merchant_url: "https://wa.me"
+                })
+              }
+            ]
           }
-        ]
+        }
       }
     }
   }
@@ -114,8 +130,11 @@ let handler = async (m, { conn }) => {
   const msg = generateWAMessageFromContent(m.chat, content, { quoted: m })
   await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
 
-  lastDailyMessage[m.sender] = now
-  fs.writeFileSync(filePath, JSON.stringify(lastDailyMessage, null, 2))
+  // Marca al usuario como que ya recibió el mensaje
+  welcomeSent[user] = true
 }
+
+// Este handler no usa comando, se dispara con cualquier mensaje privado
+handler.before = true
 
 export default handler
