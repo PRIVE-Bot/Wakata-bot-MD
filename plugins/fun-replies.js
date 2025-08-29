@@ -232,10 +232,12 @@ const respuestas = {
   'cállese': { text: 'Jajaja ya me callo 🤫' }
 }
 
-let handler = async (m, { conn, chat }) => {
-  if (!chat.autoresponder2) return
-  if (m.fromMe) return
+let handler = async (m, { conn }) => {
   if (!m.text) return
+  if (m.fromMe) return
+
+  let chat = global.db.data.chats[m.chat] || {}
+  if (!chat.autoresponder2) return
 
   const texto = m.text.toLowerCase().trim()
   let key = Object.keys(respuestas).find(k => k === texto)
@@ -245,10 +247,4 @@ let handler = async (m, { conn, chat }) => {
   await conn.sendMessage(m.chat, { text: r.text }, { quoted: m })
 }
 
-handler.customPrefix = new RegExp(
-  `^(${Object.keys(respuestas)
-    .map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
-    .join('|')})$`, 'i'
-)
-handler.command = new RegExp
 export default handler
