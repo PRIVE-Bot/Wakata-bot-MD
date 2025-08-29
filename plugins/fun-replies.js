@@ -251,8 +251,22 @@ let handler = async (m, { conn }) => {
   if (!key) return
 
   let r = respuestas[key]
+const res = await fetch('https://i.postimg.cc/Xv1QwhGc/1756438880305.jpg');
+  const thumb2 = Buffer.from(await res.arrayBuffer());
 
-    await conn.sendMessage(m.chat, { text: r.text }, { quoted: m })
+  
+  const fkontak = {
+    key: { fromMe: false, participant: m },
+    message: {
+      imageMessage: {
+        mimetype: 'image/jpeg',
+        caption: '𝗥𝗘𝗦𝗣𝗨𝗘𝗦𝗧𝗔 > 𝗕𝗢𝗧',
+        jpegThumbnail: thumb2
+      }
+    }
+  };
+
+    await conn.sendMessage(m.chat, { text: r.text }, { quoted: fkontak })
   }
 
 
