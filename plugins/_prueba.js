@@ -80,51 +80,57 @@ export default handler*/
 
 
 import { generateWAMessageFromContent } from '@whiskeysockets/baileys'
+import fs from 'fs'
+
+
+const filePath = './lastDailyMessage.json'
+
+
+let lastDailyMessage = {}
+if (fs.existsSync(filePath)) {
+  lastDailyMessage = JSON.parse(fs.readFileSync(filePath, 'utf-8'))
+}
+
 
 let handler = async (m, { conn }) => {
-  try {
-    if (m.isGroup) return
+  const now = Date.now()
+  const lastSent = lastDailyMessage[m.sender] || 0
 
-    const userId = m.sender
-    if (!global.db.data.users[userId]) global.db.data.users[userId] = {}
+  
+  if (now - lastSent < 86400000) return 
 
-    const lastSent = global.db.data.users[userId].lastPrivateMsg || 0
-    const now = Date.now()
-    if (now - lastSent < 0) return 
-
-    global.db.data.users[userId].lastPrivateMsg = now
-
-    const content = {
-      viewOnceMessage: {
-        message: {
-          interactiveMessage: {
-            header: { title: "🔥 SPARK-BOT 🔥", hasMediaAttachment: false },
-            body: { text: "¿Te gusta Spark-Bot? 🚀\n¡Compártelo con tus amigos!" },
-            footer: { text: "SPARK-BOT Official ©" },
-            nativeFlowMessage: {
-              buttons: [
-                {
-                  name: "cta_url",
-                  buttonParamsJson: JSON.stringify({
-                    display_text: "📢 Compartir Spark-Bot",
-                    url: "https://wa.me/?text=🔥+Prueba+SPARK-BOT+ahora!+Entra+al+grupo:+https://chat.whatsapp.com/HuMh41LJftl4DH7G5MWcHP",
-                    merchant_url: "https://wa.me"
-                  })
-                }
-              ]
-            }
+  
+  const content = {
+    viewOnceMessage: {
+      message: {
+        interactiveMessage: {
+          body: { text: "¿Te gusta Spark-Bot? 🚀\n¡Compártelo con tus amigos!" },
+          footer: { text: "SPARK-BOT Official ©" },
+          header: { title: "🔥 SPARK-BOT 🔥", hasMediaAttachment: false },
+          nativeFlowMessage: {
+            buttons: [
+              {
+                name: "cta_url",
+                buttonParamsJson: JSON.stringify({
+                  display_text: "📢 Compartir Spark-Bot",
+                  url: "https://wa.me/?text=🔥+Prueba+SPARK-BOT+ahora!+Entra+al+grupo:+https://chat.whatsapp.com/HuMh41LJftl4DH7G5MWcHP",
+                  merchant_url: "https://wa.me"
+                })
+              }
+            ]
           }
         }
       }
     }
-
-    const msg = generateWAMessageFromContent(m.chat, content, { quoted: m })
-    await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
-
-  } catch (e) {
-    console.error(e)
   }
+
+  
+  const msg = generateWAMessageFromContent(m.chat, content, { quoted: m })
+  await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
+
+  
+  lastDailyMessage[m.sender] = now
+  fs.writeFileSync(filePath, JSON.stringify(lastDailyMessage, null, 2))
 }
 
-handler.all = true 
 export default handler
