@@ -103,18 +103,18 @@ ${Object.keys(tags).reduce((acc, tag) => {
   {
     image: { url: global.img },
     caption: menuText.trim(),
-    mentions: [m.sender]
+    mentions: [m.sender],
+    footer: "⚡ Spark-Bot - Tu asistente confiable",
+    templateButtons: [
+      {
+        index: 1,
+        urlButton: {
+          displayText: "📢 Compartir Spark-Bot",
+          url: "https://chat.whatsapp.com/HuMh41LJftl4DH7G5MWcHP?mode=ems_copy_c"
+        }
+      }
+    ]
   },
-            buttons: [
-              {
-                name: "cta_url",
-                buttonParamsJson: JSON.stringify({
-                  display_text: "📢 Compartir Spark-Bot",
-                  url: "https://wa.me/?text=🔥+Prueba+SPARK-BOT+ahora!+Entra+al+canal:+https://whatsapp.com/channel/0029VbB46nl2ER6dZac6Nd1o",
-                  merchant_url: "https://wa.me"
-                })
-              }
-            ]
   { quoted: fkontak }
 )
 
