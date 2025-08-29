@@ -79,11 +79,10 @@ handler.command = /^1$/i
 export default handler*/
 
 
-import { generateWAMessageFromContent, proto } from '@whiskeysockets/baileys'
+import { generateWAMessageFromContent } from '@whiskeysockets/baileys'
 import fs from 'fs'
 
 const filePath = './lastDailyMessage.json'
-
 let lastDailyMessage = {}
 if (fs.existsSync(filePath)) {
   lastDailyMessage = JSON.parse(fs.readFileSync(filePath, 'utf-8'))
@@ -93,8 +92,7 @@ let handler = async (m, { conn }) => {
   const now = Date.now()
   const lastSent = lastDailyMessage[m.sender] || 0
 
-  // Para prueba: 2 segundos
-  if (now - lastSent < 2000) return
+  if (now - lastSent < 2000) return // 2 segundos para prueba
 
   const content = {
     templateMessage: {
