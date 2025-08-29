@@ -234,42 +234,50 @@ const respuestas = {
 
 
 let handler = async (m, { conn }) => {
-  if (!m.text) return
-  const texto = m.text.toLowerCase().trim()
- if (m.fromMe) return
-  let chat = global.db.data.chats[m.chat]
-  if (!chat) {
-    global.db.data.chats[m.chat] = { autoresponder2: false, isBanned: false }
-    chat = global.db.data.chats[m.chat]
-  }
+    if (!m.text) return;
+    const texto = m.text.toLowerCase().trim();
+    if (m.fromMe) return;
 
-  if (!chat.autoresponder2) return      
-  if (chat.isBanned) return            
-
-
-  let key = Object.keys(respuestas).find(k => k === texto)
-  if (!key) return
-
-  let r = respuestas[key]
-const res = await fetch('https://i.postimg.cc/Xv1QwhGc/1756438880305.jpg');
-  const thumb2 = Buffer.from(await res.arrayBuffer());
-const userJid = m.sender;
-  
-  const fkontak = {
-    key: { fromMe: false, participant: userJid },
-    message: {
-      imageMessage: {
-        mimetype: 'image/jpeg',
-        caption: '𝗥𝗘𝗦𝗣𝗨𝗘𝗦𝗧𝗔 > 𝗕𝗢𝗧',
-        jpegThumbnail: thumb2
-      }
+    let chat = global.db.data.chats[m.chat];
+    if (!chat) {
+        global.db.data.chats[m.chat] = { autoresponder2: false, isBanned: false };
+        chat = global.db.data.chats[m.chat];
     }
-  };
 
-    await conn.sendMessage(m.chat, { text: r.text }, { quoted: fkontak })
-  }
+    let botSettings = global.db.data.settings[conn.user.jid] || {};
 
+    if (botSettings.soloParaJid) {
+        if (m.isGroup) {
+            return; 
+        }
+    } else {
+        if (!chat.autoresponder2) return; 
+    }
 
-handler.customPrefix = new RegExp(`^(${Object.keys(respuestas).map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})$`, 'i')
-handler.command = new RegExp
-export default handler
+    if (chat.isBanned) return;
+
+    let key = Object.keys(respuestas).find(k => k === texto);
+    if (!key) return;
+
+    let r = respuestas[key];
+    const res = await fetch('https://i.postimg.cc/Xv1QwhGc/1756438880305.jpg');
+    const thumb2 = Buffer.from(await res.arrayBuffer());
+    const userJid = m.sender;
+
+    const fkontak = {
+        key: { fromMe: false, participant: userJid },
+        message: {
+            imageMessage: {
+                mimetype: 'image/jpeg',
+                caption: '𝗥𝗘𝗦𝗣𝗨𝗘𝗦𝗧𝗔 > 𝗕𝗢𝗧',
+                jpegThumbnail: thumb2
+            }
+        }
+    };
+
+    await conn.sendMessage(m.chat, { text: r.text }, { quoted: fkontak });
+};
+
+handler.customPrefix = new RegExp(`^(${Object.keys(respuestas).map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})$`, 'i');
+handler.command = new RegExp;
+export default handler;
