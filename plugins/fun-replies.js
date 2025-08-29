@@ -232,24 +232,30 @@ const respuestas = {
   'cállese': { text: 'Jajaja ya me callo 🤫' }
 }
 
+
 function normalize(text) {
   return text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim()
 }
 
 let handler = async (m, { conn }) => {
   if (!m.text) return
-  const texto = normalize(m.text) 
+  if (m.fromMe) return
+  let chat = global.db.data.chats[m.chat]
+  if (!chat) {
+    global.db.data.chats[m.chat] = { autoresponder2: false, isBanned: false }
+    chat = global.db.data.chats[m.chat]
+  }
+
+  if (!chat.autoresponder2) return      
+  if (chat.isBanned) return              
+
+  const texto = normalize(m.text)
 
   let key = Object.keys(respuestas).find(k => normalize(k) === texto)
   if (!key) return
 
   let r = respuestas[key]
-
   await conn.sendMessage(m.chat, { text: r.text }, { quoted: m })
 }
-
-handler.customPrefix = new RegExp(^(${Object.keys(respuestas).map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})$, 'i')
-
-handler.command = new RegExp
 
 export default handler
