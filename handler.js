@@ -179,6 +179,8 @@ if (!('autoRechazar' in chat))
 chat.autoRechazar = false
 if (!('autoresponder' in chat))
 chat.autoresponder = false
+if (!('autoresponder2' in chat))
+chat.autoresponder2 = false
 if (!('detect' in chat))
 chat.detect = true
 if (!('antiBot' in chat))
@@ -206,6 +208,7 @@ sAutoresponder: '',
 welcome: true,
 autolevelup: false,
 autoresponder: false,
+autoresponder2: false,
 delete: false,
 autoAceptar: false,
 autoRechazar: false,
