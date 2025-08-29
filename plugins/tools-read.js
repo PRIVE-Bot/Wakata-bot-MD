@@ -6,14 +6,12 @@ let handler = async (m, { conn }) => {
   let quoted = m.quoted.message
   if (!quoted) return conn.reply(m.chat, 'No se pudo obtener el mensaje citado.', m)
 
-  // Detectamos si es imagen o video
-  let type = Object.keys(quoted)[0] // "imageMessage" o "videoMessage"
+  let type = Object.keys(quoted)[0] 
   if (!['imageMessage','videoMessage'].includes(type)) 
     return conn.reply(m.chat, 'Responde a una imagen o video ViewOnce.', m)
 
   let media = quoted[type]
 
-  // descargamos el contenido
   let stream = await downloadContentFromMessage(media, type.replace('Message',''))
   let buffer = Buffer.concat([])
   for await (const chunk of stream) buffer = Buffer.concat([buffer, chunk])
