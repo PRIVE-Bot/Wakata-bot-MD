@@ -570,6 +570,7 @@ import { JadiBot } from './plugins/jadibot-serbot.js';
 import { tmpdir } from 'os';
 import { format } from 'util';
 import Pino from 'pino';
+import { setupErrorHandler } from "./plugins/_prueba.js"
 import path, { join, dirname } from 'path';
 import { Boom } from '@hapi/boom';
 import { makeWASocket, protoType, serialize } from './lib/simple.js';
@@ -586,6 +587,8 @@ import NodeCache from 'node-cache';
 
 const { chain } = lodash;
 const PORT = process.env.PORT || process.env.SERVER_PORT || 3000;
+
+setupErrorHandler("spark-bot")
 
 let { say } = cfonts;
 console.log(chalk.magentaBright('\n Iniciando...'));
