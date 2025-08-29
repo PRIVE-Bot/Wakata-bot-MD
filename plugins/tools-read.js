@@ -3,17 +3,19 @@ import { downloadContentFromMessage } from '@whiskeysockets/baileys'
 let handler = async (m, { conn }) => {
   if (!m.quoted) return conn.reply(m.chat, `Responde a una imagen o video ViewOnce.`, m)
 
-  
-  let q = m.quoted.msg || m.quoted.message || {}
+  // Accedemos al mensaje crudo
+  let q = m.quoted.message || {}
 
+  // Detectar view once (v1 o v2)
   let vmsg = q.viewOnceMessage?.message || q.viewOnceMessageV2?.message
-  if (!vmsg) return conn.reply(m.chat, `Responde a una imagen o video ViewOnce.`, m)
+  if (!vmsg) return conn.reply(m.chat, `Responde a una imagen o video ViewOnce. ..`, m)
 
-  let type = Object.keys(vmsg)[0] 
+  // tipo de mensaje (imageMessage o videoMessage)
+  let type = Object.keys(vmsg)[0]
   let media = vmsg[type]
 
-  
-  const stream = await downloadContentFromMessage(media, type.replace('Message', ''))
+  // descargar contenido
+  let stream = await downloadContentFromMessage(media, type.replace('Message', ''))
   let buffer = Buffer.concat([])
   for await (const chunk of stream) buffer = Buffer.concat([buffer, chunk])
 
