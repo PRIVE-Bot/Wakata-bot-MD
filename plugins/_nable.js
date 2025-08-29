@@ -91,6 +91,7 @@ const handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, i
       break;
 
     case 'autoresponder2':
+    case 'ar2':
     case 'autorespond2':
       if (!m.isGroup) {
         if (!isOwner) {
