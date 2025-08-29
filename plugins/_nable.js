@@ -90,6 +90,20 @@ const handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, i
       isEnable = chat.autoRechazar = !chat.autoRechazar;
       break;
 
+    case 'autoresponder2':
+    case 'autorespond2':
+      if (!m.isGroup) {
+        if (!isOwner) {
+          global.dfail('group', m, conn);
+          throw false;
+        }
+      } else if (!isAdmin) {
+        global.dfail('admin', m, conn);
+        throw false;
+      }
+      isEnable = chat.autoresponder2 = !chat.autoresponder3;
+      break;
+
     case 'autoresponder':
     case 'autorespond':
       if (!m.isGroup) {
