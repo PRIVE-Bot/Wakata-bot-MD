@@ -10,20 +10,20 @@ let handler = async (m, { conn, text, command }) => {
       emailMessage += `    ✩  *Dirección* : ${inbox.address}\n`;
       emailMessage += `    ✩  *Token* : ${inbox.token}\n\n`;
       emailMessage += `*- 📬 Revisa tu bandeja de entrada usando el token con el comando .checkmail.*`;
-      await conn.reply(m.chat, emailMessage, m, rcanal);
+      await conn.reply(m.chat, emailMessage);
     } catch (error) {
-      await conn.reply(m.chat, 'No se pudo crear una dirección de correo temporal.', m);
+      await conn.reply(m.chat, 'No se pudo crear una dirección de correo temporal.');
     }
   } else if (command === 'checkmail') {
     if (!text) {
-      await conn.reply(m.chat, 'Por favor proporciona el token del correo temporal que deseas revisar.', m);
+      await conn.reply(m.chat, 'Por favor proporciona el token del correo temporal que deseas revisar.');
       return;
     }
 
     try {
       const emails = await tempmail.checkInbox(text);
       if (!emails || emails.length === 0) {
-        await conn.reply(m.chat, 'No se encontraron mensajes en el buzón o ha expirado.', m);
+        await conn.reply(m.chat, 'No se encontraron mensajes en el buzón o ha expirado.');
         return;
       }
 
@@ -35,9 +35,9 @@ let handler = async (m, { conn, text, command }) => {
         messages += `    *Cuerpo:*\n${email.body}\n\n---\n\n`;
       });
 
-      await conn.reply(m.chat, messages, m, rcanal);
+      await conn.reply(m.chat, messages);
     } catch (error) {
-      await conn.reply(m.chat, 'No se pudo revisar los mensajes.', m);
+      await conn.reply(m.chat, 'No se pudo revisar los mensajes.');
     }
   }
 };
