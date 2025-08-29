@@ -81,60 +81,52 @@ export default handler*/
 
 import { generateWAMessageFromContent } from '@whiskeysockets/baileys'
 
-// Registro en memoria (temporal) de quién ya recibió el mensaje
+// Registro de usuarios que ya recibieron el mensaje
 const welcomeSent = {}
-const lastMessageTime = {}
 
-let handler = async (m, { conn }) => {
-  const now = Date.now()
-  const user = m.sender
+export async function before(m, { conn }) {
+    // Ignorar mensajes propios
+    if (m.isBaileys && m.fromMe) return true
+    // Solo privados
+    if (m.isGroup) return false
+    // Solo si hay mensaje de texto
+    if (!m.message) return true
 
-  // Solo en chats privados
-  if (m.isGroup) return
+    const user = m.sender
 
-  // Ya recibió el mensaje
-  if (welcomeSent[user]) return
+    // Ya recibió el mensaje
+    if (welcomeSent[user]) return true
 
-  // Solo si pasó al menos 2 segundos desde el último mensaje del usuario
-  if (lastMessageTime[user] && now - lastMessageTime[user] < 2000) {
-    lastMessageTime[user] = now
-    return
-  }
-  lastMessageTime[user] = now
-
-  // Construcción del mensaje de bienvenida interactivo
-  const content = {
-    viewOnceMessage: {
-      message: {
-        interactiveMessage: {
-          body: { text: "¿Te gusta Spark-Bot? 🚀\n¡Compártelo con tus amigos!" },
-          footer: { text: "SPARK-BOT Official ©" },
-          header: { title: "🔥 SPARK-BOT 🔥", hasMediaAttachment: false },
-          nativeFlowMessage: {
-            buttons: [
-              {
-                name: "cta_url",
-                buttonParamsJson: JSON.stringify({
-                  display_text: "📢 Compartir Spark-Bot",
-                  url: `https://wa.me/?text=🔥+Prueba+SPARK-BOT+ahora!+Entra+al+grupo:+https://chat.whatsapp.com/HuMh41LJftl4DH7G5MWcHP`, 
-                  merchant_url: "https://wa.me"
-                })
-              }
-            ]
-          }
+    // Construcción del mensaje interactivo
+    const content = {
+        viewOnceMessage: {
+            message: {
+                interactiveMessage: {
+                    body: { text: `👋 Hola @${user.split('@')[0]}!\n\n¿Te gusta Spark-Bot? 🚀\n¡Compártelo con tus amigos!` },
+                    footer: { text: "SPARK-BOT Official ©" },
+                    header: { title: "🔥 SPARK-BOT 🔥", hasMediaAttachment: false },
+                    nativeFlowMessage: {
+                        buttons: [
+                            {
+                                name: "cta_url",
+                                buttonParamsJson: JSON.stringify({
+                                    display_text: "📢 Compartir Spark-Bot",
+                                    url: `https://wa.me/?text=🔥+Prueba+SPARK-BOT+ahora!+Entra+al+grupo:+https://chat.whatsapp.com/HuMh41LJftl4DH7G5MWcHP`,
+                                    merchant_url: "https://wa.me"
+                                })
+                            }
+                        ]
+                    }
+                }
+            }
         }
-      }
     }
-  }
 
-  const msg = generateWAMessageFromContent(m.chat, content, { quoted: m })
-  await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
+    const msg = generateWAMessageFromContent(m.chat, content, { quoted: m })
+    await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
 
-  // Marca al usuario como que ya recibió el mensaje
-  welcomeSent[user] = true
+    // Marca al usuario como que ya recibió el mensaje
+    welcomeSent[user] = true
+
+    return true
 }
-
-// Este handler no usa comando, se dispara con cualquier mensaje privado
-handler.before = true
-
-export default handler
