@@ -1,4 +1,4 @@
-// plugins/admin-canal.js
+/*// plugins/admin-canal.js
 import { generateWAMessageFromContent } from '@whiskeysockets/baileys'
 
 let handler = async (m, { conn }) => {
@@ -39,9 +39,9 @@ let handler = async (m, { conn }) => {
 
 handler.command = /^invitacioncanal$/i
 export default handler
+*/
 
-
-/*import { generateWAMessageFromContent } from '@whiskeysockets/baileys'
+import { generateWAMessageFromContent } from '@whiskeysockets/baileys'
 
 let handler = async (m, { conn }) => {
   const content = {
@@ -76,4 +76,4 @@ let handler = async (m, { conn }) => {
 }
 
 handler.command = /^compartirbot$/i
-export default handler*/
+export default handler
