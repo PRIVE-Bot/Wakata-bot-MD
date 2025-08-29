@@ -1,26 +1,26 @@
+import { downloadContentFromMessage } from '@whiskeysockets/baileys'
+
 let handler = async (m, { conn }) => {
   if (!m.quoted) return conn.reply(m.chat, `Responde a una imagen o video ViewOnce.`, m)
 
   
-  let q = m.quoted
-  let msg = q.msg || q
+  let q = m.quoted.msg || m.quoted.message || {}
 
-  if (!(msg.viewOnceMessage || msg.viewOnceMessageV2)) {
-    return conn.reply(m.chat, `Responde a una imagen o video ViewOnce.`, m)
-  }
+  let vmsg = q.viewOnceMessage?.message || q.viewOnceMessageV2?.message
+  if (!vmsg) return conn.reply(m.chat, `Responde a una imagen o video ViewOnce.`, m)
 
-  let media = msg.viewOnceMessage?.message || msg.viewOnceMessageV2?.message
-  let type = Object.keys(media)[0]
-  let buffer = await downloadContentFromMessage(media[type], type.replace('Message', ''))
+  let type = Object.keys(vmsg)[0] 
+  let media = vmsg[type]
 
-  let chunks = []
-  for await (const chunk of buffer) chunks.push(chunk)
-  let result = Buffer.concat(chunks)
+  
+  const stream = await downloadContentFromMessage(media, type.replace('Message', ''))
+  let buffer = Buffer.concat([])
+  for await (const chunk of stream) buffer = Buffer.concat([buffer, chunk])
 
-  if (/videoMessage/.test(type)) {
-    return conn.sendFile(m.chat, result, 'media.mp4', media[type]?.caption || '', m)
-  } else if (/imageMessage/.test(type)) {
-    return conn.sendFile(m.chat, result, 'media.jpg', media[type]?.caption || '', m)
+  if (type === 'videoMessage') {
+    await conn.sendFile(m.chat, buffer, 'media.mp4', media?.caption || '', m)
+  } else if (type === 'imageMessage') {
+    await conn.sendFile(m.chat, buffer, 'media.jpg', media?.caption || '', m)
   }
 }
 
