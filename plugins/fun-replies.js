@@ -253,10 +253,10 @@ let handler = async (m, { conn }) => {
   let r = respuestas[key]
 const res = await fetch('https://i.postimg.cc/Xv1QwhGc/1756438880305.jpg');
   const thumb2 = Buffer.from(await res.arrayBuffer());
-
+const userJid = m.sender;
   
   const fkontak = {
-    key: { fromMe: false, participant: m },
+    key: { fromMe: false, participant: userJid },
     message: {
       imageMessage: {
         mimetype: 'image/jpeg',
