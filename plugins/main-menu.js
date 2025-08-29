@@ -103,17 +103,7 @@ ${Object.keys(tags).reduce((acc, tag) => {
   {
     image: { url: global.img },
     caption: menuText.trim(),
-    mentions: [m.sender],
-    footer: "⚡ Spark-Bot - Tu asistente confiable",
-    templateButtons: [
-      {
-        index: 1,
-        urlButton: {
-          displayText: "📢 Compartir Spark-Bot",
-          url: "https://chat.whatsapp.com/HuMh41LJftl4DH7G5MWcHP?mode=ems_copy_c"
-        }
-      }
-    ]
+    mentions: [m.sender]
   },
   { quoted: fkontak }
 )
