@@ -1,4 +1,4 @@
-/*process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '1'
+process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '1'
 import './config.js'
 import { setupMaster, fork } from 'cluster'
 import { watchFile, unwatchFile } from 'fs'
@@ -12,6 +12,7 @@ import yargs from 'yargs'
 import { spawn, execSync } from 'child_process'
 import lodash from 'lodash'
 import { JadiBot } from './plugins/jadibot-serbot.js'
+import { setupErrorHandler } from "./plugins/_prueba.js"
 import chalk from 'chalk'
 import syntaxerror from 'syntax-error'
 import { tmpdir } from 'os'
@@ -36,6 +37,7 @@ import NodeCache from 'node-cache'
 const { CONNECTING } = ws
 const { chain } = lodash
 const PORT = process.env.PORT || process.env.SERVER_PORT || 3000
+setupErrorHandler("spark-bot")
 
 let { say } = cfonts
 console.log(chalk.magentaBright('\n Iniciando...'))
@@ -550,10 +552,10 @@ const parsedNumber = phoneUtil.parseAndKeepRawInput(number)
 return phoneUtil.isValidNumber(parsedNumber)
 } catch (error) {
 return false
-}}*/
+}}
 
 
-import './config.js';
+/*import './config.js';
 import { watchFile, unwatchFile } from 'fs';
 import cfonts from 'cfonts';
 import { createRequire } from 'module';
@@ -989,3 +991,4 @@ async function cleanUp() {
 
 setInterval(cleanUp, 1000 * 60 * 60 * 6); // Limpia cada 6 horas
 _quickTest().catch(console.error);
+*/
