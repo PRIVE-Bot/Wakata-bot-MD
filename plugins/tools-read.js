@@ -1,16 +1,29 @@
+import { downloadContentFromMessage } from '@whiskeysockets/baileys'
+
 let handler = async (m, { conn }) => {
-  if (!m.quoted) return conn.reply(m.chat, 'No hay mensaje citado.', m)
+  if (!m.quoted) return conn.reply(m.chat, 'Responde a una imagen o video ViewOnce.', m)
 
-  try {
-    // Convertimos el objeto a JSON y limitamos el tamaño para no saturar
-    let jsonStr = JSON.stringify(m.quoted, null, 2)
-    if (jsonStr.length > 3000) jsonStr = jsonStr.slice(0, 3000) + '\n... (truncated)'
+  let quoted = m.quoted.message
+  if (!quoted) return conn.reply(m.chat, 'No se pudo obtener el mensaje citado.', m)
 
-    await conn.reply(m.chat, 'Aquí está la estructura de tu mensaje citado:\n\n' + jsonStr, m)
-  } catch (e) {
-    await conn.reply(m.chat, 'Error al convertir el mensaje a JSON: ' + e.message, m)
+  // Detectamos si es imagen o video
+  let type = Object.keys(quoted)[0] // "imageMessage" o "videoMessage"
+  if (!['imageMessage','videoMessage'].includes(type)) 
+    return conn.reply(m.chat, 'Responde a una imagen o video ViewOnce.', m)
+
+  let media = quoted[type]
+
+  // descargamos el contenido
+  let stream = await downloadContentFromMessage(media, type.replace('Message',''))
+  let buffer = Buffer.concat([])
+  for await (const chunk of stream) buffer = Buffer.concat([buffer, chunk])
+
+  if (type === 'videoMessage') {
+    await conn.sendFile(m.chat, buffer, 'media.mp4', media?.caption || '', m)
+  } else if (type === 'imageMessage') {
+    await conn.sendFile(m.chat, buffer, 'media.jpg', media?.caption || '', m)
   }
 }
 
-handler.command = ['debugvo']
+handler.command = ['readviewonce','read','readvo','rvo','ver']
 export default handler
