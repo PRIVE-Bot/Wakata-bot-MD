@@ -1,5 +1,6 @@
 import Jimp from 'jimp'
 import axios from 'axios'
+import FormData from 'form-data'
 const { generateWAMessageFromContent, proto, prepareWAMessageMedia } = (await import("@whiskeysockets/baileys")).default;
 
 let handler = async (m, { conn, text }) => {
@@ -34,15 +35,17 @@ let handler = async (m, { conn, text }) => {
 
 
     let formData = new FormData();
-    formData.append('source', new Blob([buffer], { type: 'image/jpeg' }));
-    formData.append('key', '6d207e02198a847aa98d0a2a901485a5');
-    formData.append('action', 'upload');
+    formData.append('upload_session', Math.random());
+    formData.append('file', buffer, { filename: 'image.jpg', contentType: 'image/jpeg' });
+    formData.append('optsize', '0');
+    formData.append('expire', '0');
+    formData.append('numfiles', '1');
 
     try {
-      let uploadRes = await axios.post('https://freeimage.host/api/1/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+      let uploadRes = await axios.post('https://postimages.org/json/rr', formData, {
+        headers: formData.getHeaders()
       });
-      let uploadedUrl = uploadRes.data.image.url;
+      let uploadedUrl = uploadRes.data?.url || uploadRes.data?.images?.[0]?.url;
 
       let media = await prepareWAMessageMedia({ image: buffer }, { upload: conn.waUploadToServer });
       const buttons = [{
