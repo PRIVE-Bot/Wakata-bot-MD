@@ -29,7 +29,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
     }
   };
 
-  const res2 = await fetch('https://files.catbox.moe/z5vrl1.jpg');
+  const res2 = await fetch('https://i.postimg.cc/y8yzWzjW/1756498087639.jpg');
   const thumb3 = Buffer.from(await res2.arrayBuffer());
 
   const fkontak2 = {
