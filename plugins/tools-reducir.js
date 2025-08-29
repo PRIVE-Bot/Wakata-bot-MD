@@ -66,7 +66,7 @@ let handler = async (m, { conn, text }) => {
                 text: `*${width}×${height}*`
               }),
               header: proto.Message.InteractiveMessage.Header.fromObject({
-                title: "乂 I M A G E N – R E D U C I D A 乂",
+                title: "乂  I M A G E N – R E D U C I D A  乂",
                 hasMediaAttachment: true,
                 imageMessage: media.imageMessage
               }),
