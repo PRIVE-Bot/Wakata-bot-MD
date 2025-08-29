@@ -251,7 +251,7 @@ let handler = async (m, { conn }) => {
 
   const texto = normalize(m.text)
 
-  let key = Object.keys(respuestas).find(k => normalize(k) === texto)
+  let key = Object.keys(respuestas).find(k => texto.includes(normalize(k)))
   if (!key) return
 
   let r = respuestas[key]
