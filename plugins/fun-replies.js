@@ -237,18 +237,19 @@ function normalize(text) {
 }
 
 let handler = async (m, { conn }) => {
-if (!m.text) return
-const texto = m.text.toLowerCase().trim()
+  if (!m.text) return
+  const texto = normalize(m.text) 
 
-let key = Object.keys(respuestas).find(k => k === texto)
-if (!key) return
+  let key = Object.keys(respuestas).find(k => normalize(k) === texto)
+  if (!key) return
 
-let r = respuestas[key]
+  let r = respuestas[key]
 
-await conn.sendMessage(m.chat, { text: r.text }, { quoted: m })
-
+  await conn.sendMessage(m.chat, { text: r.text }, { quoted: m })
 }
 
 handler.customPrefix = new RegExp(^(${Object.keys(respuestas).map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})$, 'i')
+
 handler.command = new RegExp
+
 export default handler
