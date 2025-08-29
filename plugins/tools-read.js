@@ -1,14 +1,15 @@
 import { downloadContentFromMessage } from '@whiskeysockets/baileys'
 
 let handler = async (m, { conn }) => {
-  if (!m.quoted) return conn.reply(m.chat, 'Responde a una imagen o video ViewOnce.', m)
+
+  if (!m.quoted) return conn.reply(m.chat, 'Responde a una imagen o video ViewOnce.', m, fake)
 
   let quoted = m.quoted.message
-  if (!quoted) return conn.reply(m.chat, 'No se pudo obtener el mensaje citado.', m)
+  if (!quoted) return conn.reply(m.chat, 'No se pudo obtener el mensaje citado.', m, fake)
 
   let type = Object.keys(quoted)[0] 
   if (!['imageMessage','videoMessage'].includes(type)) 
-    return conn.reply(m.chat, 'Responde a una imagen o video ViewOnce.', m)
+    return conn.reply(m.chat, 'Responde a una imagen o video ViewOnce.', m, fake)
 
   let media = quoted[type]
 
