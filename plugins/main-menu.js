@@ -1,3 +1,4 @@
+import { generateWAMessageFromContent } from '@whiskeysockets/baileys'
 import { xpRange } from '../lib/levelling.js'
 
 const tags = {
@@ -103,7 +104,17 @@ ${Object.keys(tags).reduce((acc, tag) => {
   {
     image: { url: global.img },
     caption: menuText.trim(),
-    mentions: [m.sender]
+    mentions: [m.sender],
+    footer: "⚡ Spark-Bot - Tu asistente confiable",
+    templateButtons: [
+      {
+        index: 1,
+        urlButton: {
+          displayText: "📢 Compartir Spark-Bot",
+          url: "https://wa.me/?text=🔥+Prueba+SPARK-BOT+ahora!+Entra+al+canal:+https://whatsapp.com/channel/0029VbB46nl2ER6dZac6Nd1o"
+        }
+      }
+    ]
   },
   { quoted: fkontak }
 )
