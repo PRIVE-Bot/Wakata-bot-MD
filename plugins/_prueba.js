@@ -23,7 +23,7 @@ let handler = async (m, { conn }) => {
                 name: "cta_url",
                 buttonParamsJson: JSON.stringify({
                   display_text: "Ver invitación",
-                  url: "https://wa.me/0+https://whatsapp.com/channel/0029VbB46nl2ER6dZac6Nd1o", 
+                  url: `https://wa.me/${global.ofcbot}`, 
                   merchant_url: "https://whatsapp.com"
                 })
               }
