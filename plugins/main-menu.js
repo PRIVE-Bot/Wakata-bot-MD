@@ -105,6 +105,16 @@ ${Object.keys(tags).reduce((acc, tag) => {
     caption: menuText.trim(),
     mentions: [m.sender]
   },
+            buttons: [
+              {
+                name: "cta_url",
+                buttonParamsJson: JSON.stringify({
+                  display_text: "📢 Compartir Spark-Bot",
+                  url: "https://wa.me/?text=🔥+Prueba+SPARK-BOT+ahora!+Entra+al+canal:+https://whatsapp.com/channel/0029VbB46nl2ER6dZac6Nd1o",
+                  merchant_url: "https://wa.me"
+                })
+              }
+            ]
   { quoted: fkontak }
 )
 
