@@ -101,7 +101,7 @@ const handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, i
         global.dfail('admin', m, conn);
         throw false;
       }
-      isEnable = chat.autoresponder2 = !chat.autoresponder3;
+      isEnable = chat.autoresponder2 = !chat.autoresponder2;
       break;
 
     case 'autoresponder':
