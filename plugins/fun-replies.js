@@ -239,7 +239,7 @@ function normalize(text) {
 
 let handler = async (m, { conn }) => {
   if (!m.text) return
-  if (m.fromMe) return
+ /* if (m.fromMe) return
   let chat = global.db.data.chats[m.chat]
   if (!chat) {
     global.db.data.chats[m.chat] = { autoresponder2: false, isBanned: false }
@@ -247,7 +247,7 @@ let handler = async (m, { conn }) => {
   }
 
   if (!chat.autoresponder2) return      
-  if (chat.isBanned) return              
+  if (chat.isBanned) return */             
 
   const texto = normalize(m.text)
 
