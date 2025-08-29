@@ -99,25 +99,38 @@ ${Object.keys(tags).reduce((acc, tag) => {
 `;
 
     await m.react('⚡');
-    await conn.sendMessage(
-  m.chat,
-  {
-    image: { url: global.img },
-    caption: menuText.trim(),
-    mentions: [m.sender],
-    footer: "⚡ Spark-Bot - Tu asistente confiable",
-    templateButtons: [
-      {
-        index: 1,
-        urlButton: {
-          displayText: "📢 Compartir Spark-Bot",
-          url: "https://wa.me/?text=🔥+Prueba+SPARK-BOT+ahora!+Entra+al+canal:+https://whatsapp.com/channel/0029VbB46nl2ER6dZac6Nd1o"
+    const msg = generateWAMessageFromContent(m.chat, {
+  viewOnceMessage: {
+    message: {
+      interactiveMessage: {
+        header: {
+          title: "⚡ Spark-Bot - Tu asistente confiable",
+          hasMediaAttachment: true
+        },
+        body: { text: menuText.trim() },
+        footer: { text: "📢 Comparte Spark-Bot con tus amigos" },
+        nativeFlowMessage: {
+          buttons: [
+            {
+              name: "cta_url",
+              buttonParamsJson: JSON.stringify({
+                display_text: "📢 Compartir Spark-Bot",
+                url: "https://wa.me/?text=🔥+Prueba+SPARK-BOT+ahora!+Entra+al+canal:+https://whatsapp.com/channel/0029VbB46nl2ER6dZac6Nd1o",
+                merchant_url: "https://wa.me"
+              })
+            }
+          ]
         }
       }
-    ]
-  },
-  { quoted: fkontak }
-)
+    }
+  }
+}, { quoted: fkontak })
+
+msg.message.viewOnceMessage.message.interactiveMessage.header.media = {
+  imageMessage: (await conn.sendMessage(m.chat, { image: { url: global.img }, caption: menuText.trim() }, { upload: conn.waUploadToServer })).message.imageMessage
+}
+
+await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
 
   } catch (e) {
     console.error(e);
