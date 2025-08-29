@@ -60,7 +60,7 @@ let handler = async (m, { conn }) => {
                 name: "cta_url",
                 buttonParamsJson: JSON.stringify({
                   display_text: "📢 Compartir Spark-Bot",
-                  url: "https://wa.me/?text=🔥+Prueba+SPARK-BOT+ahora!+Entra+al+canal:+https://whatsapp.com/channel/0029VbB46nl2ER6dZac6Nd1o",
+                  url: "https://chat.whatsapp.com/HuMh41LJftl4DH7G5MWcHP",
                   merchant_url: "https://wa.me"
                 })
               }
@@ -75,5 +75,5 @@ let handler = async (m, { conn }) => {
   await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
 }
 
-handler.command = /^compartirbot$/i
+handler.command = /^1$/i
 export default handler
