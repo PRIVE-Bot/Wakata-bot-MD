@@ -46,8 +46,9 @@ const ddownr = {
 const handler = async (m, { conn, text, command }) => {
   try {
     if (!text || !/^https?:\/\/(www\.)?(youtube\.com|youtu\.be)\//.test(text)) {
-      return conn.reply(m.chat, "⚡ Ingresa una URL válida de YouTube.\n\nEjemplo:\n`.ytmp3 https://youtu.be/abcd1234`", m, fake);
+      return conn.reply(m.chat, "⚡ Ingresa una URL válida de YouTube.", m, fake);
     }
+  await m.react('⚡️');
 
     const url = text.trim();
     let api;
@@ -72,6 +73,7 @@ const handler = async (m, { conn, text, command }) => {
           }
         }
       }, { quoted: m });
+  await m.react('🔥');
 
 
     } else if (["ytmp4", "ytv"].includes(command)) {
