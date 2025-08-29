@@ -1,79 +1,27 @@
-/*// plugins/admin-canal.js
-import { generateWAMessageFromContent } from '@whiskeysockets/baileys'
+import { createMessageWithReactions } from '../lib/reaction.js';
 
 let handler = async (m, { conn }) => {
-  const msg = generateWAMessageFromContent(m.chat, {
-    viewOnceMessage: {
-      message: {
-        messageContextInfo: {
-          deviceListMetadata: {},
-          deviceListMetadataVersion: 2
-        },
-        interactiveMessage: {
-          body: { text: "Invitación para ser admin. del canal" },
-          footer: { text: "SPARK-BOT ↱ UPDATE" },
-          header: {
-            title: "🔥 SPARK- BOT 🔥",
-            subtitle: "Invitación oficial",
-            hasMediaAttachment: false
-          },
-          nativeFlowMessage: {
-            buttons: [
-              {
-                name: "cta_url",
-                buttonParamsJson: JSON.stringify({
-                  display_text: "Ver invitación",
-                  url: `https://wa.me/${global.ofcbot}`, 
-                  merchant_url: "https://whatsapp.com"
-                })
-              }
-            ]
-          }
-        }
-      }
-    }
-  }, { userJid: m.chat, quoted: m })
+    const actions = {
+        
+        'ℹ️': { type: 'exec_command', data: { command: '.info' } },
+        
+        '📝': { type: 'exec_command', data: { command: '.help' } },
+    };
 
-  await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
-}
+    const infoMessage = `
+Reacciona para ver más información.
 
-handler.command = /^invitacioncanal$/i
-export default handler
-*/
+ℹ️ = Ver info del bot
+📝 = Ver lista de comandos
+`;
 
-import { generateWAMessageFromContent } from '@whiskeysockets/baileys'
+    const msg = await conn.reply(m.chat, infoMessage, m);
+    await createMessageWithReactions(conn, msg, actions);
+};
 
-let handler = async (m, { conn }) => {
-  const content = {
-    viewOnceMessage: {
-      message: {
-        interactiveMessage: {
-          body: { text: "¿Te gusta Spark-Bot? 🚀\n¡Compártelo con tus amigos!" },
-          footer: { text: "SPARK-BOT Official ©" },
-          header: {
-            title: "🔥 SPARK-BOT 🔥",
-            hasMediaAttachment: false
-          },
-          nativeFlowMessage: {
-            buttons: [
-              {
-                name: "cta_url",
-                buttonParamsJson: JSON.stringify({
-                  display_text: "📢 Compartir Spark-Bot",
-                   url: `https://wa.me/?text=🔥+Prueba+SPARK-BOT+ahora!+Entra+al+grupo:+https://chat.whatsapp.com/HuMh41LJftl4DH7G5MWcHP`, 
-                  merchant_url: "https://wa.me"
-                })
-              }
-            ]
-          }
-        }
-      }
-    }
-  }
 
-  const msg = generateWAMessageFromContent(m.chat, content, { quoted: m })
-  await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
-}
+handler.help = ['showinfo'];
+handler.tags = ['general'];
+handler.command = ['showinfo'];
 
-handler.command = /^1$/i
-export default handler
+export default handler;
