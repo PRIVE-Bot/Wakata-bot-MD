@@ -97,7 +97,7 @@ let handler = async (m, { conn }) => {
   const lastSent = lastDailyMessage[m.sender] || 0
 
   
-  if (now - lastSent < 86400000) return 
+  if (now - lastSent < 2000) return // 2 segundos
 
   
   const content = {
