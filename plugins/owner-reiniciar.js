@@ -1,7 +1,11 @@
 let handler = async (m, { conn, usedPrefix, command }) => {
 
     try {
-        m.reply('「❀」 Reiniciando Spark Bot...')
+       return conn.reply(m.chat, `
+╭╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍⌼
+┣⌬ »ʀᴇɪɴɪᴄɪᴀɴᴅᴏ ᴇʟ ʙᴏᴛ« *↻*
+┣⌬ ᴘᴏʀ ғᴀᴠᴏʀ ᴇsᴘᴇʀᴀ ⇔
+╰╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍⌼`, m, fake, rcanal)
         setTimeout(() => {
             process.exit(0)
         }, 3000) 
@@ -11,9 +15,13 @@ let handler = async (m, { conn, usedPrefix, command }) => {
     }
 }
 
-handler.help = ['restart']
-handler.tags = ['owner']
-handler.command = ['restart', 'reiniciar'] 
-handler.rowner = true
+handler.command = ['restart', 'autulizar']
+handler.before = async (m, { conn }) => {
+    let text = m.text?.toLowerCase()?.trim();
+    if (text === 'restart' || text === 'sutualizar') {
+        return handler(m, { conn });
+    }
+}
+handler.rowner = true;
 
 export default handler
