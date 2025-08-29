@@ -79,56 +79,43 @@ handler.command = /^1$/i
 export default handler*/
 
 
-import { generateWAMessageFromContent } from '@whiskeysockets/baileys'
+import { generateWAMessageFromContent, proto } from '@whiskeysockets/baileys'
 import fs from 'fs'
 
-
 const filePath = './lastDailyMessage.json'
-
 
 let lastDailyMessage = {}
 if (fs.existsSync(filePath)) {
   lastDailyMessage = JSON.parse(fs.readFileSync(filePath, 'utf-8'))
 }
 
-
 let handler = async (m, { conn }) => {
   const now = Date.now()
   const lastSent = lastDailyMessage[m.sender] || 0
 
-  
-  if (now - lastSent < 2000) return // 2 segundos
+  // Para prueba: 2 segundos
+  if (now - lastSent < 2000) return
 
-  
   const content = {
-    viewOnceMessage: {
-      message: {
-        interactiveMessage: {
-          body: { text: "¿Te gusta Spark-Bot? 🚀\n¡Compártelo con tus amigos!" },
-          footer: { text: "SPARK-BOT Official ©" },
-          header: { title: "🔥 SPARK-BOT 🔥", hasMediaAttachment: false },
-          nativeFlowMessage: {
-            buttons: [
-              {
-                name: "cta_url",
-                buttonParamsJson: JSON.stringify({
-                  display_text: "📢 Compartir Spark-Bot",
-                  url: "https://wa.me/?text=🔥+Prueba+SPARK-BOT+ahora!+Entra+al+grupo:+https://chat.whatsapp.com/HuMh41LJftl4DH7G5MWcHP",
-                  merchant_url: "https://wa.me"
-                })
-              }
-            ]
+    templateMessage: {
+      hydratedTemplate: {
+        hydratedContentText: "¿Te gusta Spark-Bot? 🚀\n¡Compártelo con tus amigos!",
+        hydratedFooterText: "SPARK-BOT Official ©",
+        hydratedButtons: [
+          {
+            urlButton: {
+              displayText: "📢 Compartir Spark-Bot",
+              url: "https://wa.me/?text=🔥+Prueba+SPARK-BOT+ahora!+Entra+al+grupo:+https://chat.whatsapp.com/HuMh41LJftl4DH7G5MWcHP"
+            }
           }
-        }
+        ]
       }
     }
   }
 
-  
   const msg = generateWAMessageFromContent(m.chat, content, { quoted: m })
   await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
 
-  
   lastDailyMessage[m.sender] = now
   fs.writeFileSync(filePath, JSON.stringify(lastDailyMessage, null, 2))
 }
