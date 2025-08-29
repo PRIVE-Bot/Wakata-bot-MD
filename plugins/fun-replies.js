@@ -232,20 +232,23 @@ const respuestas = {
   'cállese': { text: 'Jajaja ya me callo 🤫' }
 }
 
-let handler = async (m, { conn }) => {
+let handler = async (m, { conn, chat }) => {
+  if (chat.isBanned || !chat.autoresponder2) return
+  if (m.fromMe) return
   if (!m.text) return
+
   const texto = m.text.toLowerCase().trim()
-
-
   let key = Object.keys(respuestas).find(k => k === texto)
   if (!key) return
 
   let r = respuestas[key]
+  await conn.sendMessage(m.chat, { text: r.text }, { quoted: m })
+}
 
-    await conn.sendMessage(m.chat, { text: r.text }, { quoted: m })
-  }
-
-
-handler.customPrefix = new RegExp(`^(${Object.keys(respuestas).map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})$`, 'i')
+handler.customPrefix = new RegExp(
+  `^(${Object.keys(respuestas)
+    .map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+    .join('|')})$`, 'i'
+)
 handler.command = new RegExp
 export default handler
