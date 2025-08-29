@@ -237,24 +237,18 @@ function normalize(text) {
 }
 
 let handler = async (m, { conn }) => {
-  if (!m.text) return
-  if (m.fromMe) return
-  let chat = global.db.data.chats[m.chat]
-  if (!chat) {
-    global.db.data.chats[m.chat] = { autoresponder2: false, isBanned: false }
-    chat = global.db.data.chats[m.chat]
-  }
+if (!m.text) return
+const texto = m.text.toLowerCase().trim()
 
-  if (!chat.autoresponder2) return
-  if (chat.isBanned) return
+let key = Object.keys(respuestas).find(k => k === texto)
+if (!key) return
 
-  const texto = normalize(m.text)
+let r = respuestas[key]
 
-  let key = Object.keys(respuestas).find(k => normalize(k) === texto)
-  if (!key) return
+await conn.sendMessage(m.chat, { text: r.text }, { quoted: m })
 
-  let r = respuestas[key]
-  await conn.sendMessage(m.chat, { text: r.text }, { quoted: m })
 }
 
+handler.customPrefix = new RegExp(^(${Object.keys(respuestas).map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})$, 'i')
+handler.command = new RegExp
 export default handler
