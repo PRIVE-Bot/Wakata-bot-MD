@@ -559,7 +559,7 @@ import cfonts from 'cfonts';
 import { createRequire } from 'module';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { platform } from 'process';
-import * as ws from 'ws';
+import ws from 'ws';
 import fs, { readdirSync, unlinkSync, existsSync, mkdirSync, readFileSync, rmSync, watch } from 'fs';
 import yargs from 'yargs';
 import { spawn, execSync } from 'child_process';
@@ -569,8 +569,6 @@ import syntaxerror from 'syntax-error';
 import { JadiBot } from './plugins/jadibot-serbot.js';
 import { tmpdir } from 'os';
 import { format } from 'util';
-import P from 'pino';
-import pino from 'pino';
 import Pino from 'pino';
 import path, { join, dirname } from 'path';
 import { Boom } from '@hapi/boom';
@@ -675,7 +673,7 @@ console.info = () => {};
 console.debug = () => {};
 
 const connectionOptions = {
-    logger: pino({ level: 'silent' }),
+    logger: Pino({ level: 'silent' }),
     printQRInTerminal: opcion === '1' || methodCodeQR,
     mobile: MethodMobile,
     browser: opcion === '1' || methodCodeQR ? Browsers.macOS("Desktop") : Browsers.macOS("Chrome"),
@@ -735,10 +733,6 @@ global.conn.logger.info(`[ ⌨ ]  H E C H O\n`);
 if (!opts['test']) {
     if (global.db) setInterval(async () => {
         if (global.db.data) await global.db.write();
-        if (opts['autocleartmp']) {
-            const tmpDir = tmpdir();
-            spawn('find', [tmpDir, '-amin', '3', '-type', 'f', '-delete']);
-        }
     }, 30 * 1000);
 }
 
@@ -822,16 +816,10 @@ global.reloadHandler = async function(restatConn) {
     isInit = false;
     return true;
 };
-setInterval(() => {
-    console.log('[ ↻ ]  Reiniciando...');
-    process.exit(0);
-}, 10800000);
 
 global.rutaJadiBot = join(__dirname, './JadiBots')
 
 if (global.Jadibts) {
-
-
   if (!existsSync(global.rutaJadiBot)) {
     mkdirSync(global.rutaJadiBot, { recursive: true })
     console.log(chalk.bold.cyan(`📁 Carpeta creada: ${global.rutaJadiBot}`))
@@ -987,20 +975,14 @@ function isValidPhoneNumber(number) {
     }
 }
 
-setInterval(async () => {
-    if (global.stopped === 'close' || !global.conn || !global.conn.user) return;
-    await clearTmp();
-    console.log(chalk.bold.cyanBright(`\n⌦ Archivos de la carpeta TMP no necesarios han sido eliminados del servidor.`));
-}, 1000 * 60 * 4);
-setInterval(async () => {
-    if (global.stopped === 'close' || !global.conn || !global.conn.user) return;
-    await purgeSession();
-    console.log(chalk.bold.cyanBright(`\n⌦ Archivos de la carpeta ${global.sessions} no necesario han sido eliminados del servidor.`));
-}, 1000 * 60 * 10);
-setInterval(async () => {
-    if (global.stopped === 'close' || !global.conn || !global.conn.user) return;
-    await purgeOldFiles();
-    console.log(chalk.bold.cyanBright(`\n⌦ Archivos no necesario han sido eliminados del servidor.`));
-}, 1000 * 60 * 10);
-_quickTest().catch(console.error);
+async function cleanUp() {
+  await Promise.all([
+    clearTmp(),
+    purgeSession(),
+    purgeOldFiles()
+  ]);
+  console.log(chalk.bold.cyanBright(`\n⌦ Archivos innecesarios han sido eliminados del servidor.`));
+}
 
+setInterval(cleanUp, 1000 * 60 * 60 * 6); // Limpia cada 6 horas
+_quickTest().catch(console.error);
