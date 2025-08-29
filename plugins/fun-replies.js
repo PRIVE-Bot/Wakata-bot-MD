@@ -233,7 +233,7 @@ const respuestas = {
 }
 
 let handler = async (m, { conn, chat }) => {
-  if (chat.isBanned || !chat.autoresponder2) return
+  if (!chat.autoresponder2) return
   if (m.fromMe) return
   if (!m.text) return
 
