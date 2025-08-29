@@ -1,4 +1,4 @@
-/* eslint-disable */
+
 import { smsg } from './lib/simple.js';
 import { format } from 'util'; 
 import { fileURLToPath } from 'url';
@@ -375,12 +375,12 @@ export async function handler(chatUpdate) {
 
                 if ((m.id.startsWith('NJX-') || (m.id.startsWith('BAE5') && m.id.length === 16) || (m.id.startsWith('B24E') && m.id.length === 20))) return;
 
-                // --- NUEVA LÓGICA AGREGADA ---
+                
                 const settings = global.db.data.settings[this.user.jid];
                 if (settings.soloParaJid && m.sender !== settings.soloParaJid) {
-                    continue; // Ignora los comandos de otros números si la función está activa
+                    continue; 
                 }
-                // --- FIN DE LA NUEVA LÓGICA ---
+                
 
                 if (!isAccept) {
                     continue;
