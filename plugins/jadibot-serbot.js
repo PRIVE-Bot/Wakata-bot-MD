@@ -229,17 +229,8 @@ secret = secret.match(/.{1,4}/g)?.join("-")
 });*/
 
 
-let media = await prepareWAMessageMedia(
-  { image: { url: imagenUrl } }, 
-  { upload: conn.waUploadToServer }
-)
-
 const msg = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
   interactiveMessage: {
-    header: {
-      hasMediaAttachment: true,
-      imageMessage: media.imageMessage
-    },
     body: { text: rtx2 }, 
     footer: { text: `${dev}` },
     nativeFlowMessage: {
