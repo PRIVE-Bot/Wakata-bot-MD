@@ -235,32 +235,29 @@ let media = await prepareWAMessageMedia(
 )
 
 const msg = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
-  viewOnceMessage: {
-    message: {
-      interactiveMessage: {
-        header: {
-          hasMediaAttachment: true,
-          imageMessage: media.imageMessage
-        },
-        body: { text: rtx2 },
-        footer: { text: `${dev}` },
-        nativeFlowMessage: {
-          buttons: [
-            {
-              name: 'cta_copy',
-              buttonParamsJson: JSON.stringify({
-                display_text: 'Copiar el código para vincular a subbot...',
-                copy_code: secret
-              })
-            }
-          ]
+  interactiveMessage: {
+    header: {
+      hasMediaAttachment: true,
+      imageMessage: media.imageMessage
+    },
+    body: { text: rtx2 }, 
+    footer: { text: `${dev}` },
+    nativeFlowMessage: {
+      buttons: [
+        {
+          name: 'cta_copy',
+          buttonParamsJson: JSON.stringify({
+            display_text: 'Copiar el código para vincular a subbot...',
+            copy_code: secret
+          })
         }
-      }
+      ]
     }
   }
 }), { quoted: m })
 
-await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
+const txtCode = await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
+
 
 
 //codeBot = await conn.reply(m.chat, `${secret}`, fkontak, fake);
