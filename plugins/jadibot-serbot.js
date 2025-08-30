@@ -12,7 +12,7 @@ Contenido adaptado por:
 - elrebelde21 >> https://github.com/elrebelde21
 */
 
-const { useMultiFileAuthState, DisconnectReason, makeCacheableSignalKeyStore, fetchLatestBaileysVersion} = (await import("@whiskeysockets/baileys"));
+const { useMultiFileAuthState, DisconnectReason, makeCacheableSignalKeyStore, fetchLatestBaileysVersion, generateWAMessageFromContent, proto } = (await import("@whiskeysockets/baileys"));
 import qrcode from "qrcode"
 import NodeCache from "node-cache"
 import fs from "fs"
@@ -221,13 +221,39 @@ if (qr && mcode) {
   let secret = await sock.requestPairingCode((m.sender.split`@`[0]))
 secret = secret.match(/.{1,4}/g)?.join("-")
 //if (m.isWABusiness) {
-txtCode = await conn.sendMessage(m.chat, {
+/*txtCode = await conn.sendMessage(m.chat, {
     image: { url: imagenUrl },
     caption: rtx2,
     ...global.fake,
     quoted: m,
-});
-codeBot = await conn.reply(m.chat, `${secret}`, fkontak, fake);
+});*/
+
+
+const msg = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
+  interactiveMessage: {
+    body: { text: rtx2 }, 
+    footer: { text: `${dev}` },
+    header: {
+      hasMediaAttachment: false 
+    },
+    nativeFlowMessage: {
+      buttons: [
+        {
+          name: 'cta_copy',
+          buttonParamsJson: JSON.stringify({
+            display_text: 'Copiar el código para vincular a subbot...',
+            copy_code: secret
+          })
+        }
+      ]
+    }
+  }
+}), { quoted: m })
+
+txtCode = await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
+
+
+//codeBot = await conn.reply(m.chat, `${secret}`, fkontak, fake);
 //} else {
 //txtCode = await conn.sendButton(m.chat, rtx2.trim(), wm, null, [], secret, null, m) 
 //}
