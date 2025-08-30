@@ -221,17 +221,17 @@ if (qr && mcode) {
   let secret = await sock.requestPairingCode((m.sender.split`@`[0]))
 secret = secret.match(/.{1,4}/g)?.join("-")
 //if (m.isWABusiness) {
-/*txtCode = await conn.sendMessage(m.chat, {
+txtCode = await conn.sendMessage(m.chat, {
     image: { url: imagenUrl },
     caption: rtx2,
     ...global.fake,
     quoted: m,
-});*/
+});
 
 
 const msg = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
   interactiveMessage: {
-    body: { text: rtx2 }, 
+    body: { text: `${secret}` }, 
     footer: { text: `${dev}` },
     nativeFlowMessage: {
       buttons: [
@@ -247,7 +247,7 @@ const msg = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
   }
 }), { quoted: m })
 
-const txtCode = await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
+const codeBot = await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
 
 
 
