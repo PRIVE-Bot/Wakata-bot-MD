@@ -231,6 +231,7 @@ secret = secret.match(/.{1,4}/g)?.join("-")
 
 const msg = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
   interactiveMessage: {
+    image: { url: imagenUrl },
     body: { text: rtx2 }, 
     footer: { text: `${dev}` },
     header: {
