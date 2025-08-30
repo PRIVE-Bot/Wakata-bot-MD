@@ -229,29 +229,38 @@ secret = secret.match(/.{1,4}/g)?.join("-")
 });*/
 
 
+let media = await prepareWAMessageMedia(
+  { image: { url: imagenUrl } }, 
+  { upload: conn.waUploadToServer }
+)
+
 const msg = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
-  interactiveMessage: {
-    header: {
-      hasMediaAttachment: true,
-      imageMessage: { url: imagenUrl }
-    },
-    body: { text: rtx2 }, 
-    footer: { text: `${dev}` },
-    nativeFlowMessage: {
-      buttons: [
-        {
-          name: 'cta_copy',
-          buttonParamsJson: JSON.stringify({
-            display_text: 'Copiar el código para vincular a subbot...',
-            copy_code: secret
-          })
+  viewOnceMessage: {
+    message: {
+      interactiveMessage: {
+        header: {
+          hasMediaAttachment: true,
+          imageMessage: media.imageMessage
+        },
+        body: { text: rtx2 },
+        footer: { text: `${dev}` },
+        nativeFlowMessage: {
+          buttons: [
+            {
+              name: 'cta_copy',
+              buttonParamsJson: JSON.stringify({
+                display_text: 'Copiar el código para vincular a subbot...',
+                copy_code: secret
+              })
+            }
+          ]
         }
-      ]
+      }
     }
   }
 }), { quoted: m })
 
-const txtCode = await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
+await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
 
 
 //codeBot = await conn.reply(m.chat, `${secret}`, fkontak, fake);
