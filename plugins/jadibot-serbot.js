@@ -231,12 +231,12 @@ secret = secret.match(/.{1,4}/g)?.join("-")
 
 const msg = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
   interactiveMessage: {
-    image: { url: imagenUrl },
+    header: {
+      hasMediaAttachment: true,
+      imageMessage: { url: imagenUrl }
+    },
     body: { text: rtx2 }, 
     footer: { text: `${dev}` },
-    header: {
-      hasMediaAttachment: false 
-    },
     nativeFlowMessage: {
       buttons: [
         {
@@ -251,7 +251,7 @@ const msg = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
   }
 }), { quoted: m })
 
-txtCode = await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
+const txtCode = await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
 
 
 //codeBot = await conn.reply(m.chat, `${secret}`, fkontak, fake);
