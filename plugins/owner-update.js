@@ -6,8 +6,8 @@ let handler = async (m, { conn, args }) => {
 
         const output = execSync('git pull' + (args.length ? ' ' + args.join(' ') : '')).toString();
         let response = output.includes('Already up to date') 
-            ? '✅ El bot ya está actualizado.' 
-            : `🔄 Se han aplicado actualizaciones:\n\n${output}`;
+            ? '┏━━━━━━━━━━━━━━━━━━━⌼\n┠✅ El bot ya está actualizado.\n┗━━━━━━━━━━━━━━━━━━━⌼' 
+            : `┏━━━━━━━━━━━━━━━━━━━⌼\n┣🔄 Se han aplicado actualizaciones:\n┗━━━━━━━━━━━━━━━━━━━⌼\n\n${output}`;
 
         await conn.reply(m.chat, response, m);
 
