@@ -1,7 +1,7 @@
 import { downloadContentFromMessage } from '@whiskeysockets/baileys'
 
 let handler = async (m, { conn }) => {
-const res = await fetch('url');
+const res = await fetch('https://i.postimg.cc/rsgTTn6K/1756602958244.jpg');
 const thumb2 = Buffer.from(await res.arrayBuffer());
 
     const fkontak = {
