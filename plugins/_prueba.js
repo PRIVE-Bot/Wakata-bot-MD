@@ -19,11 +19,10 @@ const handler = async (m, { conn }) => {
         nativeFlowMessage: {
           buttons: [
             {
-              name: "cta_url", // también podrías usar "cta_share"
+              name: "cta_copy",
               buttonParamsJson: JSON.stringify({
-                display_text: "📢 Compartir Spark-Bot",
-                url: `https://wa.me/?text=🔥+Prueba+SPARK-BOT+ahora!+Entra+al+grupo:+https://chat.whatsapp.com/HuMh41LJftl4DH7G5MWcHP`,
-                merchant_url: "https://wa.me"
+                display_text: "📋 Copiar mensaje",
+                copy_code: "🔥 Prueba SPARK-BOT ahora! Entra al grupo: https://chat.whatsapp.com/HuMh41LJftl4DH7G5MWcHP"
               })
             }
           ]
@@ -34,12 +33,12 @@ const handler = async (m, { conn }) => {
     const msg = generateWAMessageFromContent(canal, content, {});
     await conn.relayMessage(canal, msg.message, { messageId: msg.key.id });
 
-    m.reply("✅ Mensaje con botón enviado al canal.");
+    m.reply("✅ Mensaje con botón de copiar enviado al canal.");
   } catch (e) {
     console.error("Error al enviar al canal:", e);
     m.reply(`❌ Error: ${e.message}`);
   }
 };
 
-handler.command = /^canalcompartir$/i;
+handler.command = /^canalcopy$/i;
 export default handler;
