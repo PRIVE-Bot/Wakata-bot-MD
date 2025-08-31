@@ -1,22 +1,26 @@
-const handler = async (m, { conn, text, usedPrefix, command }) => {
-const res = await fetch('https://postimg.cc/vg3KfN7T/b98b26f9');
-const thumb2 = Buffer.from(await res.arrayBuffer());
+import fetch from 'node-fetch'
 
-    const fkontak = {
-      key: { fromMe: false, participant: "0@s.whatsapp.net" },
-      message: {
-        orderMessage: {
-          itemCount: 1,
-          status: 1,
-          surface: 1,
-          message: `prueba`,
-          orderTitle: "Mejor Bot",
-          jpegThumbnail: thumb2
-        }
+const handler = async (m, { conn }) => {
+  const res = await fetch('https://i.postimg.cc/8P7C5rSr/test.jpg') 
+  const thumb2 = Buffer.from(await res.arrayBuffer())
+
+  const fkontak = {
+    key: { fromMe: false, participant: "0@s.whatsapp.net" },
+    message: {
+      orderMessage: {
+        itemCount: 1,
+        status: 1,
+        surface: 1,
+        message: `prueba`,
+        orderTitle: "Mejor Bot",
+        thumbnail: thumb2, 
+        sellerJid: "0@s.whatsapp.net"
       }
-    };
-    return conn.reply(m.chat, ` prueba `, fkontak)
-};
+    }
+  }
+
+  return conn.sendMessage(m.chat, { text: "prueba" }, { quoted: fkontak })
+}
 
 handler.command = ['1']
 export default handler
