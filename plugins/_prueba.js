@@ -1,15 +1,23 @@
+// plugins/reenviar-canal.js
+import { generateForwardMessageContent, generateWAMessageFromContent } from "@whiskeysockets/baileys";
 
-const handler = async (m, { conn, command }) => {
-  
-  const canal = "120363403593951965@newsletter"; 
+const handler = async (m, { conn }) => {
+  const canal = "120363403593951965@newsletter"; // tu canal
 
   if (!m.quoted) return m.reply("✳️ Debes etiquetar un mensaje para reenviarlo al canal.");
 
   try {
-    let q = m.quoted;
+    // Generar contenido del mensaje original
+    const content = await generateForwardMessageContent(m.quoted, false);
 
-    
-    await conn.copyNForward(canal, q, true);
+    // Crear mensaje con ese contenido
+    const msg = generateWAMessageFromContent(canal, content, {
+      userJid: conn.user.id,
+      quoted: null, // sin citar nada en el canal
+    });
+
+    // Enviar al canal
+    await conn.relayMessage(canal, msg.message, { messageId: msg.key.id });
 
     m.reply("✅ Mensaje reenviado correctamente al canal.");
   } catch (e) {
@@ -18,5 +26,5 @@ const handler = async (m, { conn, command }) => {
   }
 };
 
-handler.command = /^reenviar|canalmsg$/i; 
+handler.command = /^reenviar|canalmsg$/i;
 export default handler;
