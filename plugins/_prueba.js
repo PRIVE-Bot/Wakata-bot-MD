@@ -6,7 +6,15 @@ const handler = async (m, { conn }) => {
   }
 
   try {
-    await conn.copyNForward(canal, m.quoted, true);
+    // Intentamos cargar el mensaje completo
+    const q = m.quoted;
+    const msg = await conn.loadMessage(q.key.remoteJid, q.key.id);
+
+    if (!msg) {
+      return m.reply("❌ No se pudo recuperar el mensaje citado.");
+    }
+
+    await conn.copyNForward(canal, msg, true);
     m.reply("✅ Mensaje reenviado correctamente al canal.");
   } catch (e) {
     console.error("Error al reenviar:", e);
