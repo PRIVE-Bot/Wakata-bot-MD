@@ -21,7 +21,8 @@ const handler = async (m, { conn }) => {
       location: {
         degreesLatitude: 14.0818,   // Latitud (ejemplo: Tegucigalpa, Honduras)
         degreesLongitude: -87.2068, // Longitud (ejemplo: Tegucigalpa, Honduras)
-        name: "Mi ubicación", // Título de la ubicación
+        name: "El amor, en su esencia más pura, es un refugio y un faro; pero en la oscuridad de la depresión, a veces se siente como una verdad inalcanzable, o peor aún, como un espejo que solo refleja la distancia entre el mundo que anhelas y la batalla silenciosa que liberas dentro de ti.
+", // Título de la ubicación
         jpegThumbnail: thumbBuffer, // La miniatura que procesamos
         
         // El texto de la descripción va en el contexto del mensaje
