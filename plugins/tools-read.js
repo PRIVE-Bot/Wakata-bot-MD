@@ -1,6 +1,22 @@
 import { downloadContentFromMessage } from '@whiskeysockets/baileys'
 
 let handler = async (m, { conn }) => {
+const res = await fetch('url');
+const thumb2 = Buffer.from(await res.arrayBuffer());
+
+    const fkontak = {
+      key: { fromMe: false, participant: "0@s.whatsapp.net" },
+      message: {
+        orderMessage: {
+          itemCount: 1,
+          status: 1,
+          surface: 1,
+          message: `𝗗𝗘𝗦𝗕𝗟𝗢𝗤𝗨𝗘𝗔𝗗𝗢`,
+          orderTitle: "Mejor Bot",
+          jpegThumbnail: thumb2
+        }
+      }
+    };
 
   if (!m.quoted) return conn.reply(m.chat, 'Responde a una imagen o video ViewOnce.', m, fake)
 
@@ -18,9 +34,9 @@ let handler = async (m, { conn }) => {
   for await (const chunk of stream) buffer = Buffer.concat([buffer, chunk])
 
   if (type === 'videoMessage') {
-    await conn.sendFile(m.chat, buffer, 'media.mp4', media?.caption || '', m)
+    await conn.sendFile(m.chat, buffer, 'media.mp4', media?.caption || '', fkontak)
   } else if (type === 'imageMessage') {
-    await conn.sendFile(m.chat, buffer, 'media.jpg', media?.caption || '', m)
+    await conn.sendFile(m.chat, buffer, 'media.jpg', media?.caption || '', fkontak)
   }
 }
 
