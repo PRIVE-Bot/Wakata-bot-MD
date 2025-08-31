@@ -2,7 +2,7 @@ import fetch from 'node-fetch'
 
 const handler = async (m, { conn }) => {
   // URL directa de imagen
-  const res = await fetch('https://i.postimg.cc/8P7C5rSr/test.jpg')
+  const res = await fetch('https://postimg.cc/vg3KfN7T/b98b26f9')
   const thumb = Buffer.from(await res.arrayBuffer())
 
   await conn.sendMessage(m.chat, {
