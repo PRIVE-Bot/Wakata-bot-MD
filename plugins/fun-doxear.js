@@ -1,11 +1,15 @@
 import { performance } from 'perf_hooks';
 
-const handler = async (m, { conn, text, participants }) => {
+const handler = async (m, { conn }) => {
   const start = performance.now();
   const end = performance.now();
   const executionTime = (end - start);
 
-  let target = m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.sender;
+  if (!m.mentionedJid || m.mentionedJid.length === 0) {
+    return conn.reply(m.chat, `${emoji} Debes etiquetar con @ a un usuario para usar este comando.`, m, fake);
+  }
+
+  let target = m.mentionedJid[0]; 
   let phoneNumber = target.split('@')[0];
 
   async function loading() {
@@ -20,8 +24,7 @@ const handler = async (m, { conn, text, participants }) => {
       `⏳ Progreso: ${getRandomInt(40, 55)}%`,
       `⏳ Progreso: ${getRandomInt(60, 75)}%`,
       `⏳ Progreso: ${getRandomInt(80, 95)}%`,
-      "✅ HACKING COMPLETED",
-      `${fakeReport}`
+      "✅ HACKING COMPLETADO",
     ];
 
     let { key } = await conn.sendMessage(
@@ -37,7 +40,7 @@ const handler = async (m, { conn, text, participants }) => {
     let nombre = await conn.getName(target);
 
     const fakeReport = `
-*\`☠ HACKED DATA ☠\`*
+*\`☠ DATOS GENERADOS ☠\`*
 👤 Nombre detectado: ${nombre}
 📱 Teléfono vinculado: +${phoneNumber}
 🌐 Dirección IP: 192.168.${getRandomInt(1,255)}.${getRandomInt(1,255)}
@@ -72,7 +75,7 @@ const handler = async (m, { conn, text, participants }) => {
 ⚠️ Datos transmitidos al servidor remoto con éxito.
 `;
 
-   // await conn.sendMessage(m.chat, { text: fakeReport }, { quoted: m });
+    await conn.sendMessage(m.chat, { text: fakeReport }, { quoted: m });
   }
 
   loading();
