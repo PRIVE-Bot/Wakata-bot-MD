@@ -1,27 +1,41 @@
-const handler = async (m, { conn }) => {
-  const canal = "120363403593951965@newsletter"; // ID del canal
+const handler = async (m, { conn, text }) => {
+  const canal = "120363403593951965@newsletter";
 
-  if (!m.quoted) {
-    return m.reply("✳️ Debes responder a un mensaje para reenviarlo al canal.");
-  }
+  if (!m.quoted) return m.reply("✳️ Debes responder a un mensaje para reenviarlo al canal.");
 
   try {
-    const q = m.quoted;
-    const msg = q.msg || q.message;
+    let q = m.quoted;
+    let mime = q.mimetype || q.mediaType;
 
-    if (!msg) {
-      return m.reply("❌ No se pudo obtener el contenido del mensaje citado.");
+    if (mime) {
+      // Si es archivo multimedia
+      let media = await q.download();
+      let type = mime.startsWith("image") ? "image"
+               : mime.startsWith("video") ? "video"
+               : mime.startsWith("audio") ? "audio"
+               : mime === "image/webp" ? "sticker"
+               : null;
+
+      if (!type) return m.reply("❌ Tipo de archivo no soportado.");
+
+      await conn.sendMessage(canal, {
+        [type]: media,
+        mimetype: mime,
+        caption: type !== "sticker" ? (text || q.text || "") : undefined
+      });
+
+    } else {
+      // Si es solo texto
+      let content = q.text || q.body || text;
+      if (!content) return m.reply("❌ No se pudo obtener el texto del mensaje citado.");
+
+      await conn.sendMessage(canal, { text: content });
     }
 
-    await conn.copyNForward(canal, { ...q, message: msg }, true);
     m.reply("✅ Mensaje reenviado correctamente al canal.");
   } catch (e) {
     console.error("Error al reenviar:", e);
-    if (e.message?.includes("403")) {
-      m.reply("❌ No tengo permisos para enviar mensajes a ese canal. Agrega el bot como administrador.");
-    } else {
-      m.reply(`❌ Ocurrió un error al reenviar el mensaje: ${e.message}`);
-    }
+    m.reply(`❌ Error al reenviar: ${e.message}`);
   }
 };
 
