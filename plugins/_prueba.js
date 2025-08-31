@@ -11,17 +11,8 @@ const handler = async (m, { conn }) => {
       degreesLatitude: 0,   // no importa, puede ser 0
       degreesLongitude: 0,  // no importa, puede ser 0
       name: "Mi ubicación personalizada", // título de la ubicación
-      address: "Aquí va el texto que quieras" // descripción del mensaje
-    },
-    contextInfo: {
-      externalAdReply: {
-        showAdAttribution: true,
-        title: "Mejor Bot",
-        body: "Bot de prueba con imagen",
-        mediaType: 2, // indica imagen
-        thumbnail: thumbBuffer,
-        sourceUrl: "https://postimg.cc/vg3KfN7T/b98b26f9"
-      }
+      address: "El amor, en su esencia más pura, es un refugio y un faro; pero en la oscuridad de la depresión, a veces se siente como una verdad inalcanzable, o peor aún, como un espejo que solo refleja la distancia entre el mundo que anhelas y la batalla silenciosa que liberas dentro de ti.
+" // descripción del mensaje
     }
   };
 
