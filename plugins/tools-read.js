@@ -27,6 +27,7 @@ const thumb2 = Buffer.from(await res.arrayBuffer());
   if (!['imageMessage','videoMessage'].includes(type)) 
     return conn.reply(m.chat, 'Responde a una imagen o video ViewOnce.', m, fake)
 
+  await m.react('⚡️');
   let media = quoted[type]
 
   let stream = await downloadContentFromMessage(media, type.replace('Message',''))
