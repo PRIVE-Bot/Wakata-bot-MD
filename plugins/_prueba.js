@@ -1,43 +1,45 @@
-const handler = async (m, { conn, text }) => {
-  const canal = "120363403593951965@newsletter";
+import { generateWAMessageFromContent } from '@whiskeysockets/baileys';
 
-  if (!m.quoted) return m.reply("✳️ Debes responder a un mensaje para reenviarlo al canal.");
+const handler = async (m, { conn }) => {
+  const canal = "120363403593951965@newsletter"; // tu canal
 
   try {
-    let q = m.quoted;
-    let mime = q.mimetype || q.mediaType;
+    const content = {
+      interactiveMessage: {
+        body: { 
+          text: `👋 Hola!\n\n¿Te gusta Spark-Bot? 🚀\n¡Compártelo con tus amigos!` 
+        },
+        footer: { 
+          text: "SPARK-BOT Official ©" 
+        },
+        header: { 
+          title: "🔥 SPARK-BOT 🔥", 
+          hasMediaAttachment: false 
+        },
+        nativeFlowMessage: {
+          buttons: [
+            {
+              name: "cta_url", // también podrías usar "cta_share"
+              buttonParamsJson: JSON.stringify({
+                display_text: "📢 Compartir Spark-Bot",
+                url: `https://wa.me/?text=🔥+Prueba+SPARK-BOT+ahora!+Entra+al+grupo:+https://chat.whatsapp.com/HuMh41LJftl4DH7G5MWcHP`,
+                merchant_url: "https://wa.me"
+              })
+            }
+          ]
+        }
+      }
+    };
 
-    if (mime) {
-      // Si es archivo multimedia
-      let media = await q.download();
-      let type = mime.startsWith("image") ? "image"
-               : mime.startsWith("video") ? "video"
-               : mime.startsWith("audio") ? "audio"
-               : mime === "image/webp" ? "sticker"
-               : null;
+    const msg = generateWAMessageFromContent(canal, content, {});
+    await conn.relayMessage(canal, msg.message, { messageId: msg.key.id });
 
-      if (!type) return m.reply("❌ Tipo de archivo no soportado.");
-
-      await conn.sendMessage(canal, {
-        [type]: media,
-        mimetype: mime,
-        caption: type !== "sticker" ? (text || q.text || "") : undefined
-      });
-
-    } else {
-      // Si es solo texto
-      let content = q.text || q.body || text;
-      if (!content) return m.reply("❌ No se pudo obtener el texto del mensaje citado.");
-
-      await conn.sendMessage(canal, { text: content });
-    }
-
-    m.reply("✅ Mensaje reenviado correctamente al canal.");
+    m.reply("✅ Mensaje con botón enviado al canal.");
   } catch (e) {
-    console.error("Error al reenviar:", e);
-    m.reply(`❌ Error al reenviar: ${e.message}`);
+    console.error("Error al enviar al canal:", e);
+    m.reply(`❌ Error: ${e.message}`);
   }
 };
 
-handler.command = /^reenviar|canalmsg$/i;
+handler.command = /^canalcompartir$/i;
 export default handler;
