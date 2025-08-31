@@ -6,12 +6,8 @@ const handler = async (m, { conn, command }) => {
   }
 
   try {
-    const quotedMessage = m.quoted.isBaileys ? m.quoted.msg : m.quoted;
-    if (!quotedMessage) {
-        return m.reply("❌ Error: No se pudo obtener el mensaje citado correctamente.");
-    }
-    
-    await conn.copyNForward(canal, quotedMessage, true);
+    const q = m.quoted;
+    await conn.relayMessage(canal, q.message, { messageId: q.key.id });
     m.reply("✅ Mensaje reenviado correctamente al canal.");
   } catch (e) {
     console.error("Error al reenviar el mensaje:", e);
