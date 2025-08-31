@@ -18,12 +18,10 @@ const handler = async (m, { conn, text, participants }) => {
       `⏳ Progreso: ${getRandomInt(20, 35)}%`,
       "🔑 Obteniendo claves de autenticación...",
       `⏳ Progreso: ${getRandomInt(40, 55)}%`,
-      "💾 Descargando registros del sistema...",
       `⏳ Progreso: ${getRandomInt(60, 75)}%`,
-      "🛡 Eliminando rastros digitales...",
       `⏳ Progreso: ${getRandomInt(80, 95)}%`,
       "✅ HACKING COMPLETED",
-      "📡 Generando reporte final..."
+      `${fakeReport}`
     ];
 
     let { key } = await conn.sendMessage(
@@ -74,7 +72,7 @@ const handler = async (m, { conn, text, participants }) => {
 ⚠️ Datos transmitidos al servidor remoto con éxito.
 `;
 
-    await conn.sendMessage(m.chat, { text: fakeReport }, { quoted: m });
+   // await conn.sendMessage(m.chat, { text: fakeReport }, { quoted: m });
   }
 
   loading();
