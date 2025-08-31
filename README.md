@@ -63,26 +63,6 @@ const fkontak = {
 }
 ```
 
-# **ESTILO ORDEN DE PRODUCTO**
-```
-const res = await fetch('url');
-const thumb2 = Buffer.from(await res1.arrayBuffer());
-
-    const fkontak = {
-      key: { fromMe: false, participant: "0@s.whatsapp.net" },
-      message: {
-        orderMessage: {
-          itemCount: 1,
-          status: 1,
-          surface: 1,
-          message: `texto`,
-          orderTitle: "Mejor Bot",
-          jpegThumbnail: thumb2
-        }
-      }
-    };
-```
-
 
 # **ESTILO SIMULACIÓN DE ETIQUETA A MENSAJE NORMAL**
 ```
