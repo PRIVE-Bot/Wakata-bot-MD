@@ -1,30 +1,23 @@
-// plugins/reenviar-canal.js
-import { generateForwardMessageContent, generateWAMessageFromContent } from "@whiskeysockets/baileys";
-
-const handler = async (m, { conn }) => {
-  const canal = "120363403593951965@newsletter"; // tu canal
+const handler = async (m, { conn, command }) => {
+  const canal = "120363403593951965@newsletter";
 
   if (!m.quoted) return m.reply("✳️ Debes etiquetar un mensaje para reenviarlo al canal.");
 
   try {
-    // Generar contenido del mensaje original
-    const content = await generateForwardMessageContent(m.quoted, false);
-
-    // Crear mensaje con ese contenido
-    const msg = generateWAMessageFromContent(canal, content, {
-      userJid: conn.user.id,
-      quoted: null, // sin citar nada en el canal
-    });
-
-    // Enviar al canal
-    await conn.relayMessage(canal, msg.message, { messageId: msg.key.id });
-
+    let q = m.quoted;
+    await conn.copyNForward(canal, q, true);
     m.reply("✅ Mensaje reenviado correctamente al canal.");
   } catch (e) {
-    console.error(e);
-    m.reply("❌ Ocurrió un error al reenviar el mensaje.");
+    // Aquí se imprime la información del error completo
+    console.error("Error al reenviar el mensaje:", e);
+    // Y se le da al usuario un mensaje más específico si es posible
+    if (e.message.includes("403")) { // 403 suele ser un error de permisos
+      m.reply("❌ Error: No tengo permisos para enviar mensajes a ese canal. Asegúrate de que el bot es administrador.");
+    } else {
+      m.reply(`❌ Ocurrió un error al reenviar el mensaje: ${e.message}`);
+    }
   }
 };
 
-handler.command = /^reenviar|canalmsg$/i;
+handler.command = /^reenviar|canalmsg$/i; 
 export default handler;
