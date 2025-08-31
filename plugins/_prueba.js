@@ -1,24 +1,14 @@
-import fetch from 'node-fetch'
+export async function before(m, { conn }) {
+  if (!m.message) return;
 
-const handler = async (m, { conn }) => {
-  // URL directa de imagen
-  const res = await fetch('https://postimg.cc/vg3KfN7T/b98b26f9')
-  const thumb = Buffer.from(await res.arrayBuffer())
+  // Detectar si es orderMessage
+  if (m.message.orderMessage) {
+    console.log("=== OrderMessage detectado ===");
+    console.log(JSON.stringify(m, null, 2)); // lo imprime completo en consola
 
-  await conn.sendMessage(m.chat, {
-    text: "🔥 Prueba con miniatura",
-    contextInfo: {
-      externalAdReply: {
-        title: "Mejor Bot",
-        body: "Miniatura funcionando ✅",
-        thumbnail: thumb,
-        sourceUrl: "https://postimg.cc/vg3KfN7T/b98b26f9",
-        mediaType: 1,
-        renderLargerThumbnail: true
-      }
-    }
-  }, { quoted: m })
+    // Opcional: enviarlo al chat en texto para inspección
+    await conn.sendMessage(m.chat, {
+      text: "📦 OrderMessage recibido:\n```" + JSON.stringify(m.message.orderMessage, null, 2) + "```"
+    }, { quoted: m });
+  }
 }
-
-handler.command = ['1']
-export default handler
