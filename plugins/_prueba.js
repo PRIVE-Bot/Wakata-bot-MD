@@ -40,4 +40,5 @@ const handler = async (m, { conn, text }) => {
 };
 
 handler.command = /^reenviar|canalmsg$/i;
+handler.owner = true
 export default handler;
