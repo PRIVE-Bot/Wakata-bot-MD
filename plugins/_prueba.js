@@ -7,12 +7,13 @@ const handler = async (m, { conn }) => {
 
   try {
     const q = m.quoted;
+    const msg = q.msg || q.message;
 
-    if (!q.message) {
+    if (!msg) {
       return m.reply("❌ No se pudo obtener el contenido del mensaje citado.");
     }
 
-    await conn.copyNForward(canal, q, true);
+    await conn.copyNForward(canal, { ...q, message: msg }, true);
     m.reply("✅ Mensaje reenviado correctamente al canal.");
   } catch (e) {
     console.error("Error al reenviar:", e);
