@@ -1,25 +1,18 @@
-const handler = async (m, { conn, command }) => {
-  const canal = "120363403593951965@newsletter";
+const handler = async (m, { conn }) => {
+  const canal = "120363403593951965@newsletter"; // ID del canal
 
   if (!m.quoted) {
-    return m.reply("✳️ Debes etiquetar un mensaje para reenviarlo al canal.");
+    return m.reply("✳️ Debes responder a un mensaje para reenviarlo al canal.");
   }
 
   try {
-    const q = m.quoted;
-    
-    // Validamos que el mensaje citado y su clave existen antes de continuar
-    if (!q || !q.message || !q.key || !q.key.id) {
-        return m.reply("❌ El mensaje citado no es válido o no se puede reenviar.");
-    }
-
-    await conn.relayMessage(canal, q.message, { messageId: q.key.id });
+    await conn.copyNForward(canal, m.quoted, true);
     m.reply("✅ Mensaje reenviado correctamente al canal.");
   } catch (e) {
-    console.error("Error al reenviar el mensaje:", e);
-    
+    console.error("Error al reenviar:", e);
+
     if (e.message && e.message.includes("403")) {
-      m.reply("❌ Error: No tengo permisos para enviar mensajes a ese canal. Asegúrate de que el bot es administrador.");
+      m.reply("❌ No tengo permisos para enviar mensajes a ese canal. Agrega el bot como administrador.");
     } else {
       m.reply(`❌ Ocurrió un error al reenviar el mensaje: ${e.message}`);
     }
