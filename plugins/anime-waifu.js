@@ -12,7 +12,7 @@ let handler = async (m, { conn, usedPrefix, command }) => {
     let json = await res.json()
     if (!json || !json.url) throw 'No se pudo obtener la waifu.'
 
-    await conn.sendFile(m.chat, json.url, 'waifu.jpg', `✧ Aquí tienes tu *Waifu* (${json.tipo}) por *${json.autor}* ฅ^•ﻌ•^ฅ`, m, rcanal)
+    await conn.sendFile(m.chat, json.url, 'waifu.jpg', `✧ Aquí tienes tu *Waifu* sin restricción.`, m, rcanal)
   } catch (e) {
     console.error(e)
     m.reply('❌ Ocurrió un error al obtener la waifu.')
