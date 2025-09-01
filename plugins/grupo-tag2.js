@@ -52,7 +52,7 @@ let handler = async (m, { conn, text, participants, groupMetadata }) => {
 handler.command = ['tagtext', 'tagt']
 handler.help = ['tagtext', 'tagt']
 handler.tags = ['grupo']
-//handler.admin = true
+handler.admin = true
 handler.group = true
 
 export default handler
