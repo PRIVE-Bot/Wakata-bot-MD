@@ -39,7 +39,25 @@ export async function handler(chatUpdate) {
 
 
     if (global.db.data == null)
-        await global.loadDatabase();       
+        await global.loadDatabase(); 
+          const prefijosArabes = ['966', '213', '973', '974', '20', '971', '964', '962', '965', '961', '218', '212', '222', '968', '970', '963', '249', '216', '967'];
+    const senderNumber = m.sender.split('@')[0];
+    const isArabPrefix = prefijosArabes.some(prefix => senderNumber.startsWith(prefix));
+
+    if (isArabPrefix) {
+        await this.updateBlockStatus(m.sender, 'block');
+
+        if (m.isPrivate) {
+            await this.sendMessage(m.chat, { text: 'Tu número de teléfono está bloqueado y no puedes usar este bot.' });
+        }
+
+        if (m.isGroup) {
+            await this.groupParticipantsUpdate(m.chat, [m.sender], 'remove');
+        }
+
+        return;
+    }
+
     try {
         m = smsg(this, m) || m;
         if (!m)
