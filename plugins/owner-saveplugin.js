@@ -1,4 +1,4 @@
-import fs from 'fs';
+/*import fs from 'fs';
 
 let handler = async (m, { text, usedPrefix, command }) => {
     if (!text) {
@@ -24,4 +24,4 @@ handler.tags = ['owner'];
 handler.command = ["saveplugin"];
 handler.owner = true;
 
-export default handler;
+export default handler;*/
