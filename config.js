@@ -97,7 +97,7 @@ const res = await fetch(inc);
 const img = Buffer.from(await res.arrayBuffer());
 
 global.rcanal = { contextInfo: { isForwarded: true, forwardedNewsletterMessageInfo: { newsletterJid: channelRD.id, newsletterName: channelRD.name, serverMessageId: -1 }
-}}, { quoted: m }
+}}/*, { quoted: m }*/
 
 async function getRandomChannel() {
 let randomIndex = Math.floor(Math.random() * canalIdM.length)
