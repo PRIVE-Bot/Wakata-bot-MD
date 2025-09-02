@@ -1,19 +1,21 @@
 let handler = async (m, { conn }) => {
   await conn.sendMessage(m.chat, {
-    contacts: {
-      displayName: "Bot Oficial",
-      contacts: [{
-        vcard: `BEGIN:VCARD
-VERSION:3.0
-N:;${global.botname};;;
-FN:${global.botname}
-ORG:Venta de Bots
-TEL;type=CELL;type=VOICE;waid=50400000000:+504 0000-0000
-END:VCARD`
-      }]
+    productMessage: {
+      product: {
+        productImage: { 
+          url: "https://i.postimg.cc/vg3KfN7T/b98b26f9.jpg" // tu imagen
+        },
+        title: `🔥 Compra ${global.botname}`,
+        description: "✅ Funciones premium\n✅ Instalación rápida\n✅ Solo $5",
+        currencyCode: "USD",
+        priceAmount1000: "5000", // $5.00
+        retailerId: "bot001",
+        productImageCount: 1
+      },
+      businessOwnerJid: m.sender
     }
   }, { quoted: m })
 }
 
-handler.command = ['promo2']
+handler.command = ['promo3']
 export default handler
