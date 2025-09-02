@@ -1,13 +1,19 @@
 let handler = async (m, { conn }) => {
   await conn.sendMessage(m.chat, {
-    location: {
-      degreesLatitude: 15.2000,
-      degreesLongitude: -86.3000,
-      name: "📍 ¡Descubre el bot más rápido!",
-      address: "Disponible ahora por $5"
+    contacts: {
+      displayName: "Bot Oficial",
+      contacts: [{
+        vcard: `BEGIN:VCARD
+VERSION:3.0
+N:;${global.botname};;;
+FN:${global.botname}
+ORG:Venta de Bots
+TEL;type=CELL;type=VOICE;waid=50400000000:+504 0000-0000
+END:VCARD`
+      }]
     }
   }, { quoted: m })
 }
 
-handler.command = ['promo1']
+handler.command = ['promo2']
 export default handler
