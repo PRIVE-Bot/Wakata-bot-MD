@@ -96,16 +96,8 @@ global.inc = icono1[Math.floor(Math.random() * icono1.length)];
 const res = await fetch(inc);
 const img = Buffer.from(await res.arrayBuffer());
 
-global.rcanal = {
-    key: { fromMe: false, participant: "0@s.whatsapp.net" },
-    message: {
-        documentMessage: {
-            title: botname,
-            fileName: `$$$$$$$`,
-            jpegThumbnail: img
-        }
-    }
-}
+global.rcanal = { contextInfo: { isForwarded: true, forwardedNewsletterMessageInfo: { newsletterJid: channelRD.id, newsletterName: channelRD.name, serverMessageId: -1 }
+}}, { quoted: m }
 
 async function getRandomChannel() {
 let randomIndex = Math.floor(Math.random() * canalIdM.length)
