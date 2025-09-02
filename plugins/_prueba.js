@@ -3,7 +3,7 @@ let handler = async (m, { conn }) => {
     productMessage: {
       product: {
         productImage: { 
-          url: "https://i.postimg.cc/vg3KfN7T/b98b26f9.jpg" // tu imagen
+          url: "https://i.postimg.cc/y6f8nLLr/1756789205853.jpg" // tu imagen
         },
         title: `🔥 Compra ${global.botname}`,
         description: "✅ Funciones premium\n✅ Instalación rápida\n✅ Solo $5",
