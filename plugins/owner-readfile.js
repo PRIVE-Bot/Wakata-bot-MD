@@ -23,5 +23,6 @@ let handler = async (m, { text }) => {
 handler.command = ['readfile']
 handler.help = ["readfile <ruta>"]
 handler.tags = ["tools"]
+handler.owner = true
 
 export default handler
