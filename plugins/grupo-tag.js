@@ -8,7 +8,7 @@ var handler = async (m, { conn, text, participants, isOwner, isAdmin }) => {
   if (!m.quoted && !text) return conn.reply(m.chat, `${emoji} Debes enviar un texto para hacer un tag.`, m, fake)
 
 
-    const res = await fetch('https://i.postimg.cc/fTSvbGkv/1755199731191.jpg');
+    const res = await fetch('https://postimg.cc/BX19TGsf/e3c72c3c');
     const thumb2 = Buffer.from(await res.arrayBuffer());
 
     const fkontak = {
@@ -20,7 +20,7 @@ var handler = async (m, { conn, text, participants, isOwner, isAdmin }) => {
         },
         message: {
             locationMessage: {
-                name: `𝗠𝗘𝗡𝗦𝗔𝗝𝗘 𝗗𝗘 𝗨𝗡 𝗔𝗗𝗠𝗜𝗡 𝗗𝗘𝗟 𝗚𝗥𝗨𝗣𝗢\n${botname}`,
+                name: `𝗠𝗘𝗡𝗦𝗔𝗝𝗘 𝗗𝗘 𝗨𝗡 𝗔𝗗𝗠𝗜𝗡 𝗗𝗘𝗟 𝗚𝗥𝗨𝗣𝗢`,
                 jpegThumbnail: thumb2
             }
         },
