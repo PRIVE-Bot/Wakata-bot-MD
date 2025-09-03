@@ -8,7 +8,7 @@ var handler = async (m, { conn, text, participants, isOwner, isAdmin }) => {
   if (!m.quoted && !text) return conn.reply(m.chat, `${emoji} Debes enviar un texto para hacer un tag.`, m, fake)
 
 
-    const res = await fetch('https://postimg.cc/BX19TGsf/e3c72c3c');
+    const res = await fetch('https://i.postimg.cc/rFfVL8Ps/image.jpg');
     const thumb2 = Buffer.from(await res.arrayBuffer());
 
     const fkontak = {
