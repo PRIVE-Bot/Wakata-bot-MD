@@ -38,7 +38,7 @@ export async function before(m, { conn }) {
                                 name: "cta_url",
                                 buttonParamsJson: JSON.stringify({
                                     display_text: "📢 Compartir Spark-Bot",
-                                    url: `https://wa.me/?text=🔥+Prueba+SPARK-BOT+ahora!+Entra+al+grupo:+https://chat.whatsapp.com/HuMh41LJftl4DH7G5MWcHP?mode=ems_copy_c`,
+                                    url: `https://wa.me/?text=🔥+Prueba+SPARK-BOT+ahora!+Entra+al+grupo:+https://chat.whatsapp.com/HuMh41LJftl4DH7G5MWcHP?mode=Spark-bot_Developed_by_Deylin_El_Mejor_Bot🔥_Con_Estilo💎_Rapido⚡_Funcional✅_Sistema_Unico🌍_Velocidad_Maxima⚡_Confianza_Total🔒_Calidad_Garantizada🌟_Comunidad_Activa🔥_Soporte_Constante💬_Actualizaciones_Diarias📲_Innovacion_Sin_Limites🚀_El_Futuro_De_Los_Bots🤖_Mas_Que_Un_Grupo_Una_Familia❤️_Hazte_SubBot__no_te_pierdas_de_este_gran_bot🚀`,
                                     merchant_url: "https://wa.me"
                                 })
                             }
