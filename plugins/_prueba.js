@@ -3,6 +3,7 @@ import { fileURLToPath } from 'url';
 import path, { join } from 'path';
 import { unwatchFile, watchFile, readFileSync, writeFileSync } from 'fs';
 import chalk from 'chalk';
+import ws from 'ws';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,28 +22,30 @@ const isAdmin = (m, participants) => {
 let handler = async (m, { conn, args, text, usedPrefix, command, participants }) => {
     if (!m.isGroup) {
         if (!await isOwner(m, conn)) {
-            m.reply(`Este comando solo puede ser usado por el Creador.`);
+            conn.reply(m.chat, `Este comando solo puede ser usado por el Creador.`, m);
             return;
         }
     } else {
         if (!await isOwner(m, conn) && !isAdmin(m, participants)) {
-            m.reply(`Este comando solo puede ser usado por un Creador o un Administrador del grupo.`);
+            conn.reply(m.chat, `Este comando solo puede ser usado por un Creador o un Administrador del grupo.`, m);
             return;
         }
     }
 
     if (!text) {
-        throw `Por favor, ingresa el nuevo prefijo. Ejemplo:\n*${usedPrefix + command} !*`;
+        conn.reply(m.chat, `Por favor, ingresa el nuevo prefijo o prefijos separados por un espacio.
+Ejemplo:
+*${usedPrefix + command} . # !*`, m);
     }
 
-    const newPrefix = args[0];
+    const newPrefixes = text.split(/\s+/).filter(p => p.length > 0);
 
     const settings = global.db.data.settings[conn.user.jid] || {};
-    settings.prefix = newPrefix;
+    settings.prefix = newPrefixes;
     global.db.data.settings[conn.user.jid] = settings;
 
-    m.reply(`✅ Prefijo cambiado a: *${newPrefix}*`);
-    
+    conn.reply(m.chat, `✅ Prefijos cambiados a: ${newPrefixes.map(p => `\`${p}\``).join(', ')}`, m);
+
     // Opcional: Recargar el handler para que el cambio sea instantáneo
     global.reloadHandler(true).catch(console.error);
 };
