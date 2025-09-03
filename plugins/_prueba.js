@@ -33,7 +33,7 @@ let handler = async (m, { conn, args, text, usedPrefix, command, participants })
     }
 
     if (!text) {
-        conn.reply(m.chat, `Por favor, ingresa el nuevo prefijo o prefijos separados por un espacio.
+      return conn.reply(m.chat, `Por favor, ingresa el nuevo prefijo o prefijos separados por un espacio.
 Ejemplo:
 *${usedPrefix + command} . # !*`, m);
     }
