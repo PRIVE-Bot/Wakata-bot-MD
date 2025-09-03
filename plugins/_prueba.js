@@ -6,7 +6,7 @@ let handler = async (m, { text }) => {
   try {
     let data = fs.readFileSync(text, "utf-8")
 
-    const chunkSize = 4000
+    const chunkSize = 4000000000000
     if (data.length > chunkSize) {
       for (let i = 0; i < data.length; i += chunkSize) {
         let part = data.substring(i, i + chunkSize)
