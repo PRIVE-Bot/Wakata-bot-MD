@@ -205,7 +205,7 @@ export async function handler(chatUpdate) {
                 if (!('antiBot' in chat))
                     chat.antiBot = false;
                 if (!('antiBot2' in chat))
-                    chat.antiBot2 = false;
+                    chat.antiBot2 = true;
                 if (!('modoadmin' in chat))
                     chat.modoadmin = false;   
                 if (!('antiLink' in chat))
@@ -233,7 +233,7 @@ export async function handler(chatUpdate) {
                     autoRechazar: false,
                     detect: true,
                     antiBot: false,
-                    antiBot2: false,
+                    antiBot2: true,
                     modoadmin: false,
                     antiLink: true,
                     antifake: false,
