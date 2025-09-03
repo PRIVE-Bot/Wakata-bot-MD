@@ -22,12 +22,12 @@ const isAdmin = (m, participants) => {
 let handler = async (m, { conn, args, text, usedPrefix, command, participants }) => {
     if (!m.isGroup) {
         if (!await isOwner(m, conn)) {
-            conn.reply(m.chat, `Este comando solo puede ser usado por el Creador.`, m);
+           return conn.reply(m.chat, `Este comando solo puede ser usado por el Creador.`, m, rcanal);
             return;
         }
     } else {
         if (!await isOwner(m, conn) && !isAdmin(m, participants)) {
-            conn.reply(m.chat, `Este comando solo puede ser usado por un Creador o un Administrador del grupo.`, m);
+           return conn.reply(m.chat, `Este comando solo puede ser usado por un Creador o un Administrador del grupo.`, m, rcanal);
             return;
         }
     }
@@ -35,7 +35,7 @@ let handler = async (m, { conn, args, text, usedPrefix, command, participants })
     if (!text) {
       return conn.reply(m.chat, `Por favor, ingresa el nuevo prefijo o prefijos separados por un espacio.
 Ejemplo:
-*${usedPrefix + command} . # !*`, m);
+*${usedPrefix + command} . # !*`, m, rcanal);
     }
 
     const newPrefixes = text.split(/\s+/).filter(p => p.length > 0);
@@ -44,9 +44,8 @@ Ejemplo:
     settings.prefix = newPrefixes;
     global.db.data.settings[conn.user.jid] = settings;
 
-   return conn.reply(m.chat, `✅ Prefijos cambiados a: ${newPrefixes.map(p => `\`${p}\``).join(', ')}`, m);
+   return conn.reply(m.chat, `${emoji} Prefijos cambiados a: ${newPrefixes.map(p => `\`${p}\``).join(', ')}`, m, rcanal);
 
-    // Opcional: Recargar el handler para que el cambio sea instantáneo
     global.reloadHandler(true).catch(console.error);
 };
 
@@ -56,7 +55,6 @@ handler.command = /^(setprefix|sprefix)$/i;
 
 export default handler;
 
-// Monitorear cambios en el archivo y recargar
 let file = global.__filename(import.meta.url, true);
 watchFile(file, async () => {
     unwatchFile(file);
