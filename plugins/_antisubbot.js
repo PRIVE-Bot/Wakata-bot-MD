@@ -3,7 +3,7 @@ export async function before(m, { participants, conn }) {
     let chat = global.db.data.chats[m.chat];
 
     if (!chat.antiBot2) {
-      return
+      return true
     }
 
     let botJid = global.conn.user.jid 
