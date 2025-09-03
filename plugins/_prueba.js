@@ -55,14 +55,17 @@ handler.command = /^(setprefix|sprefix)$/i;
 
 export default handler;
 
-let file = global.__filename(import.meta.url, true);
-watchFile(file, async () => {
-    unwatchFile(file);
-    console.log(chalk.redBright("Se actualizo 'setprefix.js'"));
-    if (global.conns && global.conns.length > 0) {
-        const users = [...new Set([...global.conns.filter((conn) => conn.user && conn.ws.socket && conn.ws.socket.readyState !== ws.CLOSED).map((conn) => conn)])];
-        for (const userr of users) {
-            userr.subreloadHandler(false);
-        }
-    }
-});
+let _prefix = plugin.customPrefix ? plugin.customPrefix : this.prefix ? (Array.isArray(this.prefix) ? this.prefix : [this.prefix]) : global.prefix;
+let match = (Array.isArray(_prefix) ?
+    _prefix.map(p => {
+        let re = p instanceof RegExp ?
+            p :
+            new RegExp(str2Regex(p));
+        return [re.exec(m.text), re];
+    }) :
+    _prefix instanceof RegExp ?
+    [[_prefix.exec(m.text), _prefix]] :
+    typeof _prefix === 'string' ?
+    [[new RegExp(str2Regex(_prefix)).exec(m.text), new RegExp(str2Regex(_prefix))]] :
+    [[[], new RegExp]]
+).find(p => p[1]);
