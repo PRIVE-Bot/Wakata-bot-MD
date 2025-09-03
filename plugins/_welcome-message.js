@@ -38,7 +38,7 @@ export async function before(m, { conn }) {
                                 name: "cta_url",
                                 buttonParamsJson: JSON.stringify({
                                     display_text: "📢 Compartir Spark-Bot",
-                                    url: `https://wa.me/?text=🔥+Prueba+SPARK-BOT+ahora!+Entra+al+grupo:+https://chat.whatsapp.com/HuMh41LJftl4DH7G5MWcHP`,
+                                    url: `https://wa.me/?text=🔥+Prueba+SPARK-BOT+ahora!+Entra+al+grupo:+https://chat.whatsapp.com/HuMh41LJftl4DH7G5MWcHP?mode=ems_copy_c`,
                                     merchant_url: "https://wa.me"
                                 })
                             }
