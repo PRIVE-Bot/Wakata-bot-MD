@@ -44,7 +44,7 @@ Ejemplo:
     settings.prefix = newPrefixes;
     global.db.data.settings[conn.user.jid] = settings;
 
-    conn.reply(m.chat, `✅ Prefijos cambiados a: ${newPrefixes.map(p => `\`${p}\``).join(', ')}`, m);
+   return conn.reply(m.chat, `✅ Prefijos cambiados a: ${newPrefixes.map(p => `\`${p}\``).join(', ')}`, m);
 
     // Opcional: Recargar el handler para que el cambio sea instantáneo
     global.reloadHandler(true).catch(console.error);
