@@ -665,7 +665,7 @@ import path, { join } from 'path';
 import { unwatchFile, watchFile } from 'fs';
 import chalk from 'chalk';
 import fetch from 'node-fetch';
-import ws from 'ws'; // Se agrega importación
+import ws from 'ws';
 
 const { proto } = (await import('@whiskeysockets/baileys')).default;
 const isNumber = x => typeof x === 'number' && !isNaN(x);
@@ -1002,7 +1002,7 @@ export async function handler(chatUpdate) {
 
             const str2Regex = str => str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
 
-            // --- Lógica para múltiples prefijos: COMIENZA AQUI ---
+            // --- Lógica para múltiples prefijos ---
             let _prefix = plugin.customPrefix ? plugin.customPrefix : this.prefix ? (Array.isArray(this.prefix) ? this.prefix : [this.prefix]) : global.prefix;
             let match = (Array.isArray(_prefix) ?
                 _prefix.map(p => {
@@ -1017,7 +1017,7 @@ export async function handler(chatUpdate) {
                 [[new RegExp(str2Regex(_prefix)).exec(m.text), new RegExp(str2Regex(_prefix))]] :
                 [[[], new RegExp]]
             ).find(p => p[1]);
-            // --- Lógica para múltiples prefijos: TERMINA AQUI ---
+            // --- Fin de la lógica para múltiples prefijos ---
 
             if (typeof plugin.before === 'function') {
                 if (await plugin.before.call(this, m, {
