@@ -32,18 +32,18 @@ let handler = async (m, { conn, args, text, usedPrefix, command, participants })
 
     if (text === 'reset') {
         const settings = global.db.data.settings[conn.user.jid] || {};
-        delete settings.prefix; 
+        delete settings.prefix;
         global.db.data.settings[conn.user.jid] = settings;
         conn.reply(m.chat, `${emoji} Prefijo personalizado eliminado. El bot ahora usará el prefijo global por defecto.`, m, rcanal);
         return;
     }
 
-    
     const newPrefix = args[0];
-    const onlySymbolsAndEmojis = /^[^\p{L}]+$/u; 
+    const onlySymbolsAndEmojis = /^[^\p{L}]+$/u;
     
-    if (!newPrefix || args.length > 1 || !onlySymbolsAndEmojis.test(newPrefix)) {
-        return conn.reply(m.chat, `${emoji} Por favor, ingresa solo un prefijo que contenga *únicamente símbolos o emojis*. No se permiten letras.
+    
+    if (!newPrefix || args.length > 1 || newPrefix.length > 1 || !onlySymbolsAndEmojis.test(newPrefix)) {
+        return conn.reply(m.chat, `${emoji} Por favor, ingresa solo un prefijo que contenga *únicamente un símbolo o un emoji*. No se permiten letras ni múltiples caracteres.
 Ejemplo:
 *${usedPrefix + command} 👑*\n\nPara restablecer el prefijo, usa:
 *${usedPrefix + command} reset*`, m, rcanal);
