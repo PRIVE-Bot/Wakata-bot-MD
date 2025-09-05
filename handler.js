@@ -1,4 +1,4 @@
-import { smsg } from './lib/simple.js';
+ import { smsg } from './lib/simple.js';
 import { format } from 'util';
 import { fileURLToPath } from 'url';
 import path, { join } from 'path';
@@ -6,6 +6,81 @@ import { unwatchFile, watchFile } from 'fs';
 import chalk from 'chalk';
 import fetch from 'node-fetch';
 import ws from 'ws';
+
+// === Error logging to owners Creado Por Tu AyeitsRyzeMD ===
+const owners = global.owner || []
+
+
+async function __sendOwnerErrorLog(conn, m, info = {}) {
+    try {
+        const { pluginName = '-', usedPrefix = '', command = '', args = [], errorObj } = info
+        let text = ''
+        if (errorObj) {
+            try { text = format(errorObj) } catch { text = String(errorObj) }
+            
+            for (const pool of [global.config?.APIKeys, global.APIKeys]) {
+                if (!pool || typeof pool !== 'object') continue
+                for (const key of Object.values(pool)) {
+                    if (typeof key !== 'string' || !key) continue
+                    try {
+                        const esc = key.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
+                        text = text.replace(new RegExp(esc, 'g'), '#HIDDEN#')
+                    } catch {}
+                }
+            }
+        }
+
+        const rawSender = m?.sender || '-'
+        const rawChat = m?.chat || '-'
+        const senderName = (conn.getName && rawSender !== '-' ? await conn.getName(rawSender) : rawSender) || rawSender
+        const chatName = (conn.getName && rawChat !== '-' ? await conn.getName(rawChat) : rawChat) || rawChat
+        const header = `🗂️ *Plugin:* ${pluginName}\n👤 *Sender:* ${senderName}${rawSender && senderName !== rawSender ? ` ( ${rawSender} )` : ''}\n💬 *Chat:* ${chatName}${rawChat && chatName !== rawChat ? ` ( ${rawChat} )` : ''}\n💻 *Command:* ${usedPrefix}${command} ${args.join(' ')}\n🕒 *Time:* ${new Date().toLocaleString()}\n📄 *Error Logs:*\n\n\u0060\u0060\u0060\n${text}\n\u0060\u0060\u0060`
+        for (const entry of owners) {
+            const number = Array.isArray(entry) ? entry[0] : entry
+            if (!number) continue
+            const jid = number.replace(/[^0-9]/g, '') + '@s.whatsapp.net'
+            try {
+                await conn.sendMessage(jid, { text: header })
+            } catch (e) {
+                console.error('[ErrorLog] Falló envío a owner', jid, e)
+            }
+        }
+    } catch (err) {
+        console.error('[ErrorLog] Error interno en __sendOwnerErrorLog', err)
+    }
+}
+
+
+if (!global.__consoleErrorPatched) {
+    global.__consoleErrorPatched = true
+    const _origConsoleError = console.error.bind(console)
+    global.__errorCache = new Map()
+    console.error = function patchedConsoleError(...args) {
+        try {
+            const errObj = args.find(a => a instanceof Error || (a && a.stack && a.message))
+            if (errObj) {
+                const stack = String(errObj.stack || errObj.message || errObj)
+                
+                let pluginName = null
+                const match = stack.match(/[\\/]plugins[\\/](.+?)(?:\.js|\.cjs|\.mjs)/)
+                if (match) pluginName = match[1] + '.js'
+                const key = pluginName + '|' + stack.split('\n')[0]
+                const now = Date.now()
+                const last = global.__errorCache.get(key) || 0
+                if (pluginName && now - last > 30000) { // 30s throttle
+                    global.__errorCache.set(key, now)
+                    const conn = global.conn || global.connection || global.primaryConn
+                    if (conn && typeof __sendOwnerErrorLog === 'function') {
+                        __sendOwnerErrorLog(conn, { sender: '-', chat: '-' }, { pluginName, command: '', args: [], errorObj: errObj })
+                    }
+                }
+            }
+        } catch (patchErr) {
+            _origConsoleError('[console.error patch failed]', patchErr)
+        }
+        return _origConsoleError(...args)
+    }
+}
 
 const { proto } = (await import('@whiskeysockets/baileys')).default;
 const isNumber = x => typeof x === 'number' && !isNaN(x);
