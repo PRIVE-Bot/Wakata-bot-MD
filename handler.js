@@ -5,7 +5,6 @@ import path, { join } from 'path';
 import { unwatchFile, watchFile } from 'fs';
 import chalk from 'chalk';
 import fetch from 'node-fetch';
-import ws from 'ws';
 
 const { proto } = (await import('@whiskeysockets/baileys')).default;
 const isNumber = x => typeof x === 'number' && !isNaN(x);
@@ -17,13 +16,11 @@ const delay = ms => isNumber(ms) && new Promise(resolve => setTimeout(function (
 export async function handler(chatUpdate) {
     this.msgqueque = this.msgqueque || [];
     this.uptime = this.uptime || Date.now();
-
-    // 🟢 CORRECCIÓN DEL PRIMER ERROR: Valida que haya mensajes antes de procesar
-    if (!chatUpdate || !chatUpdate.messages || chatUpdate.messages.length === 0) {
+    if (!chatUpdate)
         return;
-    }
-
     this.pushMessage(chatUpdate.messages).catch(console.error);
+
+
     let m = chatUpdate.messages[chatUpdate.messages.length - 1];
     if (!m)
         return;
@@ -341,27 +338,21 @@ export async function handler(chatUpdate) {
                 if (plugin.tags && plugin.tags.includes('admin')) {
                     continue;
                 }
-
-                        const str2Regex = str => {
-                if (typeof str !== 'string' || str === null) {
-                    return new RegExp('');
-                }
-                return str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
-            };
-
-
-            // 🟢 MANEJO MÁS ROBUSTO DEL PREFIJO
-            let effectivePrefix = this.prefix;
-            if (!Array.isArray(effectivePrefix)) {
-                effectivePrefix = typeof effectivePrefix === 'string' ? [effectivePrefix] : [];
-            }
-            let _prefix = (plugin.customPrefix ? [plugin.customPrefix] : []).concat(effectivePrefix);
-
-            let match = _prefix.map(p => {
-                let re = p instanceof RegExp ? p : new RegExp(str2Regex(p));
-                return [re.exec(m.text), re];
-            }).find(p => p[1]);
-
+            const str2Regex = str => str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
+            let _prefix = plugin.customPrefix ? plugin.customPrefix : this.prefix ? this.prefix : global.prefix; // MODIFICADO: Usa 'this.prefix'
+            let match = (_prefix instanceof RegExp ?
+                [[_prefix.exec(m.text), _prefix]] :
+                Array.isArray(_prefix) ?
+                _prefix.map(p => {
+                    let re = p instanceof RegExp ?
+                        p :
+                        new RegExp(str2Regex(p));
+                    return [re.exec(m.text), re];
+                }) :
+                typeof _prefix === 'string' ?
+                [[new RegExp(str2Regex(_prefix)).exec(m.text), new RegExp(str2Regex(_prefix))]] :
+                [[[], new RegExp]]
+            ).find(p => p[1]);
             if (typeof plugin.before === 'function') {
                 if (await plugin.before.call(this, m, {
                     match,
