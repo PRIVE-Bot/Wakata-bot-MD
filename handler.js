@@ -339,33 +339,26 @@ export async function handler(chatUpdate) {
                 if (plugin.tags && plugin.tags.includes('admin')) {
                     continue;
                 }
+            
+            // 🟢 SOLUCIÓN AL PROBLEMA DE LOS PREFIJOS
+            const str2Regex = str => {
+              return typeof str === 'string' ? str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&') : null
+            }
+            let _prefix = global.db.data.settings[this.user.jid]?.prefix || global.prefix;
+            
+            let prefixes = Array.isArray(_prefix) ? _prefix : typeof _prefix === 'string' ? [_prefix] : [];
+            if (plugin.customPrefix) {
+                if (Array.isArray(plugin.customPrefix)) {
+                    prefixes = [...new Set([...prefixes, ...plugin.customPrefix])];
+                } else if (typeof plugin.customPrefix === 'string') {
+                    prefixes = [...new Set([...prefixes, plugin.customPrefix])];
+                }
+            }
 
-        
-global.prefix = global.prefix || new RegExp('^[#!./]')
-
-const str2Regex = str => {
-  if (typeof str !== 'string') str = String(str || '')
-  return str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&')
-}
-
-// Detectar prefijo actual
-let _prefix = conn.prefix || global.prefix
-let prefix = (
-  _prefix instanceof RegExp
-    ? [[_prefix.exec(m.text), _prefix]]
-    : Array.isArray(_prefix)
-      ? _prefix.map(p => {
-          let re = new RegExp('^' + str2Regex(p))
-          return [re.exec(m.text), re]
-        })
-      : typeof _prefix == 'string'
-        ? [[new RegExp('^' + str2Regex(_prefix)).exec(m.text), new RegExp('^' + str2Regex(_prefix))]]
-        : [[[], new RegExp('^' + str2Regex(global.prefix))]]
-).find(p => p[0]) 
-
-let match = prefix ? prefix[0] : null
-let usedPrefix = prefix ? match[0] : ''
-            // --- Fin de la lógica para múltiples prefijos ---
+            let match = prefixes.map(p => {
+                let re = p instanceof RegExp ? p : new RegExp(str2Regex(p))
+                return [re.exec(m.text), re]
+            }).find(p => p[1]);
 
             if (typeof plugin.before === 'function') {
                 if (await plugin.before.call(this, m, {
