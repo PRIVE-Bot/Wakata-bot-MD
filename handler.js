@@ -17,7 +17,9 @@ const delay = ms => isNumber(ms) && new Promise(resolve => setTimeout(function (
 export async function handler(chatUpdate) {
     this.msgqueque = this.msgqueque || [];
     this.uptime = this.uptime || Date.now();
-    if (!chatUpdate || !chatUpdate.messages || chatUpdate.messages.length === 0)
+    if (!chatUpdate)
+        return;
+    if (!chatUpdate.messages || chatUpdate.messages.length === 0)
         return;
     this.pushMessage(chatUpdate.messages).catch(console.error);
 
@@ -338,13 +340,15 @@ export async function handler(chatUpdate) {
                 if (plugin.tags && plugin.tags.includes('admin')) {
                     continue;
                 }
-
+            
             // --- INICIO: Lógica del prefijo corregida
             const str2Regex = str => {
                 return typeof str === 'string' ? str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&') : null;
             };
 
-            let prefixes = Array.isArray(global.prefix) ? global.prefix : [global.prefix];
+            const globalPrefixes = Array.isArray(global.prefix) ? global.prefix : [global.prefix];
+            let prefixes = [...globalPrefixes];
+
             if (plugin.customPrefix) {
                 if (Array.isArray(plugin.customPrefix)) {
                     prefixes = [...new Set([...prefixes, ...plugin.customPrefix])];
@@ -352,20 +356,16 @@ export async function handler(chatUpdate) {
                     prefixes = [...new Set([...prefixes, plugin.customPrefix])];
                 }
             }
+            
+            if (global.db.data.chats[m.chat]?.prefix) {
+                const chatPrefixes = Array.isArray(global.db.data.chats[m.chat].prefix) ? global.db.data.chats[m.chat].prefix : [global.db.data.chats[m.chat].prefix];
+                prefixes = [...new Set([...prefixes, ...chatPrefixes])];
+            }
 
             let match = prefixes.map(p => {
-                let re = p instanceof RegExp ? p : new RegExp(str2Regex(p));
+                let re = p instanceof RegExp ? p : new RegExp('^' + str2Regex(p));
                 return [re.exec(m.text), re];
             }).find(p => p[0]);
-
-            if (!match && m.isGroup) {
-                let chatSettings = global.db.data.chats[m.chat] || {};
-                let chatPrefixes = Array.isArray(chatSettings.prefix) ? chatSettings.prefix : [chatSettings.prefix];
-                match = chatPrefixes.map(p => {
-                    let re = p instanceof RegExp ? p : new RegExp(str2Regex(p));
-                    return [re.exec(m.text), re];
-                }).find(p => p[0]);
-            }
             
             usedPrefix = (match && match[0]) ? match[0][0] : null;
 
@@ -414,12 +414,10 @@ export async function handler(chatUpdate) {
 
                 if ((m.id.startsWith('NJX-') || (m.id.startsWith('BAE5') && m.id.length === 16) || (m.id.startsWith('B24E') && m.id.length === 20))) return;
 
-
                 const settings = global.db.data.settings[this.user.jid];
                 if (settings.soloParaJid && m.sender !== settings.soloParaJid) {
                     continue;
                 }
-
 
                 if (!isAccept) {
                     continue;
