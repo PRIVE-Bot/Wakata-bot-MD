@@ -58,11 +58,15 @@ let handler = async (m, { conn, args, text, usedPrefix, command, participants })
     global.reloadHandler(true).catch(console.error);
 };
 
-handler.help = ['setprefix <prefijo>'];
-handler.tags = ['owner'];
-handler.command = /^(setprefix|sprefix)$/i;
+handler.command = ['setprefix']
+handler.before = async (m, { conn }) => {
+    let text = m.text?.toLowerCase()?.trim();
+    if (text === 'setprefix') {
+        return handler(m, { conn });
+    }
+}
 
-export default handler;
+export default handler
 
 let file = global.__filename(import.meta.url, true);
 watchFile(file, async () => {
