@@ -375,6 +375,11 @@ export async function handler(chatUpdate) {
             if (typeof str !== 'string') return null;
             return str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
         }
+        
+        // CORRECCIÓN: Asegurar que global.prefix esté definido y sea un array
+        if (!Array.isArray(global.prefix)) {
+            global.prefix = ['.']; // Valor predeterminado si no está definido
+        }
 
         let _prefix = this.prefix ? (Array.isArray(this.prefix) ? this.prefix : [this.prefix]) : global.prefix;
         const _prefixList = Array.isArray(_prefix) ? _prefix : [_prefix];
@@ -450,7 +455,7 @@ export async function handler(chatUpdate) {
                     }))
                         continue;
                 } catch (e) {
-                    console.error(e); // **Corrección:** Manejo del error en `before()`
+                    console.error(e);
                 }
             }
             if (typeof plugin !== 'function')
@@ -737,3 +742,4 @@ watchFile(file, async () => {
         for (const userr of users) {
             userr.subreloadHandler(false);
         }}});
+
