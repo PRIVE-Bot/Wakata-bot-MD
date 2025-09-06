@@ -340,26 +340,26 @@ export async function handler(chatUpdate) {
                     continue;
                 }
 
-            const str2Regex = str => {
+        
+global.prefix = global.prefix || new RegExp('^[#!./]')
+
+const str2Regex = str => {
   if (typeof str !== 'string') str = String(str || '')
   return str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&')
 }
 
-            // --- Lógica para múltiples prefijos ---
-            let _prefix = plugin.customPrefix ? plugin.customPrefix : this.prefix ? (Array.isArray(this.prefix) ? this.prefix : [this.prefix]) : global.prefix;
-            let match = (Array.isArray(_prefix) ?
-                _prefix.map(p => {
-                    let re = p instanceof RegExp ?
-                        p :
-                        new RegExp(str2Regex(p));
-                    return [re.exec(m.text), re];
-                }) :
-                _prefix instanceof RegExp ?
-                [[_prefix.exec(m.text), _prefix]] :
-                typeof _prefix === 'string' ?
-                [[new RegExp(str2Regex(_prefix)).exec(m.text), new RegExp(str2Regex(_prefix))]] :
-                [[[], new RegExp]]
-            ).find(p => p[1]);
+let _prefix = conn.prefix || global.prefix
+let prefix = (_prefix instanceof RegExp
+  ? [[_prefix.exec(m.text), _prefix]]
+  : Array.isArray(_prefix)
+    ? _prefix.map(p => {
+        let re = new RegExp('^' + str2Regex(p))
+        return [re.exec(m.text), re]
+      })
+    : typeof _prefix == 'string'
+      ? [[new RegExp('^' + str2Regex(_prefix)).exec(m.text), new RegExp('^' + str2Regex(_prefix))]]
+      : [[[], new RegExp('^' + str2Regex(global.prefix))]]
+).find(p => p[1])
             // --- Fin de la lógica para múltiples prefijos ---
 
             if (typeof plugin.before === 'function') {
