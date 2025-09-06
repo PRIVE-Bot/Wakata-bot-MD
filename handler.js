@@ -17,11 +17,13 @@ const delay = ms => isNumber(ms) && new Promise(resolve => setTimeout(function (
 export async function handler(chatUpdate) {
     this.msgqueque = this.msgqueque || [];
     this.uptime = this.uptime || Date.now();
-    if (!chatUpdate)
+
+    // 🟢 CORRECCIÓN DEL PRIMER ERROR: Valida que haya mensajes antes de procesar
+    if (!chatUpdate || !chatUpdate.messages || chatUpdate.messages.length === 0) {
         return;
+    }
+
     this.pushMessage(chatUpdate.messages).catch(console.error);
-
-
     let m = chatUpdate.messages[chatUpdate.messages.length - 1];
     if (!m)
         return;
@@ -341,15 +343,20 @@ export async function handler(chatUpdate) {
                 }
 
             const str2Regex = str => {
-                if (typeof str !== 'string') {
-                    console.error('str2Regex: el argumento no es una cadena de texto, es:', typeof str, str);
+                // 🟢 CORRECCIÓN DEL SEGUNDO ERROR: Asegura que 'str' es una cadena
+                if (typeof str !== 'string' || str === null) {
                     return new RegExp('');
                 }
                 return str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
             };
 
-            // 🟢 SOLUCIÓN FINAL APLICADA
-            let _prefix = (plugin.customPrefix ? [plugin.customPrefix] : []).concat(Array.isArray(this.prefix) ? this.prefix : (typeof this.prefix === 'string' ? [this.prefix] : []));
+            // 🟢 MANEJO MÁS ROBUSTO DEL PREFIJO
+            let effectivePrefix = this.prefix;
+            if (!Array.isArray(effectivePrefix)) {
+                effectivePrefix = typeof effectivePrefix === 'string' ? [effectivePrefix] : [];
+            }
+            let _prefix = (plugin.customPrefix ? [plugin.customPrefix] : []).concat(effectivePrefix);
+
             let match = _prefix.map(p => {
                 let re = p instanceof RegExp ? p : new RegExp(str2Regex(p));
                 return [re.exec(m.text), re];
@@ -660,4 +667,3 @@ watchFile(file, async () => {
         for (const userr of users) {
             userr.subreloadHandler(false);
         }}});
-
