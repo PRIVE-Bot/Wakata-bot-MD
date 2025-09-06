@@ -340,9 +340,10 @@ export async function handler(chatUpdate) {
                     continue;
                 }
 
-            const str2Regex = str => typeof str === 'string' 
-    ? str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&') 
-    : str;
+            const str2Regex = str => {
+  if (typeof str !== 'string') str = String(str || '')
+  return str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&')
+}
 
             // --- Lógica para múltiples prefijos ---
             let _prefix = plugin.customPrefix ? plugin.customPrefix : this.prefix ? (Array.isArray(this.prefix) ? this.prefix : [this.prefix]) : global.prefix;
