@@ -371,18 +371,19 @@ export async function handler(chatUpdate) {
         m.exp += Math.ceil(Math.random() * 10);
 
         let usedPrefix;
-        const str2Regex = str => str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
+        const str2Regex = str => {
+            if (typeof str !== 'string') return null;
+            return str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
+        }
 
-        // Lógica de prefijos personalizada movida aquí para que siempre funcione
         let _prefix = this.prefix ? (Array.isArray(this.prefix) ? this.prefix : [this.prefix]) : global.prefix;
         const _prefixList = Array.isArray(_prefix) ? _prefix : [_prefix];
-        const prefixes = [..._prefixList, ...global.prefix];
+        const prefixes = [..._prefixList, ...global.prefix].filter(p => typeof p === 'string');
 
         let match = prefixes.map(p => {
-            if (typeof p !== 'string' || !p) return null;
             let re = p instanceof RegExp ? p : new RegExp(str2Regex(p));
             return [re.exec(m.text), re];
-        }).filter(Boolean).find(p => p[0]);
+        }).filter(p => p[0]).find(p => p[0]);
 
         if (match) {
             usedPrefix = match[0][0];
@@ -429,24 +430,28 @@ export async function handler(chatUpdate) {
                 }
 
             if (typeof plugin.before === 'function') {
-                if (await plugin.before.call(this, m, {
-                    match,
-                    conn: this,
-                    participants,
-                    groupMetadata,
-                    user,
-                    bot,
-                    isROwner,
-                    isOwner,
-                    isRAdmin,
-                    isAdmin,
-                    isBotAdmin,
-                    isPrems,
-                    chatUpdate,
-                    __dirname: ___dirname,
-                    __filename
-                }))
-                    continue;
+                try {
+                    if (await plugin.before.call(this, m, {
+                        match,
+                        conn: this,
+                        participants,
+                        groupMetadata,
+                        user,
+                        bot,
+                        isROwner,
+                        isOwner,
+                        isRAdmin,
+                        isAdmin,
+                        isBotAdmin,
+                        isPrems,
+                        chatUpdate,
+                        __dirname: ___dirname,
+                        __filename
+                    }))
+                        continue;
+                } catch (e) {
+                    console.error(e); // **Corrección:** Manejo del error en `before()`
+                }
             }
             if (typeof plugin !== 'function')
                 continue;
