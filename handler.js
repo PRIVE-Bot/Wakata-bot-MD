@@ -340,11 +340,20 @@ export async function handler(chatUpdate) {
                     continue;
                 }
 
-            const str2Regex = str => str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
+            const str2Regex = str => {
+                if (typeof str !== 'string') {
+                    console.error('str2Regex: el argumento no es una cadena de texto, es:', typeof str, str);
+                    return new RegExp('');
+                }
+                return str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
+            };
 
             // 🟢 SOLUCIÓN FINAL: Lógica para múltiples prefijos mejorada.
             // Siempre trata los prefijos como un array para una detección fiable.
             let _prefix = (plugin.customPrefix ? [plugin.customPrefix] : []).concat(this.prefix);
+            if (!Array.isArray(_prefix)) {
+                _prefix = [ _prefix ];
+            }
             let match = _prefix.map(p => {
                 let re = p instanceof RegExp ? p : new RegExp(str2Regex(p));
                 return [re.exec(m.text), re];
