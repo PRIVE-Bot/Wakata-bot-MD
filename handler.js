@@ -17,7 +17,7 @@ const delay = ms => isNumber(ms) && new Promise(resolve => setTimeout(function (
 export async function handler(chatUpdate) {
     this.msgqueque = this.msgqueque || [];
     this.uptime = this.uptime || Date.now();
-    if (!chatUpdate)
+    if (!chatUpdate || !chatUpdate.messages || chatUpdate.messages.length === 0)
         return;
     this.pushMessage(chatUpdate.messages).catch(console.error);
 
@@ -245,7 +245,6 @@ export async function handler(chatUpdate) {
                     per: [],
                 };
 
-            // MODIFICACIÓN AQUI: Lógica de prefijos individual
             let settings = global.db.data.settings[this.user.jid];
             if (typeof settings !== 'object') global.db.data.settings[this.user.jid] = {};
             if (settings) {
@@ -255,7 +254,7 @@ export async function handler(chatUpdate) {
                 if (!('antiPrivate' in settings)) settings.antiPrivate = false;
                 if (!('autoread' in settings)) settings.autoread = false;
                 if (!('soloParaJid' in settings)) settings.soloParaJid = false;
-                if (!('prefix' in settings)) settings.prefix = global.prefix; // Valor inicial
+                if (!('prefix' in settings)) settings.prefix = global.prefix;
             } else global.db.data.settings[this.user.jid] = {
                 self: false,
                 restrict: true,
@@ -264,9 +263,9 @@ export async function handler(chatUpdate) {
                 autoread: false,
                 soloParaJid: false,
                 status: 0,
-                prefix: global.prefix, // Valor inicial
+                prefix: global.prefix,
             };
-            this.prefix = settings.prefix; // Actualiza el prefijo de la conexión
+            this.prefix = settings.prefix;
         } catch (e) {
             console.error(e);
         }
@@ -339,14 +338,13 @@ export async function handler(chatUpdate) {
                 if (plugin.tags && plugin.tags.includes('admin')) {
                     continue;
                 }
-            
-            // 🟢 SOLUCIÓN AL PROBLEMA DE LOS PREFIJOS
+
+            // --- INICIO: Lógica del prefijo corregida
             const str2Regex = str => {
-              return typeof str === 'string' ? str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&') : null
-            }
-            let _prefix = global.db.data.settings[this.user.jid]?.prefix || global.prefix;
-            
-            let prefixes = Array.isArray(_prefix) ? _prefix : typeof _prefix === 'string' ? [_prefix] : [];
+                return typeof str === 'string' ? str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&') : null;
+            };
+
+            let prefixes = Array.isArray(global.prefix) ? global.prefix : [global.prefix];
             if (plugin.customPrefix) {
                 if (Array.isArray(plugin.customPrefix)) {
                     prefixes = [...new Set([...prefixes, ...plugin.customPrefix])];
@@ -356,9 +354,20 @@ export async function handler(chatUpdate) {
             }
 
             let match = prefixes.map(p => {
-                let re = p instanceof RegExp ? p : new RegExp(str2Regex(p))
-                return [re.exec(m.text), re]
-            }).find(p => p[1]);
+                let re = p instanceof RegExp ? p : new RegExp(str2Regex(p));
+                return [re.exec(m.text), re];
+            }).find(p => p[0]);
+
+            if (!match && m.isGroup) {
+                let chatSettings = global.db.data.chats[m.chat] || {};
+                let chatPrefixes = Array.isArray(chatSettings.prefix) ? chatSettings.prefix : [chatSettings.prefix];
+                match = chatPrefixes.map(p => {
+                    let re = p instanceof RegExp ? p : new RegExp(str2Regex(p));
+                    return [re.exec(m.text), re];
+                }).find(p => p[0]);
+            }
+            
+            usedPrefix = (match && match[0]) ? match[0][0] : null;
 
             if (typeof plugin.before === 'function') {
                 if (await plugin.before.call(this, m, {
@@ -382,7 +391,8 @@ export async function handler(chatUpdate) {
             }
             if (typeof plugin !== 'function')
                 continue;
-            if ((usedPrefix = (match[0] || '')[0])) {
+
+            if (usedPrefix) {
                 let noPrefix = m.text.replace(usedPrefix, '');
                 let [command, ...args] = noPrefix.trim().split` `.filter(v => v);
                 args = args || [];
@@ -435,7 +445,7 @@ export async function handler(chatUpdate) {
                             return;
                     }}
 
-                let hl = _prefix;
+                let hl = prefixes;
                 let adminMode = global.db.data.chats[m.chat].modoadmin;
                 let mini = `${plugins.botAdmin || plugins.admin || plugins.group || plugins || noPrefix || hl ||  m.text.slice(0, 1) == hl || plugins.command}`;
                 if (adminMode && !isOwner && !isROwner && m.isGroup && !isAdmin && mini) return;
