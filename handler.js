@@ -1,4 +1,4 @@
- import { smsg } from './lib/simple.js';
+import { smsg } from './lib/simple.js';
 import { format } from 'util';
 import { fileURLToPath } from 'url';
 import path, { join } from 'path';
@@ -7,79 +7,77 @@ import chalk from 'chalk';
 import fetch from 'node-fetch';
 import ws from 'ws';
 
-// === Error logging to owners Creado Por Tu AyeitsRyzeMD ===
-const owners = global.owner || []
-
+const owners = global.owner || [];
 
 async function __sendOwnerErrorLog(conn, m, info = {}) {
     try {
-        const { pluginName = '-', usedPrefix = '', command = '', args = [], errorObj } = info
-        let text = ''
+        const { pluginName = '-', usedPrefix = '', command = '', args = [], errorObj } = info;
+        let text = '';
         if (errorObj) {
-            try { text = format(errorObj) } catch { text = String(errorObj) }
-            
+            try { text = format(errorObj); } catch { text = String(errorObj); }
+
             for (const pool of [global.config?.APIKeys, global.APIKeys]) {
-                if (!pool || typeof pool !== 'object') continue
+                if (!pool || typeof pool !== 'object') continue;
                 for (const key of Object.values(pool)) {
-                    if (typeof key !== 'string' || !key) continue
+                    if (typeof key !== 'string' || !key) continue;
                     try {
-                        const esc = key.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
-                        text = text.replace(new RegExp(esc, 'g'), '#HIDDEN#')
+                        const esc = key.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+                        text = text.replace(new RegExp(esc, 'g'), '#HIDDEN#');
                     } catch {}
                 }
             }
         }
 
-        const rawSender = m?.sender || '-'
-        const rawChat = m?.chat || '-'
-        const senderName = (conn.getName && rawSender !== '-' ? await conn.getName(rawSender) : rawSender) || rawSender
-        const chatName = (conn.getName && rawChat !== '-' ? await conn.getName(rawChat) : rawChat) || rawChat
-        const header = `🗂️ *Plugin:* ${pluginName}\n👤 *Sender:* ${senderName}${rawSender && senderName !== rawSender ? ` ( ${rawSender} )` : ''}\n💬 *Chat:* ${chatName}${rawChat && chatName !== rawChat ? ` ( ${rawChat} )` : ''}\n💻 *Command:* ${usedPrefix}${command} ${args.join(' ')}\n🕒 *Time:* ${new Date().toLocaleString()}\n📄 *Error Logs:*\n\n\u0060\u0060\u0060\n${text}\n\u0060\u0060\u0060`
+        const rawSender = m?.sender || '-';
+        const rawChat = m?.chat || '-';
+        const senderName = (conn.getName && rawSender !== '-' ? await conn.getName(rawSender) : rawSender) || rawSender;
+        const chatName = (conn.getName && rawChat !== '-' ? await conn.getName(rawChat) : rawChat) || rawChat;
+        const header = `🗂️ *Plugin:* ${pluginName}\n👤 *Sender:* ${senderName}${rawSender && senderName !== rawSender ? ` ( ${rawSender} )` : ''}\n💬 *Chat:* ${chatName}${rawChat && chatName !== rawChat ? ` ( ${rawChat} )` : ''}\n💻 *Command:* ${usedPrefix}${command} ${args.join(' ')}\n🕒 *Time:* ${new Date().toLocaleString()}\n📄 *Error Logs:*\n\n\`\`\`\n${text}\n\`\`\``;
         for (const entry of owners) {
-            const number = Array.isArray(entry) ? entry[0] : entry
-            if (!number) continue
-            const jid = number.replace(/[^0-9]/g, '') + '@s.whatsapp.net'
+            const number = Array.isArray(entry) ? entry[0] : entry;
+            if (!number) continue;
+            const jid = number.replace(/[^0-9]/g, '') + '@s.whatsapp.net';
             try {
-                await conn.sendMessage(jid, { text: header })
+                await conn.sendMessage(jid, { text: header });
             } catch (e) {
-                console.error('[ErrorLog] Falló envío a owner', jid, e)
+                console.error('[ErrorLog] Falló envío a owner', jid, e);
             }
         }
     } catch (err) {
-        console.error('[ErrorLog] Error interno en __sendOwnerErrorLog', err)
+        console.error('[ErrorLog] Error interno en __sendOwnerErrorLog', err);
     }
 }
 
 
 if (!global.__consoleErrorPatched) {
-    global.__consoleErrorPatched = true
-    const _origConsoleError = console.error.bind(console)
-    global.__errorCache = new Map()
+    global.__consoleErrorPatched = true;
+    const _origConsoleError = console.error.bind(console);
+    global.__errorCache = new Map();
     console.error = function patchedConsoleError(...args) {
         try {
-            const errObj = args.find(a => a instanceof Error || (a && a.stack && a.message))
+            const errObj = args.find(a => a instanceof Error || (a && a.stack && a.message));
             if (errObj) {
-                const stack = String(errObj.stack || errObj.message || errObj)
-                
-                let pluginName = null
-                const match = stack.match(/[\\/]plugins[\\/](.+?)(?:\.js|\.cjs|\.mjs)/)
-                if (match) pluginName = match[1] + '.js'
-                const key = pluginName + '|' + stack.split('\n')[0]
-                const now = Date.now()
-                const last = global.__errorCache.get(key) || 0
-                if (pluginName && now - last > 30000) { // 30s throttle
-                    global.__errorCache.set(key, now)
-                    const conn = global.conn || global.connection || global.primaryConn
+                const stack = String(errObj.stack || errObj.message || errObj);
+
+                let pluginName = null;
+                const match = stack.match(/[\\/]plugins[\\/](.+?)(?:\.js|\.cjs|\.mjs)/);
+                if (match) pluginName = match[1] + '.js';
+                const key = pluginName + '|' + stack.split('\n')[0];
+                const now = Date.now();
+                const last = global.__errorCache.get(key) || 0;
+                if (pluginName && now - last > 30000) {
+                    global.__errorCache.set(key, now);
+                    const conn = global.conn || global.connection || global.primaryConn;
                     if (conn && typeof __sendOwnerErrorLog === 'function') {
-                        __sendOwnerErrorLog(conn, { sender: '-', chat: '-' }, { pluginName, command: '', args: [], errorObj: errObj })
+                        __sendOwnerErrorLog(conn, { sender: '-', chat: '-' }, { pluginName, command: '', args: [], errorObj: errObj });
                     }
                 }
             }
         } catch (patchErr) {
-            _origConsoleError('[console.error patch failed]', patchErr)
+            _origConsoleError('[console.error patch failed]', patchErr);
         }
-        return _origConsoleError(...args)
-    }
+        return _origConsoleError(...args);
+    };
 }
 
 const { proto } = (await import('@whiskeysockets/baileys')).default;
@@ -116,7 +114,7 @@ export async function handler(chatUpdate) {
 
     if (global.db.data == null)
         await global.loadDatabase();
-          const prefijosArabes = ['966', '213', '973', '974', '20', '971', '964', '962', '965', '961', '218', '212', '222', '968', '970', '963', '249', '216', '967'];
+    const prefijosArabes = ['966', '213', '973', '974', '20', '971', '964', '962', '965', '961', '218', '212', '222', '968', '970', '963', '249', '216', '967'];
 
     if (m.sender) {
         const senderNumber = m.sender.split('@')[0];
@@ -320,7 +318,6 @@ export async function handler(chatUpdate) {
                     per: [],
                 };
 
-            // MODIFICACIÓN AQUI: Lógica de prefijos individual
             let settings = global.db.data.settings[this.user.jid];
             if (typeof settings !== 'object') global.db.data.settings[this.user.jid] = {};
             if (settings) {
@@ -330,7 +327,7 @@ export async function handler(chatUpdate) {
                 if (!('antiPrivate' in settings)) settings.antiPrivate = false;
                 if (!('autoread' in settings)) settings.autoread = false;
                 if (!('soloParaJid' in settings)) settings.soloParaJid = false;
-                if (!('prefix' in settings)) settings.prefix = global.prefix; // Valor inicial
+                if (!('prefix' in settings)) settings.prefix = global.prefix;
             } else global.db.data.settings[this.user.jid] = {
                 self: false,
                 restrict: true,
@@ -339,9 +336,9 @@ export async function handler(chatUpdate) {
                 autoread: false,
                 soloParaJid: false,
                 status: 0,
-                prefix: global.prefix, // Valor inicial
+                prefix: global.prefix,
             };
-            this.prefix = settings.prefix; // Actualiza el prefijo de la conexión
+            this.prefix = settings.prefix;
         } catch (e) {
             console.error(e);
         }
@@ -355,9 +352,9 @@ export async function handler(chatUpdate) {
         const isPrems = isROwner || global.prems.map(v => v.replace(/[^0-9]/g, '') + detectwhat).includes(m.sender) || _user.premium == true;
 
         if (m.isBaileys) return;
-        if (opts['nyimak'])  return;
+        if (opts['nyimak']) return;
         if (!isROwner && opts['self']) return;
-        if (opts['swonly'] && m.chat !== 'status@broadcast')  return;
+        if (opts['swonly'] && m.chat !== 'status@broadcast') return;
         if (typeof m.text !== 'string')
             m.text = '';
 
@@ -417,22 +414,21 @@ export async function handler(chatUpdate) {
 
             const str2Regex = str => str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
 
-            // --- Lógica para múltiples prefijos ---
             let _prefix = plugin.customPrefix ? plugin.customPrefix : this.prefix ? (Array.isArray(this.prefix) ? this.prefix : [this.prefix]) : global.prefix;
             let match = (Array.isArray(_prefix) ?
                 _prefix.map(p => {
+                    if (typeof p !== 'string' || !p) return null; // Validación agregada aquí
                     let re = p instanceof RegExp ?
                         p :
                         new RegExp(str2Regex(p));
                     return [re.exec(m.text), re];
-                }) :
+                }).filter(Boolean) :
                 _prefix instanceof RegExp ?
                 [[_prefix.exec(m.text), _prefix]] :
                 typeof _prefix === 'string' ?
                 [[new RegExp(str2Regex(_prefix)).exec(m.text), new RegExp(str2Regex(_prefix))]] :
                 [[[], new RegExp]]
             ).find(p => p[1]);
-            // --- Fin de la lógica para múltiples prefijos ---
 
             if (typeof plugin.before === 'function') {
                 if (await plugin.before.call(this, m, {
@@ -511,7 +507,7 @@ export async function handler(chatUpdate) {
 
                 let hl = _prefix;
                 let adminMode = global.db.data.chats[m.chat].modoadmin;
-                let mini = `${plugins.botAdmin || plugins.admin || plugins.group || plugins || noPrefix || hl ||  m.text.slice(0, 1) == hl || plugins.command}`;
+                let mini = `${plugins.botAdmin || plugins.admin || plugins.group || plugins || noPrefix || hl || m.text.slice(0, 1) == hl || plugins.command}`;
                 if (adminMode && !isOwner && !isROwner && m.isGroup && !isAdmin && mini) return;
                 if (plugin.rowner && plugin.owner && !(isROwner || isOwner)) {
                     fail('owner', m, this);
@@ -607,7 +603,8 @@ export async function handler(chatUpdate) {
                 this.msgqueque.splice(quequeIndex, 1);
         }
         let user, stats = global.db.data.stats;
-        if (m) { let utente = global.db.data.users[m.sender];
+        if (m) {
+            let utente = global.db.data.users[m.sender];
             if (utente.muto == true) {
                 let bang = m.key.id;
                 let cancellazzione = m.key.participant;
@@ -734,7 +731,7 @@ watchFile(file, async () => {
     unwatchFile(file);
     console.log(chalk.magenta("Se actualizo 'handler.js'"));
 
-    if (global.conns && global.conns.length > 0 ) {
+    if (global.conns && global.conns.length > 0) {
         const users = [...new Set([...global.conns.filter((conn) => conn.user && conn.ws.socket && conn.ws.socket.readyState !== ws.CLOSED).map((conn) => conn)])];
         for (const userr of users) {
             userr.subreloadHandler(false);
