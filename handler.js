@@ -348,18 +348,23 @@ const str2Regex = str => {
   return str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&')
 }
 
+// Detectar prefijo actual
 let _prefix = conn.prefix || global.prefix
-let prefix = (_prefix instanceof RegExp
-  ? [[_prefix.exec(m.text), _prefix]]
-  : Array.isArray(_prefix)
-    ? _prefix.map(p => {
-        let re = new RegExp('^' + str2Regex(p))
-        return [re.exec(m.text), re]
-      })
-    : typeof _prefix == 'string'
-      ? [[new RegExp('^' + str2Regex(_prefix)).exec(m.text), new RegExp('^' + str2Regex(_prefix))]]
-      : [[[], new RegExp('^' + str2Regex(global.prefix))]]
-).find(p => p[1])
+let prefix = (
+  _prefix instanceof RegExp
+    ? [[_prefix.exec(m.text), _prefix]]
+    : Array.isArray(_prefix)
+      ? _prefix.map(p => {
+          let re = new RegExp('^' + str2Regex(p))
+          return [re.exec(m.text), re]
+        })
+      : typeof _prefix == 'string'
+        ? [[new RegExp('^' + str2Regex(_prefix)).exec(m.text), new RegExp('^' + str2Regex(_prefix))]]
+        : [[[], new RegExp('^' + str2Regex(global.prefix))]]
+).find(p => p[0]) 
+
+let match = prefix ? prefix[0] : null
+let usedPrefix = prefix ? match[0] : ''
             // --- Fin de la lógica para múltiples prefijos ---
 
             if (typeof plugin.before === 'function') {
