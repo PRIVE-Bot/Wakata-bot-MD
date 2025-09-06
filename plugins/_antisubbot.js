@@ -1,28 +1,21 @@
+import { areJidsSameUser } from '@adiwajshing/baileys'
+
 export async function before(m, { participants, conn }) {
   if (m.isGroup) {
     let chat = global.db.data.chats[m.chat];
-
+    
     if (!chat.antiBot2) {
-      return true
+      return true; 
     }
+    
+    let botJid = global.conn.user.jid;
 
-    let botJid = global.conn.user.jid 
-
-    if (botJid === conn.user.jid) {
-      return
-    } else {
-      let isBotPresent = participants.some(p => areJidsSameUser(botJid, p.id))
+    if (botJid !== conn.user.jid) {
+      let isBotPresent = participants.some(p => areJidsSameUser(botJid, p.id));
 
       if (isBotPresent) {
-        setTimeout(async () => {
-          await conn.reply(m.chat, `*🌀 Aviso Importante*
-
-> Ya hay un bot principal activo en el grupo, por lo tanto no responderé comandos para evitar interferencias.
-¡Gracias por su comprensión!
-
-`, m, rcanal)
-          
-        }, 5000) 
+        
+        return; 
       }
     }
   }
