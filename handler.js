@@ -9,7 +9,7 @@ import ws from 'ws';
 
 const { proto } = (await import('@whiskeysockets/baileys')).default;
 const isNumber = x => typeof x === 'number' && !isNaN(x);
-const delay = ms => isNumber(ms) && new Promise(resolve => setTimeout(function () 
+const delay = ms => isNumber(ms) && new Promise(resolve => setTimeout(function () {
     clearTimeout(this);
     resolve();
 }, ms));
