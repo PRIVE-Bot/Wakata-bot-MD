@@ -417,10 +417,8 @@ export async function handler(chatUpdate) {
             let _prefix = plugin.customPrefix ? plugin.customPrefix : this.prefix ? (Array.isArray(this.prefix) ? this.prefix : [this.prefix]) : global.prefix;
             let match = (Array.isArray(_prefix) ?
                 _prefix.map(p => {
-                    if (typeof p !== 'string' || !p) return null; // Validación agregada aquí
-                    let re = p instanceof RegExp ?
-                        p :
-                        new RegExp(str2Regex(p));
+                    if (typeof p !== 'string' || !p) return null;
+                    let re = p instanceof RegExp ? p : new RegExp(str2Regex(p));
                     return [re.exec(m.text), re];
                 }).filter(Boolean) :
                 _prefix instanceof RegExp ?
@@ -452,6 +450,7 @@ export async function handler(chatUpdate) {
             }
             if (typeof plugin !== 'function')
                 continue;
+            if (!match) continue; // <-- **Corrección aquí:** Si no hay coincidencia, salta el plugin.
             if ((usedPrefix = (match[0] || '')[0])) {
                 let noPrefix = m.text.replace(usedPrefix, '');
                 let [command, ...args] = noPrefix.trim().split` `.filter(v => v);
