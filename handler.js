@@ -342,13 +342,13 @@ export async function handler(chatUpdate) {
                     continue;
                 }
 
-            const str2Regex = str => {
-                // 🟢 CORRECCIÓN DEL SEGUNDO ERROR: Asegura que 'str' es una cadena
+                        const str2Regex = str => {
                 if (typeof str !== 'string' || str === null) {
                     return new RegExp('');
                 }
                 return str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
             };
+
 
             // 🟢 MANEJO MÁS ROBUSTO DEL PREFIJO
             let effectivePrefix = this.prefix;
