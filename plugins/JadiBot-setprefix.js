@@ -42,12 +42,12 @@ let handler = async (m, { conn, args, text, usedPrefix, command, participants })
     const onlySymbolsAndEmojis = /^[^\p{L}]+$/u;
 
 
-    if (!newPrefix || args.length > 1 || newPrefix.length > 1 || !onlySymbolsAndEmojis.test(newPrefix)) {
-        return conn.reply(m.chat, `${emoji} Por favor, ingresa solo un prefijo que contenga *únicamente un símbolo o un emoji*. No se permiten letras ni múltiples caracteres.
-Ejemplo:
-*${usedPrefix + command} 👑*\n\nPara restablecer el prefijo, usa:
-*${usedPrefix + command} reset*`, m, rcanal);
-    }
+      if (!newPrefix || args.length > 1 || !onlySymbolsAndEmojis.test(newPrefix)) {
+    return conn.reply(m.chat, `${emoji} Por favor, ingresa solo un prefijo que contenga *únicamente un símbolo o un emoji*. No se permiten letras ni múltiples caracteres.
+    Ejemplo:
+    *${usedPrefix + command} 👑*\n\nPara restablecer el prefijo, usa:
+    *${usedPrefix + command} reset*`, m, rcanal);
+}
 
     const settings = global.db.data.settings[conn.user.jid] || {};
     settings.prefix = [newPrefix];
