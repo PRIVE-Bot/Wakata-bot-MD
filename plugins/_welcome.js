@@ -1,10 +1,17 @@
-/* eslint-disable */
 import { WAMessageStubType } from '@whiskeysockets/baileys'
 import fetch from 'node-fetch'
 
 async function getBuffer(url) {
-  const res = await fetch(url)
-  return Buffer.from(await res.arrayBuffer())
+  try {
+    const res = await fetch(url)
+    if (!res.ok) {
+      throw new Error(`Error al descargar la imagen: ${res.statusText}`)
+    }
+    return Buffer.from(await res.arrayBuffer())
+  } catch (e) {
+    console.error(`Error en getBuffer para URL ${url}:`, e)
+    return null // Retorna null en caso de error
+  }
 }
 
 export async function before(m, { conn, participants, groupMetadata }) {
@@ -39,31 +46,41 @@ export async function before(m, { conn, participants, groupMetadata }) {
 
   let fkontak
   try {
-    const img3 = await getBuffer("https://i.postimg.cc/c4t9wwCw/1756162596829.jpg")
-    fkontak = {
-      key: { fromMe: false, participant: "0@s.whatsapp.net" },
-      message: {
-        productMessage: {
-          product: {
-            productImage: { jpegThumbnail: img3 },
-            title: `${tipo} ${tipo1}`,
-            description: `${botname} da la bienvenida a ${taguser}`,
-            currencyCode: "USD",
-            priceAmount1000: 5000,
-            retailerId: "BOT"
-          },
-          businessOwnerJid: "0@s.whatsapp.net"
+    const img3Buffer = await getBuffer("https://i.postimg.cc/c4t9wwCw/1756162596829.jpg")
+    if (img3Buffer) {
+      fkontak = {
+        key: { fromMe: false, participant: "0@s.whatsapp.net" },
+        message: {
+          productMessage: {
+            product: {
+              productImage: { jpegThumbnail: img3Buffer },
+              title: `${tipo} ${tipo1}`,
+              description: `${botname} da la bienvenida a ${taguser}`,
+              currencyCode: "USD",
+              priceAmount1000: 5000,
+              retailerId: "BOT"
+            },
+            businessOwnerJid: "0@s.whatsapp.net"
+          }
         }
       }
+    } else {
+      console.error("No se pudo obtener la imagen para fkontak. El mensaje se enviará sin esta parte.")
     }
   } catch (e) {
     console.error("Error al generar fkontak:", e)
   }
 
+  const imageBuffer = await getBuffer(tipo2)
+  if (!imageBuffer) {
+    console.error("Error: No se pudo obtener la imagen principal (tipo2). No se puede enviar el mensaje de bienvenida/despedida.")
+    return false // Detiene la ejecución si la imagen principal no se puede obtener
+  }
+
   const productMessage = {
     productMessage: {
       product: {
-        productImage: { jpegThumbnail: await getBuffer(tipo2) }, 
+        productImage: { jpegThumbnail: imageBuffer }, 
         title: `${tipo}, ahora somos ${totalMembers}`,
         description: `
 ✎ Usuario: ${taguser}
@@ -85,6 +102,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
     contextInfo: { mentionedJid: [who] }
   })
 }
+
 
 
 
