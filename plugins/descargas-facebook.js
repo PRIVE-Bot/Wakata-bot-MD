@@ -183,6 +183,6 @@ const handler = async (m, { conn, args }) => {
 handler.help = ['facebook <url>', 'fb <url>']
 handler.tags = ['descargas']
 handler.command = ['facebook', 'fb']
-handler.group = true
+//handler.group = true
 
 export default handler
