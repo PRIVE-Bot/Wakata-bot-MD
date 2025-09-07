@@ -1,77 +1,75 @@
-import { format } from 'util';
-import { fileURLToPath } from 'url';
-import path, { join } from 'path';
-import { unwatchFile, watchFile, readFileSync, writeFileSync } from 'fs';
-import chalk from 'chalk';
-import ws from 'ws';
+import fetch from "node-fetch"
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+let handler = async (m, { conn, args, usedPrefix, command }) => {
+  if (!args[0]) return m.reply(`⚠️ Ingresa un enlace de TikTok.\n\nEjemplo:\n${usedPrefix + command} https://vm.tiktok.com/ZMj4xxxx/`)
+  
+  try {
+    let res = await fetch(`https://g-mini-ia.vercel.app/api/tiktok?url=${encodeURIComponent(args[0])}`)
+    if (!res.ok) throw await res.text()
+    let data = await res.json()
 
-const isOwner = async (m, conn) => {
-    const detectwhat = m.sender.includes('@lid') ? '@lid' : '@s.whatsapp.net';
-    const isROwner = [...global.owner.map(([number]) => number)].map(v => v.replace(/[^0-9]/g, '') + detectwhat).includes(m.sender);
-    return isROwner;
-};
+    let txt = `
+🎥𝐓𝐈𝐊𝐓𝐎𝐊 𝐃𝐎𝐖𝐍𝐋𝐎𝐀𝐃𝐄𝐑
 
-const isAdmin = (m, participants) => {
-    const user = participants.find(p => p.id === m.sender) || {};
-    return !!user.admin;
-};
+*🌟 TIKTOK VIDEO MENU 🎵*
 
-let handler = async (m, { conn, args, text, usedPrefix, command, participants }) => {
-    if (!m.isGroup) {
-        if (!await isOwner(m, conn)) {
-           return conn.reply(m.chat, `${emoji} Este comando solo puede ser usado por el Creador.`, m, rcanal);
-        }
-    } else {
-        if (!await isOwner(m, conn) && !isAdmin(m, participants)) {
-           return conn.reply(m.chat, `${emoji} Este comando solo puede ser usado por un Creador o un Administrador del grupo.`, m, rcanal);
-        }
+🗣️ Title     »  ${data.title || "TikTok Video"}  
+
+*🔢 𝗥𝗲𝗽𝗹𝘆 𝘄𝗶𝘁𝗵 𝗯𝗲𝗹𝗼𝘄 𝗻𝘂𝗺𝗯𝗲𝗿 𝘁𝗼 𝗱𝗼𝘄𝗻𝗹𝗼𝗮𝗱:*
+
+1️⃣ ║❯❯ No Watermark Video 📽️  
+2️⃣ ║❯❯ Audio Only 🎵  
+3️⃣ ║❯❯ Video Note [PTV] 📺
+
+
+> © 𝚂𝚄𝙻𝙰 𝙼𝙸𝙽𝙸 𝙱𝙾𝚃
+    `.trim()
+
+    await conn.sendMessage(m.chat, {
+      image: { url: data.thumbnail },
+      caption: txt
+    }, { quoted: m })
+
+    // Guardar datos para la respuesta posterior
+    conn.tiktokMenu = conn.tiktokMenu ? conn.tiktokMenu : {}
+    conn.tiktokMenu[m.chat] = {
+      key: m.key,
+      data
     }
 
-    if (text === 'reset') {
-        const settings = global.db.data.settings[conn.user.jid] || {};
-        delete settings.prefix;
-        global.db.data.settings[conn.user.jid] = settings;
-        conn.reply(m.chat, `${emoji} Prefijo personalizado eliminado. El bot ahora usará el prefijo global por defecto.`, m, rcanal);
-        return;
+  } catch (e) {
+    console.error(e)
+    m.reply("❌ Error al obtener el video de TikTok.")
+  }
+}
+
+handler.command = /^t$/i
+export default handler
+
+
+// --- RESPUESTA A LOS NÚMEROS ---
+let before = async (m, { conn }) => {
+  if (!m.quoted || !conn.tiktokMenu || !conn.tiktokMenu[m.chat]) return
+  let { key, data } = conn.tiktokMenu[m.chat]
+  if (!m.quoted.key || m.quoted.key.id !== key.id) return
+
+  let choice = m.text.trim()
+  try {
+    switch (choice) {
+      case "1":
+        await conn.sendMessage(m.chat, { video: { url: data.video_url }, caption: "🎬 TikTok sin marca de agua" }, { quoted: m })
+        break
+      case "2":
+        await conn.sendMessage(m.chat, { audio: { url: data.video_url }, mimetype: "audio/mpeg", fileName: "tiktok.mp3" }, { quoted: m })
+        break
+      case "3":
+        await conn.sendMessage(m.chat, { video: { url: data.video_url }, ptt: true }, { quoted: m })
+        break
     }
+  } catch (e) {
+    console.error(e)
+    m.reply("❌ Error al enviar el archivo.")
+  }
+}
 
-    const newPrefix = args[0];
-    const onlySymbolsAndEmojis = /^[^\p{L}]+$/u;
-    
-    
-    if (!newPrefix || args.length > 1 || newPrefix.length > 1 || !onlySymbolsAndEmojis.test(newPrefix)) {
-        return conn.reply(m.chat, `${emoji} Por favor, ingresa solo un prefijo que contenga *únicamente un símbolo o un emoji*. No se permiten letras ni múltiples caracteres.
-Ejemplo:
-*${usedPrefix + command} 👑*\n\nPara restablecer el prefijo, usa:
-*${usedPrefix + command} reset*`, m, rcanal);
-    }
-    
-    const settings = global.db.data.settings[conn.user.jid] || {};
-    settings.prefix = [newPrefix];
-    global.db.data.settings[conn.user.jid] = settings;
-
-   return conn.reply(m.chat, `${emoji} Prefijo del bot cambiado a: \`${newPrefix}\``, m, rcanal);
-
-    global.reloadHandler(true).catch(console.error);
-};
-
-handler.help = ['setprefix <prefijo>'];
-handler.tags = ['owner'];
-handler.command = /^(setprefix|sprefix)$/i;
-
-export default handler;
-
-let file = global.__filename(import.meta.url, true);
-watchFile(file, async () => {
-    unwatchFile(file);
-    console.log(chalk.redBright("Se actualizo 'setprefix.js'"));
-    if (global.conns && global.conns.length > 0) {
-        const users = [...new Set([...global.conns.filter((conn) => conn.user && conn.ws.socket && conn.ws.socket.readyState !== ws.CLOSED).map((conn) => conn)])];
-        for (const userr of users) {
-            userr.subreloadHandler(false);
-        }
-    }
-});
+handler.before = before
