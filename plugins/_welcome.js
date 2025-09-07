@@ -80,7 +80,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
   const productMessage = {
     productMessage: {
       product: {
-        productImage: { jpegThumbnail: imageBuffer }, 
+        productImage: global.img, 
         title: `${tipo}, ahora somos ${totalMembers}`,
         description: `
 ✎ Usuario: ${taguser}
