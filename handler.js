@@ -341,33 +341,10 @@ export async function handler(chatUpdate) {
                     continue;
                 }
             
-            // --- INICIO: Lógica del prefijo corregida
-            const str2Regex = str => {
-                return typeof str === 'string' ? str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&') : null;
-            };
-
-            const globalPrefixes = Array.isArray(global.prefix) ? global.prefix : [global.prefix];
-            let prefixes = [...globalPrefixes];
-
-            if (plugin.customPrefix) {
-                if (Array.isArray(plugin.customPrefix)) {
-                    prefixes = [...new Set([...prefixes, ...plugin.customPrefix])];
-                } else if (typeof plugin.customPrefix === 'string') {
-                    prefixes = [...new Set([...prefixes, plugin.customPrefix])];
-                }
-            }
-            
-            if (global.db.data.chats[m.chat]?.prefix) {
-                const chatPrefixes = Array.isArray(global.db.data.chats[m.chat].prefix) ? global.db.data.chats[m.chat].prefix : [global.db.data.chats[m.chat].prefix];
-                prefixes = [...new Set([...prefixes, ...chatPrefixes])];
-            }
-
-            let match = prefixes.map(p => {
-                let re = p instanceof RegExp ? p : new RegExp('^' + str2Regex(p));
-                return [re.exec(m.text), re];
-            }).find(p => p[0]);
-            
-            usedPrefix = (match && match[0]) ? match[0][0] : null;
+            // Lógica de detección de prefijos simplificada
+            let prefixes = Array.isArray(global.prefix) ? global.prefix : [global.prefix];
+            let match = prefixes.map(p => (p instanceof RegExp) ? p.exec(m.text) : new RegExp(`^${p.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&')}`).exec(m.text)).find(p => p);
+            usedPrefix = match ? match[0] : null;
 
             if (typeof plugin.before === 'function') {
                 if (await plugin.before.call(this, m, {
