@@ -19,7 +19,6 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
 1️ ⇶Vídeo sin marca de agua 📽️  
 2️ ⇶Sólo audio 🎵  
 3️ ⇶Nota de vídeo 🕳️
-
 `.trim()
 
     let sentMsg = await conn.sendMessage(m.chat, {
@@ -29,7 +28,6 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
 
     conn.tiktokMenu = conn.tiktokMenu || {}
     conn.tiktokMenu[sentMsg.key.id] = data
-    if (sentMsg.key.id) conn.tiktokMenu[sentMsg.key.id] = data
   } catch (e) {
     console.error(e)
     m.reply("❌ Error al obtener el video de TikTok.")
@@ -46,8 +44,6 @@ let before = async (m, { conn }) => {
 
   let choice = m.text.trim()
   if (!["1", "2", "3"].includes(choice)) return
-
-  delete conn.tiktokMenu[msgId]
 
   try {
     switch (choice) {
