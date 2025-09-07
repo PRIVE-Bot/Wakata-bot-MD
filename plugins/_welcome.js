@@ -59,25 +59,25 @@ export async function before(m, { conn, participants, groupMetadata }) {
     console.error("Error al generar fkontak:", e)
   }
 
-  const productMessage = {
-    productMessage: { // ✅ corrección: debe ir dentro de productMessage
-      product: {
-        productImage: { url: tipo2 },
-        title: `${tipo}, ahora somos ${totalMembers}`,
-        description: `
+const productMessage = {
+  productMessage: {
+    product: {
+      productImage: { jpegThumbnail: await getBuffer(tipo2) }, 
+      title: `${tipo}, ahora somos ${totalMembers}`,
+      description: `
 ✎ Usuario: ${taguser}
 ✎ Grupo: ${groupMetadata.subject}
 ✎ Miembros: ${totalMembers}
 ✎ Fecha: ${date}
-        `,
-        currencyCode: "USD",
-        priceAmount1000: 5000,
-        retailerId: "1677",
-        productId: "24628293543463627"
-      },
-      businessOwnerJid: "50432955554@s.whatsapp.net"
-    }
+      `,
+      currencyCode: "USD",
+      priceAmount1000: 5000,
+      retailerId: "1677",
+      productId: "24628293543463627"
+    },
+    businessOwnerJid: "50432955554@s.whatsapp.net"
   }
+}
 
   await conn.sendMessage(m.chat, productMessage, { 
     quoted: fkontak,
