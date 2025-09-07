@@ -13,6 +13,108 @@ const delay = ms => isNumber(ms) && new Promise(resolve => setTimeout(function (
     resolve();
 }, ms));
 
+// Ryze
+async function __sendOwnerErrorLog(conn, m, info = {}) {
+    try {
+        const { pluginName = '-', usedPrefix = '', command = '', args = [], errorObj } = info
+        let text = ''
+        if (errorObj) {
+            try { text = format(errorObj) } catch { text = String(errorObj) }
+            
+            for (const pool of [global.config?.APIKeys, global.APIKeys]) {
+                if (!pool || typeof pool !== 'object') continue
+                for (const key of Object.values(pool)) {
+                    if (typeof key !== 'string' || !key) continue
+                    try {
+                        const esc = key.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
+                        text = text.replace(new RegExp(esc, 'g'), '#HIDDEN#')
+                    } catch {}
+                }
+            }
+        }
+        const owners = Array.isArray(global.owner) ? global.owner : []
+        if (!owners.length) {
+            console.warn('[ErrorLog] No hay owners definidos en global.owner')
+            return
+        }
+        
+        const resolveName = async (jid) => {
+            if (!jid || jid === '-') return '-'
+            try {
+                if (conn) {
+                    if (typeof conn.getName === 'function') {
+                        let n = conn.getName(jid)
+                        if (n && typeof n.then === 'function') {
+                            try { n = await n } catch {}
+                        }
+                        if (n) return n
+                    }
+                    if (/@g\.us$/.test(jid)) {
+                        try {
+                            const meta = (conn._groupCache?.[jid]?.data) || await conn.groupMetadata?.(jid).catch(()=>null)
+                            const subj = meta?.subject
+                            if (subj) return subj
+                        } catch {}
+                    }
+                }
+            } catch {}
+            return String(jid).split('@')[0]
+        }
+        const rawSender = m?.sender || '-'
+        const rawChat = m?.chat || '-'
+        const senderName = await resolveName(rawSender)
+        const chatName = await resolveName(rawChat)
+        const header = `🗂️ *Plugin:* ${pluginName}\n👤 *Sender:* ${senderName}${rawSender && senderName !== rawSender ? ` ( ${rawSender} )` : ''}\n💬 *Chat:* ${chatName}${rawChat && chatName !== rawChat ? ` ( ${rawChat} )` : ''}\n💻 *Command:* ${usedPrefix}${command} ${Array.isArray(args)?args.join(' '):''}\n🕒 *Time:* ${new Date().toLocaleString()}\n📄 *Error Logs:*\n\n\u0060\u0060\u0060\n${text}\n\u0060\u0060\u0060`
+        for (const entry of owners) {
+            const number = Array.isArray(entry) ? entry[0] : entry
+            if (!number) continue
+            const jid = number.replace(/[^0-9]/g, '') + '@s.whatsapp.net'
+            try {
+                await conn.sendMessage(jid, { text: header })
+            } catch (e) {
+                console.error('[ErrorLog] Falló envío a owner', jid, e)
+            }
+        }
+    } catch (err) {
+        console.error('[ErrorLog] Error interno en __sendOwnerErrorLog', err)
+    }
+}
+
+
+if (!global.__consoleErrorPatched) {
+    global.__consoleErrorPatched = true
+    const _origConsoleError = console.error.bind(console)
+    global.__errorCache = new Map()
+    console.error = function patchedConsoleError(...args) {
+        try {
+            
+            const errObj = args.find(a => a instanceof Error || (a && a.stack && a.message))
+            if (errObj) {
+                const stack = String(errObj.stack || errObj.message || errObj)
+                
+                let pluginName = null
+                const match = stack.match(/[\\/]plugins[\\/](.+?)(?:\.js|\.cjs|\.mjs)/)
+                if (match) pluginName = match[1] + '.js'
+                
+                const key = pluginName + '|' + stack.split('\n')[0]
+                const now = Date.now()
+                const last = global.__errorCache.get(key) || 0
+                if (pluginName && now - last > 30000) { 
+                    global.__errorCache.set(key, now)
+                    
+                    const conn = global.conn || global.connection || global.primaryConn
+                    if (conn && typeof __sendOwnerErrorLog === 'function') {
+                        __sendOwnerErrorLog(conn, { sender: '-', chat: '-' }, { pluginName, command: '', args: [], errorObj: errObj })
+                    }
+                }
+            }
+        } catch (patchErr) {
+            _origConsoleError('[console.error patch failed]', patchErr)
+        }
+        return _origConsoleError(...args)
+    }
+}
+
 export async function handler(chatUpdate) {
     this.msgqueque = this.msgqueque || [];
     this.uptime = this.uptime || Date.now();
