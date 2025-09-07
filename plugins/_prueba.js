@@ -48,15 +48,15 @@ let before = async (m, { conn }) => {
   try {
     switch (choice) {
       case "1":
-        await m.reply("⏳ Enviando contenido...")
+       // await m.reply("⏳ Enviando contenido...")
         await conn.sendMessage(m.chat, { video: { url: data.video_url }, caption: "🎬 TikTok sin marca de agua" }, { quoted: m })
         break
       case "2":
-        await m.reply("⏳ Enviando contenido...")
+       // await m.reply("⏳ Enviando contenido...")
         await conn.sendMessage(m.chat, { audio: { url: data.audio_url || data.video_url }, mimetype: "audio/mpeg", fileName: "tiktok.mp3" }, { quoted: m })
         break
       case "3":
-        await m.reply("⏳ Enviando contenido...")
+        //await m.reply("⏳ Enviando contenido...")
         await conn.sendMessage(m.chat, { 
           video: { url: data.video_url }, 
           mimetype: "video/mp4", 
