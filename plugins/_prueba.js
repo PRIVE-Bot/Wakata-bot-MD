@@ -2,7 +2,7 @@ import fetch from "node-fetch"
 
 let handler = async (m, { conn, args, usedPrefix, command }) => {
   if (!args[0]) return m.reply(`⚠️ Ingresa un enlace de TikTok.\n\nEjemplo:\n${usedPrefix + command} https://vm.tiktok.com/ZMj4xxxx/`)
-  
+
   try {
     let res = await fetch(`https://g-mini-ia.vercel.app/api/tiktok?url=${encodeURIComponent(args[0])}`)
     if (!res.ok) throw await res.text()
@@ -25,17 +25,14 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
 > © 𝚂𝚄𝙻𝙰 𝙼𝙸𝙽𝙸 𝙱𝙾𝚃
     `.trim()
 
-    await conn.sendMessage(m.chat, {
+    let sentMsg = await conn.sendMessage(m.chat, {
       image: { url: data.thumbnail },
       caption: txt
     }, { quoted: m })
 
-    // Guardar datos para la respuesta posterior
+    // Guardar datos para respuestas
     conn.tiktokMenu = conn.tiktokMenu ? conn.tiktokMenu : {}
-    conn.tiktokMenu[m.chat] = {
-      key: m.key,
-      data
-    }
+    conn.tiktokMenu[sentMsg.key.id] = data
 
   } catch (e) {
     console.error(e)
@@ -49,9 +46,9 @@ export default handler
 
 // --- RESPUESTA A LOS NÚMEROS ---
 let before = async (m, { conn }) => {
-  if (!m.quoted || !conn.tiktokMenu || !conn.tiktokMenu[m.chat]) return
-  let { key, data } = conn.tiktokMenu[m.chat]
-  if (!m.quoted.key || m.quoted.key.id !== key.id) return
+  if (!m.quoted || !m.quoted.key || !conn.tiktokMenu) return
+  let data = conn.tiktokMenu[m.quoted.key.id]
+  if (!data) return
 
   let choice = m.text.trim()
   try {
