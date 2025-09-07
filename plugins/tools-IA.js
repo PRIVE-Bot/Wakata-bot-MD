@@ -37,6 +37,5 @@ handler.before = async (m, { conn }) => {
         return handler(m, { conn });
     }
 }
-handler.group = true
 
 export default handler
