@@ -97,6 +97,24 @@ let handler = async (m, { conn, args }) => {
   if (!args[0]) {
     return conn.reply(m.chat, `${emoji} Necesitas enviar un enlace de *Facebook* para descargar.`, m, rcanal)
   }
+const 3resThumb = await fetch('https://files.catbox.moe/nbkung.jpg');
+  const thumb24 = Buffer.from(await 3resThumb.arrayBuffer());
+
+  const fkontak = {
+    key: {
+      participants: ["0@s.whatsapp.net"],
+      remoteJid: "status@broadcast",
+      fromMe: false,
+      id: "Halo"
+    },
+    message: {
+      locationMessage: {
+        name: `𝗗𝗘𝗦𝗖𝗔𝗥𝗚𝗔 𝗗𝗘 𝗙𝗔𝗖𝗘𝗕𝗢𝗢𝗞`,
+        jpegThumbnail: thumb24
+      }
+    },
+    participant: "0@s.whatsapp.net"
+  };
 
   const regexFacebook = /^(https?:\/\/)?(www\.)?(facebook\.com|fb\.watch)\/[^\s]+$/i
   if (!regexFacebook.test(args[0])) {
@@ -136,18 +154,17 @@ let handler = async (m, { conn, args }) => {
   const thumb2 = Buffer.from(await resThumb.arrayBuffer())
 
   let txt = `
-🎥𝐅𝐀𝐂𝐄𝐁𝐎𝐎𝐊 𝐃𝐎𝐖𝐍𝐋𝐎𝐀𝐃𝐄𝐑
+🎥 𝗙𝗔𝗖𝗘𝗕𝗢𝗢𝗞 𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗𝗘𝗥  
 
-*🌟 MENÚ DE VIDEOS DE FACEBOOK 🎵*
+🌐 Plataforma: Facebook  
+📺 Resolución: ${data.resolution || "Desconocida"}  
 
-📺 Resolución » ${data.resolution || "Desconocida"}  
-🌐 Origen » Facebook  
+⚙️ Opciones de descarga:  
+1️⃣ Vídeo normal 📽️  
+2️⃣ Solo audio 🎵  
+3️⃣ Nota de vídeo 🕳️  
 
-*➔ Responde con el número para descargar:*
-
-1️ ⇶Vídeo normal 📽️  
-2️ ⇶Sólo audio 🎵  
-3️ ⇶Nota de vídeo 🕳️
+💡 Responde con el número de tu elección.
 `.trim()
 
   let sentMsg = await conn.sendMessage(
@@ -156,7 +173,7 @@ let handler = async (m, { conn, args }) => {
       image: thumb2,
       caption: txt,
     },
-    { quoted: m }
+    { quoted: fkontak }
   )
 
   conn.fbMenu = conn.fbMenu || {}
@@ -164,7 +181,9 @@ let handler = async (m, { conn, args }) => {
   if (m.react) await m.react("✅")
 }
 
-handler.command = /^(facebook|fb)$/i
+handler.help = ['facebook <url>', 'fb <url>'];
+handler.tags = ['descargas'];
+handler.command = ['facebook', 'fb'];
 
 let before = async (m, { conn }) => {
   if (!m.quoted || !conn.fbMenu) return
@@ -182,7 +201,7 @@ let before = async (m, { conn }) => {
         await conn.sendMessage(
           m.chat,
           { video: { url: data.video }, caption: "🎬 Facebook Video" },
-          { quoted: m }
+          { quoted: fkontak }
         )
         break
       case "2":
@@ -190,7 +209,7 @@ let before = async (m, { conn }) => {
         await conn.sendMessage(
           m.chat,
           { audio: { url: data.video }, mimetype: "audio/mpeg", fileName: "facebook.mp3" },
-          { quoted: m }
+          { quoted: fkontak }
         )
         break
       case "3":
@@ -198,7 +217,7 @@ let before = async (m, { conn }) => {
         await conn.sendMessage(
           m.chat,
           { video: { url: data.video }, mimetype: "video/mp4", ptv: true },
-          { quoted: m }
+          { quoted: fkontak }
         )
         break
     }
