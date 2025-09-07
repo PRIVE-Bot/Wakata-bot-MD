@@ -1,51 +1,76 @@
-import fetch from 'node-fetch';
+import fetch from "node-fetch"
 
-var handler = async (m, { conn, args }) => {
-    if (!args[0]) {
-        return conn.reply(m.chat, `Por favor, envía un enlace de TikTok para descargar el video.`, m, rcanal);
-    }
+let handler = async (m, { conn, args, usedPrefix, command }) => {
+  if (!args[0]) return m.reply(`⚠️ Ingresa un enlace de TikTok.\n\nEjemplo:\n${usedPrefix + command} https://vm.tiktok.com/ZMj4xxxx/`)
+  try {
+    let res = await fetch(`https://g-mini-ia.vercel.app/api/tiktok?url=${encodeURIComponent(args[0])}`)
+    if (!res.ok) throw await res.text()
+    let data = await res.json()
 
-    try {
-       // await conn.reply(m.chat, `Descargando el video, por favor espera...`, m, rcanal);
-  await m.react('⏳');
-  await m.react('⌛');
-  await m.react('⏳');
-  await m.react('⌛');
-  await m.react('⏳');
-        const tiktokData = await tiktokdl(args[0]);
+    let txt = `
+𝗧𝗜𝗞-𝗧𝗢𝗞 𝗗𝗘𝗦𝗖𝗔𝗥𝗚𝗔𝗦
 
-        if (!tiktokData || !tiktokData.video_url) {
-            return conn.reply(m.chat, "No se pudo obtener el video de TikTok.", m, rcanal);
-        }
+*𝘮𝘦𝘯𝘶 𝘥𝘦 𝘰𝘱𝘤𝘪𝘰𝘯𝘦𝘴*
 
-        const videoURL = tiktokData.video_url;
-        const { title, author } = tiktokData;
+🗣️ Title » ${data.title || "TikTok Video"}  
 
-        const info = `
-📄 *Título:* ${title || 'No disponible'}
-👤 *Autor:* ${author || 'Desconocido'}
-       `.trim();
+*➔ Responde con el número para descargar:*
 
-        await conn.sendFile(m.chat, videoURL, "tiktok.mp4", `${info}\n\n✅ Video descargado correctamente.`, m);
-  await m.react('🔥');
-    } catch (error1) {
-        console.error(error1);
-        return conn.reply(m.chat, `Ocurrió un error al descargar el video: ${error1.message}`, m, rcanal);
-    }
-};
+① ⇶Vídeo sin marca de agua 📽️  
+② ⇶Sólo audio 🎵  
+③ ⇶Nota de vídeo 🕳️
+`.trim()
 
-handler.help = ['tiktok'].map(v => v + ' <link>');
+    let sentMsg = await conn.sendMessage(m.chat, {
+      image: { url: data.thumbnail },
+      caption: txt
+    }, { quoted: m })
+
+    conn.tiktokMenu = conn.tiktokMenu || {}
+    conn.tiktokMenu[sentMsg.key.id] = data
+  } catch (e) {
+    console.error(e)
+    m.reply("❌ Error al obtener el video de TikTok.")
+  }
+}
+
+handler.help = ['tiktok/tt <URL>'];
 handler.tags = ['descargas'];
 handler.command = ['tiktok', 'tt'];
 
-handler.group = true;
+let before = async (m, { conn }) => {
+  if (!m.quoted || !conn.tiktokMenu) return
+  let msgId = m.quoted.id || m.quoted.key?.id
+  let data = conn.tiktokMenu[msgId]
+  if (!data) return
 
-export default handler;
+  let choice = m.text.trim()
+  if (!["1", "2", "3"].includes(choice)) return
 
-async function tiktokdl(url) {
-    let api = `https://g-mini-ia.vercel.app/api/tiktok?url=${encodeURIComponent(url)}`;
-    let res = await fetch(api);
-    if (!res.ok) throw new Error(`Respuesta inválida de la API`);
-    let json = await res.json();
-    return json;
+  try {
+    switch (choice) {
+      case "1":
+       // await m.reply("⏳ Enviando contenido...")
+        await conn.sendMessage(m.chat, { video: { url: data.video_url }, caption: "🎬 TikTok sin marca de agua" }, { quoted: m })
+        break
+      case "2":
+       // await m.reply("⏳ Enviando contenido...")
+        await conn.sendMessage(m.chat, { audio: { url: data.audio_url || data.video_url }, mimetype: "audio/mpeg", fileName: "tiktok.mp3" }, { quoted: m })
+        break
+      case "3":
+        //await m.reply("⏳ Enviando contenido...")
+        await conn.sendMessage(m.chat, { 
+          video: { url: data.video_url }, 
+          mimetype: "video/mp4", 
+          ptv: true 
+        }, { quoted: m })
+        break
+    }
+  } catch (e) {
+    console.error(e)
+    m.reply("❌ Error al enviar el archivo.")
+  }
 }
+
+handler.before = before
+export default handler
