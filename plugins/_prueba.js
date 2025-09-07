@@ -20,7 +20,7 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
 3️⃣ ║❯❯ Video Note [PTV] 📺
 
 
-> © 𝚂𝚄𝙻𝙰 𝙼𝙸𝙽𝙸 𝙱𝙾𝚃
+> © 𝚂𝚄𝙻𝙰 𝙼𝗜𝗡𝗜 𝙱𝙾𝚃
     `.trim()
     let sentMsg = await conn.sendMessage(m.chat, {
       image: { url: data.thumbnail },
