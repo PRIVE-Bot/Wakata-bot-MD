@@ -97,8 +97,8 @@ let handler = async (m, { conn, args }) => {
   if (!args[0]) {
     return conn.reply(m.chat, `${emoji} Necesitas enviar un enlace de *Facebook* para descargar.`, m, rcanal)
   }
-const 3resThumb = await fetch('https://files.catbox.moe/nbkung.jpg');
-  const thumb24 = Buffer.from(await 3resThumb.arrayBuffer());
+const resThumb3 = await fetch('https://files.catbox.moe/nbkung.jpg')
+const thumb24 = Buffer.from(await resThumb3.arrayBuffer())
 
   const fkontak = {
     key: {
