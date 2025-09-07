@@ -1,12 +1,6 @@
 import { WAMessageStubType } from '@whiskeysockets/baileys'
 import fetch from 'node-fetch'
 
-async function getBuffer(url) {
-  const res = await fetch(url)
-  if (!res.ok) throw new Error(`Error al descargar la imagen: ${res.statusText}`)
-  return Buffer.from(await res.arrayBuffer())
-}
-
 export async function before(m, { conn, participants, groupMetadata }) {
   if (!m.messageStubType || !m.isGroup) return true
 
@@ -26,24 +20,23 @@ export async function before(m, { conn, participants, groupMetadata }) {
   if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_ADD) {
     tipo = 'Bienvenido'
     tipo1 = 'al grupo'
-    tipo2 = Array.isArray(global.img) 
-      ? global.img[Math.floor(Math.random() * global.img.length)] 
-      : global.img
+    tipo2 = global.img
   }
 
-  if ([WAMessageStubType.GROUP_PARTICIPANT_LEAVE, WAMessageStubType.GROUP_PARTICIPANT_REMOVE].includes(m.messageStubType)) {
+  if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_LEAVE || 
+      m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_REMOVE) {
     tipo = 'Adiós'
     tipo1 = 'del grupo'
-    tipo2 = Array.isArray(global.img) 
-      ? global.img[Math.floor(Math.random() * global.img.length)] 
-      : global.img
+    tipo2 = global.img
   }
 
   if (!tipo) return
 
   let fkontak
   try {
-    const img3 = await getBuffer('https://i.postimg.cc/c4t9wwCw/1756162596829.jpg')
+    const res2 = await fetch('https://i.postimg.cc/c4t9wwCw/1756162596829.jpg')
+    const img3 = Buffer.from(await res2.arrayBuffer())
+
     fkontak = {
       key: { fromMe: false, participant: "0@s.whatsapp.net" },
       message: {
@@ -64,17 +57,9 @@ export async function before(m, { conn, participants, groupMetadata }) {
     console.error("Error al generar fkontak:", e)
   }
 
-  let imageBuffer
-  try {
-    imageBuffer = await getBuffer(tipo2)
-  } catch (e) {
-    console.error("No se pudo obtener la imagen de global.img:", e)
-    return
-  }
-
   const productMessage = {
     product: {
-      productImage: { jpegThumbnail: imageBuffer },
+      productImage: { url: tipo2 },
       title: `${tipo}, ahora somos ${totalMembers}`,
       description: `
 ✎ Usuario: ${taguser}
@@ -91,7 +76,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
     businessOwnerJid: "0@s.whatsapp.net"
   }
 
-  await conn.sendMessage(m.chat, { productMessage }, { 
+  await conn.sendMessage(m.chat, productMessage, { 
     quoted: fkontak,
     contextInfo: { mentionedJid: [who] }
   })
