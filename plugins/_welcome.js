@@ -3,7 +3,8 @@ import fetch from 'node-fetch'
 
 export async function before(m, { conn, participants, groupMetadata }) {
   if (!m.messageStubType || !m.isGroup) return true
-if (global.bot?.soloParaJid) return true
+
+  if (global.bot?.soloParaJid) return true
 
   const totalMembers = participants.length
   const date = new Date().toLocaleString('es-ES', { timeZone: 'America/Mexico_City' })
@@ -24,8 +25,10 @@ if (global.bot?.soloParaJid) return true
     tipo2 = global.img
   }
 
-  if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_LEAVE || 
-      m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_REMOVE) {
+  if (
+    m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_LEAVE ||
+    m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_REMOVE
+  ) {
     tipo = 'Adiós'
     tipo1 = 'del grupo'
     tipo2 = global.img
@@ -77,7 +80,7 @@ if (global.bot?.soloParaJid) return true
     businessOwnerJid: "0@s.whatsapp.net"
   }
 
-  await conn.sendMessage(m.chat, productMessage, { 
+  await conn.sendMessage(m.chat, productMessage, {
     quoted: fkontak,
     contextInfo: { mentionedJid: [who] }
   })
