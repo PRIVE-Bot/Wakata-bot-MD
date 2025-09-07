@@ -29,7 +29,6 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
     }, { quoted: m })
 
     conn.tiktokMenu = conn.tiktokMenu || {}
-    // Guardamos con dos posibles IDs (compatibilidad)
     conn.tiktokMenu[sentMsg.key.id] = data
     if (sentMsg.key.id) conn.tiktokMenu[sentMsg.key.id] = data
   } catch (e) {
@@ -63,7 +62,11 @@ let before = async (m, { conn }) => {
         break
       case "3":
         await m.reply("⏳ Enviando contenido...")
-        await conn.sendMessage(m.chat, { video: { url: data.video_url }, ptt: true }, { quoted: m })
+        await conn.sendMessage(m.chat, { 
+          video: { url: data.video_url }, 
+          mimetype: "video/mp4", 
+          ptv: true 
+        }, { quoted: m })
         break
     }
   } catch (e) {
