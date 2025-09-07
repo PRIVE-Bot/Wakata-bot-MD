@@ -2,13 +2,17 @@
 import { WAMessageStubType } from '@whiskeysockets/baileys'
 import fetch from 'node-fetch'
 
+async function getBuffer(url) {
+  const res = await fetch(url)
+  return Buffer.from(await res.arrayBuffer())
+}
+
 export async function before(m, { conn, participants, groupMetadata }) {
   if (!m.isGroup) return true
 
   const chat = global.db.data.chats[m.chat]
   if (!chat.welcome) return true
 
-  // Si no hay stubType o params válidos, salimos
   if (!m.messageStubType || !m.messageStubParameters || !m.messageStubParameters[0]) return true
 
   const totalMembers = participants.length
@@ -19,26 +23,23 @@ export async function before(m, { conn, participants, groupMetadata }) {
 
   let tipo = ''
   let tipo1 = ''
-  let tipo2 = ''
+  let tipo2 = global.img || "https://i.postimg.cc/c4t9wwCw/1756162596829.jpg"
 
   if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_ADD) {
     tipo = 'Bienvenido'
     tipo1 = 'al grupo'
-    tipo2 = global.img
   }
 
   if ([WAMessageStubType.GROUP_PARTICIPANT_LEAVE, WAMessageStubType.GROUP_PARTICIPANT_REMOVE].includes(m.messageStubType)) {
     tipo = 'Adiós'
     tipo1 = 'del grupo'
-    tipo2 = global.img
   }
 
   if (!tipo) return true
 
   let fkontak
   try {
-    const res2 = await fetch('https://i.postimg.cc/c4t9wwCw/1756162596829.jpg')
-    const img3 = Buffer.from(await res2.arrayBuffer())
+    const img3 = await getBuffer("https://i.postimg.cc/c4t9wwCw/1756162596829.jpg")
     fkontak = {
       key: { fromMe: false, participant: "0@s.whatsapp.net" },
       message: {
@@ -59,25 +60,25 @@ export async function before(m, { conn, participants, groupMetadata }) {
     console.error("Error al generar fkontak:", e)
   }
 
-const productMessage = {
-  productMessage: {
-    product: {
-      productImage: { jpegThumbnail: await getBuffer(tipo2) }, 
-      title: `${tipo}, ahora somos ${totalMembers}`,
-      description: `
+  const productMessage = {
+    productMessage: {
+      product: {
+        productImage: { jpegThumbnail: await getBuffer(tipo2) }, 
+        title: `${tipo}, ahora somos ${totalMembers}`,
+        description: `
 ✎ Usuario: ${taguser}
 ✎ Grupo: ${groupMetadata.subject}
 ✎ Miembros: ${totalMembers}
 ✎ Fecha: ${date}
-      `,
-      currencyCode: "USD",
-      priceAmount1000: 5000,
-      retailerId: "1677",
-      productId: "24628293543463627"
-    },
-    businessOwnerJid: "50432955554@s.whatsapp.net"
+        `.trim(),
+        currencyCode: "USD",
+        priceAmount1000: 5000,
+        retailerId: "1677",
+        productId: "24628293543463627"
+      },
+      businessOwnerJid: "50432955554@s.whatsapp.net"
+    }
   }
-}
 
   await conn.sendMessage(m.chat, productMessage, { 
     quoted: fkontak,
