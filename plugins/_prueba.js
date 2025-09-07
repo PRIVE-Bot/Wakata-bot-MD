@@ -12,27 +12,26 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
 
 *🌟 TIKTOK VIDEO MENU 🎵*
 
-🗣️ Title     »  ${data.title || "TikTok Video"}  
+🗣️ Title » ${data.title || "TikTok Video"}  
 
-*🔢 𝗥𝗲𝗽𝗹𝘆 𝘄𝗶𝘁𝗵 𝗯𝗲𝗹𝗼𝘄 𝗻𝘂𝗺𝗯𝗲𝗿 𝘁𝗼 𝗱𝗼𝘄𝗻𝗹𝗼𝗮𝗱:*
+*🔢 Responde con el número para descargar:*
 
 1️⃣ ║❯❯ No Watermark Video 📽️  
 2️⃣ ║❯❯ Audio Only 🎵  
 3️⃣ ║❯❯ Video Note [PTV] 📺
 
-
 > © 𝚂𝚄𝙻𝙰 𝙼𝗜𝗡𝗜 𝙱𝙾𝚃
-    `.trim()
+`.trim()
 
     let sentMsg = await conn.sendMessage(m.chat, {
       image: { url: data.thumbnail },
       caption: txt
     }, { quoted: m })
 
-    // Guardar datos con el ID del mensaje enviado
     conn.tiktokMenu = conn.tiktokMenu || {}
+    // Guardamos con dos posibles IDs (compatibilidad)
     conn.tiktokMenu[sentMsg.key.id] = data
-
+    if (sentMsg.key.id) conn.tiktokMenu[sentMsg.key.id] = data
   } catch (e) {
     console.error(e)
     m.reply("❌ Error al obtener el video de TikTok.")
@@ -40,36 +39,38 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
 }
 
 handler.command = /^t$/i
-export default handler
 
-
-// --- ESCUCHAR TODAS LAS RESPUESTAS ---
-let handlerAll = async (m, { conn }) => {
-  if (!m.quoted || !m.quoted.key || !conn.tiktokMenu) return
-  let data = conn.tiktokMenu[m.quoted.key.id]
+let before = async (m, { conn }) => {
+  if (!m.quoted || !conn.tiktokMenu) return
+  let msgId = m.quoted.id || m.quoted.key?.id
+  let data = conn.tiktokMenu[msgId]
   if (!data) return
 
   let choice = m.text.trim()
   if (!["1", "2", "3"].includes(choice)) return
 
-  // borrar para que no se repita
-  delete conn.tiktokMenu[m.quoted.key.id]
+  delete conn.tiktokMenu[msgId]
 
   try {
-    await m.reply("⏳ Enviando contenido...")
-
-    if (choice === "1") {
-      await conn.sendMessage(m.chat, { video: { url: data.video_url }, caption: "🎬 TikTok sin marca de agua" }, { quoted: m })
-    } else if (choice === "2") {
-      await conn.sendMessage(m.chat, { audio: { url: data.audio_url || data.video_url }, mimetype: "audio/mpeg", fileName: "tiktok.mp3" }, { quoted: m })
-    } else if (choice === "3") {
-      await conn.sendMessage(m.chat, { video: { url: data.video_url }, ptt: true }, { quoted: m })
+    switch (choice) {
+      case "1":
+        await m.reply("⏳ Enviando contenido...")
+        await conn.sendMessage(m.chat, { video: { url: data.video_url }, caption: "🎬 TikTok sin marca de agua" }, { quoted: m })
+        break
+      case "2":
+        await m.reply("⏳ Enviando contenido...")
+        await conn.sendMessage(m.chat, { audio: { url: data.audio_url || data.video_url }, mimetype: "audio/mpeg", fileName: "tiktok.mp3" }, { quoted: m })
+        break
+      case "3":
+        await m.reply("⏳ Enviando contenido...")
+        await conn.sendMessage(m.chat, { video: { url: data.video_url }, ptt: true }, { quoted: m })
+        break
     }
-
   } catch (e) {
     console.error(e)
     m.reply("❌ Error al enviar el archivo.")
   }
 }
 
-handler.all = handlerAll
+handler.before = before
+export default handler
