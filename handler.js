@@ -14,7 +14,7 @@ const delay = ms => isNumber(ms) && new Promise(resolve => setTimeout(function (
 }, ms));
 
 // Ryze
-async function __sendOwnerErrorLog(conn, m, info = {}) {
+/*async function __sendOwnerErrorLog(conn, m, info = {}) {
     try {
         const { pluginName = '-', usedPrefix = '', command = '', args = [], errorObj } = info
         let text = ''
@@ -79,7 +79,7 @@ async function __sendOwnerErrorLog(conn, m, info = {}) {
         console.error('[ErrorLog] Error interno en __sendOwnerErrorLog', err)
     }
 }
-
+*/
 
 if (!global.__consoleErrorPatched) {
     global.__consoleErrorPatched = true
