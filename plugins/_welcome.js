@@ -2,102 +2,96 @@ import { WAMessageStubType } from '@whiskeysockets/baileys'
 import fetch from 'node-fetch'
 
 async function getBuffer(url) {
-  try {
-    const res = await fetch(url)
-    if (!res.ok) {
-      throw new Error(`Error al descargar la imagen: ${res.statusText}`)
-    }
-    return Buffer.from(await res.arrayBuffer())
-  } catch (e) {
-    console.error(`Error en getBuffer para URL ${url}:`, e)
-    return null // Retorna null en caso de error
-  }
+  const res = await fetch(url)
+  if (!res.ok) throw new Error(`Error al descargar la imagen: ${res.statusText}`)
+  return Buffer.from(await res.arrayBuffer())
 }
 
 export async function before(m, { conn, participants, groupMetadata }) {
-  if (!m.isGroup) return true
-
-  const chat = global.db.data.chats[m.chat]
-  if (!chat.welcome) return true
-
-  if (!m.messageStubType || !m.messageStubParameters || !m.messageStubParameters[0]) return true
+  if (!m.messageStubType || !m.isGroup) return true
 
   const totalMembers = participants.length
   const date = new Date().toLocaleString('es-ES', { timeZone: 'America/Mexico_City' })
   const who = m.messageStubParameters[0]
-  const taguser = `@${(who || '').split('@')[0]}`
+  const taguser = `@${who.split('@')[0]}`
+  const chat = global.db.data.chats[m.chat]
   const botname = global.botname || "Bot"
+
+  if (!chat.welcome) return
 
   let tipo = ''
   let tipo1 = ''
-  let tipo2 = global.img || "https://i.postimg.cc/c4t9wwCw/1756162596829.jpg"
+  let tipo2 = ''
 
   if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_ADD) {
     tipo = 'Bienvenido'
     tipo1 = 'al grupo'
+    tipo2 = Array.isArray(global.img) 
+      ? global.img[Math.floor(Math.random() * global.img.length)] 
+      : global.img
   }
 
   if ([WAMessageStubType.GROUP_PARTICIPANT_LEAVE, WAMessageStubType.GROUP_PARTICIPANT_REMOVE].includes(m.messageStubType)) {
     tipo = 'Adiós'
     tipo1 = 'del grupo'
+    tipo2 = Array.isArray(global.img) 
+      ? global.img[Math.floor(Math.random() * global.img.length)] 
+      : global.img
   }
 
-  if (!tipo) return true
+  if (!tipo) return
 
   let fkontak
   try {
-    const img3Buffer = await getBuffer("https://i.postimg.cc/c4t9wwCw/1756162596829.jpg")
-    if (img3Buffer) {
-      fkontak = {
-        key: { fromMe: false, participant: "0@s.whatsapp.net" },
-        message: {
-          productMessage: {
-            product: {
-              productImage: { jpegThumbnail: img3Buffer },
-              title: `${tipo} ${tipo1}`,
-              description: `${botname} da la bienvenida a ${taguser}`,
-              currencyCode: "USD",
-              priceAmount1000: 5000,
-              retailerId: "BOT"
-            },
-            businessOwnerJid: "0@s.whatsapp.net"
-          }
+    const img3 = await getBuffer('https://i.postimg.cc/c4t9wwCw/1756162596829.jpg')
+    fkontak = {
+      key: { fromMe: false, participant: "0@s.whatsapp.net" },
+      message: {
+        productMessage: {
+          product: {
+            productImage: { jpegThumbnail: img3 },
+            title: `${tipo} ${tipo1}`,
+            description: `${botname} da la bienvenida a ${taguser}`,
+            currencyCode: "USD",
+            priceAmount1000: 5000,
+            retailerId: "BOT"
+          },
+          businessOwnerJid: "0@s.whatsapp.net"
         }
       }
-    } else {
-      console.error("No se pudo obtener la imagen para fkontak. El mensaje se enviará sin esta parte.")
     }
   } catch (e) {
     console.error("Error al generar fkontak:", e)
   }
 
-  const imageBuffer = await getBuffer(tipo2)
-  if (!imageBuffer) {
-    console.error("Error: No se pudo obtener la imagen principal (tipo2). No se puede enviar el mensaje de bienvenida/despedida.")
-    return false // Detiene la ejecución si la imagen principal no se puede obtener
+  let imageBuffer
+  try {
+    imageBuffer = await getBuffer(tipo2)
+  } catch (e) {
+    console.error("No se pudo obtener la imagen de global.img:", e)
+    return
   }
 
   const productMessage = {
-    productMessage: {
-      product: {
-        productImage: global.img, 
-        title: `${tipo}, ahora somos ${totalMembers}`,
-        description: `
+    product: {
+      productImage: { jpegThumbnail: imageBuffer },
+      title: `${tipo}, ahora somos ${totalMembers}`,
+      description: `
 ✎ Usuario: ${taguser}
 ✎ Grupo: ${groupMetadata.subject}
 ✎ Miembros: ${totalMembers}
 ✎ Fecha: ${date}
-        `.trim(),
-        currencyCode: "USD",
-        priceAmount1000: 5000,
-        retailerId: "1677",
-        productId: "24628293543463627"
-      },
-      businessOwnerJid: "50432955554@s.whatsapp.net"
-    }
+      `,
+      currencyCode: "USD",
+      priceAmount1000: 5000,
+      retailerId: "1677",
+      productId: "24628293543463627",
+      productImageCount: 1,
+    },
+    businessOwnerJid: "0@s.whatsapp.net"
   }
 
-  await conn.sendMessage(m.chat, productMessage, { 
+  await conn.sendMessage(m.chat, { productMessage }, { 
     quoted: fkontak,
     contextInfo: { mentionedJid: [who] }
   })
