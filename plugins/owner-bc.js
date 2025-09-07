@@ -1,62 +1,55 @@
 import { randomBytes } from 'crypto'
 
 const handler = async (m, { conn, command, usedPrefix, text }) => {
-  if (!text) return conn.reply(m.chat, '⚠️ Te faltó el texto que quieres transmitir a todos los chats.', m, fake)
+  if (!text) return conn.reply(m.chat, '⚠️ Te faltó el texto que quieres transmitir a todos los chats.', m, rcanal)
 
-  
-  await conn.reply(m.chat, '*✅ El texto se está enviando a todos los chats...*', m, fake)
+  await conn.reply(m.chat, '*✅ El texto se está enviando a todos los chats...*', m, rcanal)
 
-  const start2 = new Date().getTime()
+  const start2 = Date.now()
 
   const groups = Object.values(await conn.groupFetchAllParticipating())
   const chatsPrivados = Object.keys(global.db.data.users).filter((u) => u.endsWith('@s.whatsapp.net'))
 
-  let totalPrivados = 0
+  let enviadosGrupo = 0
+  let enviadosPriv = 0
 
   for (let i = 0; i < groups.length; i++) {
     const group = groups[i]
-    const metadata = await conn.groupMetadata(group.id) // obtener info de cada grupo
-    const participantes = metadata.participants.map((u) => u.id) 
-    const delay = i * 4000 
-
-    setTimeout(async () => {
-      try {
-        await conn.sendMessage(group.id, {
-          text,
-          mentions: participantes
-        }, { quoted: m })
-      } catch (e) {
-        console.error(`❌ Error al enviar en grupo ${group.subject}:`, e)
-      }
-    }, delay)
+    try {
+      await conn.sendMessage(group.id, { text }, { quoted: m })
+      enviadosGrupo++
+    } catch (e) {
+      console.error(`❌ Error en grupo ${group.subject}:`, e.message)
+    }
+    await delay(8000) 
   }
 
   for (const user of chatsPrivados) {
-    await new Promise((resolve) => setTimeout(resolve, 2000)) 
     try {
       await conn.sendMessage(user, { text }, { quoted: m })
-      totalPrivados++
-      if (totalPrivados >= 500000) break
+      enviadosPriv++
     } catch (e) {
-      console.error(`❌ Error al enviar a ${user}:`, e)
+      if (e?.data === 429) {
+        console.log('⏳ Rate limit en privado, esperando 30s...')
+        await delay(30000)
+      } else {
+        console.error(`❌ Error en privado ${user}:`, e.message)
+      }
     }
+    await delay(5000) 
   }
 
-  const end2 = new Date().getTime()
-  const totalGrupos = groups.length
-  const totalPriv = chatsPrivados.length
-  const total = totalGrupos + totalPriv
-
+  const end2 = Date.now()
   let time2 = Math.floor((end2 - start2) / 1000)
   if (time2 >= 60) {
     const minutes = Math.floor(time2 / 60)
     const seconds = time2 % 60
-    time2 = `${minutes} minutos y ${seconds} segundos`
+    time2 = `${minutes}m ${seconds}s`
   } else {
-    time2 = `${time2} segundos`
+    time2 = `${time2}s`
   }
 
-  await m.reply(`⭐️ *Broadcast finalizado*\n\n🔥 Chats Privados: ${totalPriv}\n👑 Grupos: ${totalGrupos}\n⚡ Total: ${total}\n\n⏱️ Tiempo total: ${time2}`)
+  await m.reply(`⭐️ *Broadcast finalizado*\n\n👑 Grupos: ${enviadosGrupo}\n🔥 Privados: ${enviadosPriv}\n⚡ Total: ${enviadosGrupo + enviadosPriv}\n\n⏱️ Tiempo total: ${time2}`)
 }
 
 handler.help = ['broadcast', 'bc']
