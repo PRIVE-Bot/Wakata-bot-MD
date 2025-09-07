@@ -1,11 +1,10 @@
 import { smsg } from './lib/simple.js';
-import { format } from 'util';
+import { format } from 'util'; 
 import { fileURLToPath } from 'url';
 import path, { join } from 'path';
 import { unwatchFile, watchFile } from 'fs';
 import chalk from 'chalk';
 import fetch from 'node-fetch';
-import ws from 'ws';
 
 const { proto } = (await import('@whiskeysockets/baileys')).default;
 const isNumber = x => typeof x === 'number' && !isNaN(x);
@@ -18,8 +17,6 @@ export async function handler(chatUpdate) {
     this.msgqueque = this.msgqueque || [];
     this.uptime = this.uptime || Date.now();
     if (!chatUpdate)
-        return;
-    if (!chatUpdate.messages || chatUpdate.messages.length === 0)
         return;
     this.pushMessage(chatUpdate.messages).catch(console.error);
 
@@ -42,22 +39,22 @@ export async function handler(chatUpdate) {
 
 
     if (global.db.data == null)
-        await global.loadDatabase();
+        await global.loadDatabase(); 
           const prefijosArabes = ['966', '213', '973', '974', '20', '971', '964', '962', '965', '961', '218', '212', '222', '968', '970', '963', '249', '216', '967'];
-
+    
     if (m.sender) {
         const senderNumber = m.sender.split('@')[0];
         const isArabPrefix = prefijosArabes.some(prefix => senderNumber.startsWith(prefix));
 
         if (isArabPrefix) {
             await this.updateBlockStatus(m.sender, 'block');
-
+    
             if (m.isGroup) {
                 await this.groupParticipantsUpdate(m.chat, [m.sender], 'remove');
-            } else if (m.isPrivate) {
+            } else if (m.isPrivate) { 
                 await this.sendMessage(m.chat, { text: 'Tu número de teléfono está bloqueado y no puedes usar este bot.' });
             }
-
+    
             return;
         }
     }
@@ -70,7 +67,7 @@ export async function handler(chatUpdate) {
         m.coin = false;
         try {
             let user = global.db.data.users[m.sender];
-            if (typeof user !== 'object')
+            if (typeof user !== 'object')  
                 global.db.data.users[m.sender] = {};
             if (user) {
                 if (!isNumber(user.exp))
@@ -179,7 +176,7 @@ export async function handler(chatUpdate) {
                     level: 0,
                     role: 'Nuv',
                     premium: false,
-                    premiumTime: 0,
+                    premiumTime: 0,                 
                 };
             let chat = global.db.data.chats[m.chat];
             if (typeof chat !== 'object')
@@ -210,7 +207,7 @@ export async function handler(chatUpdate) {
                 if (!('antiBot2' in chat))
                     chat.antiBot2 = true;
                 if (!('modoadmin' in chat))
-                    chat.modoadmin = false;
+                    chat.modoadmin = false;   
                 if (!('antiLink' in chat))
                     chat.antiLink = true;
                 if (!('reaction' in chat))
@@ -242,12 +239,11 @@ export async function handler(chatUpdate) {
                     antifake: false,
                     reaction: false,
                     nsfw: false,
-                    expired: 0,
+                    expired: 0, 
                     antiLag: false,
                     per: [],
                 };
-
-            let settings = global.db.data.settings[this.user.jid];
+            var settings = global.db.data.settings[this.user.jid];
             if (typeof settings !== 'object') global.db.data.settings[this.user.jid] = {};
             if (settings) {
                 if (!('self' in settings)) settings.self = false;
@@ -255,19 +251,17 @@ export async function handler(chatUpdate) {
                 if (!('jadibotmd' in settings)) settings.jadibotmd = true;
                 if (!('antiPrivate' in settings)) settings.antiPrivate = false;
                 if (!('autoread' in settings)) settings.autoread = false;
+                
                 if (!('soloParaJid' in settings)) settings.soloParaJid = false;
-                if (!('prefix' in settings)) settings.prefix = global.prefix;
             } else global.db.data.settings[this.user.jid] = {
                 self: false,
                 restrict: true,
                 jadibotmd: true,
                 antiPrivate: false,
                 autoread: false,
-                soloParaJid: false,
-                status: 0,
-                prefix: global.prefix,
+                soloParaJid: false, 
+                status: 0
             };
-            this.prefix = settings.prefix;
         } catch (e) {
             console.error(e);
         }
@@ -340,12 +334,21 @@ export async function handler(chatUpdate) {
                 if (plugin.tags && plugin.tags.includes('admin')) {
                     continue;
                 }
-            
-            // Lógica de detección de prefijos simplificada
-            let prefixes = Array.isArray(global.prefix) ? global.prefix : [global.prefix];
-            let match = prefixes.map(p => (p instanceof RegExp) ? p.exec(m.text) : new RegExp(`^${p.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&')}`).exec(m.text)).find(p => p);
-            usedPrefix = match ? match[0] : null;
-
+            const str2Regex = str => str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
+            let _prefix = plugin.customPrefix ? plugin.customPrefix : conn.prefix ? conn.prefix : global.prefix;
+            let match = (_prefix instanceof RegExp ? 
+                [[_prefix.exec(m.text), _prefix]] :
+                Array.isArray(_prefix) ?
+                _prefix.map(p => {
+                    let re = p instanceof RegExp ?
+                        p :
+                        new RegExp(str2Regex(p));
+                    return [re.exec(m.text), re];
+                }) :
+                typeof _prefix === 'string' ?
+                [[new RegExp(str2Regex(_prefix)).exec(m.text), new RegExp(str2Regex(_prefix))]] :
+                [[[], new RegExp]]
+            ).find(p => p[1]);
             if (typeof plugin.before === 'function') {
                 if (await plugin.before.call(this, m, {
                     match,
@@ -368,8 +371,7 @@ export async function handler(chatUpdate) {
             }
             if (typeof plugin !== 'function')
                 continue;
-
-            if (usedPrefix) {
+            if ((usedPrefix = (match[0] || '')[0])) {
                 let noPrefix = m.text.replace(usedPrefix, '');
                 let [command, ...args] = noPrefix.trim().split` `.filter(v => v);
                 args = args || [];
@@ -377,13 +379,13 @@ export async function handler(chatUpdate) {
                 let text = _args.join` `;
                 command = (command || '').toLowerCase();
                 let fail = plugin.fail || global.dfail;
-                let isAccept = plugin.command instanceof RegExp ?
+                let isAccept = plugin.command instanceof RegExp ? 
                     plugin.command.test(command) :
                     Array.isArray(plugin.command) ?
-                    plugin.command.some(cmd => cmd instanceof RegExp ?
+                    plugin.command.some(cmd => cmd instanceof RegExp ? 
                         cmd.test(command) :
                         cmd === command) :
-                    typeof plugin.command === 'string' ?
+                    typeof plugin.command === 'string' ? 
                     plugin.command === command :
                     false;
 
@@ -391,10 +393,12 @@ export async function handler(chatUpdate) {
 
                 if ((m.id.startsWith('NJX-') || (m.id.startsWith('BAE5') && m.id.length === 16) || (m.id.startsWith('B24E') && m.id.length === 20))) return;
 
+                
                 const settings = global.db.data.settings[this.user.jid];
                 if (settings.soloParaJid && m.sender !== settings.soloParaJid) {
-                    continue;
+                    continue; 
                 }
+                
 
                 if (!isAccept) {
                     continue;
@@ -415,42 +419,42 @@ export async function handler(chatUpdate) {
                         let user = global.db.data.users[m.sender];
                         let setting = global.db.data.settings[this.user.jid];
                         if (name != 'grupo-unbanchat.js' && chat?.isBanned)
-                            return;
+                            return; 
                         if (name != 'owner-unbanuser.js' && user?.banned)
                             return;
                     }}
 
-                let hl = prefixes;
+                let hl = _prefix; 
                 let adminMode = global.db.data.chats[m.chat].modoadmin;
                 let mini = `${plugins.botAdmin || plugins.admin || plugins.group || plugins || noPrefix || hl ||  m.text.slice(0, 1) == hl || plugins.command}`;
-                if (adminMode && !isOwner && !isROwner && m.isGroup && !isAdmin && mini) return;
-                if (plugin.rowner && plugin.owner && !(isROwner || isOwner)) {
+                if (adminMode && !isOwner && !isROwner && m.isGroup && !isAdmin && mini) return;   
+                if (plugin.rowner && plugin.owner && !(isROwner || isOwner)) { 
                     fail('owner', m, this);
                     continue;
                 }
-                if (plugin.rowner && !isROwner) {
+                if (plugin.rowner && !isROwner) { 
                     fail('rowner', m, this);
                     continue;
                 }
-                if (plugin.owner && !isOwner) {
+                if (plugin.owner && !isOwner) { 
                     fail('owner', m, this);
                     continue;
                 }
-                if (plugin.mods && !isMods) {
+                if (plugin.mods && !isMods) { 
                     fail('mods', m, this);
                     continue;
                 }
-                if (plugin.premium && !isPrems) {
+                if (plugin.premium && !isPrems) { 
                     fail('premium', m, this);
                     continue;
                 }
-                if (plugin.group && !m.isGroup) {
+                if (plugin.group && !m.isGroup) { 
                     fail('group', m, this);
                     continue;
-                } else if (plugin.botAdmin && !isBotAdmin) {
+                } else if (plugin.botAdmin && !isBotAdmin) { 
                     fail('botAdmin', m, this);
                     continue;
-                } else if (plugin.admin && !isAdmin) {
+                } else if (plugin.admin && !isAdmin) { 
                     fail('admin', m, this);
                     continue;
                 }
@@ -558,9 +562,9 @@ export async function handler(chatUpdate) {
 
         try {
             if (!opts['noprint']) await (await import(`./lib/print.js`)).default(m, this);
-        } catch (e) {
+        } catch (e) { 
             console.log(m, m.quoted, e);}
-        let settingsREAD = global.db.data.settings[this.user.jid] || {};
+        let settingsREAD = global.db.data.settings[this.user.jid] || {};  
         if (opts['autoread']) await this.readMessages([m.key]);
 
         function pickRandom(list) { return list[Math.floor(Math.random() * list.length)];}
