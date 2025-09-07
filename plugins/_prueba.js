@@ -10,17 +10,16 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
     let txt = `
 🎥𝐓𝐈𝐊𝐓𝐎𝐊 𝐃𝐎𝐖𝐍𝐋𝐎𝐀𝐃𝐄𝐑
 
-*🌟 TIKTOK VIDEO MENU 🎵*
+*🌟 MENÚ DE VIDEOS DE TIKTOK 🎵*
 
 🗣️ Title » ${data.title || "TikTok Video"}  
 
-*🔢 Responde con el número para descargar:*
+*➔ Responde con el número para descargar:*
 
-1️⃣ ║❯❯ No Watermark Video 📽️  
-2️⃣ ║❯❯ Audio Only 🎵  
-3️⃣ ║❯❯ Video Note [PTV] 📺
+1️ ⇶Vídeo sin marca de agua 📽️  
+2️ ⇶Sólo audio 🎵  
+3️ ⇶Nota de vídeo 🕳️
 
-> © 𝚂𝚄𝙻𝙰 𝙼𝗜𝗡𝗜 𝙱𝙾𝚃
 `.trim()
 
     let sentMsg = await conn.sendMessage(m.chat, {
