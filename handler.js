@@ -14,7 +14,7 @@ const delay = ms => isNumber(ms) && new Promise(resolve => setTimeout(function (
 }, ms));
 
 // Ryze
-async function __sendOwnerErrorLog(conn, m, info = {}) {
+/*async function __sendOwnerErrorLog(conn, m, info = {}) {
     try {
         const { pluginName = '-', usedPrefix = '', command = '', args = [], errorObj } = info
         let text = ''
@@ -112,7 +112,7 @@ if (!global.__consoleErrorPatched) {
         }
         return _origConsoleError(...args)
     }
-}
+}*/
 
 export async function handler(chatUpdate) {
     this.msgqueque = this.msgqueque || [];
