@@ -32,7 +32,7 @@ let crm4 = "IF9hdXRvcmVzcG9uZGVyLmpzIGluZm8tYm90Lmpz"
 let drm1 = ""
 let drm2 = ""
 let rtx = `
-*⚡「 ＳＰΛＲＫ-ＢＯＴ 」⚡*
+*${emoji}「 ${botname} 」${emoji}*
 
 🛰️ 〢 Ｍｏｄｏ ＱＲ ▣ ＳｕｂＢｏｔ ⌬ Ｔｅｍｐｏｒａｌ
 
@@ -45,7 +45,7 @@ let rtx = `
 `;
 
 let rtx2 = `
-*⚡「 ＳＰΛＲＫ-ＢＯＴ 」⚡*
+*${emoji}「 ${botname} 」${emoji}*
 
 💻 〢 Ｍｏｄｏ Ｃｏ́ｄｉｇｏ ▣ ＳｕｂＢｏｔ ⌬ Ｔｅｍｐｏｒａｌ
 
@@ -238,7 +238,7 @@ const msg = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
         {
           name: 'cta_copy',
           buttonParamsJson: JSON.stringify({
-            display_text: 'Copiar el código para vincular a subbot...',
+            display_text: `${emoji}「 ${botname} 」${emoji}`,
             copy_code: secret
           })
         }
