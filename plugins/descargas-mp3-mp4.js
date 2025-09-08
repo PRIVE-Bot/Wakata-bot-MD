@@ -62,7 +62,7 @@ const handler = async (m, { conn, text, command }) => {
         fileName: `${api.title}.mp3`,
         contextInfo: {
           externalAdReply: {
-            title: "⚡ Spark-Bot | YT-MP3",
+            title: "YT-MP3",
             body: api.title,
             mediaType: 1,
             previewType: 0,
@@ -97,10 +97,10 @@ const handler = async (m, { conn, text, command }) => {
               video: { url: downloadUrl },
               fileName: `${api?.title || "video"}.mp4`,
               mimetype: "video/mp4",
-              caption: "⚡ Aquí tienes tu video descargado por *Spark-Bot* ⚡",
+              caption: `${emoji} Aquí tienes tu video descargado por`,
               contextInfo: {
                 externalAdReply: {
-                  title: "⚡ Spark-Bot | YT-MP4",
+                  title: "YT-MP4",
                   body: api?.title || "YouTube Video",
                   mediaType: 1,
                   previewType: 0,
