@@ -27,7 +27,7 @@ let handler = async (m, { conn, args }) => {
 
     const sticker = new Sticker(imageBuffer, {
       pack: 'Imagen BRAT',
-      author: 'Spark-Bot',
+      author: botname,
       type: 'full',
       quality: 100,
       categories: ['🤩', '🎉'],
