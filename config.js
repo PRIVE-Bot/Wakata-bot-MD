@@ -34,21 +34,21 @@ global.baileys = 'V 6.7.16'
 global.languaje = 'Español'
 global.vs = '2.2.0'
 global.vsJB = '5.0'
-global.nameqr = '𝚂𝙿𝙰𝚁𝙺-𝙱𝙾𝚃'
+global.nameqr = 'ᏫᏰᎥᏖᏫ ႮᏟᏂᎥᏂᎯ'
 global.sessions = 'Sessions'
 global.jadi = 'JadiBots' 
 global.Jadibts = true
 
 global.canalIdM = ["120363403593951965@newsletter", "120363403593951965@newsletter"]
-global.canalNombreM = ["𝐒𝐏𝐀𝐑𝐊-𝐁𝐎𝐓 ✦ ᴀᴠɪsᴏ⚡", "𝐒𝐏𝐀𝐑𝐊-𝐁𝐎𝐓 ✦ ᴜᴘᴅᴀᴛᴇ⚡"]
+global.canalNombreM = ["ᏫᏰᎥᏖᏫ ႮᏟᏂᎥᏂᎯ ✦ ᴀᴠɪsᴏ⚡", "ᏫᏰᎥᏖᏫ ႮᏟᏂᎥᏂᎯ✦ ᴜᴘᴅᴀᴛᴇ⚡"]
 global.channelRD = await getRandomChannel()
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
 
-global.packname = '𝑺𝑷𝑨𝑹𝑲 - 𝑩𝑶𝑻';
-global.botname = '𝑺𝒑𝒂𝒓𝒌 - 𝑩𝒐𝒕'
+global.packname = 'ᏫᏰᎥᏖᏫ ႮᏟᏂᎥᏂᎯ';
+global.botname = 'ᏫᏰᎥᏖᏫ ႮᏟᏂᎥᏂᎯ'
 global.author = 'Made By 𝐃𝐞𝐲𝐥𝐢𝐧'
 global.dev = '© ⍴᥆ᥕᥱrᥱძ ᑲᥡ 𝑫𝒆𝒚𝒍𝒊𝒏'
-global.textbot = '𝑺𝒑𝒂𝒓𝒌 - 𝐁𝐨𝐭 • Powered By 𝑫𝒆𝒚𝒍𝒊𝒏'
+global.textbot = 'ᏫᏰᎥᏖᏫ ႮᏟᏂᎥᏂᎯ • Powered By 𝑫𝒆𝒚𝒍𝒊𝒏'
 global.etiqueta = '𝑫𝒆𝒚𝒍𝒊𝒏'
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
