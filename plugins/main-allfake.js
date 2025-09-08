@@ -91,12 +91,13 @@ var ase = new Date(); var hour = ase.getHours(); switch(hour){ case 0: hour = 'L
 global.saludo = hour;
 
 const imgs = [
-  'https://i.postimg.cc/0Q91PMFK/1756347109930.jpg',
-  'https://i.postimg.cc/HLw1q4ZC/1756347105917.jpg',
-  'https://i.postimg.cc/LsKMQ0VT/1756347102197.jpg',
-  'https://i.postimg.cc/mgFswG7k/1756347087808.jpg',
-  'https://i.postimg.cc/FszmYSRj/1756347078209.jpg',
-  'https://i.postimg.cc/cHTyH1G9/1756347118035.jpg'
+  'https://i.postimg.cc/GmWx1shZ/1757371306216.jpg',
+  'https://i.postimg.cc/13nrTKPG/1757371299354.jpg',
+  'https://i.postimg.cc/J4hq3L2d/1757371289892.jpg',
+  'https://i.postimg.cc/2jGGB62Z/1757371280225.jpg',
+  'https://i.postimg.cc/2j7cFT83/1757371266770.jpg',
+  'https://i.postimg.cc/rmJ1WnCk/1757371316761.jpg',
+  'https://i.postimg.cc/25nFj813/1757371311857.jpg'
 ];
 
 global.img = imgs[Math.floor(Math.random() * imgs.length)];
