@@ -1,4 +1,4 @@
-import { areJidsSameUser } from '@whiskeysockets/baileys';
+//import { areJidsSameUser } from '@whiskeysockets/baileys';
 
 export async function before(m, { participants, conn }) {
   if (m.isGroup) {
@@ -22,7 +22,7 @@ export async function before(m, { participants, conn }) {
 > Ya hay un bot principal activo en el grupo, por lo tanto no responderé comandos para evitar interferencias.
 ¡Gracias por su comprensión!
 
-`, m, rcanal)
+`, m)
 
         }, 5000) 
       }
