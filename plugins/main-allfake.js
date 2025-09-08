@@ -31,13 +31,9 @@ console.log(`Error : ${e}`)
 global.creador = 'Wa.me/50432955554'
 global.ofcbot = `${conn.user.jid.split('@')[0]}`
 global.asistencia = 'Wa.me/50432955554'
-global.listo = '⚡ *Aquí tienes, shinobi ❛‿˂̵✧*'
+global.listo = ' *Aquí tienes, shinobi ❛‿˂̵✧*'
 global.fotoperfil = await conn.profilePictureUrl(m.sender, 'image').catch(_ => 'https://files.catbox.moe/nv87us.jpg')
 
-// Ids channel
-/*global.canalIdM = ["120363403593951965@newsletter", "120363403593951965@newsletter"]
-global.canalNombreM = ["𝐒𝐏𝐀𝐑𝐊-𝐁𝐎𝐓 ✦ ᴀᴠɪsᴏ⚡", "𝐒𝐏𝐀𝐑𝐊-𝐁𝐎𝐓 ✦ ᴜᴘᴅᴀᴛᴇ⚡"]
-global.channelRD = await getRandomChannel()*/
 
 //fechas
 global.d = new Date(new Date + 3600000)
