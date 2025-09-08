@@ -58,7 +58,7 @@ let rtx2 = `
 > 🔗 𝐂𝐚𝐧𝐚𝐥 𝐎𝐟𝐢𝐜𝐢𝐚𝐥 ↓
 `;
 
-let imagenUrl = 'https://i.postimg.cc/25y2jZs1/1756163690161.jpg'
+let imagenUrl = global.img
 
     const res = await fetch('https://i.postimg.cc/vHqc5x17/1756169140993.jpg');
     const thumb2 = Buffer.from(await res.arrayBuffer());
