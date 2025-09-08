@@ -29,7 +29,7 @@ export async function before(m, { conn }) {
         viewOnceMessage: {
             message: {
                 interactiveMessage: {
-                    body: { text: `👋 Hola @${user.split('@')[0]}!\n\n¿Te presiona el botón? 🚀\n> ¡No tengas miedo!` },
+                    body: { text: `👋 Hola @${user.split('@')[0]}!\n\n¿Presiona el botón? 🚀\n> ¡No tengas miedo!` },
                     footer: { text: "TE ESPERO" },
                     header: { title: "TOCA", hasMediaAttachment: false },
                     nativeFlowMessage: {
