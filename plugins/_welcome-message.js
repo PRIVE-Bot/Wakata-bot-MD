@@ -30,8 +30,7 @@ export async function before(m, { conn }) {
             message: {
                 interactiveMessage: {
                     body: { text: `👋 Hola @${user.split('@')[0]}!\n\n¿Te presiona el botón? 🚀\n> ¡No tengas miedo!` },
-                    footer: { text: "
-TE ESPERO" },
+                    footer: { text: "TE ESPERO" },
                     header: { title: "TOCA", hasMediaAttachment: false },
                     nativeFlowMessage: {
                         buttons: [
