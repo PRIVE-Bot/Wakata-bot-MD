@@ -48,11 +48,11 @@ import NodeCache from 'node-cache'
 const { CONNECTING } = ws
 const { chain } = lodash
 const PORT = process.env.PORT || process.env.SERVER_PORT || 3000
-setupErrorHandler("Bot")
+setupErrorHandler("spark-bot")
 
 let { say } = cfonts
 console.log(chalk.magentaBright('\n Iniciando...'))
-say('BOT', {
+say('Spark Bot', {
 font: 'simple',
 align: 'left',
 gradient: ['green', 'white']
