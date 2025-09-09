@@ -38,7 +38,7 @@ let handler = async (m, { conn, args, text, usedPrefix, command, participants })
         return;
     }
 
-    const newPrefix = args[0];
+    const newPrefix = args[0] || global.prefix;
     const onlySymbolsAndEmojis = /^[^\p{L}]+$/u;
 
 
