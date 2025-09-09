@@ -1,8 +1,7 @@
-import { downloadContentFromMessage } from '@whiskeysockets/baileys'
+let { downloadContentFromMessage } = (await import('@whiskeysockets/baileys'));
 
 let handler = async (m, { conn }) => {
-
-    const fkontak = {
+const fkontak = {
       key: { fromMe: false, participant: "0@s.whatsapp.net" },
       message: {
         orderMessage: {
@@ -14,29 +13,17 @@ let handler = async (m, { conn }) => {
         }
       }
     };
+if (!m.quoted) return conn.reply(m.chat, `${emoji} Responde a una imagen ViewOnce.`, m, rcanal)
+if (!m?.quoted || !m?.quoted?.viewOnce) return conn.reply(m.chat, `${emoji} Responde a una imagen ViewOnce.`, m, rcanal)
+let buffer = await m.quoted.download(false);
+if (/videoMessage/.test(m.quoted.mtype)) {
+return conn.sendFile(m.chat, buffer, 'media.mp4', m.quoted.caption || '', fkontak)
+} else if (/imageMessage/.test(m.quoted.mtype)) {
+return conn.sendFile(m.chat, buffer, 'media.jpg', m.quoted?.caption || '', fkontak)
+}}
+handler.help = ['ver']
+handler.tags = ['tools']
+handler.command = ['readviewonce', 'read', 'readvo', 'ver'] 
+handler.register = true 
 
-    if (!m.quoted) return conn.reply(m.chat, 'Responde a una imagen o video ViewOnce.', m, fake);
-
-    let quoted = m.quoted.message;
-    if (!quoted) return conn.reply(m.chat, 'No se pudo obtener el mensaje citado.', m, fake);
-
-    let type = Object.keys(quoted)[0];
-    if (!['imageMessage', 'videoMessage'].includes(type))
-      return conn.reply(m.chat, 'Responde a una imagen o video ViewOnce.', m, fake);
-
-    await m.react('⚡️');
-    let media = quoted[type];
-
-    let stream = await downloadContentFromMessage(media, type.replace('Message', ''));
-    let buffer = Buffer.concat([]);
-    for await (const chunk of stream) buffer = Buffer.concat([buffer, chunk]);
-
-    if (type === 'videoMessage') {
-      await conn.sendFile(m.chat, buffer, 'media.mp4', media?.caption || '', fkontak);
-    } else if (type === 'imageMessage') {
-      await conn.sendFile(m.chat, buffer, 'media.jpg', media?.caption || '', fkontak);
-    }
-}
-
-handler.command = ['readviewonce', 'read', 'readvo', 'rvo', 'ver'];
-export default handler;
+export default handler
