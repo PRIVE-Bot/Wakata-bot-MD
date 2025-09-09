@@ -1,74 +1,56 @@
-import fetch from "node-fetch"
+import fs from "fs"
 
-let handler = async (m, { conn, args, usedPrefix, command }) => {
-  if (!args[0]) return m.reply(`⚠️ Ingresa un enlace de TikTok.\n\nEjemplo:\n${usedPrefix + command} https://vm.tiktok.com/ZMj4xxxx/`)
+let handler = async (m, { conn, command }) => {
   try {
-    let res = await fetch(`https://g-mini-ia.vercel.app/api/tiktok?url=${encodeURIComponent(args[0])}`)
-    if (!res.ok) throw await res.text()
-    let data = await res.json()
+    if (!m.quoted) throw `✳️ Responde a *un sticker del paquete* con el comando *${command}*`
 
-    let txt = `
-🎥𝐓𝐈𝐊𝐓𝐎𝐊 𝐃𝐎𝐖𝐍𝐋𝐎𝐀𝐃𝐄𝐑
+    if (m.quoted.mtype !== "stickerMessage") throw `✳️ Debes responder a un *sticker válido*.`
 
-*🌟 MENÚ DE VIDEOS DE TIKTOK 🎵*
+    // Canal de destino (cámbialo por tu canal)
+    let canal = "120363422765084227@newsletter"
 
-🗣️ Title » ${data.title || "TikTok Video"}  
+    // Obtenemos el mensaje del que respondiste
+    let msg = m.quoted
 
-*➔ Responde con el número para descargar:*
+    // Si el sticker tiene un contexto de "álbum" (paquete)
+    let context = msg?.message?.contextInfo?.quotedMessage || {}
+    let stickers = []
 
-1️ ⇶Vídeo sin marca de agua 📽️  
-2️ ⇶Sólo audio 🎵  
-3️ ⇶Nota de vídeo 🕳️
-`.trim()
-
-    let sentMsg = await conn.sendMessage(m.chat, {
-      image: { url: data.thumbnail },
-      caption: txt
-    }, { quoted: m })
-
-    conn.tiktokMenu = conn.tiktokMenu || {}
-    conn.tiktokMenu[sentMsg.key.id] = data
-  } catch (e) {
-    console.error(e)
-    m.reply("❌ Error al obtener el video de TikTok.")
-  }
-}
-
-handler.command = /^t$/i
-
-let before = async (m, { conn }) => {
-  if (!m.quoted || !conn.tiktokMenu) return
-  let msgId = m.quoted.id || m.quoted.key?.id
-  let data = conn.tiktokMenu[msgId]
-  if (!data) return
-
-  let choice = m.text.trim()
-  if (!["1", "2", "3"].includes(choice)) return
-
-  try {
-    switch (choice) {
-      case "1":
-       // await m.reply("⏳ Enviando contenido...")
-        await conn.sendMessage(m.chat, { video: { url: data.video_url }, caption: "🎬 TikTok sin marca de agua" }, { quoted: m })
-        break
-      case "2":
-       // await m.reply("⏳ Enviando contenido...")
-        await conn.sendMessage(m.chat, { audio: { url: data.audio_url || data.video_url }, mimetype: "audio/mpeg", fileName: "tiktok.mp3" }, { quoted: m })
-        break
-      case "3":
-        //await m.reply("⏳ Enviando contenido...")
-        await conn.sendMessage(m.chat, { 
-          video: { url: data.video_url }, 
-          mimetype: "video/mp4", 
-          ptv: true 
-        }, { quoted: m })
-        break
+    // Si viene como un paquete de varios
+    if (m.quoted && m.quoted.message) {
+      let buffer = await m.quoted.download()
+      if (buffer) stickers.push(buffer)
     }
+
+    // Aquí puedes expandir: si el paquete vino en lote, agregarlos todos
+    // (WhatsApp a veces manda varios con contextInfo)
+
+    if (!stickers.length) throw `❌ No se pudo reconstruir el paquete.`
+
+    // Aviso al canal
+   /* await conn.sendMessage(canal, { 
+      text: `📦 *Nuevo Paquete de Stickers Subido*  
+👤 Autor: @${m.sender.split("@")[0]}  
+📌 Cantidad: ${stickers.length}`, 
+      mentions: [m.sender] 
+    })*/
+
+    // Enviar todos los stickers al canal
+    for (let buffer of stickers) {
+      await conn.sendMessage(canal, { sticker: buffer })
+    }
+
+    await conn.reply(m.chat, `✅ Paquete de stickers enviado correctamente al canal.`, m)
+
   } catch (e) {
     console.error(e)
-    m.reply("❌ Error al enviar el archivo.")
+    await conn.reply(m.chat, `❌ Error: ${e}`, m)
   }
 }
 
-handler.before = before
+handler.help = ["canalsticker"]
+handler.tags = ["stickers"]
+handler.command = /^canalsticker$/i
+handler.owner = true
+
 export default handler
