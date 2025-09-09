@@ -50,12 +50,12 @@ global.done = '✅'
 global.error = '✖️'
 global.msm = '⚠︎'
 
-global.emoji0 = '*✎*'
-global.emoji1 = '*✧*'
-global.emoji2 = '*♛*'
-global.emoji3 = '*✰*'
-global.emoji4 = '*⍰*'
-global.emoji5 = '*⌬*'
+global.emoji0 = '✎'
+global.emoji1 = '✧'
+global.emoji2 = '♛'
+global.emoji3 = '✰'
+global.emoji4 = '⍰'
+global.emoji5 = '⌬'
 
 global.emojis = [emoji0, emoji1, emoji2, emoji3, emoji4, emoji5].getRandom()
 global.emoji = [emoji0, emoji1, emoji2, emoji3, emoji4, emoji5].getRandom()
