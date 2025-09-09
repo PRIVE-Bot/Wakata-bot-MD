@@ -32,7 +32,7 @@ let crm4 = "IF9hdXRvcmVzcG9uZGVyLmpzIGluZm8tYm90Lmpz"
 let drm1 = ""
 let drm2 = ""
 let rtx = `
-*${emoji}「 ${botname} 」${emoji}*
+*${global.emoji}「 ${global.botname} 」${global.emoji}*
 
 🛰️ 〢 Ｍｏｄｏ ＱＲ ▣ ＳｕｂＢｏｔ ⌬ Ｔｅｍｐｏｒａｌ
 
@@ -45,7 +45,7 @@ let rtx = `
 `;
 
 let rtx2 = `
-*${emoji}「 ${botname} 」${emoji}*
+*${global.emoji}「 ${global.botname} 」${global.emoji}*
 
 💻 〢 Ｍｏｄｏ Ｃｏ́ｄｉｇｏ ▣ ＳｕｂＢｏｔ ⌬ Ｔｅｍｐｏｒａｌ
 
