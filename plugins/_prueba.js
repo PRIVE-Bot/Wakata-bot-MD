@@ -4,18 +4,21 @@ let handler = async (m, { conn, command }) => {
   try {
     if (!m.quoted) throw `✳️ Responde a *un sticker del paquete* con el comando *${command}*`
 
-    // Aceptar si tiene mensaje de sticker aunque venga en álbum
-    let isSticker = m.quoted?.mtype === "stickerMessage" || m.quoted?.msg?.mimetype === "image/webp"
-    if (!isSticker) throw `✳️ Debes responder a un *sticker válido*.`
+    // Detectar si el mensaje citado tiene un sticker
+    let stickerMsg = m.quoted.message?.stickerMessage
+    if (!stickerMsg) throw `✳️ Debes responder a un *sticker válido*.`
 
+    // Canal de destino
     let canal = "120363422765084227@newsletter"
     let stickers = []
 
+    // Descargar el sticker citado
     let buffer = await m.quoted.download()
     if (buffer) stickers.push(buffer)
 
     if (!stickers.length) throw `❌ No se pudo reconstruir el paquete.`
 
+    // Enviar al canal todos los stickers recolectados
     for (let buffer of stickers) {
       await conn.sendMessage(canal, { sticker: buffer })
     }
