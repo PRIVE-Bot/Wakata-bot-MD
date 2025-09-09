@@ -10,7 +10,7 @@ let handler = async (m, { conn, text, isOwner }) => {
 
     if (isOwner) {
         try {
-const res = await fetch('https://i.postimg.cc/GtNf8H7Q/1756347323271.jpg');
+const res = await fetch('https://i.postimg.cc/HLj8Shst/1757398147482.jpg');
 const img = Buffer.from(await res.arrayBuffer());
 
 const fkontak = {
