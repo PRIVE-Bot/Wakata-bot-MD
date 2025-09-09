@@ -40,15 +40,15 @@ global.jadi = 'JadiBots'
 global.Jadibts = true
 
 global.canalIdM = ["120363403593951965@newsletter", "120363403593951965@newsletter"]
-global.canalNombreM = ["ᏫᏰᎥᏖᏫ ႮᏟᏂᎥᏂᎯ ✦ ᴀᴠɪsᴏ⚡", "ᏫᏰᎥᏖᏫ ႮᏟᏂᎥᏂᎯ✦ ᴜᴘᴅᴀᴛᴇ⚡"]
+global.canalNombreM = ["𐌏𐌁𐌉𐌕𐍉 ႮᏟᏂᎥᏂᎯ ✦ ᴀᴠɪsᴏ TOᑕᗩ ᗩᑫᑌI", "ᴼᵇᶦᵗᵒ ႮᏟᏂᎥᏂᎯ✦ ᴜᴘᴅᴀᴛᴇ TOᑕᗩ ᗩᑫᑌI"]
 global.channelRD = await getRandomChannel()
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
 
-global.packname = 'ᏫᏰᎥᏖᏫ ႮᏟᏂᎥᏂᎯ';
-global.botname = 'ᏫᏰᎥᏖᏫ ႮᏟᏂᎥᏂᎯ'
+global.packname = '🅾🅱🅸🆃🅾 ႮᏟᏂᎥᏂᎯ';
+global.botname = 'ʘɓɨէօ ႮᏟᏂᎥᏂᎯ'
 global.author = 'Made By 𝐃𝐞𝐲𝐥𝐢𝐧'
 global.dev = '© ⍴᥆ᥕᥱrᥱძ ᑲᥡ 𝑫𝒆𝒚𝒍𝒊𝒏'
-global.textbot = 'ᏫᏰᎥᏖᏫ ႮᏟᏂᎥᏂᎯ • Powered By 𝑫𝒆𝒚𝒍𝒊𝒏'
+global.textbot = '𐌏𐌁𐌉𐌕𐍉 • Powered By 𝑫𝒆𝒚𝒍𝒊𝒏'
 global.etiqueta = '𝑫𝒆𝒚𝒍𝒊𝒏'
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
