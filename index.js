@@ -12,7 +12,7 @@ import { spawn, execSync } from 'child_process';
 import lodash from 'lodash';
 import chalk from 'chalk';
 import syntaxerror from 'syntax-error';
-//import { JadiBot } from './plugins/jadibot-serbot.js';
+import { JadiBot } from './plugins/jadibot-serbot.js';
 import { tmpdir } from 'os';
 import { format } from 'util';
 import P from 'pino';
@@ -273,17 +273,14 @@ setInterval(() => {
     process.exit(0);
 }, 10800000);
 
-/*global.rutaJadiBot = join(__dirname, './JadiBots')
+global.rutaJadiBot = join(__dirname, './JadiBots')
 
 if (global.Jadibts) {
 
 
   if (!existsSync(global.rutaJadiBot)) {
     mkdirSync(global.rutaJadiBot, { recursive: true })
-    console.log(chalk.bold.cyan(`📁 Carpeta creada: ${global.rutaJadiBot}`))
-  } else {
-    console.log(chalk.bold.cyan(`📁 Carpeta ya existente: ${global.rutaJadiBot}`))
-  }
+  } 
 
   const subbots = readdirSync(global.rutaJadiBot, { withFileTypes: true })
     .filter(dirent => dirent.isDirectory())
@@ -303,13 +300,10 @@ if (global.Jadibts) {
           usedPrefix: '/',
           command: 'serbot'
         })
-        console.log(chalk.green(`✅ Subbot cargado: ${nombreSubbot}`))
-      } catch (e) {
-        console.error(chalk.red(`❌ Error cargando subbot: ${nombreSubbot}`), e)
-      }
+      } 
     }
   }
-}*/
+}
 
 const pluginFolder = global.__dirname(join(__dirname, './plugins/index'));
 const pluginFilter = (filename) => /\.js$/.test(filename);
