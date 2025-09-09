@@ -33,6 +33,7 @@ let drm1 = ""
 let drm2 = ""
 let emoji= global.emoji
 let botname = global.botname
+let img = global.img
 let rtx = `
 *${emoji}「 ${botname} 」${emoji}*
 
@@ -60,7 +61,7 @@ let rtx2 = `
 > 🔗 𝐂𝐚𝐧𝐚𝐥 𝐎𝐟𝐢𝐜𝐢𝐚𝐥 ↓
 `;
 
-let imagenUrl = global.img
+let imagenUrl = img
 
     const res = await fetch('https://i.postimg.cc/vHqc5x17/1756169140993.jpg');
     const thumb2 = Buffer.from(await res.arrayBuffer());
