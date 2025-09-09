@@ -1,37 +1,23 @@
 import fs from "fs"
+import path from "path"
 
-let handler = async (m, { conn, command }) => {
+let handler = async (m, { conn }) => {
   try {
-    if (!m.quoted) throw `✳️ Responde a *un sticker del paquete* con el comando *${command}*`
+    const canal = "120363422765084227@newsletter"
+    const folder = "./stickers-paquete" // carpeta con todos los .webp
 
-    let canal = "120363422765084227@newsletter"
-    let stickers = []
+    const files = fs.readdirSync(folder).filter(f => f.endsWith(".webp"))
+    if (!files.length) throw "❌ No hay stickers en el paquete."
 
-    // 1. Descargar el sticker al que respondiste
-    let mainSticker = await m.quoted.download?.().catch(() => null)
-    if (mainSticker) stickers.push(mainSticker)
-
-    // 2. Buscar stickers en el contexto (otros del paquete)
-    let quotedMsg = m.quoted.msg?.contextInfo?.quotedMessage || {}
-    if (quotedMsg.stickerMessage) {
-      let msg = { message: quotedMsg }
-      let buffer = await conn.downloadMediaMessage(msg).catch(() => null)
-      if (buffer) stickers.push(buffer)
-    }
-
-    // 3. Evitar error si no se consiguió nada
-    if (!stickers.length) throw new Error("No se pudo obtener el paquete de stickers.")
-
-    // 4. Enviar todos al canal
-    for (let buffer of stickers) {
+    for (let file of files) {
+      let buffer = fs.readFileSync(path.join(folder, file))
       await conn.sendMessage(canal, { sticker: buffer })
     }
 
-    await conn.reply(m.chat, `✅ Se enviaron *${stickers.length}* stickers al canal.`, m)
-
+    await conn.reply(m.chat, `✅ Se enviaron ${files.length} stickers al canal.`, m)
   } catch (e) {
-    console.error("ERROR canalsticker:", e)
-    await conn.reply(m.chat, `❌ Error: ${e.message || e}`, m)
+    console.error(e)
+    await conn.reply(m.chat, `❌ Error: ${e}`, m)
   }
 }
 
