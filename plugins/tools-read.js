@@ -15,12 +15,20 @@ let handler = async (m, { conn }) => {
     };
 
     const quoted = m.quoted;
-    if (!quoted || (!quoted.message?.viewOnceMessage && !quoted.message?.viewOnceMessageV2)) {
+
+    if (!quoted) {
+        return conn.reply(m.chat, `*❗ Responde a un mensaje de "ver una vez".*`, m, { contextInfo: { mentionedJid: [m.sender] } });
+    }
+    
+    const msg = quoted.message;
+    const viewOnceKey = Object.keys(msg).find(key => key.includes('viewOnceMessage'));
+    
+    if (!viewOnceKey) {
         return conn.reply(m.chat, `*❗ Responde a un mensaje de "ver una vez".*`, m, { contextInfo: { mentionedJid: [m.sender] } });
     }
 
     try {
-        const viewOnceMessage = quoted.message.viewOnceMessage?.message || quoted.message.viewOnceMessageV2?.message;
+        const viewOnceMessage = msg[viewOnceKey].message;
         const type = Object.keys(viewOnceMessage)[0];
         const buffer = await downloadContentFromMessage(viewOnceMessage[type], type.slice(0, -7));
 
