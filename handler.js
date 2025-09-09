@@ -35,7 +35,6 @@ export async function handler(chatUpdate) {
     let m = chatUpdate.messages[chatUpdate.messages.length - 1];
     if (!m) return;
 
-    // Prevenir el doble procesamiento de mensajes
     this.processedMessages = this.processedMessages || new Map();
     const id = m.key.id;
     const now = Date.now();
@@ -109,7 +108,6 @@ export async function handler(chatUpdate) {
                     premiumTime: 0,
                 };
             }
-
             let chat = global.db.data.chats[m.chat];
             if (typeof chat !== 'object') global.db.data.chats[m.chat] = {};
             if (chat) {
@@ -156,7 +154,6 @@ export async function handler(chatUpdate) {
                     per: [],
                 };
             }
-
             let settings = global.db.data.settings[this.user.jid];
             if (typeof settings !== 'object') global.db.data.settings[this.user.jid] = {};
             if (settings) {
@@ -208,6 +205,7 @@ export async function handler(chatUpdate) {
 
         let usedPrefix;
         
+        // Lógica de prefijos para sub-bots
         const botSettings = global.db.data.settings[this.user.jid] || {};
         const botPrefix = botSettings.prefix;
         const isPrefixCustom = Array.isArray(botPrefix) && botPrefix.length > 0;
@@ -455,10 +453,8 @@ global.dfail = (type, m, conn) => {
 ┃ » 𝑁𝑜 𝑖𝑛𝑡𝑒𝑛𝑡𝑒𝑠...
 ┗━━━━━━━━━━━━━━╯`
     }[type];
-
     if (msg) conn.reply(m.chat, msg, m, fake).then(_ => m.react('✖️'));
 };
-
 let file = global.__filename(import.meta.url, true);
 watchFile(file, async () => {
     unwatchFile(file);
