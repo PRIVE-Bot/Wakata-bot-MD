@@ -14,31 +14,32 @@ let handler = async (m, { conn }) => {
         }
     };
 
-    const quoted = m.quoted ? m.quoted : m;
-    if (!quoted || !quoted.isViewOnce) {
+    const quoted = m.quoted;
+    if (!quoted || (!quoted.message?.viewOnceMessage && !quoted.message?.viewOnceMessageV2)) {
         return conn.reply(m.chat, `*❗ Responde a un mensaje de "ver una vez".*`, m, { contextInfo: { mentionedJid: [m.sender] } });
     }
 
     try {
-        const buffer = await downloadContentFromMessage(quoted.m.viewOnceMessageV2.message, quoted.mtype.slice(0, -7));
+        const viewOnceMessage = quoted.message.viewOnceMessage?.message || quoted.message.viewOnceMessageV2?.message;
+        const type = Object.keys(viewOnceMessage)[0];
+        const buffer = await downloadContentFromMessage(viewOnceMessage[type], type.slice(0, -7));
 
-        let mediaType;
         let fileExtension;
+        let mime;
 
-        if (quoted.mtype === 'imageMessage') {
-            mediaType = 'image';
+        if (type === 'imageMessage') {
             fileExtension = 'jpg';
-        } else if (quoted.mtype === 'videoMessage') {
-            mediaType = 'video';
+            mime = 'image/jpg';
+        } else if (type === 'videoMessage') {
             fileExtension = 'mp4';
-        } else if (quoted.mtype === 'audioMessage') {
-            mediaType = 'audio';
+            mime = 'video/mp4';
+        } else if (type === 'audioMessage') {
             fileExtension = 'mp3';
+            mime = 'audio/mp3';
         } else {
             return conn.reply(m.chat, `*❗ Este tipo de mensaje no es compatible para desbloquear.*`, m);
         }
 
-        let mime = `${mediaType}/${fileExtension}`;
         const media = Buffer.from([]);
         for await (const chunk of buffer) {
             media.push(chunk);
@@ -46,13 +47,13 @@ let handler = async (m, { conn }) => {
 
         await conn.sendFile(m.chat, media, `media.${fileExtension}`, quoted.caption || '', fkontak, false, {
             mimetype: mime,
-            ptt: mediaType === 'audio' ? quoted.m.audioMessage.ptt : false
+            ptt: type === 'audioMessage' ? viewOnceMessage.audioMessage.ptt : false
         });
 
     } catch (e) {
         await conn.reply(m.chat, `*❌ Ocurrió un error al intentar desbloquear el mensaje:*\n\n\`\`\`${e.message}\`\`\``, m);
     }
-}
+};
 
 handler.help = ['ver'];
 handler.tags = ['tools'];
