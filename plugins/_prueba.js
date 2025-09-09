@@ -4,26 +4,31 @@ let handler = async (m, { conn, command }) => {
   try {
     if (!m.quoted) throw `✳️ Responde a *un sticker del paquete* con el comando *${command}*`
 
-    // Detectar si el mensaje citado tiene un sticker
-    let stickerMsg = m.quoted.message?.stickerMessage
-    if (!stickerMsg) throw `✳️ Debes responder a un *sticker válido*.`
-
-    // Canal de destino
     let canal = "120363422765084227@newsletter"
     let stickers = []
 
-    // Descargar el sticker citado
-    let buffer = await m.quoted.download()
-    if (buffer) stickers.push(buffer)
+    // 1. Descargar el sticker al que respondiste
+    let mainSticker = await m.quoted.download?.()
+    if (mainSticker) stickers.push(mainSticker)
 
-    if (!stickers.length) throw `❌ No se pudo reconstruir el paquete.`
+    // 2. Ver si hay stickers en el contexto del paquete
+    let grouped = m.quoted.msg?.contextInfo?.groupedMessages || []
+    for (let g of grouped) {
+      if (g.stickerMessage) {
+        let msg = { message: g }
+        let buffer = await conn.downloadMediaMessage(msg)
+        if (buffer) stickers.push(buffer)
+      }
+    }
 
-    // Enviar al canal todos los stickers recolectados
+    if (!stickers.length) throw `❌ No se pudo obtener el paquete completo.`
+
+    // 3. Enviar todos al canal
     for (let buffer of stickers) {
       await conn.sendMessage(canal, { sticker: buffer })
     }
 
-    await conn.reply(m.chat, `✅ Paquete de stickers enviado correctamente al canal.`, m)
+    await conn.reply(m.chat, `✅ Paquete de *${stickers.length}* stickers enviado correctamente al canal.`, m)
 
   } catch (e) {
     console.error(e)
