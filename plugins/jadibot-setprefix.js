@@ -1,81 +1,86 @@
-import { format } from 'util';
-import { fileURLToPath } from 'url';
-import path, { join } from 'path';
-import { unwatchFile, watchFile, readFileSync, writeFileSync } from 'fs';
-import chalk from 'chalk';
-import ws from 'ws';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import { promises as fs } from 'fs';
+import path from 'path';
 
-const isOwner = async (m, conn) => {
-    const detectwhat = m.sender.includes('@lid') ? '@lid' : '@s.whatsapp.net';
-    const isROwner = [...global.owner.map(([number]) => number)].map(v => v.replace(/[^0-9]/g, '') + detectwhat).includes(m.sender);
-    return isROwner;
-};
+const prefixesFilePath = path.join(path.dirname(new URL(import.meta.url).pathname), '../prefixes.json');
 
-const isAdmin = (m, participants) => {
-    const user = participants.find(p => p.id === m.sender) || {};
-    return !!user.admin;
-};
-
-let handler = async (m, { conn, args, text, usedPrefix, command, participants }) => {
-    if (!m.isGroup) {
-        if (!await isOwner(m, conn)) {
-           return conn.reply(m.chat, `${emoji} Este comando solo puede ser usado por el Creador.`, m, rcanal);
-        }
-    } else {
-        if (!await isOwner(m, conn) && !isAdmin(m, participants)) {
-           return conn.reply(m.chat, `${emoji} Este comando solo puede ser usado por un Creador o un Administrador del grupo.`, m, rcanal);
-        }
-    }
-
-    if (text === 'reset') {
-        const settings = global.db.data.settings[conn.user.jid] || {};
-        delete settings.prefix;
-        global.db.data.settings[conn.user.jid] = settings;
-        conn.reply(m.chat, `${emoji} Prefijo personalizado eliminado. El bot ahora usará el prefijo global por defecto.`, m, rcanal);
+const handler = async (m, { conn, args, usedPrefix, command, isROwner }) => {
+    let prefixesData = {};
+    try {
+        prefixesData = JSON.parse(await fs.readFile(prefixesFilePath, 'utf-8'));
+    } catch (e) {
+        console.error('Error al leer prefixes.json:', e);
+        m.reply('❌ Error al cargar los datos de prefijos.');
         return;
     }
 
-    const newPrefix = args[0] || global.prefix;
-    const onlySymbolsAndEmojis = /^[^\p{L}]+$/u;
+    const botJid = conn.user.jid;
 
+    if (command === 'setprefix') {
+        if (!m.isGroup) {
+            if (!isROwner) {
+                return m.reply('Este comando solo puede ser usado por el Creador.');
+            }
+        } else {
+            const groupMetadata = await conn.groupMetadata(m.chat);
+            const isAdmin = groupMetadata.participants.find(p => p.id === m.sender)?.admin;
+            if (!isAdmin && !isROwner) {
+                return m.reply('Solo los administradores del grupo y el creador pueden usar este comando.');
+            }
+        }
 
-      if (!newPrefix || args.length > 1 || !onlySymbolsAndEmojis.test(newPrefix)) {
-    return conn.reply(m.chat, `${emoji} Por favor, ingresa solo un prefijo que contenga *únicamente un símbolo o un emoji*. No se permiten letras ni múltiples caracteres.
-    Ejemplo:
-    *${usedPrefix + command} 👑*\n\nPara restablecer el prefijo, usa:
-    *${usedPrefix + command} reset*`, m, rcanal);
-}
+        const newPrefixes = args.filter(arg => arg.trim() !== '');
+        if (newPrefixes.length === 0) {
+            return m.reply(`Usa \`${usedPrefix}setprefix <prefijo1> <prefijo2> ...\` para establecer nuevos prefijos.`);
+        }
 
-    const settings = global.db.data.settings[conn.user.jid] || {};
-    settings.prefix = [newPrefix];
-    global.db.data.settings[conn.user.jid] = settings;
+        prefixesData.bots[botJid] = newPrefixes;
 
-   return conn.reply(m.chat, `${emoji} Prefijo del bot cambiado a: \`${newPrefix}\``, m, rcanal);
-
-    global.reloadHandler(true).catch(console.error);
-};
-
-handler.command = ['setprefix']
-handler.before = async (m, { conn }) => {
-    let text = m.text?.toLowerCase()?.trim();
-    if (text === 'setprefix') {
-        return handler(m, { conn });
-    }
-}
-
-export default handler
-
-let file = global.__filename(import.meta.url, true);
-watchFile(file, async () => {
-    unwatchFile(file);
-    console.log(chalk.redBright("Se actualizo 'setprefix.js'"));
-    if (global.conns && global.conns.length > 0) {
-        const users = [...new Set([...global.conns.filter((conn) => conn.user && conn.ws.socket && conn.ws.socket.readyState !== ws.CLOSED).map((conn) => conn)])];
-        for (const userr of users) {
-            userr.subreloadHandler(false);
+        try {
+            await fs.writeFile(prefixesFilePath, JSON.stringify(prefixesData, null, 2));
+            m.reply(`✅ ¡Prefijos actualizados a: ${newPrefixes.join(', ')}!`);
+        } catch (error) {
+            console.error('Error al guardar los prefijos:', error);
+            m.reply('❌ Ocurrió un error al guardar los prefijos. Inténtalo de nuevo más tarde.');
         }
     }
-});
+
+    else if (command === 'miprefix' || command === 'prefix') {
+        const activePrefixes = prefixesData.bots[botJid] || prefixesData.default;
+        m.reply(`Los prefijos activos para este bot son: ${activePrefixes.join(', ')}`);
+    }
+
+    else if (command === 'resetprefix') {
+        if (!m.isGroup) {
+            if (!isROwner) {
+                return m.reply('Este comando solo puede ser usado por el Creador.');
+            }
+        } else {
+            const groupMetadata = await conn.groupMetadata(m.chat);
+            const isAdmin = groupMetadata.participants.find(p => p.id === m.sender)?.admin;
+            if (!isAdmin && !isROwner) {
+                return m.reply('Solo los administradores del grupo y el creador pueden usar este comando.');
+            }
+        }
+
+        if (prefixesData.bots[botJid]) {
+            delete prefixesData.bots[botJid];
+            try {
+                await fs.writeFile(prefixesFilePath, JSON.stringify(prefixesData, null, 2));
+                const defaultPrefixes = prefixesData.default.join(', ');
+                m.reply(`✅ ¡Los prefijos para este bot han sido restablecidos a los valores por defecto: ${defaultPrefixes}!`);
+            } catch (error) {
+                console.error('Error al restablecer los prefijos:', error);
+                m.reply('❌ Ocurrió un error al restablecer los prefijos. Inténtalo de nuevo más tarde.');
+            }
+        } else {
+            m.reply('Este bot ya está usando los prefijos por defecto.');
+        }
+    }
+};
+
+handler.help = ['setprefix', 'miprefix', 'resetprefix'];
+handler.tags = ['main'];
+handler.command = ['setprefix', 'miprefix', 'resetprefix'];
+
+export default handler;
