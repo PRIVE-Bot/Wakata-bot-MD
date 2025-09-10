@@ -1,5 +1,3 @@
-Necesito que hagas este código sea más rápido porque siento que está un poco lento y también que le mejore la lógica anti árabes para que los eliminen el grupo y los bloqueos y le escriben al privado haz que esté código sea más rápido porque siento que está un poco lento
-
 
 import { smsg } from './lib/simple.js';
 import { format } from 'util';
@@ -484,8 +482,14 @@ global.dfail = (type, m, conn) => {
     if (msg) conn.reply(m.chat, msg, m, fake).then(_ => m.react('✖️'));
 };
 
+
 let file = global.__filename(import.meta.url, true);
 watchFile(file, async () => {
     unwatchFile(file);
     console.log(chalk.magenta("Se actualizo 'handler.js'"));
-    if (global.conns && 
+
+    if (global.conns && global.conns.length > 0 ) {
+        const users = [...new Set([...global.conns.filter((conn) => conn.user && conn.ws.socket && conn.ws.socket.readyState !== ws.CLOSED).map((conn) => conn)])];
+        for (const userr of users) {
+            userr.subreloadHandler(false);
+        }}});
