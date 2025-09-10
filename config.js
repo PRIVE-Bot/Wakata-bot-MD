@@ -58,6 +58,7 @@ global.catalogo = fs.readFileSync('./src/catalogo.jpg');
 global.photoSity = [catalogo]
 global.ch = {
 ch1: '120363403593951965@newsletter',
+ch2: '120363403593951965@newsletter',
 }
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
