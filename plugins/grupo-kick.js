@@ -1,4 +1,4 @@
-import { isGroup } from 'baileys';
+
 
 var handler = async (m, { conn, participants, usedPrefix, command, args }) => {
     try {
