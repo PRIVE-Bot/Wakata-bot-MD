@@ -233,8 +233,8 @@ export async function handler(chatUpdate) {
 
             if (typeof plugin !== 'function') continue;
             if ((usedPrefix = (match?.[0]?.[0] || ''))) {
-                let noPrefix = m.text.replace(usedPrefix, '');
-                let [command, ...args] = noPrefix.trim().split` `.filter(v => v);
+                let noPrefix = (m.text || '').replace(usedPrefix, '');
+                let [command, ...args] = (noPrefix.trim() || '').split` `.filter(v => v);
                 let text = args.join` `;
                 command = (command || '').toLowerCase();
                 let fail = plugin.fail || global.dfail;
