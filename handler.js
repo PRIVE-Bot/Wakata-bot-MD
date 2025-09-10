@@ -5,14 +5,12 @@ import path, { join } from 'path';
 import { unwatchFile, watchFile } from 'fs';
 import chalk from 'chalk';
 import fetch from 'node-fetch';
-
 const { proto } = (await import('@whiskeysockets/baileys')).default;
 const isNumber = x => typeof x === 'number' && !isNaN(x);
 const delay = ms => isNumber(ms) && new Promise(resolve => setTimeout(function () {
     clearTimeout(this);
     resolve();
 }, ms));
-
 const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './plugins');
 const prefijosArabes = ['966', '213', '973', '974', '20', '971', '964', '962', '965', '961', '218', '212', '222', '968', '970', '963', '249', '216', '967'];
 
@@ -39,16 +37,18 @@ export async function handler(chatUpdate) {
 
     if (global.db.data == null) await global.loadDatabase();
 
-    const senderNumber = m.sender.split('@')[0];
-    const isArabPrefix = prefijosArabes.some(prefix => senderNumber.startsWith(prefix));
-    if (isArabPrefix) {
-        await this.updateBlockStatus(m.sender, 'block');
-        if (m.isGroup) {
-            await this.groupParticipantsUpdate(m.chat, [m.sender], 'remove');
-        } else if (m.isPrivate) {
-            await this.sendMessage(m.chat, { text: 'Tu número de teléfono está bloqueado y no puedes usar este bot.' });
+    const senderNumber = m.sender?.split('@')[0];
+    if (senderNumber) {
+        const isArabPrefix = prefijosArabes.some(prefix => senderNumber.startsWith(prefix));
+        if (isArabPrefix) {
+            await this.updateBlockStatus(m.sender, 'block');
+            if (m.isGroup) {
+                await this.groupParticipantsUpdate(m.chat, [m.sender], 'remove');
+            } else if (m.isPrivate) {
+                await this.sendMessage(m.chat, { text: 'Tu número de teléfono está bloqueado y no puedes usar este bot.' });
+            }
+            return;
         }
-        return;
     }
 
     try {
@@ -98,7 +98,6 @@ export async function handler(chatUpdate) {
                 bank: user?.bank ?? 0,
                 warn: user?.warn ?? 0,
             };
-
             let chat = global.db.data.chats[m.chat];
             if (typeof chat !== 'object') global.db.data.chats[m.chat] = {};
             global.db.data.chats[m.chat] = {
@@ -124,7 +123,6 @@ export async function handler(chatUpdate) {
                 antiLag: chat?.antiLag ?? false,
                 per: chat?.per ?? [],
             };
-
             let settings = global.db.data.settings[this.user.jid];
             if (typeof settings !== 'object') global.db.data.settings[this.user.jid] = {};
             global.db.data.settings[this.user.jid] = {
