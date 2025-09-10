@@ -225,7 +225,7 @@ if (qr && mcode) {
 secret = secret.match(/.{1,4}/g)?.join("-")
 //if (m.isWABusiness) {
 txtCode = await conn.sendMessage(m.chat, {
-    image: { url: imagenUrl },
+    image: { url: global.img },
     caption: rtx2,
     ...global.fake,
     quoted: m,
