@@ -1,64 +1,88 @@
+import { isGroup } from 'baileys';
+
 var handler = async (m, { conn, participants, usedPrefix, command, args }) => {
-    const groupInfo = await conn.groupMetadata(m.chat);
-    const ownerGroup = groupInfo.owner || m.chat.split`-`[0] + '@s.whatsapp.net';
-    const ownerBot = global.owner[0][0] + '@s.whatsapp.net';
+    try {
 
-    let usersToKick = m.mentionedJid || [];
+        const groupInfo = await conn.groupMetadata(m.chat);
+        const ownerGroup = groupInfo.owner || m.chat.split`-`[0] + '@s.whatsapp.net';
+        const ownerBot = global.owner[0][0] + '@s.whatsapp.net';
 
-    if (m.quoted && !usersToKick.includes(m.quoted.sender)) {
-        usersToKick.push(m.quoted.sender);
-    }
+        let usersToKick = m.mentionedJid || [];
+        const prefix = args[0]?.startsWith('+') ? args[0].replace(/\D/g, '') : null;
+        let usersFoundByPrefix = [];
 
-    const prefix = args[0]?.startsWith('+') ? args[0].replace(/\D/g, '') : null;
-    if (prefix) {
-        for (let user of participants) {
-            const number = user.id.split('@')[0];
-            if (number.startsWith(prefix) && !usersToKick.includes(user.id)) {
-                usersToKick.push(user.id);
+        if (m.quoted && !usersToKick.includes(m.quoted.sender)) {
+            usersToKick.push(m.quoted.sender);
+        }
+
+        if (prefix) {
+            for (let user of participants) {
+                const number = user.id.split('@')[0];
+                if (number.startsWith(prefix) && !usersToKick.includes(user.id)) {
+                    usersToKick.push(user.id);
+                    usersFoundByPrefix.push(user.id);
+                }
+            }
+            if (usersFoundByPrefix.length === 0) {
+                return conn.reply(m.chat, `⚠️ No se encontraron usuarios en el grupo con el prefijo *${prefix}*.`, m);
             }
         }
-    }
 
-    if (!usersToKick.length) {
-        return conn.reply(
-            m.chat,
-            `⚠️ Debes mencionar a alguien, responder un mensaje o usar un prefijo como *${usedPrefix + command} +504* para expulsar a números que empiecen con ese código.`,
-            m
-        );
-    }
-
-    let kicked = [];
-    let notAllowed = [];
-
-    for (let user of usersToKick) {
-        if (user === conn.user.jid) {
-            notAllowed.push('🤖 El bot no puede eliminarse a sí mismo.');
-            continue;
-        }
-        if (user === ownerGroup) {
-            notAllowed.push('👑 No se puede expulsar al dueño del grupo.');
-            continue;
-        }
-        if (user === ownerBot) {
-            notAllowed.push('🧑‍💻 No se puede expulsar al creador del bot.');
-            continue;
+        if (!usersToKick.length) {
+            return conn.reply(
+                m.chat,
+                `⚠️ Debes mencionar a alguien, responder a un mensaje o usar un prefijo como *${usedPrefix + command} +504* para expulsar a números que empiecen con ese código.`,
+                m
+            );
         }
 
-        try {
-            await conn.groupParticipantsUpdate(m.chat, [user], 'remove');
-            kicked.push(user);
-        } catch (e) {
-            notAllowed.push(`⚠️ No se pudo expulsar a @${user.split('@')[0]}`);
+        let kicked = [];
+        let notAllowed = [];
+        let notKicked = [];
+
+        for (let user of usersToKick) {
+            if (user === conn.user.jid) {
+                notAllowed.push('🤖 El bot no puede eliminarse a sí mismo.');
+                continue;
+            }
+            if (user === ownerGroup) {
+                notAllowed.push('👑 No se puede expulsar al dueño del grupo.');
+                continue;
+            }
+            if (user === ownerBot) {
+                notAllowed.push('🧑‍💻 No se puede expulsar al creador del bot.');
+                continue;
+            }
+
+            try {
+                await conn.groupParticipantsUpdate(m.chat, [user], 'remove');
+                kicked.push(user);
+            } catch (e) {
+                notKicked.push(`⚠️ No se pudo expulsar a @${user.split('@')[0]}`);
+            }
         }
-    }
 
-    
-    if (notAllowed.length) {
-        await conn.reply(m.chat, `❌ *No expulsados:*\n${notAllowed.join('\n')}`, m, { mentions: usersToKick });
-    }
+        if (kicked.length) {
+            const kickedMentions = kicked.map(jid => `@${jid.split('@')[0]}`);
+            const kickMessage = `✅ *Expulsados:*\n${kickedMentions.join('\n')}`;
+            await conn.reply(m.chat, kickMessage, m, { mentions: kicked });
+        }
 
-    
-    await conn.sendMessage(m.chat, { react: { text: "🔥", key: m.key } });
+        if (notAllowed.length) {
+            await conn.reply(m.chat, `❌ *No expulsados:*\n${notAllowed.join('\n')}`, m);
+        }
+
+        if (notKicked.length) {
+            const notKickedMentions = notKicked.map(line => line.match(/@\d+/)[0]);
+            await conn.reply(m.chat, `❌ *No se pudo expulsar a los siguientes usuarios:*\n${notKicked.join('\n')}`, m, { mentions: notKickedMentions });
+        }
+
+        await conn.sendMessage(m.chat, { react: { text: "🔥", key: m.key } });
+
+    } catch (e) {
+        console.error(e);
+        conn.reply(m.chat, 'Ocurrió un error inesperado. Por favor, inténtalo de nuevo más tarde.', m);
+    }
 };
 
 handler.help = ['kick'];
