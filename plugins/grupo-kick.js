@@ -2,6 +2,9 @@ import { isGroup } from 'baileys';
 
 var handler = async (m, { conn, participants, usedPrefix, command, args }) => {
     try {
+        if (!m.isGroup) {
+            return conn.reply(m.chat, 'Este comando solo se puede usar en grupos.', m);
+        }
 
         const groupInfo = await conn.groupMetadata(m.chat);
         const ownerGroup = groupInfo.owner || m.chat.split`-`[0] + '@s.whatsapp.net';
