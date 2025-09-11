@@ -1,17 +1,3 @@
-
-/*⚠ PROHIBIDO EDITAR ⚠
-Este codigo fue modificado, adaptado y mejorado por
-- ReyEndymion >> https://github.com/ReyEndymion
-El codigo de este archivo esta inspirado en el codigo original de:
-- Aiden_NotLogic >> https://github.com/ferhacks
-*El archivo original del MysticBot-MD fue liberado en mayo del 2024 aceptando su liberacion*
-El codigo de este archivo fue parchado en su momento por:
-- BrunoSobrino >> https://github.com/BrunoSobrino
-Contenido adaptado por:
-- GataNina-Li >> https://github.com/GataNina-Li
-- elrebelde21 >> https://github.com/elrebelde21
-*/
-
 const { useMultiFileAuthState, DisconnectReason, makeCacheableSignalKeyStore, fetchLatestBaileysVersion, generateWAMessageFromContent, proto } = (await import("@whiskeysockets/baileys"));
 import qrcode from "qrcode"
 import NodeCache from "node-cache"
@@ -33,7 +19,6 @@ let drm1 = ""
 let drm2 = ""
 let emoji = global.emoji
 let botname = global.botname
-let img = global.img
 let rtx = `
 *${emoji}「 ${botname} 」${emoji}*
 
@@ -60,8 +45,6 @@ let rtx2 = `
 
 > 🔗 𝐂𝐚𝐧𝐚𝐥 𝐎𝐟𝐢𝐜𝐢𝐚𝐥 ↓
 `;
-
-let imagenUrl = img
 
     const res = await fetch('https://i.postimg.cc/vHqc5x17/1756169140993.jpg');
     const thumb2 = Buffer.from(await res.arrayBuffer());
