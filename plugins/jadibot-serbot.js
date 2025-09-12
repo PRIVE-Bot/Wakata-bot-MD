@@ -95,7 +95,7 @@ let time = global.db.data.users[m.sender].Subs + 120000
 const subBots = [...new Set([...global.conns.filter((conn) => conn.user && conn.ws.socket && conn.ws.socket.readyState !== ws.CLOSED).map((conn) => conn)])]
 const subBotsCount = subBots.length
 if (subBotsCount === 21) {
-return m.reply(`${emoji2} No se han encontrado espacios para *Sub-Bots* disponibles espera que un subbot se desconecte e intenta más tarde.`)
+return conn.reply(m.chat, ${emoji2} No se han encontrado espacios para subbots disponibles. Espera a que un subbot se desconecte e intenta más tarde., m, racnal)
 }
 let who = m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.fromMe ? conn.user.jid : m.sender
 let id = `${who.split`@`[0]}`  //conn.getName(who)
