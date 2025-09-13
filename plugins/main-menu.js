@@ -66,30 +66,33 @@ const fkontak = {
 
 
     let menuText = `
-┏━━━━━━━━━━━━━━━━━━━━⌼
-┃ ⇶ *Cliente:* ${tag}
-┃ ⇶ *Bot:* ${(conn.user.jid == global.conn.user.jid ? 'Principal 🅥' : 'Prem Bot 🅑')}
-┃ ⇶ *Modo:* ${mode}
-┃ ⇶ *Usuarios:* ${totalReg}
-┃ ⇶ *Activo:* ${uptime}
-┃ ⇶ *Comandos:* ${totalCommands}
-┗━━━━━━━━━━━━━━━━━━━━━⍰
+╔═══════════════════════════╗
+║       INFORMACIÓN DEL BOT    
+╟───────────────────────────╢
+║ Cliente   : ${tag}
+║ Bot       : ${(conn.user.jid == global.conn.user.jid ? 'Principal ⬢' : 'Premium ⬡')}
+║ Modo      : ${mode}
+║ Usuarios  : ${totalReg}
+║ Activo    : ${uptime}
+║ Comandos  : ${totalCommands}
+╚═══════════════════════════╝
 
+
+┌─═≡ LISTA DE COMANDOS ≡═─┐
 ${global.readMore}
-*◤━━━━━━━━━⌼━━━━━━━━━◥*
-⚙️ *LISTA DE COMANDOS*
-${Object.keys(tags).reduce((acc, tag) => {
-  const cmds = help.filter(h => h.tags.includes(tag));
-  if (!cmds.length) return acc;
-  const cmdList = cmds.flatMap(c => 
-    c.help.map(cmd => 
-      `┃ ⚡ \`/${cmd}\` ${c.limit ? '⭐' : ''} ${c.premium ? '💎' : ''}`
-    )
-  ).join('\n');
-  return acc + `\n*┏━━━『${tags[tag]} ${getRandomEmoji()}』━━━✎*\n${cmdList}\n*┗━━━━━━━━━━━━━━━━━━━━✎*`;
-}, '')}
+${Object.keys(tags).map(tag => {
+    const cmds = help.filter(h => h.tags.includes(tag));
+    if (!cmds.length) return '';
+    const cmdList = cmds.flatMap(c =>
+        c.help.map(cmd => `│ ⊳ /${cmd} ${c.limit ? '[Límite]' : ''} ${c.premium ? '[Premium]' : ''}`)
+    ).join('\n');
+    return `
+╔═══『 ${tags[tag]} ${getRandomEmoji()} 』═══╗
+${cmdList}
+╚══════════════════════╝`;
+}).join('\n')}
 
-> ${dev}
+> Desarrollador: ${dev}
 `;
 
     await m.react('⚡');
