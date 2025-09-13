@@ -63,8 +63,6 @@ const fkontak = {
 };
 
 
-
-
     let menuText = `
 ╔═══════════════════════════╗
 ║       INFORMACIÓN DEL BOT    
@@ -77,25 +75,24 @@ const fkontak = {
 ║ Comandos  : ${totalCommands}
 ╚═══════════════════════════╝
 
-
 ┌─═≡ LISTA DE COMANDOS ≡═─┐
 ${global.readMore}
-${Object.keys(tags).map(tag => {
-    const cmds = help.filter(h => h.tags.includes(tag));
-    if (!cmds.length) return '';
-    const cmdList = cmds.flatMap(c =>
-        c.help.map(cmd => `│ ⊳ /${cmd} ${c.limit ? '[Límite]' : ''} ${c.premium ? '[Premium]' : ''}`)
-    ).join('\n');
-    return `
-╔═══『 ${tags[tag]} ${getRandomEmoji()} 』═══╗
-${cmdList}
-╚══════════════════════╝`;
-}).join('\n')}
+${Object.keys(tags).reduce((acc, tag) => {
+  const cmds = help.filter(h => h.tags.includes(tag));
+  if (!cmds.length) return acc;
+  const cmdList = cmds.flatMap(c => 
+    c.help.map(cmd => 
+      `│ ⊳ /${cmd} ${c.limit ? '⭐' : ''}`
+    )
+  ).join('\n');
+  return acc + `\n*╔═══『 ${tags[tag]} ${getRandomEmoji()} 』═══╗*\n${cmdList}\n*╚══════════════════════╝*`;
+}, '')}
 
-> Desarrollador: ${dev}
+> ${dev}
 `;
 
-    await m.react('⚡');
+
+    await m.react('🌟');
     await conn.sendMessage(
   m.chat,
   {
