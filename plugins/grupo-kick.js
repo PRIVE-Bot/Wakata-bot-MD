@@ -67,7 +67,7 @@ var handler = async (m, { conn, participants, usedPrefix, command, args }) => {
 
         if (kicked.length) {
             const kickedMentions = kicked.map(jid => `@${jid.split('@')[0]}`);
-            const kickMessage = `✅ *Expulsados:*\n${kickedMentions.join('\n')}`;
+            //const kickMessage = `✅ *Expulsados:*\n${kickedMentions.join('\n')}`;
             await conn.reply(m.chat, kickMessage, m, { mentions: kicked });
         }
 
