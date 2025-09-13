@@ -131,17 +131,12 @@ const thumb5 = Buffer.from(await res1.arrayBuffer());
             }
         } else if (args[0] && isUrl(args[0])) {
             stiker = await sticker(false, args[0], global.packsticker, global.packsticker2);
-        } else {
-            return replyError(m, conn);
-        }
-    } catch (e) {
-        console.error(e);
-    } finally {
+        } 
+    } 
+ finally {
         if (stiker) {
             await conn.sendMessage(m.chat, { sticker: stiker }, { quoted: fkontak });
-        } else {
-            replyError(m, conn);
-        }
+        } 
     }
 };
 
@@ -152,7 +147,3 @@ handler.command = ['s', 'sticker', 'stiker'];
 export default handler;
 
 const isUrl = (text) => new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)(jpe?g|gif|png)/, 'gi').test(text);
-
-function replyError(m, conn) {
-    return conn.reply(m.chat, `${emoji} *No se pudo generar el sticker.*`, m, rcanal);
-}
