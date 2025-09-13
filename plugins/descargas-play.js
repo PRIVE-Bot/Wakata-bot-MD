@@ -274,12 +274,12 @@ await m.react('🌟');
 
     const infoMessage = `★ ${global.botname || 'Bot'} ★
 
-┏☾ *Titulo:* 「 ${title} 」 
-┗┓ *Canal:* ${author?.name || 'Desconocido'} 
- ┃✎ *Vistas:* ${vistas} 
- ┃✎ *Duración:* ${timestamp}
- ┃✎ *Publicado:* ${ago}
-┏┛
+ ┏☾ *Titulo:* 「 ${title} 」 
+┏┛  *Canal:* ${author?.name || 'Desconocido'} 
+┃✎ *Vistas:* ${vistas} 
+┃✎ *Duración:* ${timestamp}
+┃✎ *Publicado:* ${ago}
+┃
 ┗⌼ ᴅᴇsᴄᴀʀɢᴀɴᴅᴏ...`;
 
     await conn.sendMessage(
