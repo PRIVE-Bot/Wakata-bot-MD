@@ -65,7 +65,8 @@ const fkontak = {
       await conn.sendMessage(
         m.chat, 
         { sticker: stiker }, 
-        { quoted: fkontak }
+        { quoted: fkontak },
+        ...global.rcanal
       );
     } else {
       return conn.reply(m.chat, `${emoji} *Por favor, envía una imagen o video para hacer un sticker.*`, m, rcanal);
