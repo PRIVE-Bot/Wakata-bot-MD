@@ -105,18 +105,18 @@ const thumb5 = Buffer.from(await res1.arrayBuffer());
     try {
         let q = m.quoted ? m.quoted : m;
         let mime = (q.msg || q).mimetype || q.mediaType || '';
-
+        let img = await q.download?.();
         
         if (/webp|image|video/g.test(mime)) {
             if (/video/g.test(mime) && (q.msg || q).seconds > 15) {
                 return m.reply(`${emoji2} *¡El video no puede durar más de 15 segundos!...*`, m, rcanal);
             }
-
-            let img = await q.download?.();
-            if (!img) return replyError();
-if (!img) {
+      
+        if (!img) {
         return conn.reply(m.chat, `${emoji} *Por favor, envía una imagen o video para hacer un sticker.*`, m, rcanal);
       }
+            
+
 
             const packstickers = global.db.data.users[m.sender];
             const texto1 = packstickers?.text1 || `${global.packsticker}`;
