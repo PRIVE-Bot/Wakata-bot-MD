@@ -1,30 +1,22 @@
-//import { areJidsSameUser } from '@whiskeysockets/baileys';
+import { areJidsSameUser } from '@whiskeysockets/baileys';
 
 export async function before(m, { participants, conn }) {
   if (m.isGroup) {
     let chat = global.db.data.chats[m.chat];
 
     if (!chat.antiBot2) {
-      return
+      return;
     }
 
-    let botJid = global.conn.user.jid 
+    let botJid = global.conn.user.jid;
 
     if (botJid === conn.user.jid) {
-      return
+      return;
     } else {
-      let isBotPresent = participants.some(p => areJidsSameUser(botJid, p.id))
+      let isBotPresent = participants.some(p => areJidsSameUser(botJid, p.id));
 
       if (isBotPresent) {
-        setTimeout(async () => {
-          await conn.reply(m.chat, `*🌀 Aviso Importante*
-
-> Ya hay un bot principal activo en el grupo, por lo tanto no responderé comandos para evitar interferencias.
-¡Gracias por su comprensión!
-
-`, m)
-
-        }, 5000) 
+        return; 
       }
     }
   }
