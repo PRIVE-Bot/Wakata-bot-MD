@@ -1,7 +1,7 @@
 // editado y optimizado por 
 // https://github.com/deylin-eliac
 
-/*import fetch from "node-fetch";
+import fetch from "node-fetch";
 import yts from "yt-search";
 import axios from "axios";
 import Jimp from "jimp";
@@ -115,12 +115,13 @@ const fkontak2 = {
 
     const infoMessage = `★ ${global.botname || 'Bot'} ★
 
-╭⍰ *Titulo:* 「 ${title} 」 
-⍰ *Canal:* ${author?.name || 'Desconocido'} 
-⍰ *Vistas:* ${vistas} 
-⍰ *Duración:* ${timestamp}
-⍰ *Publicado:* ${ago}
-
+  ┏☾ *Titulo:* 「 ${title} 」 
+┏┛  *Canal:* ${author?.name || 'Desconocido'} 
+┃✎ *Vistas:* ${vistas} 
+┃✎ *Duración:* ${timestamp}
+┃✎ *Publicado:* ${ago}
+┃
+┗⌼ ᴅᴇsᴄᴀʀɢᴀɴᴅᴏ...`;
 `;
 
     await conn.sendMessage(
@@ -141,7 +142,7 @@ const fkontak2 = {
     );
 
     // Audio
-    if (["play", "yta", "ytmp3"].includes(command)) {
+    if (["play"].includes(command)) {
       const api = await ddownr.download(url, "mp3");
       await conn.sendMessage(
         m.chat,
@@ -156,7 +157,7 @@ const fkontak2 = {
     }
 
     // Video
-    if (["play2", "ytv", "ytmp4"].includes(command)) {
+    if (["play2"].includes(command)) {
       try {
         const apiURL = `https://api.sylphy.xyz/download/ytmp4?url=${encodeURIComponent(url)}&apikey=sylphy-fbb9`;
         const res = await fetch(apiURL);
@@ -199,13 +200,13 @@ function formatViews(views) {
   return views >= 1000
     ? (views / 1000).toFixed(1) + "k (" + views.toLocaleString() + ")"
     : views.toString();
-}*/
+}
 
 
 // editado y optimizado por 
 // https://github.com/deylin-eliac
 
-import fetch from "node-fetch";
+/*import fetch from "node-fetch";
 import yts from "yt-search";
 import axios from "axios";
 import Jimp from "jimp";
@@ -360,7 +361,7 @@ await m.react('📽️');
   }
 };
 
-handler.command = handler.help = ["play", "play2"/*, "ytmp3", "yta", "ytmp4", "ytv"*/];
+handler.command = handler.help = ["play", "play2"];
 handler.tags = ["downloader"];
 
 export default handler;
@@ -370,4 +371,4 @@ function formatViews(views) {
   return views >= 1000
     ? (views / 1000).toFixed(1) + "k (" + views.toLocaleString() + ")"
     : views.toString();
-}
+}*/
