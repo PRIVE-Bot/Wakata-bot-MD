@@ -1,4 +1,4 @@
-import { sticker } from '../lib/sticker.js';
+/*import { sticker } from '../lib/sticker.js';
 import uploadFile from '../lib/uploadFile.js';
 import uploadImage from '../lib/uploadImage.js';
 import { webp2png } from '../lib/webp2mp4.js';
@@ -82,4 +82,75 @@ export default handler;
 
 const isUrl = (text) => {
   return text.match(new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)(jpe?g|gif|png)/, 'gi'));
+};*/
+
+
+import { sticker } from '../lib/sticker.js';
+import uploadFile from '../lib/uploadFile.js';
+import uploadImage from '../lib/uploadImage.js';
+import { webp2png } from '../lib/webp2mp4.js';
+
+let handler = async (m, { conn, args, usedPrefix, command }) => {
+    
+    const fkontak = {
+        key: { fromMe: false, participant: "0@s.whatsapp.net" },
+        message: { documentMessage: { title: '𝗦𝗧𝗜𝗞𝗘𝗥', fileName: `𝗦𝗧𝗜𝗞𝗘𝗥 𝗚𝗘𝗡𝗘𝗥𝗔𝗗𝗢 𝗖𝗢𝗡 𝗘𝗫𝗜𝗧𝗢` } }
+    };
+    const replyError = () => conn.reply(m.chat, `${emoji} *Por favor, envía una imagen o video para hacer un sticker.*`, m, rcanal);
+
+    let stiker = false;
+    try {
+        let q = m.quoted ? m.quoted : m;
+        let mime = (q.msg || q).mimetype || q.mediaType || '';
+
+        
+        if (/webp|image|video/g.test(mime)) {
+            if (/video/g.test(mime) && (q.msg || q).seconds > 15) {
+                return m.reply(`${emoji2} *¡El video no puede durar más de 15 segundos!...*`, m, rcanal);
+            }
+
+            let img = await q.download?.();
+            if (!img) return replyError();
+
+            const packstickers = global.db.data.users[m.sender];
+            const texto1 = packstickers?.text1 || `${global.packsticker}`;
+            const texto2 = packstickers?.text2 || `${global.packsticker2}`;
+
+            stiker = await sticker(img, false, texto1, texto2);
+
+            
+            if (!stiker) {
+                let out;
+                if (/webp/g.test(mime)) out = await webp2png(img);
+                else if (/image/g.test(mime)) out = await uploadImage(img);
+                else if (/video/g.test(mime)) out = await uploadFile(img);
+                if (typeof out !== 'string') out = await uploadImage(img);
+                stiker = await sticker(false, out, global.packsticker, global.packsticker2);
+            }
+        } 
+        
+        
+        else if (args[0] && isUrl(args[0])) {
+            stiker = await sticker(false, args[0], global.packsticker, global.packsticker2);
+        } else {
+            return replyError();
+        }
+    } catch (e) {
+        console.error(e);
+    } finally {
+        if (stiker) {
+            await conn.sendMessage(m.chat, { sticker: stiker }, { quoted: fkontak }, ...global.rcanal);
+        } else {
+            replyError();
+        }
+    }
 };
+
+handler.help = ['stiker <img>', 'sticker <url>'];
+handler.tags = ['sticker'];
+handler.command = ['s', 'sticker', 'stiker'];
+
+export default handler;
+
+const isUrl = (text) => new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)(jpe?g|gif|png)/, 'gi').test(text);
+
