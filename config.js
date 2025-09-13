@@ -51,7 +51,6 @@ global.author = 'Made By 𝐃𝐞𝐲𝐥𝐢𝐧'
 global.dev = '© ⍴᥆ᥕᥱrᥱძ ᑲᥡ 𝑫𝒆𝒚𝒍𝒊𝒏'
 global.textbot = '𐌏𐌁𐌉𐌕𐍉 • Powered By 𝑫𝒆𝒚𝒍𝒊𝒏'
 global.etiqueta = '𝑫𝒆𝒚𝒍𝒊𝒏'
-global.emoji = global.emoji
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
 
 global.catalogo = fs.readFileSync('./src/catalogo.jpg');
