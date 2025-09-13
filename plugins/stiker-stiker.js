@@ -93,7 +93,7 @@ import { webp2png } from '../lib/webp2mp4.js';
 
 let handler = async (m, { conn, args, usedPrefix, command }) => {
 const res1 = await fetch('https://files.catbox.moe/p87uei.jpg');
-const thumb5 = Buffer.from(await res1.arrayBuffer());
+const thumb5 = Buffer.from(await res1.buffer());
 
     const fkontak = {
         key: { fromMe: false, participant: "0@s.whatsapp.net" },
@@ -107,7 +107,7 @@ const thumb5 = Buffer.from(await res1.arrayBuffer());
         let img = await q.download?.();
 
         if (/webp|image|video/g.test(mime)) {
-            if (/video/g.test(mime) && (q.msg || q).seconds > 15) {
+            if (/video/g.test(mime) && ((q.msg || q).seconds || 0) > 15) {
                 return conn.reply(m.chat, `*¡El video no puede durar más de 15 segundos!...*`, m, rcanal);
             }
 
