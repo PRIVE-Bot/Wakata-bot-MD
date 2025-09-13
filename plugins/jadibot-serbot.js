@@ -17,10 +17,10 @@ let crm3 = "SBpbmZvLWRvbmFyLmpz"
 let crm4 = "IF9hdXRvcmVzcG9uZGVyLmpzIGluZm8tYm90Lmpz"
 let drm1 = ""
 let drm2 = ""
-let 1 = '⌬'
-let 2 = '✎'
-let 3 = '♛'
-let emoji = []
+let m1 = '⌬'
+let m2 = '✎'
+let m3 = '♛'
+let emoji = [m1, m2, m3].getRandom()
 let botname = global.botname
 let rtx = `
 *${emoji}「 ${botname} 」${emoji}*
