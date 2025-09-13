@@ -66,19 +66,14 @@ const fkontak = {
 
 
     let menuText = `
-*⚡◈ ━━━━━━━ SPARK ━━━━━━━ ◈⚡*
-
-👋 Hola ${tag}  
-Soy tu asistente *${global.botname}* ⚡
-
-┏━⚡『 𝑰 𝑵 𝑭 𝑶 』⚡━┓
-┃ ✦ *Cliente:* ${tag}
-┃ ✦ *Bot:* ${(conn.user.jid == global.conn.user.jid ? 'Principal 🅥' : 'Prem Bot 🅑')}
-┃ ✦ *Modo:* ${mode}
-┃ ✦ *Usuarios:* ${totalReg}
-┃ ✦ *Activo:* ${uptime}
-┃ ✦ *Comandos:* ${totalCommands}
-┗━━━━━━━━━━━━━━━⚡
+┏━━━━━━━━━━━━━━━━━━━━⌼
+┃ ⇶ *Cliente:* ${tag}
+┃ ⇶ *Bot:* ${(conn.user.jid == global.conn.user.jid ? 'Principal 🅥' : 'Prem Bot 🅑')}
+┃ ⇶ *Modo:* ${mode}
+┃ ⇶ *Usuarios:* ${totalReg}
+┃ ⇶ *Activo:* ${uptime}
+┃ ⇶ *Comandos:* ${totalCommands}
+┗━━━━━━━━━━━━━━━━━━━━━⍰
 
 ${global.readMore}
 *◤━━━━━━━━━⌼━━━━━━━━━◥*
@@ -91,7 +86,7 @@ ${Object.keys(tags).reduce((acc, tag) => {
       `┃ ⚡ \`/${cmd}\` ${c.limit ? '⭐' : ''} ${c.premium ? '💎' : ''}`
     )
   ).join('\n');
-  return acc + `\n*┏━⚡〘 ${tags[tag]} ${getRandomEmoji()} 〙⚡━*\n${cmdList}\n*┗━━━━━━━⚡━━━━━━━*`;
+  return acc + `\n*┏━━━『${tags[tag]} ${getRandomEmoji()}』━━━✎*\n${cmdList}\n*┗━━━━━━━━━━━━━━━━━━━━✎*`;
 }, '')}
 
 > ${dev}
