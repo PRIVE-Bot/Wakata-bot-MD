@@ -139,7 +139,7 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
         console.error(e);
     } finally {
         if (stiker) {
-            await conn.sendMessage(m.chat, { sticker: stiker }, { quoted: fkontak }, ...global.rcanal);
+            await conn.sendMessage(m.chat, { sticker: stiker }, { quoted: fkontak } );
         } else {
             replyError();
         }
