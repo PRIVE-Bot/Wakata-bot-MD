@@ -17,7 +17,10 @@ let crm3 = "SBpbmZvLWRvbmFyLmpz"
 let crm4 = "IF9hdXRvcmVzcG9uZGVyLmpzIGluZm8tYm90Lmpz"
 let drm1 = ""
 let drm2 = ""
-let emoji = global.emoji
+let 1 = '⌬'
+let 2 = '✎'
+let 3 = '♛'
+let emoji = []
 let botname = global.botname
 let rtx = `
 *${emoji}「 ${botname} 」${emoji}*
