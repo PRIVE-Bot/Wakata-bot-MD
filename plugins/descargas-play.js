@@ -274,7 +274,7 @@ await m.react('🌟');
 
     const infoMessage = `★ ${global.botname || 'Bot'} ★
 
- ┏☾ *Titulo:* 「 ${title} 」 
+  ┏☾ *Titulo:* 「 ${title} 」 
 ┏┛  *Canal:* ${author?.name || 'Desconocido'} 
 ┃✎ *Vistas:* ${vistas} 
 ┃✎ *Duración:* ${timestamp}
