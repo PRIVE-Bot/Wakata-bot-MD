@@ -33,24 +33,34 @@
 import { areJidsSameUser } from '@whiskeysockets/baileys';
 
 export async function before(m, { participants, conn }) {
+  // Solo aplica a grupos
   if (!m.isGroup) return;
 
+  // Obtenemos la configuración del chat
   let chat = global.db.data.chats[m.chat];
   if (!chat.antiBot2) return;
 
-  let botJid = global.conn.user.jid;
+  // JID del bot principal
+  let mainBotJid = global.conn.user.jid;
 
-  if (botJid === conn.user.jid) return;
+  // Si este es el bot principal, no hacemos nada
+  if (mainBotJid === conn.user.jid) return;
 
-  let isBotPresent = participants.some(p => areJidsSameUser(botJid, p.id));
+  // Verificamos si hay un bot principal en el grupo
+  let isMainBotPresent = participants.some(p => areJidsSameUser(mainBotJid, p.id));
 
-  if (isBotPresent) {
-    // await conn.reply(m.chat, `Ya hay un bot principal activo, no responderé comandos.`, m);
+  if (isMainBotPresent) {
+    // Opcional: enviar aviso a los usuarios (descomenta si quieres)
+    /*
+    setTimeout(async () => {
+      await conn.reply(m.chat, `*🌀 Aviso Importante*\n\n> Ya hay un bot principal activo en este grupo, por lo que este bot no ejecutará comandos para evitar interferencias.`, m);
+    }, 2000);
+    */
 
-    return true; 
+    // BLOQUEAMOS la ejecución de comandos de este subbot
+    return true; // <- muy importante: aquí el subbot deja de procesar cualquier cosa
   }
 }
-
 
 
 /*import { areJidsSameUser } from '@whiskeysockets/baileys'
