@@ -50,7 +50,7 @@ export async function before(m, { conn }) {
     };
 
     const msg = generateWAMessageFromContent(m.chat, content, { quoted: m });
-    await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id });
+    await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id }, {mentions: [m.sender]});
 
     welcomeSent[user] = now;
     saveState();
