@@ -99,9 +99,7 @@ const thumb5 = Buffer.from(await res1.arrayBuffer());
         key: { fromMe: false, participant: "0@s.whatsapp.net" },
         message: { documentMessage: { title: '𝗦𝗧𝗜𝗞𝗘𝗥', fileName: `𝗦𝗧𝗜𝗞𝗘𝗥 𝗚𝗘𝗡𝗘𝗥𝗔𝗗𝗢 𝗖𝗢𝗡 𝗘𝗫𝗜𝗧𝗢`, jpegThumbnail: thumb5 } }
     };
-          if (!img) {
-        return conn.reply(m.chat, `${emoji} *Por favor, envía una imagen o video para hacer un sticker.*`, m, rcanal);
-      }
+          
 
     let stiker = false;
     try {
@@ -116,6 +114,9 @@ const thumb5 = Buffer.from(await res1.arrayBuffer());
 
             let img = await q.download?.();
             if (!img) return replyError();
+if (!img) {
+        return conn.reply(m.chat, `${emoji} *Por favor, envía una imagen o video para hacer un sticker.*`, m, rcanal);
+      }
 
             const packstickers = global.db.data.users[m.sender];
             const texto1 = packstickers?.text1 || `${global.packsticker}`;
