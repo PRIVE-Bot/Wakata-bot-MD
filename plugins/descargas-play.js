@@ -218,10 +218,12 @@ async function resizeImage(buffer, size = 300) {
 }
 
 const handler = async (m, { conn, text, command }) => {
-  await m.react('⚡️');
+  await m.react('🔎');
+await m.react('🔍');
+await m.react('🌟');
 
   if (!text?.trim()) {
-    return conn.reply(m.chat, `⚠️ Dime el nombre de la canción o video que buscas`, m, rcanal);
+    return conn.reply(m.chat, `${emoji} Dime el nombre de la canción o video que buscas`, m, rcanal);
   }
 
   try {
@@ -272,12 +274,13 @@ const handler = async (m, { conn, text, command }) => {
 
     const infoMessage = `★ ${global.botname || 'Bot'} ★
 
-╭⍰ *Titulo:* 「 ${title} 」 
-⍰ *Canal:* ${author?.name || 'Desconocido'} 
-⍰ *Vistas:* ${vistas} 
-⍰ *Duración:* ${timestamp}
-⍰ *Publicado:* ${ago}
-`;
+┏☾ *Titulo:* 「 ${title} 」 
+┗┓ *Canal:* ${author?.name || 'Desconocido'} 
+ ┃✎ *Vistas:* ${vistas} 
+ ┃✎ *Duración:* ${timestamp}
+ ┃✎ *Publicado:* ${ago}
+┏┛
+┗⌼ ᴅᴇsᴄᴀʀɢᴀɴᴅᴏ...`;
 
     await conn.sendMessage(
       m.chat,
@@ -305,6 +308,7 @@ const handler = async (m, { conn, text, command }) => {
         if (!json?.status || !json.res?.url) {
           return m.reply("❌ No se pudo descargar el audio desde Sylphy.");
         }
+await m.react('🎧');
 
         await conn.sendMessage(
           m.chat,
@@ -332,7 +336,7 @@ const handler = async (m, { conn, text, command }) => {
         if (!json?.status || !json.res?.url) {
           return m.reply("❌ No se pudo descargar el video desde Sylphy.");
         }
-
+await m.react('📽️');
         await conn.sendMessage(
           m.chat,
           {
