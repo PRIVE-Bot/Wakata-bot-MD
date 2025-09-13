@@ -109,7 +109,7 @@ ${Object.keys(tags).reduce((acc, tag) => {
   }
 };
 
-handler.command = ['menu', 'help'];
+handler.command = ['menu', 'help', 'menú'];
 
 handler.before = async (m, { conn }) => {
   const text = m.text?.toLowerCase()?.trim();
