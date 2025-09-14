@@ -9,7 +9,7 @@ export async function before(m, { participants, conn }) {
         }
 
 
-        let botJid = global.conn.user.jid // JID del bot principal
+        let botJid = global.conn.user.jid 
 
        if (botJid === conn.user.jid) {
            return
@@ -18,16 +18,9 @@ export async function before(m, { participants, conn }) {
 
           if (isBotPresent) {
                 setTimeout(async () => {
-                    await conn.reply(m.chat, `*🌀 Aviso Importante*
-
-> Ya hay un bot principal activo en el grupo, por lo tanto me retiro para evitar generar spam o interferencias.
-¡Gracias por su comprensión!
-
-
-> *sɪɢᴜᴇ ᴇʟ ᴄᴀɴᴀʟ ᴏғɪᴄɪᴀʟ:*
-> whatsapp.com/channel/0029VbAzn9GGU3BQw830eA0F`, m, rcanal);
+                    await conn.reply(m.chat, `*​"Conectado con éxito al servidor. Saliendo del grupo para evitar spam..."*`, m);
                     await this.groupLeave(m.chat)
-                }, 5000)// 5 segundos
+                }, 5000)
             }
         }
     }
