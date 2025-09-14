@@ -204,9 +204,9 @@ function formatViews(views) {
 
 const handler = async (m, { conn, text, command }) => {
   await m.react('❌');
- conn.reply(m.chat, `Este comando se encuentra fuera de servicio sistema defectuoso.`, m, racnal)
-  };
+  conn.reply(m.chat, `Este comando se encuentra fuera de servicio, sistema defectuoso.`, m);
+};
 
-handler.command = ['play', 'play2']
+handler.command = ['play', 'play2'];
 
 export default handler;
