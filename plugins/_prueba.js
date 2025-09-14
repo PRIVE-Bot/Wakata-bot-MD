@@ -1,7 +1,8 @@
 import fetch from "node-fetch";
 
 // Reemplaza esta URL con la URL de tu API en Render
-const API_URL = "https://dey-yt.onrender.com/api";
+// Nota: La URL ya no incluye '/api' para evitar la duplicación
+const API_URL = "https://dey-yt.onrender.com"; 
 
 const handler = async (m, { conn, text }) => {
     // Verifica si se proporcionó una URL
@@ -14,7 +15,8 @@ const handler = async (m, { conn, text }) => {
 
     try {
         // Paso 1: Iniciar la descarga (POST request)
-        const startResponse = await fetch(`${API_URL}/download`, {
+        // Se añade '/api' solo en esta solicitud
+        const startResponse = await fetch(`${API_URL}/api/download`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -32,11 +34,12 @@ const handler = async (m, { conn, text }) => {
 
         // Paso 2: Verificar el estado de la descarga (polling con un bucle)
         const checkStatus = async () => {
-            const statusResponse = await fetch(`${API_URL}/status/${taskId}`);
+            const statusResponse = await fetch(`${API_URL}/api/status/${taskId}`);
             const statusData = await statusResponse.json();
 
             if (statusData.status === "completed") {
                 // Paso 3: Descargar el archivo (GET request)
+                // Se construye la URL correctamente
                 const downloadUrl = `${API_URL}${statusData.download_url}`;
                 
                 // Muestra el título y prepara la descarga
