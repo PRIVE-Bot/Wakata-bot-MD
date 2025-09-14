@@ -6,7 +6,7 @@
 
 > [!NOTE]
 > <p align="center">
->   <img src="https://i.postimg.cc/8kWYFx5N/1756189788406.jpg" alt="Menú Principal" width="85%">
+>   <img src="https://i.postimg.cc/yxzb6fcp/1757892735552.jpg" alt="Menú Principal" width="900%">
 > </p>
 
 ---
