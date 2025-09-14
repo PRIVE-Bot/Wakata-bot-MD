@@ -203,6 +203,8 @@ function formatViews(views) {
 }*/
 
 
+
+
 // editado y optimizado por 
 // https://github.com/deylin-eliac
 
@@ -300,22 +302,23 @@ await m.react('🌟');
       { quoted: fkontak2 }
     );
 
-        if (["play"].includes(command)) {
+    if (["play"].includes(command)) {
       try {
         const apiURL = `https://yt-dey-pi.onrender.com/download-mp3?url=${encodeURIComponent(url)}`;
         const res = await fetch(apiURL);
+        const json = await res.json();
 
-        if (!res.ok) {
-          return m.reply("❌ No se pudo descargar el audio desde la API.");
+        if (!json?.status || !json.res?.url) {
+          return m.reply("❌ No se pudo descargar el audio desde Sylphy.");
         }
-        await m.react('🎧');
+await m.react('🎧');
 
         await conn.sendMessage(
           m.chat,
           {
-            audio: { url: apiURL },
+            audio: { url: json.res.url },
             mimetype: "audio/mpeg",
-            fileName: `${title}.mp3`,
+            fileName: `${json.res.title || title}.mp3`,
             ptt: true
           },
           { quoted: fkontak }
@@ -326,7 +329,6 @@ await m.react('🌟');
         return m.reply(`⚠️ Ocurrió un error: ${err.message}`);
       }
     }
-
 
     if (["play2"].includes(command)) {
       try {
