@@ -1,7 +1,7 @@
 // editado y optimizado por 
 // https://github.com/deylin-eliac
 
-import fetch from "node-fetch";
+/*import fetch from "node-fetch";
 import yts from "yt-search";
 import axios from "axios";
 import Jimp from "jimp";
@@ -200,5 +200,14 @@ function formatViews(views) {
     ? (views / 1000).toFixed(1) + "k (" + views.toLocaleString() + ")"
     : views.toString();
 }
+*/
 
+const handler = async (m, { conn, text, command }) => {
+  await m.react('⚡️');
 
+returt conn.reply(m.chat, `Este comando se encuentra fuera de servicio sistema defectuoso.`, m, racnal)
+}
+
+handler.command = ['play', 'play2']
+
+export default handler;
