@@ -305,15 +305,15 @@ await m.react('🌟');
         const res = await fetch(apiURL);
         const json = await res.json();
 
-        if (!json?.status || !json.res?.url) {
-          return m.reply("❌ No se pudo descargar el audio desde Sylphy.");
+        if (!json?.status || !json.res?.downloadURL) {
+          return m.reply("❌ No se pudo descargar el audio.");
         }
 await m.react('🎧');
 
         await conn.sendMessage(
           m.chat,
           {
-            audio: { url: json.res.url },
+            audio: { url: json.res.downloadURL },
             mimetype: "audio/mpeg",
             fileName: `${json.res.title || title}.mp3`,
             ptt: true
