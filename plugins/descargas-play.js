@@ -210,10 +210,7 @@ function formatViews(views) {
 
 import fetch from "node-fetch";
 import yts from "yt-search";
-import axios from "axios";
 import Jimp from "jimp";
-
-const FORMAT_VIDEO = ["360", "480", "720", "1080", "1440", "4k"];
 
 async function resizeImage(buffer, size = 300) {
   const image = await Jimp.read(buffer);
@@ -222,11 +219,11 @@ async function resizeImage(buffer, size = 300) {
 
 const handler = async (m, { conn, text, command }) => {
   await m.react('🔎');
-await m.react('🔍');
-await m.react('🌟');
+  await m.react('🔍');
+  await m.react('🌟');
 
   if (!text?.trim()) {
-    return conn.reply(m.chat, `${emoji} Dime el nombre de la canción o video que buscas`, m, rcanal);
+    return conn.reply(m.chat, `⚠️ Dime el nombre de la canción o video que buscas`, m);
   }
 
   try {
@@ -253,7 +250,7 @@ await m.react('🌟');
       message: {
         documentMessage: {
           title: "𝗗𝗘𝗦𝗖𝗔𝗥𝗚𝗔𝗡𝗗𝗢",
-          fileName: botname,
+          fileName: global.botname || "Bot",
           jpegThumbnail: thumb3
         }
       }
@@ -291,34 +288,31 @@ await m.react('🌟');
         image: thumb,
         caption: infoMessage,
         contextInfo: {
-          isForwarded: true,
-          forwardedNewsletterMessageInfo: {
-            newsletterJid: channelRD.id,
-            newsletterName: channelRD.name,
-            serverMessageId: -1
-          }
+          isForwarded: true
         }
       },
       { quoted: fkontak2 }
     );
 
+    // 🔊 Comando de audio (play)
     if (["play"].includes(command)) {
       try {
         const apiURL = `https://yt-dey-pi.onrender.com/download-mp3?url=${encodeURIComponent(url)}`;
         const res = await fetch(apiURL);
         const json = await res.json();
 
-        if (!json?.status || !json.res?.url) {
-          return m.reply("❌ No se pudo descargar el audio desde Sylphy.");
+        if (!json?.status || !json.audio_url) {
+          return m.reply("❌ No se pudo descargar el audio desde la API.");
         }
-await m.react('🎧');
+
+        await m.react('🎧');
 
         await conn.sendMessage(
           m.chat,
           {
-            audio: { url: json.res.url },
+            audio: { url: json.audio_url },
             mimetype: "audio/mpeg",
-            fileName: `${json.res.title || title}.mp3`,
+            fileName: `${json.title || title}.mp3`,
             ptt: true
           },
           { quoted: fkontak }
@@ -330,6 +324,7 @@ await m.react('🎧');
       }
     }
 
+    // 🎥 Comando de video (play2)
     if (["play2"].includes(command)) {
       try {
         const apiURL = `https://api.sylphy.xyz/download/ytmp4?url=${encodeURIComponent(url)}&apikey=sylphy-fbb9`;
@@ -339,7 +334,8 @@ await m.react('🎧');
         if (!json?.status || !json.res?.url) {
           return m.reply("❌ No se pudo descargar el video desde Sylphy.");
         }
-await m.react('📽️');
+
+        await m.react('📽️');
         await conn.sendMessage(
           m.chat,
           {
