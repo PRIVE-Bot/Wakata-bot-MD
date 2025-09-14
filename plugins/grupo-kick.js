@@ -10,13 +10,13 @@ var handler = async (m, { conn, participants, usedPrefix, command, args }) => {
 
         let usersToKick = m.mentionedJid || [];
         const prefix = args[0]?.startsWith('+') ? args[0].replace(/\D/g, '') : null;
-        let usersFoundByPrefix = [];
 
         if (m.quoted && !usersToKick.includes(m.quoted.sender)) {
             usersToKick.push(m.quoted.sender);
         }
 
         if (prefix) {
+            let usersFoundByPrefix = [];
             for (let user of participants) {
                 const number = user.id.split('@')[0];
                 if (number.startsWith(prefix) && !usersToKick.includes(user.id)) {
@@ -56,6 +56,11 @@ var handler = async (m, { conn, participants, usedPrefix, command, args }) => {
 
             try {
                 await conn.groupParticipantsUpdate(m.chat, [user], 'remove');
+
+                if (m.quoted && m.quoted.sender === user) {
+                    await conn.sendMessage(m.chat, { delete: m.quoted.key });
+                }
+
             } catch (e) {
                 notKicked.push(`⚠️ No se pudo expulsar a @${user.split('@')[0]}`);
             }
