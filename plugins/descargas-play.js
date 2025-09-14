@@ -122,7 +122,6 @@ const fkontak2 = {
 ┃✎ *Publicado:* ${ago}
 ┃
 ┗⌼ ᴅᴇsᴄᴀʀɢᴀɴᴅᴏ...`;
-`;
 
     await conn.sendMessage(
       m.chat,
