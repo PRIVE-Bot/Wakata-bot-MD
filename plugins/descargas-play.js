@@ -295,34 +295,37 @@ const handler = async (m, { conn, text, command }) => {
     );
 
     // 🔊 Comando de audio (play)
-    if (["play"].includes(command)) {
-      try {
-        const apiURL = `https://yt-dey-pi.onrender.com/download-mp3?url=${encodeURIComponent(url)}`;
-        const res = await fetch(apiURL);
-        const json = await res.json();
+if (["play"].includes(command)) {
+  try {
+    const apiURL = `https://yt-dey-pi.onrender.com/download-mp3?url=${encodeURIComponent(url)}`;
+    const res = await fetch(apiURL);
+    const json = await res.json();
 
-        if (!json?.status || !json.audio_url) {
-          return m.reply("❌ No se pudo descargar el audio desde la API.");
-        }
-
-        await m.react('🎧');
-
-        await conn.sendMessage(
-          m.chat,
-          {
-            audio: { url: json.audio_url },
-            mimetype: "audio/mpeg",
-            fileName: `${json.title || title}.mp3`,
-            ptt: true
-          },
-          { quoted: fkontak }
-        );
-
-      } catch (err) {
-        console.error("❌ Error en play:", err.message);
-        return m.reply(`⚠️ Ocurrió un error: ${err.message}`);
-      }
+    if (!json?.status || !json.audio_url) {
+      return m.reply("❌ No se pudo descargar el audio desde la API.");
     }
+
+    // Descargamos el audio como buffer (más seguro que enviar URL)
+    const audioBuffer = await fetch(json.audio_url).then(r => r.buffer());
+
+    await m.react('🎧');
+
+    await conn.sendMessage(
+      m.chat,
+      {
+        audio: audioBuffer,
+        mimetype: "audio/mpeg",
+        fileName: `${json.title || title}.mp3`,
+        ptt: true // si quieres que se mande como nota de voz
+      },
+      { quoted: fkontak }
+    );
+
+  } catch (err) {
+    console.error("❌ Error en play:", err.message);
+    return m.reply(`⚠️ Ocurrió un error: ${err.message}`);
+  }
+}
 
     // 🎥 Comando de video (play2)
     if (["play2"].includes(command)) {
