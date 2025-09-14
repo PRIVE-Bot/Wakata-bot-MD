@@ -302,7 +302,7 @@ await m.react('🌟');
 
     if (["play"].includes(command)) {
       try {
-        const apiURL = `https://api.sylphy.xyz/download/ytmp3?url=${encodeURIComponent(url)}&apikey=sylphy-fbb9`;
+        const apiURL = `https://dey-yt.onrender.com/api/download?url=${encodeURIComponent(url)}`;
         const res = await fetch(apiURL);
         const json = await res.json();
 
