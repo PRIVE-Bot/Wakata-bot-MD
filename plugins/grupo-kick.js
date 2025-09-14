@@ -1,5 +1,3 @@
-
-
 var handler = async (m, { conn, participants, usedPrefix, command, args }) => {
     try {
         if (!m.isGroup) {
@@ -39,7 +37,6 @@ var handler = async (m, { conn, participants, usedPrefix, command, args }) => {
             );
         }
 
-        let kicked = [];
         let notAllowed = [];
         let notKicked = [];
 
@@ -59,16 +56,9 @@ var handler = async (m, { conn, participants, usedPrefix, command, args }) => {
 
             try {
                 await conn.groupParticipantsUpdate(m.chat, [user], 'remove');
-                kicked.push(user);
             } catch (e) {
                 notKicked.push(`⚠️ No se pudo expulsar a @${user.split('@')[0]}`);
             }
-        }
-
-        if (kicked.length) {
-            const kickedMentions = kicked.map(jid => `@${jid.split('@')[0]}`);
-            //const kickMessage = `✅ *Expulsados:*\n${kickedMentions.join('\n')}`;
-            await conn.reply(m.chat, kickMessage, m, { mentions: kicked });
         }
 
         if (notAllowed.length) {
@@ -77,7 +67,12 @@ var handler = async (m, { conn, participants, usedPrefix, command, args }) => {
 
         if (notKicked.length) {
             const notKickedMentions = notKicked.map(line => line.match(/@\d+/)[0]);
-            await conn.reply(m.chat, `❌ *No se pudo expulsar a los siguientes usuarios:*\n${notKicked.join('\n')}`, m, { mentions: notKickedMentions });
+            await conn.reply(
+                m.chat,
+                `❌ *No se pudo expulsar a los siguientes usuarios:*\n${notKicked.join('\n')}`,
+                m,
+                { mentions: notKickedMentions }
+            );
         }
 
         await conn.sendMessage(m.chat, { react: { text: "🔥", key: m.key } });
