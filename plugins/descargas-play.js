@@ -300,23 +300,22 @@ await m.react('🌟');
       { quoted: fkontak2 }
     );
 
-    if (["play"].includes(command)) {
+        if (["play"].includes(command)) {
       try {
-        const apiURL = `https://dey-yt.onrender.com/api/download?url=${encodeURIComponent(url)}`;
+        const apiURL = `https://yt-dey-pi.onrender.com/download-mp3?url=${encodeURIComponent(url)}`;
         const res = await fetch(apiURL);
-        const json = await res.json();
 
-        if (!json?.status || !json.res?.url) {
-          return m.reply("❌ No se pudo descargar el audio desde Sylphy.");
+        if (!res.ok) {
+          return m.reply("❌ No se pudo descargar el audio desde la API.");
         }
-await m.react('🎧');
+        await m.react('🎧');
 
         await conn.sendMessage(
           m.chat,
           {
-            audio: { url: json.res.url },
+            audio: { url: apiURL },
             mimetype: "audio/mpeg",
-            fileName: `${json.res.title || title}.mp3`,
+            fileName: `${title}.mp3`,
             ptt: true
           },
           { quoted: fkontak }
@@ -327,6 +326,7 @@ await m.react('🎧');
         return m.reply(`⚠️ Ocurrió un error: ${err.message}`);
       }
     }
+
 
     if (["play2"].includes(command)) {
       try {
