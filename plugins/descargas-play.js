@@ -299,14 +299,14 @@ const handler = async (m, { conn, text, command }) => {
       { quoted: fkontak2 }
     );
 
+    // 📌 MP3 con la API de GokuBlack
     if (["play"].includes(command)) {
       try {
-        // 🔥 Ahora usa tu API MP3
-        const apiURL = `https://dey-yt.onrender.com/api/download?url=${encodeURIComponent(url)}`;
+        const apiURL = `https://gokublack.xyz/download/ytmp3?url=${encodeURIComponent(url)}`;
         const res = await fetch(apiURL);
         const json = await res.json();
 
-        if (!json?.status || !json.res?.url) {
+        if (!json?.status || !json.data?.downloadURL) {
           return m.reply("❌ No se pudo descargar el audio.");
         }
 
@@ -315,14 +315,14 @@ const handler = async (m, { conn, text, command }) => {
         await conn.sendMessage(
           m.chat,
           {
-            audio: { url: json.res.url },
+            audio: { url: json.data.downloadURL },
             mimetype: "audio/mpeg",
-            fileName: `${json.res.title || title}.mp3`,
+            fileName: `${json.data.title || title}.mp3`,
             contextInfo: {
               externalAdReply: {
-                title: json.res.title || title,
-                body: `Tamaño: ${json.res.filesize} | Calidad: ${json.res.quality}`,
-                thumbnailUrl: json.res.thumbnail,
+                title: json.data.title || title,
+                body: `Formato: ${json.data.format.toUpperCase()}`,
+                thumbnailUrl: thumbnail,
                 sourceUrl: url,
                 mediaType: 1,
                 renderLargerThumbnail: true
@@ -338,6 +338,7 @@ const handler = async (m, { conn, text, command }) => {
       }
     }
 
+    // 📌 Video MP4 con Sylphy
     if (["play2"].includes(command)) {
       try {
         const apiURL = `https://api.sylphy.xyz/download/ytmp4?url=${encodeURIComponent(url)}&apikey=sylphy-fbb9`;
