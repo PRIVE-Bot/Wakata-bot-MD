@@ -1,151 +1,93 @@
-// plugins/generar-factura.js
-// Generador de facturas en imagen con logo por URL
-// Dependencias: npm install canvas axios
+// plugins/factura.js
+// Generador de facturas para tu bot de WhatsApp
+// Editado y optimizado por https://github.com/deylin-eliac
 
-import { createCanvas, loadImage } from "canvas";
-import axios from "axios";
+import { createCanvas, loadImage } from 'canvas'
+import fetch from 'node-fetch'
 
-function formatMoney(n, currency = "") {
-  return (
-    (Number(n) || 0).toLocaleString("es-HN", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }) + (currency ? ` ${currency}` : "")
-  );
-}
+async function generateFactura({ cliente, producto, cantidad, precio, total, logoUrl }) {
+  const width = 800
+  const height = 600
+  const canvas = createCanvas(width, height)
+  const ctx = canvas.getContext('2d')
 
-async function generateInvoice(data = {}) {
-  const W = 900;
-  const H = 1200;
-  const padding = 40;
-  const canvas = createCanvas(W, H);
-  const ctx = canvas.getContext("2d");
+  // Fondo llamativo
+  const gradient = ctx.createLinearGradient(0, 0, width, height)
+  gradient.addColorStop(0, '#FFDEE9')
+  gradient.addColorStop(1, '#B5FFFC')
+  ctx.fillStyle = gradient
+  ctx.fillRect(0, 0, width, height)
 
-  // Fondo llamativo (degradado)
-  const gradient = ctx.createLinearGradient(0, 0, W, 0);
-  gradient.addColorStop(0, "#f43f5e"); // rojo
-  gradient.addColorStop(1, "#3b82f6"); // azul
-  ctx.fillStyle = gradient;
-  ctx.fillRect(0, 0, W, 180);
-
-  // Logo desde URL
-  if (data.logoUrl) {
+  // Logo
+  if (logoUrl) {
     try {
-      const res = await axios.get(data.logoUrl, { responseType: "arraybuffer" });
-      const img = await loadImage(res.data);
-      ctx.drawImage(img, padding, 20, 130, 130);
+      const res = await fetch(logoUrl)
+      const buffer = Buffer.from(await res.arrayBuffer())
+      const logo = await loadImage(buffer)
+      ctx.drawImage(logo, 30, 20, 120, 120)
     } catch (e) {
-      console.log("No se pudo cargar el logo:", e.message);
+      console.log('No se pudo cargar el logo')
     }
   }
 
-  // Título y datos vendedor
-  ctx.fillStyle = "#fff";
-  ctx.font = "bold 32px Sans";
-  ctx.fillText(data.seller?.name || "Mi Empresa", padding + 160, 70);
-  ctx.font = "20px Sans";
-  ctx.fillText(data.seller?.address || "", padding + 160, 105);
-  ctx.fillText(data.seller?.phone || "", padding + 160, 135);
+  // Encabezado
+  ctx.fillStyle = '#222'
+  ctx.font = 'bold 36px Arial'
+  ctx.fillText('FACTURA DE COMPRA', 200, 80)
 
-  // Factura info (derecha)
-  ctx.textAlign = "right";
-  ctx.font = "bold 28px Sans";
-  ctx.fillText(data.invoiceNumber || "FACTURA", W - padding, 70);
-  ctx.font = "20px Sans";
-  ctx.fillText(data.date || new Date().toLocaleDateString(), W - padding, 110);
-  ctx.textAlign = "left";
+  ctx.font = '20px Arial'
+  ctx.fillText(`Cliente: ${cliente}`, 200, 120)
 
-  // Cliente
-  const boxY = 220;
-  ctx.fillStyle = "#f9fafb";
-  ctx.fillRect(padding, boxY, W - padding * 2, 110);
-  ctx.fillStyle = "#111827";
-  ctx.font = "bold 22px Sans";
-  ctx.fillText("Cliente:", padding + 12, boxY + 35);
-  ctx.font = "20px Sans";
-  ctx.fillText(data.buyer?.name || "-", padding + 12, boxY + 70);
+  const fecha = new Date().toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })
+  ctx.fillText(`Fecha: ${fecha}`, 200, 150)
 
-  // Tabla de items
-  const tableTop = boxY + 150;
-  const colX = [padding + 12, 500, 680, 820];
-  ctx.fillStyle = "#374151";
-  ctx.font = "bold 20px Sans";
-  ctx.fillText("Descripción", colX[0], tableTop);
-  ctx.fillText("Cant.", colX[1], tableTop);
-  ctx.fillText("P. Unit", colX[2], tableTop);
-  ctx.fillText("Total", colX[3], tableTop);
+  // Tabla de productos
+  ctx.fillStyle = '#000'
+  ctx.font = 'bold 22px Arial'
+  ctx.fillText('Producto', 80, 220)
+  ctx.fillText('Cantidad', 320, 220)
+  ctx.fillText('Precio', 500, 220)
 
-  ctx.strokeStyle = "#d1d5db";
-  ctx.beginPath();
-  ctx.moveTo(padding, tableTop + 10);
-  ctx.lineTo(W - padding, tableTop + 10);
-  ctx.stroke();
+  ctx.font = '20px Arial'
+  ctx.fillText(producto, 80, 260)
+  ctx.fillText(`${cantidad}`, 340, 260)
+  ctx.fillText(`$${precio}`, 500, 260)
 
-  let y = tableTop + 40;
-  let subTotal = 0;
-  for (const it of data.items || []) {
-    const total = (Number(it.qty) || 0) * (Number(it.unit) || 0);
-    subTotal += total;
+  // Total
+  ctx.font = 'bold 26px Arial'
+  ctx.fillText(`TOTAL: $${total}`, 80, 340)
 
-    ctx.fillStyle = "#111827";
-    ctx.font = "18px Sans";
-    ctx.fillText(it.desc || "-", colX[0], y);
-    ctx.fillText(String(it.qty || 0), colX[1], y);
-    ctx.fillText(formatMoney(it.unit, data.currency), colX[2], y);
-    ctx.fillText(formatMoney(total, data.currency), colX[3], y);
-    y += 32;
-  }
+  // Nota final
+  ctx.font = 'italic 18px Arial'
+  ctx.fillText('Gracias por su compra ❤️', 80, 400)
 
-  const vat = data.vatPercent
-    ? subTotal * (Number(data.vatPercent) / 100)
-    : 0;
-  const total = subTotal + vat;
-  const totalsY = H - 200;
-
-  ctx.font = "bold 20px Sans";
-  ctx.fillText("Subtotal:", colX[2], totalsY);
-  ctx.fillText(formatMoney(subTotal, data.currency), colX[3], totalsY);
-  ctx.fillText(`IVA ${data.vatPercent || 0}%:`, colX[2], totalsY + 30);
-  ctx.fillText(formatMoney(vat, data.currency), colX[3], totalsY + 30);
-
-  ctx.fillStyle = "#dc2626";
-  ctx.font = "bold 26px Sans";
-  ctx.fillText("Total:", colX[2], totalsY + 80);
-  ctx.fillText(formatMoney(total, data.currency), colX[3], totalsY + 80);
-
-  return canvas.toBuffer("image/png");
+  return canvas.toBuffer()
 }
 
-// Handler para el bot
-let handler = async (m, { conn }) => {
-  const data = {
-    invoiceNumber: "F001-0007",
-    date: "2025-09-15",
-    seller: {
-      name: "Mode Store",
-      address: "Avenida Central",
-      phone: "+504 9999-9999",
-    },
-    buyer: { name: "Cliente Demo" },
-    items: [
-      { desc: "Producto A", qty: 2, unit: 12.5 },
-      { desc: "Servicio B", qty: 1, unit: 40.0 },
-    ],
-    currency: "USD",
-    logoUrl:
-      "https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg",
-  };
+let handler = async (m, { conn, args, text, usedPrefix, command }) => {
+  if (!text) {
+    return m.reply(`❌ Uso correcto:\n\n${usedPrefix + command} Cliente|Producto|Cantidad|Precio|Total|LogoURL(opcional)\n\nEjemplo:\n${usedPrefix + command} Juan Pérez|Camiseta|2|15|30|https://tecnoblog/logo.png`)
+  }
 
-  const buffer = await generateInvoice(data);
-  await conn.sendMessage(
-    m.chat,
-    { image: buffer, caption: `Factura ${data.invoiceNumber}` },
-    { quoted: m }
-  );
-};
+  let [cliente, producto, cantidad, precio, total, logoUrl] = text.split('|')
+  if (!cliente || !producto || !cantidad || !precio || !total) {
+    return m.reply(`❌ Faltan datos.\nEjemplo:\n${usedPrefix + command} Juan Pérez|Camiseta|2|15|30|https://tecnoblog/logo.png`)
+  }
 
-handler.command = ["generarfactura"];
-handler.help = ["generarfactura"];
-handler.tags = ["herramientas"];
+  let factura = await generateFactura({
+    cliente,
+    producto,
+    cantidad: Number(cantidad),
+    precio: Number(precio),
+    total: Number(total),
+    logoUrl
+  })
 
-export default handler;
+  await conn.sendMessage(m.chat, { image: factura, caption: '📄 Aquí está tu factura generada.' }, { quoted: m })
+}
+
+handler.command = ['generarfactura']
+handler.help = ['generarfactura']
+handler.tags = ['herramientas']
+
+export default handler
