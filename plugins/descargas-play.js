@@ -318,16 +318,6 @@ const handler = async (m, { conn, text, command }) => {
             audio: { url: json.data.downloadURL },
             mimetype: "audio/mpeg",
             fileName: `${json.data.title || title}.mp3`,
-            contextInfo: {
-              externalAdReply: {
-                title: json.data.title || title,
-                body: `Formato: ${json.data.format.toUpperCase()}`,
-                thumbnailUrl: thumbnail,
-                sourceUrl: url,
-                mediaType: 1,
-                renderLargerThumbnail: true
-              }
-            }
           },
           { quoted: fkontak }
         );
