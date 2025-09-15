@@ -317,7 +317,7 @@ const handler = async (m, { conn, text, command }) => {
           {
             audio: { url: json.data.downloadURL },
             mimetype: "audio/mpeg",
-            fileName: `${json.data.title || title}.mp3`,
+            fileName: `${json.data.title || title}.mp3`
           },
           { quoted: fkontak }
         );
