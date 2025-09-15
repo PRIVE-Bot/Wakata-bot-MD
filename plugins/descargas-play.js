@@ -217,7 +217,7 @@ async function resizeImage(buffer, size = 300) {
   return image.resize(size, size).getBufferAsync(Jimp.MIME_JPEG);
 }
 
-const handler = async (m, { conn, text, command }) => {
+const handler = async (m, { conn, text, command, args }) => {
   await m.react('🔎');
   await m.react('🔍');
   await m.react('🌟');
@@ -302,8 +302,8 @@ const handler = async (m, { conn, text, command }) => {
     // 📌 MP3 con la API de GokuBlack
 if (["play"].includes(command)) {
   try {
-    if (!args[0]) return m.reply("❌ Debes poner un enlace de YouTube válido.");
-    const url = args[0];
+    const url = args[0] || text; // usa args[0] o text
+    if (!url) return m.reply("❌ Debes poner un enlace de YouTube válido.");
 
     const apiURL = `https://gokublack.xyz/download/ytmp3?url=${encodeURIComponent(url)}`;
     const res = await fetch(apiURL);
