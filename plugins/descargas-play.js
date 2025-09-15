@@ -300,33 +300,38 @@ const handler = async (m, { conn, text, command }) => {
     );
 
     // 📌 MP3 con la API de GokuBlack
-    if (["play"].includes(command)) {
-      try {
-        const apiURL = `https://gokublack.xyz/download/ytmp3?url=${encodeURIComponent(url)}`;
-        const res = await fetch(apiURL);
-        const json = await res.json();
+if (["play"].includes(command)) {
+  try {
+    if (!args[0]) return m.reply("❌ Debes poner un enlace de YouTube válido.");
+    const url = args[0];
 
-        if (!json?.status || !json.data?.downloadURL) {
-          return m.reply("❌ No se pudo descargar el audio.");
-        }
+    const apiURL = `https://gokublack.xyz/download/ytmp3?url=${encodeURIComponent(url)}`;
+    const res = await fetch(apiURL);
+    const json = await res.json();
 
-        await m.react('🎧');
-
-        await conn.sendMessage(
-          m.chat,
-          {
-            audio: { url: json.data.downloadURL },
-            mimetype: "audio/mpeg",
-            fileName: `${json.data.title || title}.mp3`
-          },
-          { quoted: fkontak }
-        );
-
-      } catch (err) {
-        console.error("❌ Error en play:", err.message);
-        return m.reply(`⚠️ Ocurrió un error: ${err.message}`);
-      }
+    if (!json?.status || !json.data?.downloadURL) {
+      return m.reply("❌ No se pudo descargar el audio.");
     }
+
+    await m.react('🎧');
+
+    const title = json.data.title || "audio";
+
+    await conn.sendMessage(
+      m.chat,
+      {
+        audio: { url: json.data.downloadURL },
+        mimetype: "audio/mpeg",
+        fileName: `${title}.mp3`
+      },
+      { quoted: fkontak } 
+    );
+
+  } catch (err) {
+    console.error("❌ Error en play:", err.message);
+    return m.reply(`⚠️ Ocurrió un error: ${err.message}`);
+  }
+}
 
     // 📌 Video MP4 con Sylphy
     if (["play2"].includes(command)) {
