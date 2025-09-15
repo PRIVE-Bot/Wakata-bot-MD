@@ -4,18 +4,24 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     if (!text) return m.reply(`⚠️ Ingresa un link de YouTube\n\nEjemplo:\n${usedPrefix + command} https://youtube.com/watch?v=li_smPIZOZs`);
 
     try {
+        // Mensaje de búsqueda
+        const searchingMsg = await conn.sendMessage(m.chat, { text: '🔎 Buscando tu audio...' }, { quoted: m });
+
         // Consulta tu API
         let api = `https://dey-yt.onrender.com/api/download?url=${encodeURIComponent(text)}`;
         let res = await fetch(api);
         let json = await res.json();
 
         if (!json.status || !json.res?.url) {
-            return m.reply("❌ No se pudo obtener el audio.");
+            return conn.sendMessage(m.chat, { text: '❌ No se pudo obtener el audio.' }, { quoted: m });
         }
 
         let { title, filesize, quality, thumbnail, url } = json.res;
 
-        // Enviar información + audio
+        // Eliminar mensaje de "buscando"
+        await conn.sendMessage(m.chat, { delete: searchingMsg.key });
+
+        // Enviar audio
         await conn.sendMessage(m.chat, {
             audio: { url },
             mimetype: 'audio/mpeg',
@@ -34,7 +40,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 
     } catch (e) {
         console.error(e);
-        m.reply("⚠️ Error al procesar tu solicitud.");
+        m.reply("⚠️ Ocurrió un error al procesar tu solicitud.");
     }
 };
 
