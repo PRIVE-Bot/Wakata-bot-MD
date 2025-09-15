@@ -219,11 +219,11 @@ async function resizeImage(buffer, size = 300) {
 
 const handler = async (m, { conn, text, command }) => {
   await m.react('🔎');
-await m.react('🔍');
-await m.react('🌟');
+  await m.react('🔍');
+  await m.react('🌟');
 
   if (!text?.trim()) {
-    return conn.reply(m.chat, `${emoji} Dime el nombre de la canción o video que buscas`, m, rcanal);
+    return conn.reply(m.chat, `⚠️ Dime el nombre de la canción o video que buscas`, m, rcanal);
   }
 
   try {
@@ -301,22 +301,33 @@ await m.react('🌟');
 
     if (["play"].includes(command)) {
       try {
-        const apiURL = `https://gokublack.xyz/download/ytmp3?url=${encodeURIComponent(url)}`;
+        // 🔥 Ahora usa tu API MP3
+        const apiURL = `https://dey-yt.onrender.com/api/download?url=${encodeURIComponent(url)}`;
         const res = await fetch(apiURL);
         const json = await res.json();
 
-        if (!json?.status || !json.res?.downloadURL) {
+        if (!json?.status || !json.res?.url) {
           return m.reply("❌ No se pudo descargar el audio.");
         }
-await m.react('🎧');
+
+        await m.react('🎧');
 
         await conn.sendMessage(
           m.chat,
           {
-            audio: { url: json.res.downloadURL },
+            audio: { url: json.res.url },
             mimetype: "audio/mpeg",
             fileName: `${json.res.title || title}.mp3`,
-            ptt: true
+            contextInfo: {
+              externalAdReply: {
+                title: json.res.title || title,
+                body: `Tamaño: ${json.res.filesize} | Calidad: ${json.res.quality}`,
+                thumbnailUrl: json.res.thumbnail,
+                sourceUrl: url,
+                mediaType: 1,
+                renderLargerThumbnail: true
+              }
+            }
           },
           { quoted: fkontak }
         );
@@ -336,7 +347,7 @@ await m.react('🎧');
         if (!json?.status || !json.res?.url) {
           return m.reply("❌ No se pudo descargar el video desde Sylphy.");
         }
-await m.react('📽️');
+        await m.react('📽️');
         await conn.sendMessage(
           m.chat,
           {
