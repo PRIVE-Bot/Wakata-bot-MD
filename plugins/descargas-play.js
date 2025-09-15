@@ -217,13 +217,13 @@ async function resizeImage(buffer, size = 300) {
   return image.resize(size, size).getBufferAsync(Jimp.MIME_JPEG);
 }
 
-const handler = async (m, { conn, text, command, args }) => {
+const handler = async (m, { conn, text, command }) => {
   await m.react('🔎');
-  await m.react('🔍');
-  await m.react('🌟');
+await m.react('🔍');
+await m.react('🌟');
 
   if (!text?.trim()) {
-    return conn.reply(m.chat, `⚠️ Dime el nombre de la canción o video que buscas`, m, rcanal);
+    return conn.reply(m.chat, `${emoji} Dime el nombre de la canción o video que buscas`, m, rcanal);
   }
 
   try {
@@ -299,41 +299,34 @@ const handler = async (m, { conn, text, command, args }) => {
       { quoted: fkontak2 }
     );
 
-    // 📌 MP3 con la API de GokuBlack
-if (["play"].includes(command)) {
-  try {
-    const url = args[0] || text; // usa args[0] o text
-    if (!url) return m.reply("❌ Debes poner un enlace de YouTube válido.");
+    if (["play"].includes(command)) {
+      try {
+        const apiURL = `https://api.sylphy.xyz/download/ytmp3?apikey=sylphy_2962&url=${encodeURIComponent(url)}`;
+        const res = await fetch(apiURL);
+        const json = await res.json();
 
-    const apiURL = `https://gokublack.xyz/download/ytmp3?url=${encodeURIComponent(url)}`;
-    const res = await fetch(apiURL);
-    const json = await res.json();
+        if (!json?.status || !json.res?.url) {
+          return m.reply("❌ No se pudo descargar el audio desde Sylphy.");
+        }
+await m.react('🎧');
 
-    if (!json?.status || !json.data?.downloadURL) {
-      return m.reply("❌ No se pudo descargar el audio.");
+        await conn.sendMessage(
+          m.chat,
+          {
+            audio: { url: json.res.url },
+            mimetype: "audio/mpeg",
+            fileName: `${json.res.title || title}.mp3`,
+            ptt: true
+          },
+          { quoted: fkontak }
+        );
+
+      } catch (err) {
+        console.error("❌ Error en play:", err.message);
+        return m.reply(`⚠️ Ocurrió un error: ${err.message}`);
+      }
     }
 
-    await m.react('🎧');
-
-    const title = json.data.title || "audio";
-
-    await conn.sendMessage(
-      m.chat,
-      {
-        audio: { url: json.data.downloadURL },
-        mimetype: "audio/mpeg",
-        fileName: `${title}.mp3`
-      },
-      { quoted: fkontak } 
-    );
-
-  } catch (err) {
-    console.error("❌ Error en play:", err.message);
-    return m.reply(`⚠️ Ocurrió un error: ${err.message}`);
-  }
-}
-
-    // 📌 Video MP4 con Sylphy
     if (["play2"].includes(command)) {
       try {
         const apiURL = `https://api.sylphy.xyz/download/ytmp4?url=${encodeURIComponent(url)}&apikey=sylphy-fbb9`;
@@ -343,7 +336,7 @@ if (["play"].includes(command)) {
         if (!json?.status || !json.res?.url) {
           return m.reply("❌ No se pudo descargar el video desde Sylphy.");
         }
-        await m.react('📽️');
+await m.react('📽️');
         await conn.sendMessage(
           m.chat,
           {
