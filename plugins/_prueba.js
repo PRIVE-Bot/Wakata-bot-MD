@@ -1,131 +1,151 @@
-import jimp from 'jimp';
-import path from 'path';
-import fs from 'fs'; // Necesario para eliminar el archivo temporal
+// plugins/generar-factura.js
+// Generador de facturas en imagen con logo por URL
+// Dependencias: npm install canvas axios
 
-let handler = async (m, { conn, text, usedPrefix, command }) => {
-    // Definición de colores y fuentes (puedes cargar fuentes personalizadas si quieres)
-    const FONT_NORMAL = await jimp.loadFont(jimp.FONT_SANS_32_BLACK);
-    const FONT_BOLD = await jimp.loadFont(jimp.FONT_SANS_64_BLACK);
-    const FONT_SMALL = await jimp.loadFont(jimp.FONT_SANS_16_BLACK);
+import { createCanvas, loadImage } from "canvas";
+import axios from "axios";
 
-    // Colores de la factura (hexadecimal en formato RGBA, el último FF es para opacidad)
-    const PINK = 0xFF69B4FF; // Rosa
-    const YELLOW = 0xFFFF00FF; // Amarillo
-    const BLACK = 0x000000FF; // Negro para el texto
+function formatMoney(n, currency = "") {
+  return (
+    (Number(n) || 0).toLocaleString("es-HN", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }) + (currency ? ` ${currency}` : "")
+  );
+}
 
-    // --- Validación de datos de entrada ---
-    const args = text.split('|').map(arg => arg.trim());
-    if (args.length < 3) {
-        let example = `${usedPrefix + command} Juan Pérez | juan.perez@gmail.com | Producto A,2 | Producto B,1 | Producto C,3`;
-        return m.reply(`❌ *Uso incorrecto.*\n\nEjemplo de uso:\n\n*${example}*`);
-    }
+async function generateInvoice(data = {}) {
+  const W = 900;
+  const H = 1200;
+  const padding = 40;
+  const canvas = createCanvas(W, H);
+  const ctx = canvas.getContext("2d");
 
-    const [nombreCliente, emailCliente, ...productosRaw] = args;
+  // Fondo llamativo (degradado)
+  const gradient = ctx.createLinearGradient(0, 0, W, 0);
+  gradient.addColorStop(0, "#f43f5e"); // rojo
+  gradient.addColorStop(1, "#3b82f6"); // azul
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, W, 180);
 
-    // Verificar si el email es válido (formato básico)
-    if (!emailCliente.includes('@') || !emailCliente.includes('.')) {
-        return m.reply('❌ *Error: El formato del correo electrónico es inválido.* Por favor, usa un email como: `nombre.apellido@dominio.com`');
-    }
-
-    const productos = productosRaw.map(p => {
-        const parts = p.split(',');
-        if (parts.length !== 2) {
-            return null; // Marcar como inválido
-        }
-        const nombre = parts[0].trim();
-        const cantidad = parseInt(parts[1].trim());
-        if (isNaN(cantidad) || cantidad <= 0 || !nombre) {
-            return null; // Marcar como inválido
-        }
-        return { nombre, cantidad };
-    }).filter(p => p !== null); // Eliminar productos inválidos
-
-    if (productos.length === 0) {
-        return m.reply('❌ *Error: No se especificaron productos válidos.* Asegúrate de usar el formato `Producto,Cantidad` para cada item.');
-    }
-
-    // --- Generación de la imagen de la factura ---
-
-    // Crear una imagen base con el fondo rosa
-    const width = 800;
-    const height = 1200;
-    const image = new jimp(width, height, PINK);
-
-    // Añadir el marco amarillo
-    image.border(40, YELLOW);
-
-    // --- Contenido de la factura ---
-
-    // Título "FACTURA"
-    image.print(FONT_BOLD, 0, 80, {
-        text: 'FACTURA',
-        alignmentX: jimp.HORIZONTAL_ALIGN_CENTER,
-        alignmentY: jimp.VERTICAL_ALIGN_TOP
-    }, width, 100);
-
-    // Información del cliente
-    image.print(FONT_NORMAL, 80, 200, 'Cliente', BLACK);
-    image.print(FONT_SMALL, 80, 260, nombreCliente, BLACK);
-    image.print(FONT_SMALL, 80, 290, emailCliente, BLACK);
-
-    // Información de la factura (número y fecha)
-    const numeroFactura = '000456'; // Puedes generar un número aleatorio o un ID real
-    const fecha = new Date().toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
-    image.print(FONT_NORMAL, 450, 200, 'Número', BLACK);
-    image.print(FONT_SMALL, 450, 260, numeroFactura, BLACK);
-    image.print(FONT_NORMAL, 450, 300, 'Fecha', BLACK);
-    image.print(FONT_SMALL, 450, 360, fecha, BLACK);
-
-    // Tabla de productos
-    let yPos = 450;
-    image.print(FONT_NORMAL, 80, yPos, 'Descripción', BLACK);
-    image.print(FONT_NORMAL, 450, yPos, 'Cantidad', BLACK);
-    yPos += 50;
-
-    let total = 0;
-    for (const producto of productos) {
-        image.print(FONT_SMALL, 80, yPos, producto.nombre, BLACK);
-        image.print(FONT_SMALL, 450, yPos, producto.cantidad.toString(), BLACK);
-        total += producto.cantidad; // Asumiendo que el "total" es la suma de las cantidades por ahora
-        yPos += 40;
-    }
-
-    // Separador y total
-    yPos += 80;
-    image.print(FONT_BOLD, 80, yPos, 'Total', BLACK);
-    yPos += 60;
-    image.print(FONT_BOLD, 80, yPos, `$ ${total}.00`, BLACK);
-
-    // Mensaje de agradecimiento
-    image.print(FONT_NORMAL, 0, height - 100, {
-        text: 'Gracias por su compra!',
-        alignmentX: jimp.HORIZONTAL_ALIGN_CENTER,
-        alignmentY: jimp.VERTICAL_ALIGN_BOTTOM
-    }, width, 100, BLACK);
-
-    // --- Guardar y enviar la imagen ---
-
-    // Genera un nombre de archivo único para evitar conflictos si se generan muchas facturas
-    const fileName = `factura_${m.sender.split('@')[0]}_${Date.now()}.png`;
-    const imagePath = path.join(__dirname, fileName); // Guarda en la misma carpeta que el handler
-
+  // Logo desde URL
+  if (data.logoUrl) {
     try {
-        await image.writeAsync(imagePath);
-        // Envía la imagen al chat donde se ejecutó el comando
-        await conn.sendFile(m.chat, imagePath, fileName, 'Aquí tienes tu factura:', m);
-    } catch (error) {
-        console.error('Error al generar o enviar la factura:', error);
-        await m.reply('Hubo un error al generar la factura. Inténtalo de nuevo más tarde.');
-    } finally {
-        // Elimina la imagen temporal después de enviarla, incluso si hubo un error en el envío
-        if (fs.existsSync(imagePath)) {
-            fs.unlinkSync(imagePath);
-        }
+      const res = await axios.get(data.logoUrl, { responseType: "arraybuffer" });
+      const img = await loadImage(res.data);
+      ctx.drawImage(img, padding, 20, 130, 130);
+    } catch (e) {
+      console.log("No se pudo cargar el logo:", e.message);
     }
+  }
+
+  // Título y datos vendedor
+  ctx.fillStyle = "#fff";
+  ctx.font = "bold 32px Sans";
+  ctx.fillText(data.seller?.name || "Mi Empresa", padding + 160, 70);
+  ctx.font = "20px Sans";
+  ctx.fillText(data.seller?.address || "", padding + 160, 105);
+  ctx.fillText(data.seller?.phone || "", padding + 160, 135);
+
+  // Factura info (derecha)
+  ctx.textAlign = "right";
+  ctx.font = "bold 28px Sans";
+  ctx.fillText(data.invoiceNumber || "FACTURA", W - padding, 70);
+  ctx.font = "20px Sans";
+  ctx.fillText(data.date || new Date().toLocaleDateString(), W - padding, 110);
+  ctx.textAlign = "left";
+
+  // Cliente
+  const boxY = 220;
+  ctx.fillStyle = "#f9fafb";
+  ctx.fillRect(padding, boxY, W - padding * 2, 110);
+  ctx.fillStyle = "#111827";
+  ctx.font = "bold 22px Sans";
+  ctx.fillText("Cliente:", padding + 12, boxY + 35);
+  ctx.font = "20px Sans";
+  ctx.fillText(data.buyer?.name || "-", padding + 12, boxY + 70);
+
+  // Tabla de items
+  const tableTop = boxY + 150;
+  const colX = [padding + 12, 500, 680, 820];
+  ctx.fillStyle = "#374151";
+  ctx.font = "bold 20px Sans";
+  ctx.fillText("Descripción", colX[0], tableTop);
+  ctx.fillText("Cant.", colX[1], tableTop);
+  ctx.fillText("P. Unit", colX[2], tableTop);
+  ctx.fillText("Total", colX[3], tableTop);
+
+  ctx.strokeStyle = "#d1d5db";
+  ctx.beginPath();
+  ctx.moveTo(padding, tableTop + 10);
+  ctx.lineTo(W - padding, tableTop + 10);
+  ctx.stroke();
+
+  let y = tableTop + 40;
+  let subTotal = 0;
+  for (const it of data.items || []) {
+    const total = (Number(it.qty) || 0) * (Number(it.unit) || 0);
+    subTotal += total;
+
+    ctx.fillStyle = "#111827";
+    ctx.font = "18px Sans";
+    ctx.fillText(it.desc || "-", colX[0], y);
+    ctx.fillText(String(it.qty || 0), colX[1], y);
+    ctx.fillText(formatMoney(it.unit, data.currency), colX[2], y);
+    ctx.fillText(formatMoney(total, data.currency), colX[3], y);
+    y += 32;
+  }
+
+  const vat = data.vatPercent
+    ? subTotal * (Number(data.vatPercent) / 100)
+    : 0;
+  const total = subTotal + vat;
+  const totalsY = H - 200;
+
+  ctx.font = "bold 20px Sans";
+  ctx.fillText("Subtotal:", colX[2], totalsY);
+  ctx.fillText(formatMoney(subTotal, data.currency), colX[3], totalsY);
+  ctx.fillText(`IVA ${data.vatPercent || 0}%:`, colX[2], totalsY + 30);
+  ctx.fillText(formatMoney(vat, data.currency), colX[3], totalsY + 30);
+
+  ctx.fillStyle = "#dc2626";
+  ctx.font = "bold 26px Sans";
+  ctx.fillText("Total:", colX[2], totalsY + 80);
+  ctx.fillText(formatMoney(total, data.currency), colX[3], totalsY + 80);
+
+  return canvas.toBuffer("image/png");
+}
+
+// Handler para el bot
+let handler = async (m, { conn }) => {
+  const data = {
+    invoiceNumber: "F001-0007",
+    date: "2025-09-15",
+    seller: {
+      name: "Mode Store",
+      address: "Avenida Central",
+      phone: "+504 9999-9999",
+    },
+    buyer: { name: "Cliente Demo" },
+    items: [
+      { desc: "Producto A", qty: 2, unit: 12.5 },
+      { desc: "Servicio B", qty: 1, unit: 40.0 },
+    ],
+    currency: "USD",
+    logoUrl:
+      "https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg",
+  };
+
+  const buffer = await generateInvoice(data);
+  await conn.sendMessage(
+    m.chat,
+    { image: buffer, caption: `Factura ${data.invoiceNumber}` },
+    { quoted: m }
+  );
 };
 
-handler.command = ['a']; // El comando que activará este handler
-handler.help = ['a <cliente>|<email>|<producto,cantidad>|...'];
-handler.tags = ['herramientas'];
+handler.command = ["generarfactura"];
+handler.help = ["generarfactura"];
+handler.tags = ["herramientas"];
 
 export default handler;
