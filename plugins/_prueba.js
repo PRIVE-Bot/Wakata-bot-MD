@@ -1,38 +1,45 @@
 import fetch from "node-fetch";
 
-// Reemplaza esta URL con la dirección de tu API en Render
-const API_URL = "[https://dey-yt.onrender.com/api](https://dey-yt.onrender.com/api)";
-
-const handler = async (m, { conn, text }) => {
-    // Verifica si se proporcionó una URL
-    if (!text) {
-        return m.reply("Por favor, proporciona una URL de YouTube.");
-    }
-
-    m.reply("Obteniendo información del audio, por favor espera un momento.");
+let handler = async (m, { conn, text, usedPrefix, command }) => {
+    if (!text) return m.reply(`⚠️ Ingresa un link de YouTube\n\nEjemplo:\n${usedPrefix + command} https://youtube.com/watch?v=li_smPIZOZs`);
 
     try {
-        // Realiza una única solicitud GET a la API
-        const response = await fetch(`${API_URL}/download?url=${encodeURIComponent(text)}`);
-        const data = await response.json();
+        // Consulta tu API
+        let api = `https://dey-yt.onrender.com/api/download?url=${encodeURIComponent(text)}`;
+        let res = await fetch(api);
+        let json = await res.json();
 
-        // Si la respuesta contiene un error, se lo informa al usuario
-        if (data.error) {
-            return m.reply(`Hubo un error en la API: ${data.error}`);
+        if (!json.status || !json.res?.url) {
+            return m.reply("❌ No se pudo obtener el audio.");
         }
 
-        // Responde con el título y la URL del audio
-        const audioUrl = data.url;
-        m.reply(`¡Información obtenida! Título: *${data.title}*`);
-        m.reply(`Puedes descargar el audio desde esta URL: ${audioUrl}`);
-        
-    } catch (error) {
-        console.error("Error al conectar con la API:", error);
-        m.reply("Ocurrió un error al conectar con la API. Inténtalo de nuevo.");
+        let { title, filesize, quality, thumbnail, url } = json.res;
+
+        // Enviar información + audio
+        await conn.sendMessage(m.chat, {
+            audio: { url },
+            mimetype: 'audio/mpeg',
+            fileName: `${title}.mp3`,
+            contextInfo: {
+                externalAdReply: {
+                    title: title,
+                    body: `Tamaño: ${filesize} | Calidad: ${quality}`,
+                    thumbnailUrl: thumbnail,
+                    sourceUrl: text,
+                    mediaType: 1,
+                    renderLargerThumbnail: true
+                }
+            }
+        }, { quoted: m });
+
+    } catch (e) {
+        console.error(e);
+        m.reply("⚠️ Error al procesar tu solicitud.");
     }
 };
 
-handler.command = ["y"];
+handler.help = ["playmp3"].map(v => v + " <url>");
 handler.tags = ["downloader"];
+handler.command = ["playmp3", "ytmp3"];
 
 export default handler;
