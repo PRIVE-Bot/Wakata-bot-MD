@@ -1,4 +1,4 @@
-import { WAMessageStubType } from '@whiskeysockets/baileys'
+/*import { WAMessageStubType } from '@whiskeysockets/baileys'
 import fetch from 'node-fetch'
 
 export async function before(m, { conn, participants, groupMetadata }) {
@@ -87,7 +87,104 @@ export async function before(m, { conn, participants, groupMetadata }) {
   })
 }
 
+*/
 
+
+import { WAMessageStubType } from '@whiskeysockets/baileys'
+import fetch from 'node-fetch'
+
+export async function before(m, { conn, participants, groupMetadata }) {
+  let botSettings = global.db.data.settings[conn.user.jid] || {}
+  if (botSettings.soloParaJid) return
+  if (!m.messageStubType || !m.isGroup) return true
+
+  const totalMembers = participants.length
+  const date = new Date().toLocaleString('es-ES', { timeZone: 'America/Mexico_City' })
+  const who = m.messageStubParameters[0]
+  const taguser = `@${who.split('@')[0]}`
+  const chat = global.db.data.chats[m.chat]
+  const botname = global.botname || "Bot"
+
+  if (!chat.welcome) return
+
+  let tipo = ''
+  let tipo1 = ''
+  let tipo2 = global.img || 'https://i.postimg.cc/t4TjFpCj/1757994329979.jpg' // fondo estático
+
+  if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_ADD) {
+    tipo = 'Bienvenido'
+    tipo1 = 'al grupo'
+  }
+
+  if (
+    m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_LEAVE ||
+    m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_REMOVE
+  ) {
+    tipo = 'Adiós'
+    tipo1 = 'del grupo'
+  }
+
+  if (!tipo) return
+
+  let fkontak
+  try {
+    // Foto de perfil del usuario
+    let avatar = await conn.profilePictureUrl(who).catch(() => tipo2)
+
+    // Llamar a la API de bienvenida/despedida
+    const apiUrl = `https://canvas-8zhi.onrender.com/api/welcome?title=${encodeURIComponent(tipo)}&desc=${encodeURIComponent(tipo1)}&profile=${encodeURIComponent(avatar)}&background=${encodeURIComponent(tipo2)}`
+    const res = await fetch(apiUrl)
+    const imgBuffer = Buffer.from(await res.arrayBuffer())
+
+    // Generar fkontak usando tu imagen por defecto
+    const res2 = await fetch('https://i.postimg.cc/c4t9wwCw/1756162596829.jpg')
+    const img3 = Buffer.from(await res2.arrayBuffer())
+
+    fkontak = {
+      key: { fromMe: false, participant: "0@s.whatsapp.net" },
+      message: {
+        productMessage: {
+          product: {
+            productImage: { jpegThumbnail: img3 },
+            title: `${tipo} ${tipo1}`,
+            description: `${botname} da la bienvenida a ${taguser}`,
+            currencyCode: "USD",
+            priceAmount1000: 5000,
+            retailerId: "BOT"
+          },
+          businessOwnerJid: "0@s.whatsapp.net"
+        }
+      }
+    }
+
+    // Aquí usamos tu productMessage tal como lo pediste
+    const productMessage = {
+      product: {
+        productImage: { url: imgBuffer }, // imagen generada por API
+        title: `${tipo}, ahora somos ${totalMembers}`,
+        description: `
+✎ Usuario: ${taguser}
+✎ Grupo: ${groupMetadata.subject}
+✎ Miembros: ${totalMembers}
+✎ Fecha: ${date}
+        `,
+        currencyCode: "USD",
+        priceAmount1000: 5000,
+        retailerId: "1677",
+        productId: "24628293543463627",
+        productImageCount: 1,
+      },
+      businessOwnerJid: "0@s.whatsapp.net"
+    }
+
+    await conn.sendMessage(m.chat, productMessage, {
+      quoted: fkontak,
+      contextInfo: { mentionedJid: [who] }
+    })
+  } catch (e) {
+    console.error("Error al generar bienvenida/despedida:", e)
+  }
+}
 
 
 
