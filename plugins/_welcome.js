@@ -89,7 +89,6 @@ export async function before(m, { conn, participants, groupMetadata }) {
 
 */
 
-
 import { WAMessageStubType } from '@whiskeysockets/baileys'
 import fetch from 'node-fetch'
 
@@ -136,16 +135,13 @@ export async function before(m, { conn, participants, groupMetadata }) {
     const res = await fetch(apiUrl)
     const imgBuffer = Buffer.from(await res.arrayBuffer())
 
-    // Generar fkontak usando tu imagen por defecto
-    const res2 = await fetch('https://i.postimg.cc/c4t9wwCw/1756162596829.jpg')
-    const img3 = Buffer.from(await res2.arrayBuffer())
-
+    // fkontak con thumbnail de la API
     fkontak = {
       key: { fromMe: false, participant: "0@s.whatsapp.net" },
       message: {
         productMessage: {
           product: {
-            productImage: { jpegThumbnail: img3 },
+            productImage: { jpegThumbnail: imgBuffer }, // thumbnail
             title: `${tipo} ${tipo1}`,
             description: `${botname} da la bienvenida a ${taguser}`,
             currencyCode: "USD",
@@ -157,10 +153,10 @@ export async function before(m, { conn, participants, groupMetadata }) {
       }
     }
 
-    // Aquí usamos tu productMessage tal como lo pediste
+    // Mantener tu productMessage original, usando tipo2 como URL (fondo estático)
     const productMessage = {
       product: {
-        productImage: { url: imgBuffer }, // imagen generada por API
+        productImage: { url: tipo2 },
         title: `${tipo}, ahora somos ${totalMembers}`,
         description: `
 ✎ Usuario: ${taguser}
@@ -181,6 +177,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
       quoted: fkontak,
       contextInfo: { mentionedJid: [who] }
     })
+
   } catch (e) {
     console.error("Error al generar bienvenida/despedida:", e)
   }
