@@ -376,7 +376,7 @@ function formatViews(views) {
 import fetch from "node-fetch";
 import yts from "yt-search";
 import Jimp from "jimp";
-import savetubeModule from "./savetube.js"; // Importa tu módulo de savetube aquí
+import savetubeModule from "./plugins/_prueba.js"; // Importa tu módulo de savetube aquí
 const savetube = savetubeModule;
 
 async function resizeImage(buffer, size = 300) {
