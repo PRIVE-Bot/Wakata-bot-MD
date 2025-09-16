@@ -1,5 +1,3 @@
-// plugins/factura.js
-// Generador de facturas para tu bot de WhatsApp
 // Editado y optimizado por https://github.com/deylin-eliac
 
 import { createCanvas, loadImage } from 'canvas'
@@ -11,14 +9,12 @@ async function generateFactura({ cliente, producto, cantidad, precio, total, log
   const canvas = createCanvas(width, height)
   const ctx = canvas.getContext('2d')
 
-  // Fondo llamativo
   const gradient = ctx.createLinearGradient(0, 0, width, height)
   gradient.addColorStop(0, '#FFDEE9')
   gradient.addColorStop(1, '#B5FFFC')
   ctx.fillStyle = gradient
   ctx.fillRect(0, 0, width, height)
 
-  // Logo
   if (logoUrl) {
     try {
       const res = await fetch(logoUrl)
@@ -30,7 +26,6 @@ async function generateFactura({ cliente, producto, cantidad, precio, total, log
     }
   }
 
-  // Encabezado
   ctx.fillStyle = '#222'
   ctx.font = 'bold 36px Arial'
   ctx.fillText('FACTURA DE COMPRA', 200, 80)
@@ -41,7 +36,6 @@ async function generateFactura({ cliente, producto, cantidad, precio, total, log
   const fecha = new Date().toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })
   ctx.fillText(`Fecha: ${fecha}`, 200, 150)
 
-  // Tabla de productos
   ctx.fillStyle = '#000'
   ctx.font = 'bold 22px Arial'
   ctx.fillText('Producto', 80, 220)
@@ -53,11 +47,9 @@ async function generateFactura({ cliente, producto, cantidad, precio, total, log
   ctx.fillText(`${cantidad}`, 340, 260)
   ctx.fillText(`$${precio}`, 500, 260)
 
-  // Total
   ctx.font = 'bold 26px Arial'
   ctx.fillText(`TOTAL: $${total}`, 80, 340)
 
-  // Nota final
   ctx.font = 'italic 18px Arial'
   ctx.fillText('Gracias por su compra ❤️', 80, 400)
 
