@@ -36,7 +36,7 @@ import NodeCache from 'node-cache'
 const { CONNECTING } = ws
 const { chain } = lodash
 const PORT = process.env.PORT || process.env.SERVER_PORT || 3000
-
+setupErrorHandler("Bot")
 let { say } = cfonts
 console.log(chalk.magentaBright('\n ...............Iniciando................'))
 say('Bot', {
