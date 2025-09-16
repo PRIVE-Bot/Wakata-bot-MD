@@ -485,8 +485,8 @@ const handler = async (m, { conn, text, command }) => {
     const JT = {
       contextInfo: {
         externalAdReply: {
-          title: "Vegeta-Bot MB2.0 👑",
-          body: "ᴇʟ ᴍᴇᴊᴏʀ ʙᴏᴛ ᴅᴇ ᴡʜᴀᴛsᴀᴘᴘ",
+          title: botname,
+          body: title,
           mediaType: 1,
           previewType: 0,
           mediaUrl: url,
@@ -529,7 +529,7 @@ const handler = async (m, { conn, text, command }) => {
               video: { url: downloadUrl },
               fileName: `${title}.mp4`,
               mimetype: "video/mp4",
-              caption: "📥 Aquí tienes tu video descargado por,
+              caption: "📥 Aquí tienes tu video descargado por",
               thumbnail: thumb
             }, { quoted: fkontak });
             break;
