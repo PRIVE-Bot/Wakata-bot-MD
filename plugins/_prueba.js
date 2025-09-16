@@ -164,25 +164,29 @@ const handler = async (m, { conn, text, command }) => {
       }, { quoted: fkontak });  
     }  
 
-    // --- play2 (video) ---  
-    if (command === "play2") {  
-      await m.react('🎬');  
-      const dl = await savetube.download(url, "video");  
-      if (!dl.status) return m.reply(`❌ Error: ${dl.error}`);  
+    // --- play2 (video) ---
+if (command === "play2") {  
+  await m.react('🎬');  
+  const dl = await savetube.download(url, "video");  
+  if (!dl.status) return m.reply(`❌ Error: ${dl.error}`);  
 
-      await conn.sendMessage(m.chat, {  
-        video: { url: dl.result.download },  
-        mimetype: "video/mp4",  
-        fileName: `${dl.result.title}.mp4`,  
-        caption: `🎬 ${dl.result.title}`  
-      }, { quoted: fkontak });  
-    }  
+  try {
+    // descargar el video como buffer
+    const response = await axios.get(dl.result.download, { responseType: "arraybuffer" });
+    const buffer = Buffer.from(response.data);
 
-  } catch (error) {  
-    console.error("❌ Error:", error);  
-    return m.reply(`⚠️ Ocurrió un error: ${error.message}`);  
-  }  
-};  
+    await conn.sendMessage(m.chat, {  
+      video: buffer,  
+      mimetype: "video/mp4",  
+      fileName: `${dl.result.title}.mp4`,  
+      caption: `🎬 ${dl.result.title}`  
+    }, { quoted: fkontak });  
+
+  } catch (e) {
+    console.error("❌ Error al bajar el video:", e.message);
+    return m.reply("⚠️ No pude descargar el archivo del video, intenta con otro.");
+  }
+}
 
 handler.command = handler.help = ["play", "play2"];  
 handler.tags = ["downloader"];  
