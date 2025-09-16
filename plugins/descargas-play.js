@@ -374,97 +374,78 @@ function formatViews(views) {
 
 
 import { exec } from "child_process";
-import yts from "yt-search";
-import fs from "fs";
 import path from "path";
+import fs from "fs";
+import yts from "yt-search";
 
-const formatAudio = ["mp3", "m4a", "webm", "aac", "flac", "opus", "ogg", "wav"];
-const formatVideo = ["360", "480", "720", "1080", "1440", "2160", "4k"];
+const ytDlpPath = path.join(process.cwd(), "yt-dlp"); // ruta al binario
+const formatAudio = ["mp3","m4a","aac","opus","flac","ogg","wav"];
+const formatVideo = ["360","480","720","1080","1440","2160","4k"];
 
 function runYtDlp(url, format) {
   return new Promise((resolve, reject) => {
-    const output = path.join("/tmp", "%(title)s.%(ext)s"); // temporal
-    let cmd = `yt-dlp -f best --no-playlist "${url}" -o "${output}"`;
+    const output = path.join("/tmp", "%(title)s.%(ext)s");
+    let cmd = `${ytDlpPath} -f best --no-playlist "${url}" -o "${output}"`;
 
     if (formatAudio.includes(format)) {
-      cmd = `yt-dlp -f bestaudio --extract-audio --audio-format ${format} "${url}" -o "${output}"`;
+      cmd = `${ytDlpPath} -f bestaudio --extract-audio --audio-format ${format} "${url}" -o "${output}"`;
     } else if (formatVideo.includes(format)) {
-      cmd = `yt-dlp -f "bestvideo[height<=${format}]+bestaudio/best" "${url}" -o "${output}"`;
+      cmd = `${ytDlpPath} -f "bestvideo[height<=${format}]+bestaudio/best" "${url}" -o "${output}"`;
     } else {
       return reject(new Error("⚠ Formato no soportado."));
     }
 
     exec(cmd, (err, stdout, stderr) => {
       if (err) return reject(err);
-      // Buscar el archivo generado en stdout o temporal
-      const match = stdout.match(/Destination: (.+)/);
-      if (match) {
-        resolve(match[1].trim());
-      } else {
-        // fallback: buscar último archivo en /tmp
-        const files = fs.readdirSync("/tmp").map(f => path.join("/tmp", f));
-        const latest = files.map(f => ({ f, t: fs.statSync(f).mtime })).sort((a,b)=>b.t-a.t)[0];
-        if (latest) resolve(latest.f);
-        else reject(new Error("No se encontró el archivo descargado."));
-      }
+      // Buscar archivo descargado en /tmp
+      const files = fs.readdirSync("/tmp").map(f => path.join("/tmp", f));
+      const latest = files.map(f => ({ f, t: fs.statSync(f).mtime })).sort((a,b)=>b.t-a.t)[0];
+      if (latest) resolve(latest.f);
+      else reject(new Error("No se encontró el archivo descargado."));
     });
   });
 }
 
 const handler = async (m, { conn, text, command }) => {
   try {
-    if (!text.trim()) return m.reply("🎧 Ingresa el nombre de la canción o video que deseas buscar.");
+    if (!text.trim()) return m.reply("🎧 Ingresa el nombre de la canción o video.");
 
     const search = await yts(text);
     if (!search.all.length) return m.reply("⚠ No se encontraron resultados.");
 
-    const videoInfo = search.all[0];
-    const { title, thumbnail, timestamp, views, ago, url } = videoInfo;
-    const vistas = views?.toLocaleString() || "Desconocido";
-
-    const tipo = ["play2", "ytv", "ytmp4"].includes(command) ? "ᴠɪᴅᴇᴏ 🎞" : "ᴀᴜᴅɪᴏ ♫";
+    const video = search.all[0];
+    const { title, url, timestamp } = video;
+    const tipo = ["play2","ytv","ytmp4"].includes(command) ? "ᴠɪᴅᴇᴏ 🎞" : "ᴀᴜᴅɪᴏ ♫";
     const emoji = tipo.includes("ᴠɪᴅᴇᴏ") ? "📹" : "🎧";
 
     await m.react(emoji);
+    await conn.reply(m.chat, `*${tipo}*\nTítulo: ${title}\nDuración: ${timestamp}\nEnlace: ${url}`, m);
 
-    const infoMessage = `
-┏━━━━━━━━━━━┓
-┃ *YouTube Downloader*
-┣━━━━━━━━━━━┫
-┃ *Título:* ${title}
-┃ *Duración:* ${timestamp}
-┃ *Vistas:* ${vistas}
-┃ *Publicado:* ${ago}
-┃ *Enlace:* ${url}
-┗━━━━━━━━━━━┛`;
-
-    await conn.reply(m.chat, infoMessage, m);
-
-    let format = ["play", "yta", "ytmp3"].includes(command) ? "mp3" : "720"; // default video 720p
+    let format = ["play","yta","ytmp3"].includes(command) ? "mp3" : "720";
     const filePath = await runYtDlp(url, format);
 
     if (formatAudio.includes(format)) {
       await conn.sendMessage(m.chat, {
         audio: { url: "file://" + filePath },
         mimetype: "audio/mpeg",
-        fileName: path.basename(filePath)
+        fileName: `${title}.mp3`
       }, { quoted: m });
     } else {
       await conn.sendMessage(m.chat, {
         video: { url: "file://" + filePath },
         mimetype: "video/mp4",
-        fileName: path.basename(filePath),
+        fileName: `${title}.mp4`,
         caption: `📥 Aquí tienes tu video descargado: ${title}`
       }, { quoted: m });
     }
 
-  } catch (error) {
-    console.error("❌ Error:", error);
-    return m.reply(`⚠ Ocurrió un error:\n${error.message}`);
+  } catch (err) {
+    console.error(err);
+    m.reply(`⚠ Ocurrió un error:\n${err.message}`);
   }
 };
 
-handler.command = handler.help = ["play", "play2", "yta", "ytmp3", "ytv", "ytmp4"];
+handler.command = handler.help = ["play","play2","yta","ytmp3","ytv","ytmp4"];
 handler.tags = ["downloader"];
 handler.coin = 5;
 
