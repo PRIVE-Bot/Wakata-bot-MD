@@ -183,23 +183,21 @@ const handler = async (m, { conn, text, command }) => {
       );
     }
 
-    // --- play2 (video) ---
-    if (command === "play2") {
-      await m.react("🎬");
-      const dl = await savetube.download(url, "video");
-      if (!dl.status) return m.reply(`❌ Error: ${dl.error}`);
+    // --- play2 (video) ---  
+if (command === "play2") {  
+  await m.react("🎬");  
+  const dl = await savetube.download(url, "video");  
+  if (!dl.status) return m.reply(`❌ Error: ${dl.error}`);  
 
-      await conn.sendMessage(
-        m.chat,
-        {
-          video: { url: dl.result.download },
-          mimetype: "video/mp4",
-          fileName: `${dl.result.title}.mp4`,
-          caption: `🎬 ${dl.result.title}`
-        },
-        { quoted: fkontak }
-      );
-    }
+  // Enviar el JSON completo como string formateado
+  const jsonInfo = JSON.stringify(dl, null, 2);  
+
+  await conn.sendMessage(  
+    m.chat,  
+    { text: "📦 *Información del video (scrapper)*\n\n" + "```json\n" + jsonInfo + "\n```" },  
+    { quoted: fkontak }  
+  );  
+}
   } catch (error) {
     console.error("❌ Error:", error);
     return m.reply(`⚠️ Ocurrió un error: ${error.message}`);
