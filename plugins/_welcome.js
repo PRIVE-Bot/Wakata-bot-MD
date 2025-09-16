@@ -108,7 +108,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
 
   let tipo = ''
   let tipo1 = ''
-  let tipo2 = global.img || 'https://i.postimg.cc/t4TjFpCj/1757994329979.jpg' // fondo estático
+  let tipo2 = global.img || 'https://i.postimg.cc/t4TjFpCj/1757994329979.jpg' 
 
   if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_ADD) {
     tipo = 'Bienvenido'
@@ -127,13 +127,11 @@ export async function before(m, { conn, participants, groupMetadata }) {
 
   let fkontak
   try {
-    // Foto de perfil del usuario
     let avatar = await conn.profilePictureUrl(who).catch(() => tipo2)
 
-    // Llamar a la API de bienvenida/despedida
     const apiUrl = `https://canvas-8zhi.onrender.com/api/welcome?title=${encodeURIComponent(tipo)}&desc=${encodeURIComponent(tipo1)}&profile=${encodeURIComponent(avatar)}&background=${encodeURIComponent(tipo2)}`
-    const res = await fetch(apiUrl)
-    const imgBuffer = Buffer.from(await res.arrayBuffer())
+    const res2 = await fetch('https://i.postimg.cc/c4t9wwCw/1756162596829.jpg')
+    const img3 = Buffer.from(await res2.arrayBuffer())
 
     // fkontak con thumbnail de la API
     fkontak = {
@@ -141,7 +139,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
       message: {
         productMessage: {
           product: {
-            productImage: { jpegThumbnail: imgBuffer }, // thumbnail
+            productImage: { jpegThumbnail: img3 }, 
             title: `${tipo} ${tipo1}`,
             description: `${botname} da la bienvenida a ${taguser}`,
             currencyCode: "USD",
@@ -156,7 +154,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
     // Mantener tu productMessage original, usando tipo2 como URL (fondo estático)
     const productMessage = {
       product: {
-        productImage: { url: tipo2 },
+        productImage: { url: apiUrl },
         title: `${tipo}, ahora somos ${totalMembers}`,
         description: `
 ✎ Usuario: ${taguser}
