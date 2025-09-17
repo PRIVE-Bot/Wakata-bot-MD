@@ -168,39 +168,11 @@ handler.tags = ["downloader"];
 export default handler;*/
 
 
-// plugins/agregar.js
-const handler = async (m, { conn, args, command, usedPrefix }) => {
-  if (!m.isGroup) throw `✳️ Este comando solo funciona en grupos`;
-  if (!args[0]) throw `⚠️ Uso: ${usedPrefix + command} 521XXXXXXXXXX`;
+const handler = async (m, { conn, command }) => {
+let avatar = await conn.profilePictureUrl(who).catch(() => null);
+  await m.reply(`avatar`)
+}
 
-  let user = args[0].replace(/[^0-9]/g, '') + '@s.whatsapp.net';
+handler.command = ["1"]
 
-  try {
-    // Intentar agregar directamente
-    await conn.groupParticipantsUpdate(m.chat, [user], 'add');
-    m.reply(`✅ Intentando agregar a @${user.split('@')[0]}`, null, { mentions: [user] });
-  } catch (e) {
-    // Si no se pudo (por privacidad), mandar invitación
-    try {
-      let code = await conn.groupInviteCode(m.chat);
-      let link = `https://chat.whatsapp.com/${code}`;
-
-      await conn.sendMessage(user, {
-        text: `👋 Hola!  
-Fuiste invitado a unirte al grupo *${m.groupMetadata.subject}*  
-👉 Haz clic aquí para entrar: ${link}`
-      });
-
-      m.reply(`⚠️ No pude agregar a @${user.split('@')[0]} directamente.  
-Le envié una invitación privada ✅`, null, { mentions: [user] });
-    } catch (err) {
-      m.reply(`❌ Error al generar invitación: ${err.message}`);
-    }
-  }
-};
-
-handler.command = /^agregar$/i;
-handler.group = true;
-handler.admin = true; // Solo admins del grupo pueden usarlo
-
-export default handler;
+export default handler
