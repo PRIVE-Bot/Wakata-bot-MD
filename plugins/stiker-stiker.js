@@ -1,34 +1,36 @@
+import fetch from 'node-fetch';
 import { sticker } from '../lib/sticker.js';
 import uploadFile from '../lib/uploadFile.js';
 import uploadImage from '../lib/uploadImage.js';
 import { webp2png } from '../lib/webp2mp4.js';
 
-let handler = async (m, { conn, args, usedPrefix, command }) => {
-const res1 = await fetch('https://files.catbox.moe/p87uei.jpg');
-const thumb5 = Buffer.from(await res1.arrayBuffer());
+let handler = async (m, { conn, args }) => {
+  const res1 = await fetch('https://files.catbox.moe/p87uei.jpg');
+  const thumb5 = Buffer.from(await res1.arrayBuffer());
 
-const fkontak = {
+  const fkontak = {
     key: { fromMe: false, participant: "0@s.whatsapp.net" },
     message: {
-        documentMessage: {
-            title: '𝗦𝗧𝗜𝗞𝗘𝗥',
-            fileName: `𝗦𝗧𝗜𝗞𝗘𝗥 𝗚𝗘𝗡𝗘𝗥𝗔𝗗𝗢 𝗖𝗢𝗡 𝗘𝗫𝗜𝗧𝗢`,
-            jpegThumbnail: thumb5
-        }
+      documentMessage: {
+        title: '𝗦𝗧𝗜𝗞𝗘𝗥',
+        fileName: `𝗦𝗧𝗜𝗞𝗘𝗥 𝗚𝗘𝗡𝗘𝗥𝗔𝗗𝗢 𝗖𝗢𝗡 𝗘𝗫𝗜𝗧𝗢`,
+        jpegThumbnail: thumb5
+      }
     }
-}
-
+  };
 
   let stiker = false;
   try {
     let q = m.quoted ? m.quoted : m;
     let mime = (q.msg || q).mimetype || q.mediaType || '';
+
     if (/webp|image|video/g.test(mime)) {
-      if (/video/g.test(mime) && (q.msg || q).seconds > 15) {
+      let seconds = (q.msg || q).seconds || 0;
+      if (/video/g.test(mime) && seconds > 15) {
         return m.reply(`${emoji2} *¡El video no puede durar más de 15 segundos!...*`, m, rcanal);
       }
-      let img = await q.download?.();
 
+      let img = await q.download?.();
       if (!img) {
         return conn.reply(m.chat, `${emoji} *Por favor, envía una imagen o video para hacer un sticker.*`, m, rcanal);
       }
@@ -54,19 +56,15 @@ const fkontak = {
       if (isUrl(args[0])) {
         stiker = await sticker(false, args[0], global.packsticker, global.packsticker2);
       } else {
-        return m.reply(`${msm} *El URL es incorrecto...*`, m, rcanal);
+        return m.reply(`${msm || emoji} *El URL es incorrecto...*`, m, rcanal);
       }
     }
   } catch (e) {
     console.error(e);
-    if (!stiker) stiker = e;
+    if (!stiker) stiker = null;
   } finally {
     if (stiker) {
-      await conn.sendMessage(
-  m.chat, 
-  { sticker: stiker }, 
-  { quoted: fkontak }
-);
+      await conn.sendMessage(m.chat, { sticker: stiker }, { quoted: fkontak });
     } else {
       return conn.reply(m.chat, `${emoji} *Por favor, envía una imagen o video para hacer un sticker.*`, m, rcanal);
     }
@@ -80,5 +78,5 @@ handler.command = ['s', 'sticker', 'stiker'];
 export default handler;
 
 const isUrl = (text) => {
-  return text.match(new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)(jpe?g|gif|png)/, 'gi'));
+  return /(https?:\/\/[^\s]+)\.(jpe?g|gif|png)/i.test(text);
 };
