@@ -1,10 +1,10 @@
 let handler = async (m, { conn, usedPrefix, command }) => {
 
     try {
-        m.reply('╭╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍⌼
+        m.reply(`╭╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍⌼
 ┣⌬ »ʀᴇɪɴɪᴄɪᴀɴᴅᴏ ᴇʟ ʙᴏᴛ« *↻*
 ┣⌬ ᴘᴏʀ ғᴀᴠᴏʀ ᴇsᴘᴇʀᴀ ⇔
-╰╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍⌼')
+╰╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍⌼`)
         setTimeout(() => {
             process.exit(0)
         }, 3000) 
