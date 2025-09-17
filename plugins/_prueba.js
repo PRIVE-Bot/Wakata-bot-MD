@@ -265,7 +265,7 @@ ${commandsForTag.map(menu => menu.help.map(help =>
 `.trim();
 
     // no tocar 
-    const imageUrls = ['https://rejas.x10.mx/images/inu/inu5.jpeg', 'https://rejas.x10.mx/images/inu/inu1.jpeg']; 
+    const imageUrls = global.img; 
 
 let selectedImage = imageUrls[Math.floor(Math.random() * imageUrls.length)];
 
