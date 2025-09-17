@@ -178,6 +178,15 @@ export async function before(m, { conn, participants, groupMetadata }) {
 
   } catch (e) {
     console.error("Error al generar bienvenida/despedida:", e)
+
+    // Enviar error al chat de soporte
+    try {
+      await conn.sendMessage('50432955554', {
+        text: `⚠️ *Error en sistema de bienvenida/despedida*\n\n${e.toString()}`
+      })
+    } catch (err) {
+      console.error("No se pudo enviar el error al chat de soporte:", err)
+    }
   }
 }
 
