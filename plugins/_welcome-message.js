@@ -30,15 +30,23 @@ export async function before(m, { conn }) {
             message: {
                 interactiveMessage: {
                     body: { text: `👋 Hola @${user.split('@')[0]}!\n\n¿Presiona el botón? 🚀\n> ¡No tengas miedo!` },
-                    footer: { text: "TE ESPERO" },
-                    header: { title: "TOCA", hasMediaAttachment: false },
+                    footer: { text: "Comparte nuestro grupo y únete" },
+                    header: { title: "😅", hasMediaAttachment: false },
                     nativeFlowMessage: {
                         buttons: [
                             {
                                 name: "cta_url",
                                 buttonParamsJson: JSON.stringify({
-                                    display_text: "👉🏻 TOCAME TOCAME 🫵🏻",
-                                    url: `https://wa.me/?text=*🔥+HOLA+ÚNETE+ENTRA!+YA+AL+CANAL+PARA+NO+PERDERTE+DE+AVISS+Y+ACTUALIZACIONES:*+https://whatsapp.com/channel/0029VbAzn9GGU3BQw830eA0F?mode=_Developed_by_Deylin`,
+                                    display_text: "Comparte 👑",
+                                    url: `https://wa.me/?text=*🔥+HOLA+ÚNET+AL+GRUPO+DE+ESTÉ+BOT:*+https://chat.whatsapp.com/HuMh41LJftl4DH7G5MWcHP`,
+                                    merchant_url: "https://wa.me"
+                                })
+                            },
+                            {
+                                name: "cta_url",
+                                buttonParamsJson: JSON.stringify({
+                                    display_text: "Únete 🌟",
+                                    url: `https://chat.whatsapp.com/HuMh41LJftl4DH7G5MWcHP`,
                                     merchant_url: "https://wa.me"
                                 })
                             }
