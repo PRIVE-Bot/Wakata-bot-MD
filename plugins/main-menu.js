@@ -48,16 +48,16 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
     };
 
     let menuText = `
-╔════════════════════════════╗
-║        >>>  SYSTEM INFO  <<<
-╟────────────────────────────╢
-║ Client    : ${tag}
-║ Bot       : ${(conn.user.jid == global.conn.user.jid ? 'Principal' : 'Premium')}
-║ Mode      : ${mode}
-║ Users     : ${totalReg}
-║ Uptime    : ${uptime}
-║ Commands  : ${totalCommands}
-╚════════════════════════════╝
+┏━━━━━━━━━━━━━━━┅┉⌬
+┃ » Hola, soy ${botname}
+┣━━━━━━━━━━━━━━━┅┉⌬
+┃✧ Client: ${tag}
+┃➣ Bot: ${(conn.user.jid == global.conn.user.jid ?   'Principal' : 'Premium')}
+┃✰ Mode: ${mode}
+┃♛ Users: ${totalReg}
+┃☾ Uptime: ${uptime}
+┃✎ Commandos: ${totalCommands}
+┗━━━━━━━━━━━━━━━┅┉⌬
 
 ┌─≡ FUNCTION CATALOG ≡─┐
 ${global.readMore}
