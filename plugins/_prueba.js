@@ -169,8 +169,12 @@ export default handler;*/
 
 
 const handler = async (m, { conn, command }) => {
-let avatar = await conn.profilePictureUrl(who).catch(() => null);
-  await m.reply(`avatar`)
+  
+  let who = m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.sender  
+
+  let avatar = await conn.profilePictureUrl(who).catch(() => null)
+
+  await m.reply(`Avatar de ${who}: ${avatar ? avatar : 'No tiene foto de perfil'}`)
 }
 
 handler.command = ["1"]
