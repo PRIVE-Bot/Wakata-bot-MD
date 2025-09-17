@@ -1,9 +1,7 @@
-
-const handler = async (m, { conn, text, command }) => {
-
-    return m.reply(`h`);
+const handler = async (m, { conn, command }) => {
+  await m.reply("h")
 }
 
-handler.command = ["1"];
+handler.command = ["1"]
 
-export default handler;
+export default handler
