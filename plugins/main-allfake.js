@@ -29,7 +29,6 @@ console.log(`Error : ${e}`)
 
 //creador y otros
 global.creador = 'Wa.me/50432955554'
-global.avatar = await conn.profilePictureUrl(who).catch(() => null);
 global.ofcbot = `${conn.user.jid.split('@')[0]}`
 global.asistencia = 'Wa.me/50432955554'
 global.listo = ' *Aquí tienes, shinobi ❛‿˂̵✧*'
