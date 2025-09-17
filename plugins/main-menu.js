@@ -26,8 +26,7 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
 
     const { exp, level } = global.db.data.users[userId];
     const { min, xp, max } = xpRange(level, global.multiplier);
-    let tag = '@' + userId.split('@')[0]
-
+    let tag = '@' + userId.split('@')[0];
 
     const help = Object.values(global.plugins)
       .filter(p => !p.disabled)
@@ -38,85 +37,61 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
         premium: p.premium
       }));
 
-
-
-
-
-const res = await fetch('https://files.catbox.moe/91rqne.jpg');
-const img = Buffer.from(await res.arrayBuffer());
-
-const fkontak = {
-    key: { fromMe: false, participant: "0@s.whatsapp.net" },
-    message: {
-        productMessage: {
-            product: {
-                productImage: { jpegThumbnail: img },
-                title: `𝗠𝗘𝗡𝗨 ＝ 𝗟𝗜𝗦𝗧𝗔 𝗗𝗘 𝗙𝗨𝗡𝗖𝗜𝗢𝗡𝗘𝗦`,
-                description: botname ,
-                currencyCode: "USD",
-                priceAmount1000: "5000", 
-                retailerId: "BOT"
-            },
-            businessOwnerJid: "0@s.whatsapp.net"
+    const fkontak = {
+      key: { fromMe: false, participant: "0@s.whatsapp.net" },
+      message: {
+        contactMessage: {
+          displayName: botname,
+          vcard: `BEGIN:VCARD\nVERSION:3.0\nN:;${botname};;;\nFN:${botname}\nEND:VCARD`
         }
-    }
-};
-
+      }
+    };
 
     let menuText = `
-╔═══════════════════════════╗
-║       INFORMACIÓN DEL BOT    
-╟───────────────────────────╢
-║ Cliente   : ${tag}
-║ Bot       : ${(conn.user.jid == global.conn.user.jid ? 'Principal ⬢' : 'Premium ⬡')}
-║ Modo      : ${mode}
-║ Usuarios  : ${totalReg}
-║ Activo    : ${uptime}
-║ Comandos  : ${totalCommands}
-╚═══════════════════════════╝
+╔════════════════════════════╗
+║        >>>  SYSTEM INFO  <<<
+╟────────────────────────────╢
+║ Client    : ${tag}
+║ Bot       : ${(conn.user.jid == global.conn.user.jid ? 'Principal' : 'Premium')}
+║ Mode      : ${mode}
+║ Users     : ${totalReg}
+║ Uptime    : ${uptime}
+║ Commands  : ${totalCommands}
+╚════════════════════════════╝
 
-┌─═≡ LISTA DE COMANDOS ≡═─┐
+┌─≡ FUNCTION CATALOG ≡─┐
 ${global.readMore}
 ${Object.keys(tags).reduce((acc, tag) => {
   const cmds = help.filter(h => h.tags.includes(tag));
   if (!cmds.length) return acc;
-  const cmdList = cmds.flatMap(c => 
-    c.help.map(cmd => 
-      `│ ⊳ /${cmd} ${c.limit ? '⭐' : ''}`
+  const cmdList = cmds.flatMap(c =>
+    c.help.map(cmd =>
+      `│ /${cmd}${c.limit ? ' [L]' : ''}${c.premium ? ' [P]' : ''}`
     )
   ).join('\n');
-  return acc + `\n*╔═══『 ${tags[tag]} ${getRandomEmoji()} 』═══╗*\n${cmdList}\n*╚══════════════════════╝*`;
+  return acc + `\n╔═══ ${tags[tag]} ═══╗\n${cmdList}\n╚═══════════════╝`;
 }, '')}
 
 > ${dev}
 `;
 
-
-    await m.react('🌟');
     await conn.sendMessage(
-  m.chat,
-  {
-    image: { url: global.img },
-    caption: menuText.trim(),
-    mentions: [m.sender]
-  },
-  { quoted: fkontak }
-)
+      m.chat,
+      {
+        image: { url: global.img },
+        caption: menuText.trim(),
+        mentions: [m.sender]
+      },
+      { quoted: fkontak }
+    );
 
   } catch (e) {
     console.error(e);
-    conn.reply(m.chat, '❎ Lo sentimos, el menú tiene un error.', m);
+    conn.reply(m.chat, 'Error: el menú no se pudo generar.', m);
   }
 };
 
 handler.command = ['menu', 'help', 'menú'];
-
-handler.before = async (m, { conn }) => {
-  const text = m.text?.toLowerCase()?.trim();
-  if (text === 'menu' || text === 'help') {
-    return handler(m, { conn });
-  }
-};
 
 export default handler;
 
@@ -125,9 +100,4 @@ function clockString(ms) {
   const m = String(Math.floor(ms / 60000) % 60).padStart(2, '0');
   const s = String(Math.floor(ms / 1000) % 60).padStart(2, '0');
   return `${h}:${m}:${s}`;
-}
-
-function getRandomEmoji() {
-  const emojis = ['👑', '🔥', '🌟', '⚡'];
-  return emojis[Math.floor(Math.random() * emojis.length)];
 }
