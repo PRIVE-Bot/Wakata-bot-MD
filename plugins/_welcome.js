@@ -67,7 +67,7 @@ let urlapi = 'https://canvas-8zhi.onrender.com/api/welcome?title=${encodeURIComp
 
   const productMessage = {
     product: {
-      productImage: { url: tipo2 },
+      productImage: { url: urlapi },
       title: `${tipo}, ahora somos ${totalMembers}`,
       description: `
 ✎ Usuario: ${taguser}
