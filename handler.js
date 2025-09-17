@@ -514,7 +514,23 @@ if (m.coin)
 conn.reply(m.chat, `❮✦❯ Utilizaste ${+m.coin} ${moneda}`, m)
 }
 break
-}}
+}
+      case 'justbot':
+      case 'solonumero':
+        isAll = true;
+        if (!isOwner) {
+          global.dfail('owner', m, conn);
+          throw false;
+        }
+        if (!settings.soloParaJid) {
+          settings.soloParaJid = m.sender;
+          isEnable = true;
+        } else {
+          settings.soloParaJid = false;
+          isEnable = false;
+        }
+        break;
+}
 } catch (e) {
 console.error(e)
 } finally {
