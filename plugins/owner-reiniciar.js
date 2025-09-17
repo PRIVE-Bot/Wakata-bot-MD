@@ -1,11 +1,10 @@
 let handler = async (m, { conn, usedPrefix, command }) => {
 
     try {
-       return conn.reply(m.chat, `
-╭╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍⌼
+        m.reply('╭╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍⌼
 ┣⌬ »ʀᴇɪɴɪᴄɪᴀɴᴅᴏ ᴇʟ ʙᴏᴛ« *↻*
 ┣⌬ ᴘᴏʀ ғᴀᴠᴏʀ ᴇsᴘᴇʀᴀ ⇔
-╰╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍⌼`, m, fake, rcanal)
+╰╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍⌼')
         setTimeout(() => {
             process.exit(0)
         }, 3000) 
@@ -15,13 +14,9 @@ let handler = async (m, { conn, usedPrefix, command }) => {
     }
 }
 
-handler.command = ['restart', 'autulizar']
-handler.before = async (m, { conn }) => {
-    let text = m.text?.toLowerCase()?.trim();
-    if (text === 'restart' || text === 'sutualizar') {
-        return handler(m, { conn });
-    }
-}
-handler.rowner = true;
+handler.help = ['restart']
+handler.tags = ['owner']
+handler.command = ['restart', 'reiniciar'] 
+handler.rowner = true
 
 export default handler
