@@ -205,7 +205,7 @@ function formatViews(views) {
 // editado y optimizado por 
 // https://github.com/deylin-eliac
 
-/*import fetch from "node-fetch";
+import fetch from "node-fetch";
 import yts from "yt-search";
 import axios from "axios";
 import Jimp from "jimp";
@@ -370,4 +370,4 @@ function formatViews(views) {
   return views >= 1000
     ? (views / 1000).toFixed(1) + "k (" + views.toLocaleString() + ")"
     : views.toString();
-}*/
+}
