@@ -1,7 +1,7 @@
 import axios from 'axios';
 import baileys from '@whiskeysockets/baileys';
 
-async function sendAlbumMessage(jid, medias, options = {}) {
+async function sendAlbumMessage(conn, jid, medias, options = {}) {
   if (typeof jid !== "string") {
     throw new TypeError(`jid must be string, received: ${jid} (${jid?.constructor?.name})`);
   }
@@ -87,22 +87,24 @@ const pins = async (judul) => {
 let handler = async (m, { conn, text }) => {
   if (!text) return conn.reply(m.chat, `${emojis} Ingresa un texto. Ejemplo: .pinterest ${botname}`, m, rcanal);
 
-
   try {
     const res2 = await fetch('https://files.catbox.moe/875ido.png');
     const thumb2 = Buffer.from(await res2.arrayBuffer());
-const userJid = m.sender;
-const fkontak = {
-    key: { fromMe: false, participant: userJid },
-    message: {
+
+    const userJid = m.sender;
+    const fkontak = {
+      key: { fromMe: false, participant: userJid },
+      message: {
         documentMessage: {
-            title: botname,
-            fileName: `𝗛𝗢𝗟𝗔, 𝗘𝗦𝗧𝗘 𝗘𝗦 𝗘𝗟 𝗣𝗜𝗡𝗧𝗔𝗥𝗘𝗧𝗦 𝗠𝗔𝗦 𝗣𝗢𝗧𝗘𝗡𝗧𝗘`,
-            jpegThumbnail: thumb2
+          title: botname,
+          fileName: `𝗛𝗢𝗟𝗔, 𝗘𝗦𝗧𝗘 𝗘𝗦 𝗘𝗟 𝗣𝗜𝗡𝗧𝗘𝗥𝗘𝗧𝗦 𝗠𝗔𝗦 𝗣𝗢𝗧𝗘𝗡𝗧𝗘`,
+          jpegThumbnail: thumb2
         }
-    }
-}
+      }
+    };
+
     m.react('🕒');
+
     const results = await pins(text);
     if (!results || results.length === 0) return conn.reply(m.chat, `No se encontraron resultados para "${text}".`, m, rcanal);
 
@@ -116,14 +118,15 @@ const fkontak = {
       });
     }
 
-    await sendAlbumMessage(m.chat, medias, {
-      caption: `𝗥𝗲𝘀𝘂𝗹𝘁𝗮𝗱𝗼𝘀 𝗱𝗲: ${text}\n𝗖𝗮𝗻𝘁𝗶𝗱𝗮𝗱 𝗱𝗲 𝗿𝗲𝘀𝘂𝗹𝘁𝗮𝗱𝗼𝘀: 15`,
+    await sendAlbumMessage(conn, m.chat, medias, {
+      caption: `𝗥𝗲𝘀𝘂𝗹𝘁𝗮𝗱𝗼𝘀 𝗱𝗲: ${text}\n𝗖𝗮𝗻𝘁𝗶𝗱𝗮𝗱 𝗱𝗲 𝗿𝗲𝘀𝘂𝗹𝘁𝗮𝗱𝗼𝘀: ${maxImages}`,
       quoted: fkontak
     });
 
     await conn.sendMessage(m.chat, { react: { text: '✅', key: m.key } });
 
   } catch (error) {
+    console.error(error);
     conn.reply(m.chat, 'Error al obtener imágenes de Pinterest.', m, rcanal);
   }
 };
@@ -131,6 +134,5 @@ const fkontak = {
 handler.help = ['pinterest'];
 handler.command = ['pinterest', 'pin'];
 handler.tags = ['buscador'];
-
 
 export default handler;
