@@ -1,4 +1,3 @@
-
 import { smsg } from './lib/simple.js';
 import { format } from 'util';
 import { fileURLToPath } from 'url';
@@ -17,10 +16,8 @@ const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './pl
     try {
         m = smsg(this, m) || m;
         if (!m) return;
-
         m.exp = 0;
         m.coin = false;
-
         try {
             let user = global.db.data.users[m.sender];
             if (typeof user !== 'object') global.db.data.users[m.sender] = {};
@@ -100,35 +97,20 @@ const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './pl
         } catch (e) {
             console.error(e);
         }
-
-        let _user = global.db.data && global.db.data.users && global.db.data.users[m.sender];
+        let _user = global.db.data && global.db.data.users[m.sender];
         const conn = this;
-
         const detectwhat = m.sender.includes('@lid') ? '@lid' : '@s.whatsapp.net';
         const isROwner = [...global.owner.map(([number]) => number)].map(v => v.replace(/[^0-9]/g, '') + '@s.whatsapp.net').includes(m.sender);
         const isOwner = isROwner || m.fromMe;
         const isMods = isROwner || global.mods.map(v => v.replace(/[^0-9]/g, '') + '@s.whatsapp.net').includes(m.sender);
         const isPrems = isROwner || global.prems.map(v => v.replace(/[^0-9]/g, '') + '@s.whatsapp.net').includes(m.sender) || _user?.premium;
-
         if (m.isBaileys) return;
         if (opts.nyimak) return;
         if (!isROwner && opts.self) return;
         if (opts.swonly && m.chat !== 'status@broadcast') return;
-
-        if (opts.queque && m.text && !(isMods || isPrems)) {
-            let queque = this.msgqueque, time = 1000 * 5;
-            const previousID = queque[queque.length - 1];
-            queque.push(m.id || m.key.id);
-            setInterval(async function () {
-                if (queque.indexOf(previousID) === -1) clearInterval(this);
-                await delay(time);
-            }, time);
-        }
-
         m.exp += Math.ceil(Math.random() * 10);
-
         let usedPrefix;
-                async function getLidFromJid(id, conn) {
+        async function getLidFromJid(id, conn) {
             if (id.endsWith('@lid')) return id;
             const res = await conn.onWhatsApp(id).catch(() => []);
             return res[0]?.lid || id;
@@ -144,11 +126,9 @@ const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './pl
         const isRAdmin = user?.admin === "superadmin";
         const isAdmin = isRAdmin || user?.admin === "admin";
         const isBotAdmin = !!bot?.admin;
-
         for (let name in global.plugins) {
             let plugin = global.plugins[name];
             if (!plugin || plugin.disabled) continue;
-
             const __filename = join(___dirname, name);
             if (typeof plugin.all === 'function') {
                 try {
@@ -161,11 +141,9 @@ const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './pl
                     console.error(e);
                 }
             }
-
             if (!opts.restrict && plugin.tags && plugin.tags.includes('admin')) {
                 continue;
             }
-
             const str2Regex = str => str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
             let _prefix = plugin.customPrefix ? plugin.customPrefix : conn.prefix ? conn.prefix : global.prefix;
             let match = (_prefix instanceof RegExp ?
@@ -181,7 +159,6 @@ const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './pl
                 [[new RegExp(str2Regex(_prefix)).exec(m.text), new RegExp(str2Regex(_prefix))]] :
                 [[[], new RegExp]]
             ).find(p => p[1]);
-
             if (typeof plugin.before === 'function') {
                 if (await plugin.before.call(this, m, {
                     match,
@@ -201,7 +178,6 @@ const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './pl
                     __filename
                 })) continue;
             }
-
             if (typeof plugin !== 'function') continue;
             if ((usedPrefix = (match?.[0]?.[0] || ''))) {
                 let noPrefix = (m.text || '').replace(usedPrefix, '');
@@ -218,27 +194,19 @@ const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './pl
                     typeof plugin.command === 'string' ?
                     plugin.command === command :
                     false;
-
                 global.comando = command;
-
-                if (m.id.startsWith('NJX-') || (m.id.startsWith('BAE5') && m.id.length === 16) || (m.id.startsWith('B24E') && m.id.length === 20)) return;
-
                 const settings = global.db.data.settings[this.user.jid];
                 if (settings?.soloParaJid && m.sender !== settings.soloParaJid) continue;
-
                 if (!isAccept) continue;
                 m.plugin = name;
-
                 let chat = global.db.data.chats[m.chat];
                 let _user = global.db.data.users[m.sender];
                 let setting = global.db.data.settings[this.user.jid];
-
                 if (chat?.isBanned && !isROwner && !['grupo-unbanchat.js', 'owner-exec.js', 'owner-exec2.js', 'grupo-delete.js'].includes(name)) return;
                 if (_user?.banned && !isROwner) {
                     m.reply(`《✦》Estás baneado/a, no puedes usar comandos en este bot!\n\n${_user.bannedReason ? `✰ *Motivo:* ${_user.bannedReason}` : '✰ *Motivo:* Sin Especificar'}\n\n> ✧ Si este Bot es cuenta oficial y tiene evidencia que respalde que este mensaje es un error, puedes exponer tu caso con un moderador.`);
                     return;
                 }
-
                 let adminMode = chat?.modoadmin;
                 let mini = `${plugin.botAdmin || plugin.admin || plugin.group || noPrefix || usedPrefix || m.text.slice(0, 1) == usedPrefix || plugin.command}`;
                 if (adminMode && !isOwner && !isROwner && m.isGroup && !isAdmin && mini) return;
@@ -327,11 +295,9 @@ const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './pl
     } catch (e) {
         console.error(e);
     } finally {
-        if (opts.queque && m.text) {
-            const quequeIndex = this.msgqueque.indexOf(m.id || m.key.id);
-            if (quequeIndex !== -1)
-                this.msgqueque.splice(quequeIndex, 1);
-        }
+        const quequeIndex = this.msgqueque.indexOf(m.id || m.key.id);
+        if (quequeIndex !== -1)
+            this.msgqueque.splice(quequeIndex, 1);
         let user, stats = global.db.data.stats;
         if (m) {
             let utente = global.db.data.users[m.sender];
@@ -342,7 +308,6 @@ const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './pl
                 user.exp += m.exp;
                 user.coin -= m.coin * 1;
             }
-
             let stat;
             if (m.plugin) {
                 let now = +new Date;
@@ -368,7 +333,6 @@ const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './pl
                 }
             }
         }
-
         try {
             if (!opts.noprint) await (await import(`./lib/print.js`)).default(m, this);
         } catch (e) {
@@ -377,7 +341,6 @@ const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './pl
         if (opts.autoread) await this.readMessages([m.key]);
     }
 }
-
 global.dfail = (type, m, conn) => {
     const msg = {
         rowner: `
@@ -440,18 +403,16 @@ global.dfail = (type, m, conn) => {
 ┃ » 𝑁𝑜 𝑖𝑛𝑡𝑒𝑛𝑡𝑒𝑠...
 ┗━━━━━━━━━━━━━━╯`
     }[type];
-
     if (msg) conn.reply(m.chat, msg, m, fake).then(_ => m.react('✖️'));
 };
-
-
 let file = global.__filename(import.meta.url, true);
 watchFile(file, async () => {
     unwatchFile(file);
     console.log(chalk.magenta("Se actualizo 'handler.js'"));
-
-    if (global.conns && global.conns.length > 0 ) {
+    if (global.conns && global.conns.length > 0) {
         const users = [...new Set([...global.conns.filter((conn) => conn.user && conn.ws.socket && conn.ws.socket.readyState !== ws.CLOSED).map((conn) => conn)])];
         for (const userr of users) {
             userr.subreloadHandler(false);
-        }}});
+        }
+    }
+});
