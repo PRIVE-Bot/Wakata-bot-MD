@@ -125,7 +125,7 @@ const savetube = {
 // --- HANDLER ---
 const handler = async (m, { conn, text, command }) => {
   await m.react('🔎');
-  if (!text?.trim()) return conn.reply(m.chat, `🎧 Dime el nombre de la canción o video que buscas`, m, rcanal);
+  if (!text?.trim()) return conn.reply(m.chat, `🎧 Dime el nombre de la canción o video que buscas`, m);
 
   try {
     const search = await yts.search({ query: text, pages: 1 });
@@ -139,16 +139,7 @@ const handler = async (m, { conn, text, command }) => {
 
     const fkontak = {
       key: { fromMe: false, participant: "0@s.whatsapp.net" },
-      message: {
-        orderMessage: {
-          itemCount: 1,
-          status: 1,
-          surface: 1,
-          message: `「 ${title} 」`,
-          orderTitle: "Descarga",
-          thumbnail: thumbResized
-        }
-      }
+      message: { orderMessage: { itemCount: 1, status: 1, surface: 1, message: `「 ${title} 」`, orderTitle: "Descarga", thumbnail: thumbResized } }
     };
 
     // descarga mp3
@@ -157,54 +148,21 @@ const handler = async (m, { conn, text, command }) => {
       const dl = await savetube.download(url, "mp3");
       if (!dl.status) return m.reply(`❌ Error: ${dl.error}`);
 
-      await conn.sendMessage(
-        m.chat,
-        {
-          audio: { url: dl.result.download },
-          mimetype: "audio/mpeg",
-          fileName: `${dl.result.title}.mp3`,
-          ptt: true
-        },
-        { quoted: fkontak }
-      );
-    }
-
-    // descarga mp4
-    if (command === "play2") {
-      try {
-        const apiURL = `https://api.sylphy.xyz/download/ytmp4?url=${encodeURIComponent(url)}&apikey=sylphy-fbb9`;
-        const res = await fetch(apiURL);
-        const json = await res.json();
-
-        if (!json?.status || !json.res?.url) {
-          return m.reply("❌ No se pudo descargar el video desde Sylphy.");
-        }
-
-        await m.react('📽️');
-        await conn.sendMessage(
-          m.chat,
-          {
-            video: { url: json.res.url },
-            fileName: `${json.res.title || title}.mp4`,
-            mimetype: "video/mp4",
-            thumbnail: thumbResized
-          },
-          { quoted: fkontak }
-        );
-
-      } catch (error) {
-        console.error("❌ Error:", error);
-        return m.reply(`⚠️ Ocurrió un error: ${error.message}`);
-      }
+      await conn.sendMessage(m.chat, {
+        audio: { url: dl.result.download },
+        mimetype: "audio/mpeg",
+        fileName: `${dl.result.title}.mp3`,
+        ptt: true
+      }, { quoted: fkontak });
     }
 
   } catch (error) {
-    console.error("❌ Error global:", error);
-    return m.reply(`⚠️ Error inesperado: ${error.message}`);
+    console.error("❌ Error:", error);
+    return m.reply(`⚠️ Ocurrió un error: ${error.message}`);
   }
 };
 
-handler.command = handler.help = ["play", "play2"];
+handler.command = handler.help = ["play"];
 handler.tags = ["downloader"];
 
 export default handler;
