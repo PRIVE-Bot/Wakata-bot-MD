@@ -97,7 +97,7 @@ const fkontak = {
     message: {
         documentMessage: {
             title: botname,
-            fileName: `texto`,
+            fileName: `𝗛𝗢𝗟𝗔, 𝗘𝗦𝗧𝗘 𝗘𝗦 𝗘𝗟 𝗣𝗜𝗡𝗧𝗔𝗥𝗘𝗧𝗦 𝗠𝗔𝗦 𝗣𝗢𝗧𝗘𝗡𝗧𝗘`,
             jpegThumbnail: thumb2
         }
     }
