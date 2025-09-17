@@ -156,13 +156,35 @@ const handler = async (m, { conn, text, command }) => {
       }, { quoted: fkontak });
     }
 
+
+    if (["play2"].includes(command)) {
+      try {
+        const apiURL = `https://api.sylphy.xyz/download/ytmp4?url=${encodeURIComponent(url)}&apikey=sylphy-fbb9`;
+        const res = await fetch(apiURL);
+        const json = await res.json();
+
+        if (!json?.status || !json.res?.url) {
+          return m.reply("❌ No se pudo descargar el video desde Sylphy.");
+        }
+await m.react('📽️');
+        await conn.sendMessage(
+          m.chat,
+          {
+            video: { url: json.res.url },
+            fileName: `${json.res.title || title}.mp4`,
+            mimetype: "video/mp4",
+            thumbnail: thumb
+          },
+          { quoted: fkontak }
+        );
+
   } catch (error) {
     console.error("❌ Error:", error);
     return m.reply(`⚠️ Ocurrió un error: ${error.message}`);
   }
 };
 
-handler.command = handler.help = ["play"];
+handler.command = handler.help = ["play", "play2"];
 handler.tags = ["downloader"];
 
 export default handler;
