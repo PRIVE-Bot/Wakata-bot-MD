@@ -1093,10 +1093,6 @@ if (plugin.private && m.isGroup) {
 fail('private', m, this)
 continue
 }
-if (plugin.register == true && _user.registered == false) { 
-fail('unreg', m, this)
-continue
-}
 m.isCommand = true
 let xp = 'exp' in plugin ? parseInt(plugin.exp) : 17 
 if (xp > 200)
@@ -1261,7 +1257,6 @@ global.dfail = (type, m, conn) => {
     private: `*⚡ 〘 ${comando} 〙 solo en chat privado. Aquí no, amigo.*`,
     admin: `*👑 〘 ${comando} 〙 es un poder reservado para administradores.*`,
     botAdmin: `*⚡ Necesito ser admin para ejecutar 〘 ${comando} 〙 Dame el rango y hablamos.*`,
-    unreg: `*👑 Para usar 〘 ${comando} 〙 primero debes registrarte.*\n\n *⚡ Usa: #${verifyaleatorio} ${user2}.${edadaleatoria}*`,
     restrict: `*⚡ Esta función está bloqueada. Fin de la historia.*`
   }[type];
 
