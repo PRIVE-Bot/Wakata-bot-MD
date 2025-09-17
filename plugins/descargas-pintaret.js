@@ -144,7 +144,8 @@ export default handler;*/
 import axios from 'axios';
 import baileys from '@whiskeysockets/baileys';
 
-async function sendAlbumMessage(jid, medias, options = {}) {
+// --- FUNCIÓN PARA ENVIAR ÁLBUM ---
+async function sendAlbumMessage(conn, jid, medias, options = {}) {
   if (typeof jid !== "string") {
     throw new TypeError(`jid must be string, received: ${jid} (${jid?.constructor?.name})`);
   }
@@ -204,7 +205,7 @@ async function sendAlbumMessage(jid, medias, options = {}) {
       messageAssociation: { associationType: 1, parentMessageKey: album.key },
       forwardedNewsletterMessageInfo: {
         newsletterJid: "120363403593951965@newsletter",
-        newsletterName: "ＮＡＲＵＴＯ ＢＯＴ ᴍᴅ 𒆙",
+        newsletterName: " ᴍᴅ 𒆙",
         serverMessageId: ""
       }
     };
@@ -215,6 +216,7 @@ async function sendAlbumMessage(jid, medias, options = {}) {
   return album;
 }
 
+// --- SCRAPER DE PINTEREST ---
 const pins = async (judul) => {
   try {
     const res = await axios.get(`https://anime-xi-wheat.vercel.app/api/pinterest?q=${encodeURIComponent(judul)}`);
@@ -232,6 +234,7 @@ const pins = async (judul) => {
   }
 };
 
+// --- HANDLER ---
 let handler = async (m, { conn, text }) => {
   if (!text) return conn.reply(m.chat, `${emojis} Ingresa un texto. Ejemplo: .pinterest ${botname}`, m, rcanal);
 
@@ -240,21 +243,23 @@ let handler = async (m, { conn, text }) => {
     const thumb2 = Buffer.from(await res2.arrayBuffer());
 
     const fkontak = {
-        key: {
-            participants: "0@s.whatsapp.net",
-            remoteJid: "status@broadcast",
-            fromMe: false,
-            id: "Halo"
-        },
-        message: {
-            locationMessage: {
-                name: '𝗕𝗨𝗦𝗤𝗨𝗘𝗗𝗔 𝗗𝗘 ✦ 𝗣𝗶𝗻𝘁𝗲𝗿𝗲𝘀𝘁',
-                jpegThumbnail: thumb2
-            }
-        },
-        participant: "0@s.whatsapp.net"
+      key: {
+        participants: "0@s.whatsapp.net",
+        remoteJid: "status@broadcast",
+        fromMe: false,
+        id: "Halo"
+      },
+      message: {
+        locationMessage: {
+          name: '𝗕𝗨𝗦𝗤𝗨𝗘𝗗𝗔 𝗗𝗘 ✦ 𝗣𝗶𝗻𝘁𝗲𝗿𝗲𝘀𝘁',
+          jpegThumbnail: thumb2
+        }
+      },
+      participant: "0@s.whatsapp.net"
     };
+
     m.react('🕒');
+
     const results = await pins(text);
     if (!results || results.length === 0) return conn.reply(m.chat, `No se encontraron resultados para "${text}".`, m, rcanal);
 
@@ -268,14 +273,15 @@ let handler = async (m, { conn, text }) => {
       });
     }
 
-    await sendAlbumMessage(m.chat, medias, {
-      caption: `𝗥𝗲𝘀𝘂𝗹𝘁𝗮𝗱𝗼𝘀 𝗱𝗲: ${text}\n𝗖𝗮𝗻𝘁𝗶𝗱𝗮𝗱 𝗱𝗲 𝗿𝗲𝘀𝘂𝗹𝘁𝗮𝗱𝗼𝘀: 15`,
+    await sendAlbumMessage(conn, m.chat, medias, {
+      caption: `𝗥𝗲𝘀𝘂𝗹𝘁𝗮𝗱𝗼𝘀 𝗱𝗲: ${text}\n𝗖𝗮𝗻𝘁𝗶𝗱𝗮𝗱 𝗱𝗲 𝗿𝗲𝘀𝘂𝗹𝘁𝗮𝗱𝗼𝘀: ${maxImages}`,
       quoted: fkontak
     });
 
     await conn.sendMessage(m.chat, { react: { text: '✅', key: m.key } });
 
   } catch (error) {
+    console.error(error);
     conn.reply(m.chat, 'Error al obtener imágenes de Pinterest.', m, rcanal);
   }
 };
