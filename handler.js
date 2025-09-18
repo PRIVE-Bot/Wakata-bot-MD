@@ -5,7 +5,6 @@ import path, { join } from 'path'
 import { unwatchFile, watchFile } from 'fs'
 import chalk from 'chalk'
 import fetch from 'node-fetch'
-import { readdirSync, statSync } from 'fs'
 
 const { proto } = (await import('@whiskeysockets/baileys')).default
 const isNumber = x => typeof x === 'number' && !isNaN(x)
@@ -298,30 +297,14 @@ const isRAdmin = user?.admin === "superadmin"
 const isAdmin = isRAdmin || user?.admin === "admin"
 const isBotAdmin = !!bot?.admin
 
-const pluginsDir = path.join(path.dirname(fileURLToPath(import.meta.url)), './plugins');
-/* AÑADIDO POR GEMINI - INICIO */
-function getPluginFiles(dir) {
-    let files = [];
-    const items = readdirSync(dir);
-    for (const item of items) {
-        const fullPath = join(dir, item);
-        const stat = statSync(fullPath);
-        if (stat.isDirectory()) {
-            files = files.concat(getPluginFiles(fullPath));
-        } else if (item.endsWith('.js')) {
-            files.push(fullPath);
-        }
-    }
-    return files;
-}
-/* AÑADIDO POR GEMINI - FIN */
+const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './plugins')
 for (let name in global.plugins) {
 let plugin = global.plugins[name]
 if (!plugin)
 continue
 if (plugin.disabled)
 continue
-const __filename = join(pluginsDir, name)
+const __filename = join(___dirname, name)
 /*if (m.sender === this.user.jid) {
 continue
 }*/
@@ -329,7 +312,7 @@ if (typeof plugin.all === 'function') {
 try {
 await plugin.all.call(this, m, {
 chatUpdate,
-__dirname: pluginsDir,
+__dirname: ___dirname,
 __filename
 })
 } catch (e) {
@@ -369,7 +352,7 @@ isAdmin,
 isBotAdmin,
 isPrems,
 chatUpdate,
-__dirname: pluginsDir,
+__dirname: ___dirname,
 __filename
 }))
 continue
@@ -504,7 +487,7 @@ isAdmin,
 isBotAdmin,
 isPrems,
 chatUpdate,
-__dirname: pluginsDir,
+__dirname: ___dirname,
 __filename
 }
 try {
