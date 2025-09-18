@@ -167,8 +167,7 @@ handler.tags = ["downloader"];
 
 export default handler;*/
 
-
-import { ogmp3 } from '../lib/prueba.js'; // donde guardaste tu código
+import { savetube } from '../lib/prueba.js'; // tu scraper guardado aquí
 
 const handler = async (m, { conn, command, args }) => {
   if (!args[0]) return m.reply(`❌ Ingresa el link de YouTube`);
@@ -176,9 +175,9 @@ const handler = async (m, { conn, command, args }) => {
   const url = args[0];
 
   try {
-    if (command === "p1") {
-      // Descargar en audio
-      const res = await ogmp3.download(url, '320', 'audio');
+    if (command === "play") {
+      // Descargar en audio mp3
+      const res = await savetube.download(url, 'mp3');
       if (!res.status) return m.reply(`❌ Error: ${res.error}`);
 
       await conn.sendMessage(
@@ -191,6 +190,7 @@ const handler = async (m, { conn, command, args }) => {
           contextInfo: {
             externalAdReply: {
               title: res.result.title,
+              body: `Duración: ${res.result.duration || "Desconocida"}`,
               thumbnailUrl: res.result.thumbnail,
               sourceUrl: url,
               mediaType: 1,
@@ -202,9 +202,9 @@ const handler = async (m, { conn, command, args }) => {
       );
     }
 
-    if (command === "p2") {
-      // Descargar en video
-      const res = await ogmp3.download(url, '720', 'video');
+    if (command === "play2") {
+      // Descargar en video mp4 (720p)
+      const res = await savetube.download(url, '720');
       if (!res.status) return m.reply(`❌ Error: ${res.error}`);
 
       await conn.sendMessage(
@@ -213,8 +213,17 @@ const handler = async (m, { conn, command, args }) => {
           video: { url: res.result.download },
           fileName: `${res.result.title}.mp4`,
           mimetype: "video/mp4",
-          caption: `🎬 ${res.result.title}`,
-          thumbnailUrl: res.result.thumbnail
+          caption: `🎬 ${res.result.title}\n📌 Calidad: ${res.result.quality}p\n⏱️ Duración: ${res.result.duration}`,
+          contextInfo: {
+            externalAdReply: {
+              title: res.result.title,
+              body: `Formato: ${res.result.format}`,
+              thumbnailUrl: res.result.thumbnail,
+              sourceUrl: url,
+              mediaType: 1,
+              renderLargerThumbnail: true
+            }
+          }
         },
         { quoted: m }
       );
@@ -227,4 +236,3 @@ const handler = async (m, { conn, command, args }) => {
 
 handler.command = ["p1", "p2"];
 export default handler;
-
