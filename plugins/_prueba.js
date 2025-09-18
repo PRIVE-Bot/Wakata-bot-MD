@@ -1,238 +1,76 @@
-/*import fetch from "node-fetch";
-import yts from "yt-search";
-import Jimp from "jimp";
-import axios from "axios";
-import crypto from "crypto";
 
-async function resizeImage(buffer, size = 300) {
-  const image = await Jimp.read(buffer);
-  return image.resize(size, size).getBufferAsync(Jimp.MIME_JPEG);
-}
+let games = {}; 
 
-// --- SAVETUBE SCRAPER ---
-const savetube = {
-  api: {
-    base: "https://media.savetube.me/api",
-    info: "/v2/info",
-    download: "/download",
-    cdn: "/random-cdn"
-  },
+const preguntas = [
+  "¿Cuál es tu mayor miedo?",
+  "¿Quién es tu crush secreto?",
+  "¿Qué es lo más vergonzoso que has hecho?",
+  "¿Cuál fue tu última mentira?",
+  "¿Has stalkeado a alguien aquí?"
+];
 
-  headers: {
-    'accept': '/',
-    'content-type': 'application/json',
-    'origin': 'https://yt.savetube.me',
-    'referer': 'https://yt.savetube.me/',
-    'user-agent': 'Postify/1.0.0'
-  },
+const retos = [
+  "Cambia tu nombre en WhatsApp por algo gracioso durante 5 minutos.",
+  "Envía un audio diciendo 'Soy el rey del grupo'.",
+  "Haz 10 flexiones y grábalo.",
+  "Escribe 'Te extraño ❤️' al último contacto en tu chat.",
+  "Manda tu última foto en galería."
+];
 
-  crypto: {
-    hexToBuffer: (hexString) => {
-      const matches = hexString.match(/.{1,2}/g);
-      return Buffer.from(matches.join(''), 'hex');
-    },
+const handler = async (m, { conn, text, command, participants, groupMetadata }) => {
+  let id = m.chat;
+  games[id] = games[id] || { players: [], turn: 0, started: false };
 
-    decrypt: async (enc) => {
-      try {
-        const secretKey = 'C5D58EF67A7584E4A29F6C35BBC4EB12';
-        const data = Buffer.from(enc, 'base64');
-        const iv = data.slice(0, 16);
-        const content = data.slice(16);
-        const key = savetube.crypto.hexToBuffer(secretKey);
-        const decipher = crypto.createDecipheriv('aes-128-cbc', key, iv);
-        let decrypted = decipher.update(content);
-        decrypted = Buffer.concat([decrypted, decipher.final()]);
-        return JSON.parse(decrypted.toString());
-      } catch (error) {
-        throw new Error(error.message);
-      }
-    }
-  },
+  switch (command) {
+    case "join":
+      if (games[id].started) return m.reply("🚫 La partida ya comenzó.");
+      if (games[id].players.includes(m.sender)) return m.reply("Ya estás dentro.");
+      games[id].players.push(m.sender);
+      m.reply(`✅ ${conn.getName(m.sender)} se unió al juego. (${games[id].players.length} jugadores)`);
+      break;
 
-  isUrl: (str) => {
-    try {
-      new URL(str);
-      return /youtube\.com|youtu\.be/.test(str);
-    } catch (_) {
-      return false;
-    }
-  },
+    case "leave":
+      if (!games[id].players.includes(m.sender)) return m.reply("No estás en la partida.");
+      games[id].players = games[id].players.filter(p => p !== m.sender);
+      m.reply(`🚪 ${conn.getName(m.sender)} salió de la partida.`);
+      break;
 
-  youtube: (url) => {
-    const patterns = [
-      /youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/,
-      /youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/,
-      /youtu\.be\/([a-zA-Z0-9_-]{11})/
-    ];
-    for (let pattern of patterns) {
-      if (pattern.test(url)) return url.match(pattern)[1];
-    }
-    return null;
-  },
+    case "start":
+      if (games[id].started) return m.reply("Ya hay una partida en curso.");
+      if (games[id].players.length < 2) return m.reply("Necesitan al menos 2 jugadores.");
+      games[id].started = true;
+      games[id].turn = 0;
+      let first = games[id].players[0];
+      m.reply(`🎉 ¡La partida comenzó con ${games[id].players.length} jugadores!\n👉 Turno de @${first.split("@")[0]}`, { mentions: [first] });
+      break;
 
-  request: async (endpoint, data = {}, method = 'post') => {
-    try {
-      const { data: response } = await axios({
-        method,
-        url: `${endpoint.startsWith('http') ? '' : savetube.api.base}${endpoint}`,
-        data: method === 'post' ? data : undefined,
-        params: method === 'get' ? data : undefined,
-        headers: savetube.headers
-      });
-      return { status: true, code: 200, data: response };
-    } catch (error) {
-      return { status: false, code: error.response?.status || 500, error: error.message };
-    }
-  },
+    case "verdad":
+    case "reto":
+      if (!games[id].started) return m.reply("⚠️ No hay partida activa.");
+      let current = games[id].players[games[id].turn];
+      if (m.sender !== current) return m.reply("⏳ No es tu turno.");
 
-  getCDN: async () => {
-    const response = await savetube.request(savetube.api.cdn, {}, 'get');
-    if (!response.status) return response;
-    return { status: true, code: 200, data: response.data.cdn };
-  },
+      let content = command === "verdad"
+        ? preguntas[Math.floor(Math.random() * preguntas.length)]
+        : retos[Math.floor(Math.random() * retos.length)];
 
-  download: async (link, format = "mp3") => {
-    if (!savetube.isUrl(link)) return { status: false, code: 400, error: "URL inválida" };
-    const id = savetube.youtube(link);
-    if (!id) return { status: false, code: 400, error: "No se pudo obtener ID del video" };
+      await m.reply(`🎲 *${command.toUpperCase()}*\n${content}`);
 
-    try {
-      const cdnx = await savetube.getCDN();
-      if (!cdnx.status) return cdnx;
-      const cdn = cdnx.data;
+      
+      games[id].turn = (games[id].turn + 1) % games[id].players.length;
+      let next = games[id].players[games[id].turn];
+      m.reply(`👉 Ahora es turno de @${next.split("@")[0]}`, { mentions: [next] });
+      break;
 
-      const videoInfo = await savetube.request(`https://${cdn}${savetube.api.info}`, { url: `https://www.youtube.com/watch?v=${id}` });
-      if (!videoInfo.status) return videoInfo;
-
-      const decrypted = await savetube.crypto.decrypt(videoInfo.data.data);
-
-      const downloadData = await savetube.request(`https://${cdn}${savetube.api.download}`, {
-        id,
-        downloadType: 'audio',
-        quality: format,
-        key: decrypted.key
-      });
-
-      if (!downloadData.data.data || !downloadData.data.data.downloadUrl) return { status: false, code: 500, error: "No se pudo obtener link de descarga" };
-
-      return { status: true, code: 200, result: { title: decrypted.title || "Desconocido", format, download: downloadData.data.data.downloadUrl } };
-    } catch (error) {
-      return { status: false, code: 500, error: error.message };
-    }
+    case "end":
+      if (!games[id].started) return m.reply("No hay ninguna partida activa.");
+      delete games[id];
+      m.reply("🛑 La partida terminó.");
+      break;
   }
 };
 
-// --- HANDLER ---
-const handler = async (m, { conn, text, command }) => {
-  await m.react('🔎');
-  if (!text?.trim()) return conn.reply(m.chat, `🎧 Dime el nombre de la canción o video que buscas`, m);
+handler.command = ["join", "leave", "start", "verdad", "reto", "end"];
+handler.group = true;
 
-  try {
-    const search = await yts.search({ query: text, pages: 1 });
-    if (!search.videos.length) return m.reply("❌ No se encontró nada con ese nombre.");
-
-    const videoInfo = search.videos[0];
-    const { title, thumbnail, url } = videoInfo;
-
-    const thumbFileRes = await conn.getFile(thumbnail);
-    const thumbResized = await resizeImage(thumbFileRes.data, 300);
-
-    const fkontak = {
-      key: { fromMe: false, participant: "0@s.whatsapp.net" },
-      message: { orderMessage: { itemCount: 1, status: 1, surface: 1, message: `「 ${title} 」`, orderTitle: "Descarga", thumbnail: thumbResized } }
-    };
-
-    // descarga mp3
-    if (command === "play") {
-      await m.react('🎧');
-      const dl = await savetube.download(url, "mp3");
-      if (!dl.status) return m.reply(`❌ Error: ${dl.error}`);
-
-      await conn.sendMessage(m.chat, {
-        audio: { url: dl.result.download },
-        mimetype: "audio/mpeg",
-        fileName: `${dl.result.title}.mp3`,
-        ptt: true
-      }, { quoted: fkontak });
-    }
-
-  } catch (error) {
-    console.error("❌ Error:", error);
-    return m.reply(`⚠️ Ocurrió un error: ${error.message}`);
-  }
-};
-
-handler.command = handler.help = ["play"];
-handler.tags = ["downloader"];
-
-export default handler;*/
-
-import { savetube } from '../lib/prueba.js'; // tu scraper guardado aquí
-
-const handler = async (m, { conn, command, args }) => {
-  if (!args[0]) return m.reply(`❌ Ingresa el link de YouTube`);
-
-  const url = args[0];
-
-  try {
-    if (command === "play") {
-      // Descargar en audio mp3
-      const res = await savetube.download(url, 'mp3');
-      if (!res.status) return m.reply(`❌ Error: ${res.error}`);
-
-      await conn.sendMessage(
-        m.chat,
-        {
-          audio: { url: res.result.download },
-          fileName: `${res.result.title}.mp3`,
-          mimetype: "audio/mpeg",
-          ptt: false,
-          contextInfo: {
-            externalAdReply: {
-              title: res.result.title,
-              body: `Duración: ${res.result.duration || "Desconocida"}`,
-              thumbnailUrl: res.result.thumbnail,
-              sourceUrl: url,
-              mediaType: 1,
-              renderLargerThumbnail: true
-            }
-          }
-        },
-        { quoted: m }
-      );
-    }
-
-    if (command === "play2") {
-      // Descargar en video mp4 (720p)
-      const res = await savetube.download(url, '720');
-      if (!res.status) return m.reply(`❌ Error: ${res.error}`);
-
-      await conn.sendMessage(
-        m.chat,
-        {
-          video: { url: res.result.download },
-          fileName: `${res.result.title}.mp4`,
-          mimetype: "video/mp4",
-          caption: `🎬 ${res.result.title}\n📌 Calidad: ${res.result.quality}p\n⏱️ Duración: ${res.result.duration}`,
-          contextInfo: {
-            externalAdReply: {
-              title: res.result.title,
-              body: `Formato: ${res.result.format}`,
-              thumbnailUrl: res.result.thumbnail,
-              sourceUrl: url,
-              mediaType: 1,
-              renderLargerThumbnail: true
-            }
-          }
-        },
-        { quoted: m }
-      );
-    }
-  } catch (e) {
-    console.error(e);
-    m.reply("⚠️ Ocurrió un error al procesar tu solicitud.");
-  }
-};
-
-handler.command = ["p1", "p2"];
 export default handler;
