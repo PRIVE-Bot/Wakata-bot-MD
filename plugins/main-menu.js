@@ -138,7 +138,7 @@ ${commandsForTag.map(menu => menu.help.map(help =>
   caption: menuText,
 contextInfo: {
             mentionedJid: [userId] }
-}, { quoted: m });
+}, { quoted: fkontak });
       } catch (e) {
     conn.reply(m.chat, `❎ Lo sentimos, el menú tiene un error. ${e} `, m);
     throw e;
