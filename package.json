@@ -18,16 +18,16 @@
 "eslint": "eslint .",
 "eslintfix": "eslint --fix ."
 },
-"homepage": "https://github.com/deylin-eliac/Naruto-Bot-MD",
+"homepage": "https://github.com/Deylin-Eliac/obito-b",
 "author": {
 "name": "DEYLIN"
 },
 "repository": {
 "type": "git",
-"url": "git+https://github.com/deylin-eliac/Naruto-Bot-MD.git"
+"url": "git+https://github.com/Deylin-Eliac/obito-b.git"
 },
 "bugs": {
-"url": "https://github.com/deylin-eliac/Naruto-Bot-MD/issues"
+"url": "https://github.com/Deylin-Eliac/obito-b/issues"
 },
 "license": "GPL-3.0-or-later",
 "dependencies": {
