@@ -264,10 +264,6 @@ ${commandsForTag.map(menu => menu.help.map(help =>
 *⌬⌬➩ © Powered by Deylin - ${botname}*
 `.trim();
 
-    // no tocar 
-    const imageUrls = global.img; 
-
-let selectedImage = imageUrls[Math.floor(Math.random() * imageUrls.length)];
 
     await m.react('👑');
 
@@ -290,7 +286,7 @@ let selectedImage = imageUrls[Math.floor(Math.random() * imageUrls.length)];
   }, { quoted: m })*/
 
         await conn.sendMessage(m.chat, {
-  image: { url: selectedImage },
+  image: { url: global.img },
   caption: menuText,
 contextInfo: {
             mentionedJid: [userId] }
