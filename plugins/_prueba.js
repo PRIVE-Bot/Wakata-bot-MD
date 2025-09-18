@@ -106,14 +106,14 @@ async function nextTurn(conn, id, m) {
     text: `👉 Turno de @${chosen.split("@")[0]}.\nResponde *Verdad* o *Reto* a este mensaje.`,
     mentions: [chosen]
   }, { quoted: m });
-  game.waiting = { player: chosen, stage: "choose", msgId: msg.key?.id };
+  game.waiting = { player: chosen, stage: "choose", msgId: msg.id };
 }
 
 handler.before = async (m, { conn }) => {
   let id = m.chat;
   let game = games[id];
   if (!game?.started || !game.waiting) return;
-  if (!m.quoted || m.quoted.key?.id !== game.waiting.msgId) return;
+  if (!m.quoted || m.quoted.id !== game.waiting.msgId) return;
   if (m.sender !== game.waiting.player) return;
 
   if (game.waiting.stage === "choose") {
@@ -125,7 +125,7 @@ handler.before = async (m, { conn }) => {
       text: `🎲 *${choice.toUpperCase()}*\n${content}\n\n👉 Responde a este mensaje con tu respuesta (TEXTO, IMAGEN o VIDEO).`,
       mentions: [game.player]
     }, { quoted: m });
-    game.waiting = { player: m.sender, stage: "answer", msgId: msg.key?.id };
+    game.waiting = { player: m.sender, stage: "answer", msgId: msg.id };
     return;
   }
 
