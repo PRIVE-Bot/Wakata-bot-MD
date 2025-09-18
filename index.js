@@ -390,19 +390,36 @@ if (readBotPath.includes(creds)) {
 JadiBot({pathJadiBot: botPath, m: null, conn, args: '', usedPrefix: '/', command: 'serbot'})
 }}}}
 
-const pluginFolder = global.__dirname(join(__dirname, './plugins/index'))
+// ---- INICIO DEL CÓDIGO MODIFICADO ----
+const pluginFolder = global.__dirname(join(__dirname, './plugins'))
 const pluginFilter = (filename) => /\.js$/.test(filename)
 global.plugins = {}
+function getPluginFiles(dir) {
+    let files = [];
+    const items = readdirSync(dir);
+    for (const item of items) {
+        const fullPath = join(dir, item);
+        const stat = statSync(fullPath);
+        if (stat.isDirectory()) {
+            files = files.concat(getPluginFiles(fullPath));
+        } else if (item.endsWith('.js')) {
+            files.push(fullPath);
+        }
+    }
+    return files;
+}
 async function filesInit() {
-for (const filename of readdirSync(pluginFolder).filter(pluginFilter)) {
-try {
-const file = global.__filename(join(pluginFolder, filename))
-const module = await import(file)
-global.plugins[filename] = module.default || module
-} catch (e) {
-conn.logger.error(e)
-delete global.plugins[filename]
-}}}
+    const pluginFiles = getPluginFiles(pluginFolder);
+    for (const file of pluginFiles) {
+        try {
+            const module = await import('file://' + file);
+            global.plugins[path.basename(file)] = module.default || module;
+        } catch (e) {
+            conn.logger.error(`Error al cargar el plugin ${file}:`, e);
+            delete global.plugins[path.basename(file)];
+        }
+    }
+}
 filesInit().then((_) => Object.keys(global.plugins)).catch(console.error)
 
 global.reload = async (_ev, filename) => {
@@ -428,6 +445,8 @@ conn.logger.error(`error require plugin '${filename}\n${format(e)}'`)
 } finally {
 global.plugins = Object.fromEntries(Object.entries(global.plugins).sort(([a], [b]) => a.localeCompare(b)))
 }}}}
+// ---- FIN DEL CÓDIGO MODIFICADO ----
+
 Object.freeze(global.reload)
 watch(pluginFolder, global.reload)
 await global.reloadHandler()
