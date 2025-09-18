@@ -167,3 +167,64 @@ handler.tags = ["downloader"];
 
 export default handler;*/
 
+
+import { ogmp3 } from '../lib/prueba.js'; // donde guardaste tu código
+
+const handler = async (m, { conn, command, args }) => {
+  if (!args[0]) return m.reply(`❌ Ingresa el link de YouTube`);
+
+  const url = args[0];
+
+  try {
+    if (command === "p1") {
+      // Descargar en audio
+      const res = await ogmp3.download(url, '320', 'audio');
+      if (!res.status) return m.reply(`❌ Error: ${res.error}`);
+
+      await conn.sendMessage(
+        m.chat,
+        {
+          audio: { url: res.result.download },
+          fileName: `${res.result.title}.mp3`,
+          mimetype: "audio/mpeg",
+          ptt: false,
+          contextInfo: {
+            externalAdReply: {
+              title: res.result.title,
+              thumbnailUrl: res.result.thumbnail,
+              sourceUrl: url,
+              mediaType: 1,
+              renderLargerThumbnail: true
+            }
+          }
+        },
+        { quoted: m }
+      );
+    }
+
+    if (command === "p2") {
+      // Descargar en video
+      const res = await ogmp3.download(url, '720', 'video');
+      if (!res.status) return m.reply(`❌ Error: ${res.error}`);
+
+      await conn.sendMessage(
+        m.chat,
+        {
+          video: { url: res.result.download },
+          fileName: `${res.result.title}.mp4`,
+          mimetype: "video/mp4",
+          caption: `🎬 ${res.result.title}`,
+          thumbnailUrl: res.result.thumbnail
+        },
+        { quoted: m }
+      );
+    }
+  } catch (e) {
+    console.error(e);
+    m.reply("⚠️ Ocurrió un error al procesar tu solicitud.");
+  }
+};
+
+handler.command = ["p1", "p2"];
+export default handler;
+
