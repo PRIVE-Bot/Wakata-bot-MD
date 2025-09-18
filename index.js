@@ -44,7 +44,7 @@ font: 'simple',
 align: 'left',
 gradient: ['green', 'white']
 })
-say('developed by Dulce', {
+say('developed by Deylin', {
 font: 'console',
 align: 'center',
 colors: ['cyan', 'magenta', 'yellow']
