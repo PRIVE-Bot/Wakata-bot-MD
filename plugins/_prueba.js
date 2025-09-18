@@ -130,7 +130,7 @@ handler.before = async (m, { conn }) => {
 
   if (game.waiting.stage === "answer") {
     if (!(m.text || m.imageMessage || m.videoMessage)) return m.reply("⚠️ Debes responder con TEXTO, IMAGEN o VIDEO.");
-    await m.reply("✅ Respuesta recibida. ¡Bien hecho!");
+   // await m.reply("✅ Respuesta recibida. ¡Bien hecho!");
     game.waiting = null;
     nextTurn(conn, id, m);
   }
