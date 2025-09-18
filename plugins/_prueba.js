@@ -1,5 +1,4 @@
-
-let games = {}; 
+let games = {};
 
 const preguntas = [
   "¿Cuál es tu mayor miedo?",
@@ -17,9 +16,13 @@ const retos = [
   "Manda tu última foto en galería."
 ];
 
-const handler = async (m, { conn, text, command, participants, groupMetadata }) => {
+function pickRandom(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+const handler = async (m, { conn, command }) => {
   let id = m.chat;
-  games[id] = games[id] || { players: [], turn: 0, started: false };
+  games[id] = games[id] || { players: [], used: [], started: false, waiting: null };
 
   switch (command) {
     case "join":
@@ -37,29 +40,10 @@ const handler = async (m, { conn, text, command, participants, groupMetadata }) 
 
     case "start":
       if (games[id].started) return m.reply("Ya hay una partida en curso.");
-      if (games[id].players.length < 2) return m.reply("Necesitan al menos 2 jugadores.");
+      if (games[id].players.length < 2) return m.reply("⚠️ Necesitan al menos 2 jugadores.");
       games[id].started = true;
-      games[id].turn = 0;
-      let first = games[id].players[0];
-      m.reply(`🎉 ¡La partida comenzó con ${games[id].players.length} jugadores!\n👉 Turno de @${first.split("@")[0]}`, { mentions: [first] });
-      break;
-
-    case "verdad":
-    case "reto":
-      if (!games[id].started) return m.reply("⚠️ No hay partida activa.");
-      let current = games[id].players[games[id].turn];
-      if (m.sender !== current) return m.reply("⏳ No es tu turno.");
-
-      let content = command === "verdad"
-        ? preguntas[Math.floor(Math.random() * preguntas.length)]
-        : retos[Math.floor(Math.random() * retos.length)];
-
-      await m.reply(`🎲 *${command.toUpperCase()}*\n${content}`);
-
-      
-      games[id].turn = (games[id].turn + 1) % games[id].players.length;
-      let next = games[id].players[games[id].turn];
-      m.reply(`👉 Ahora es turno de @${next.split("@")[0]}`, { mentions: [next] });
+      games[id].used = [];
+      nextTurn(conn, id, m);
       break;
 
     case "end":
@@ -70,7 +54,48 @@ const handler = async (m, { conn, text, command, participants, groupMetadata }) 
   }
 };
 
-handler.command = ["join", "leave", "start", "verdad", "reto", "end"];
+async function nextTurn(conn, id, m) {
+  let game = games[id];
+  if (!game) return;
+  if (game.used.length >= game.players.length) game.used = [];
+  let candidates = game.players.filter(p => !game.used.includes(p));
+  let chosen = pickRandom(candidates);
+  game.used.push(chosen);
+  let msg = await conn.sendMessage(id, {
+    text: `👉 Turno de @${chosen.split("@")[0]}.\nResponde *Verdad* o *Reto* a este mensaje.`,
+    mentions: [chosen]
+  }, { quoted: m });
+  game.waiting = { player: chosen, stage: "choose", msgId: msg.key.id };
+}
+
+handler.before = async (m, { conn }) => {
+  let id = m.chat;
+  let game = games[id];
+  if (!game?.started || !game.waiting) return;
+  if (!m.quoted || m.quoted.id !== game.waiting.msgId) return;
+  if (m.sender !== game.waiting.player) return;
+  if (!m.text) return m.reply("⚠️ Solo se permite texto en este juego.");
+
+  if (game.waiting.stage === "choose") {
+    let choice = m.text.toLowerCase();
+    if (choice !== "verdad" && choice !== "reto") return m.reply("Responde solo con *Verdad* o *Reto*.");
+    let content = choice === "verdad" ? pickRandom(preguntas) : pickRandom(retos);
+    let msg = await conn.sendMessage(id, {
+      text: `🎲 *${choice.toUpperCase()}*\n${content}\n\n👉 Responde a este mensaje con tu respuesta.`,
+      mentions: [game.player]
+    }, { quoted: m });
+    game.waiting = { player: m.sender, stage: "answer", msgId: msg.key.id };
+    return;
+  }
+
+  if (game.waiting.stage === "answer") {
+    await m.reply("✅ Respuesta recibida. ¡Bien hecho!");
+    game.waiting = null;
+    nextTurn(conn, id, m);
+  }
+};
+
+handler.command = ["join", "leave", "start", "end"];
 handler.group = true;
 
 export default handler;
