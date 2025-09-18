@@ -43,13 +43,13 @@ const res1 = await fetch('https://i.postimg.cc/vHyTj3dZ/1758228459909.jpg');
 const img2 = Buffer.from(await res1.arrayBuffer());
 let userjid = m.sender
 const fkontak = {
-    key: { fromMe: false, participant: "0@s.whatsapp.net" },
+    key: { fromMe: false, participant: userjid },
     message: {
         productMessage: {
             product: {
                 productImage: { jpegThumbnail: img2 },
-                title: `texto`,
-                description: '𝗟𝗜𝗦𝗧𝗔 𝗗𝗘 𝗙𝗨𝗡𝗖𝗜𝗢𝗡𝗘𝗦',
+                title: `𝗟𝗜𝗦𝗧𝗔 𝗗𝗘 𝗙𝗨𝗡𝗖𝗜𝗢𝗡𝗘𝗦`,
+                description: '1',
                 currencyCode: "USD",
                 priceAmount1000: "15000", 
                 retailerId: "BOT"
