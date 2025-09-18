@@ -56,21 +56,22 @@ const handler = async (m, { conn, command }) => {
 
   switch (command) {
     case "join":
-      if (games[id].players.includes(m.sender)) return m.reply("Ya estás dentro.");
-      games[id].players.push(m.sender);
-      m.reply(`✅ ${conn.getName(m.sender)} se unió al juego. (${games[id].players.length} jugadores)`);
+      if (!games[id].players.includes(m.sender)) {
+        games[id].players.push(m.sender);
+        m.reply(`✅ ${conn.getName(m.sender)} se unió al juego. (${games[id].players.length} jugadores)`);
+      } else m.reply("Ya estás dentro.");
       break;
 
     case "leave":
-      if (!games[id].players.includes(m.sender)) return m.reply("No estás en la partida.");
-      games[id].players = games[id].players.filter(p => p !== m.sender);
-      m.reply(`🚪 ${conn.getName(m.sender)} salió de la partida.`);
+      if (games[id].players.includes(m.sender)) {
+        games[id].players = games[id].players.filter(p => p !== m.sender);
+        m.reply(`🚪 ${conn.getName(m.sender)} salió de la partida.`);
+      } else m.reply("No estás en la partida.");
       break;
 
     case "start":
       if (games[id].started) return m.reply("Ya hay una partida en curso.");
       if (games[id].players.length < 2) return m.reply("⚠️ Necesitan al menos 2 jugadores.");
-
       games[id].started = true;
       games[id].used = [];
       let list = games[id].players.map(p => `• @${p.split("@")[0]}`).join("\n");
@@ -105,14 +106,14 @@ async function nextTurn(conn, id, m) {
     text: `👉 Turno de @${chosen.split("@")[0]}.\nResponde *Verdad* o *Reto* a este mensaje.`,
     mentions: [chosen]
   }, { quoted: m });
-  game.waiting = { player: chosen, stage: "choose", msgId: msg.key.id };
+  game.waiting = { player: chosen, stage: "choose", msgId: msg.key?.id };
 }
 
 handler.before = async (m, { conn }) => {
   let id = m.chat;
   let game = games[id];
   if (!game?.started || !game.waiting) return;
-  if (!m.quoted || m.quoted.id !== game.waiting.msgId) return;
+  if (!m.quoted || m.quoted.key?.id !== game.waiting.msgId) return;
   if (m.sender !== game.waiting.player) return;
 
   if (game.waiting.stage === "choose") {
@@ -124,13 +125,12 @@ handler.before = async (m, { conn }) => {
       text: `🎲 *${choice.toUpperCase()}*\n${content}\n\n👉 Responde a este mensaje con tu respuesta (TEXTO, IMAGEN o VIDEO).`,
       mentions: [game.player]
     }, { quoted: m });
-    game.waiting = { player: m.sender, stage: "answer", msgId: msg.key.id };
+    game.waiting = { player: m.sender, stage: "answer", msgId: msg.key?.id };
     return;
   }
 
   if (game.waiting.stage === "answer") {
     if (!(m.text || m.imageMessage || m.videoMessage)) return m.reply("⚠️ Debes responder con TEXTO, IMAGEN o VIDEO.");
-   // await m.reply("✅ Respuesta recibida. ¡Bien hecho!");
     game.waiting = null;
     nextTurn(conn, id, m);
   }
