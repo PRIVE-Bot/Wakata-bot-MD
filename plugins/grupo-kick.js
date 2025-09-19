@@ -1,7 +1,7 @@
 var handler = async (m, { conn, participants, usedPrefix, command, args }) => {
     try {
         if (!m.isGroup) {
-            return conn.reply(m.chat, 'Este comando solo se puede usar en grupos.', m);
+            return conn.reply(m.chat, '❌ Este comando solo se puede usar en grupos.', m);
         }
 
         const groupInfo = await conn.groupMetadata(m.chat);
@@ -32,7 +32,7 @@ var handler = async (m, { conn, participants, usedPrefix, command, args }) => {
         if (!usersToKick.length) {
             return conn.reply(
                 m.chat,
-                `⚠️ Debes mencionar a alguien, responder a un mensaje o usar un prefijo como *${usedPrefix + command} +504* para expulsar a números que empiecen con ese código.`,
+                `⚠️ Debes mencionar a alguien, responder a un mensaje o usar un prefijo como:\n*${usedPrefix + command} +504*`,
                 m
             );
         }
@@ -57,12 +57,22 @@ var handler = async (m, { conn, participants, usedPrefix, command, args }) => {
             try {
                 await conn.groupParticipantsUpdate(m.chat, [user], 'remove');
 
+                // Si se eliminó un mensaje citado del usuario expulsado
                 if (m.quoted && m.quoted.sender === user) {
                     await conn.sendMessage(m.chat, { delete: m.quoted.key });
                 }
 
             } catch (e) {
-                notKicked.push(`⚠️ No se pudo expulsar a @${user.split('@')[0]}`);
+                let reason = '⚠️ Error desconocido';
+                if (String(e).includes('not-authorized')) {
+                    reason = '⚠️ El bot no tiene permisos para expulsar.';
+                } else if (String(e).includes('403')) {
+                    reason = '⚠️ No se pudo expulsar (posible restricción de WhatsApp).';
+                } else if (String(e).includes('not-in-group')) {
+                    reason = '⚠️ El usuario ya no está en el grupo.';
+                }
+
+                notKicked.push(`${reason} → @${user.split('@')[0]}`);
             }
         }
 
@@ -74,17 +84,21 @@ var handler = async (m, { conn, participants, usedPrefix, command, args }) => {
             const notKickedMentions = notKicked.map(line => line.match(/@\d+/)[0]);
             await conn.reply(
                 m.chat,
-                `❌ *No se pudo expulsar a los siguientes usuarios:*\n${notKicked.join('\n')}`,
+                `❌ *Errores al expulsar:*\n${notKicked.join('\n')}`,
                 m,
                 { mentions: notKickedMentions }
             );
         }
 
-        await conn.sendMessage(m.chat, { react: { text: "🔥", key: m.key } });
+        if (!notAllowed.length && !notKicked.length) {
+            await conn.sendMessage(m.chat, { react: { text: "✅", key: m.key } });
+        } else {
+            await conn.sendMessage(m.chat, { react: { text: "⚠️", key: m.key } });
+        }
 
     } catch (e) {
         console.error(e);
-        conn.reply(m.chat, 'Ocurrió un error inesperado. Por favor, inténtalo de nuevo más tarde.', m);
+        conn.reply(m.chat, `❌ Error inesperado: ${e.message}`, m);
     }
 };
 
