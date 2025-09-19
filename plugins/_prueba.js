@@ -1,23 +1,22 @@
-const handler = async (m, { conn, usedPrefix, command }) => {
+const handler = async (m, { conn }) => {
   try {
-    // Revisa todos los comandos cargados en global.plugins
     let tags = [];
 
+    // Recorremos todos los plugins cargados en global.plugins
     for (let name in global.plugins) {
       let plugin = global.plugins[name];
       if (plugin?.tags) {
-        // Agrega cada tag del plugin a la lista
         tags.push(...plugin.tags);
       }
     }
 
-    // Quita duplicados y normaliza (ejemplo: "main" -> "Main")
-    let uniqueTags = [...new Set(tags.map(tag => tag.charAt(0).toUpperCase() + tag.slice(1)))];
+    // Eliminar duplicados
+    let uniqueTags = [...new Set(tags)];
 
-    // Ordena alfabéticamente
+    // Ordenar alfabéticamente
     uniqueTags.sort();
 
-    // Construye el mensaje
+    // Construir el mensaje final
     let text = `📂 *Tags disponibles en los handlers:*\n\n${uniqueTags.map(t => `- ${t}`).join("\n")}`;
 
     await conn.reply(m.chat, text, m);
