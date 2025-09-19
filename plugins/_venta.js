@@ -1,5 +1,6 @@
-import { generateWAMessageFromContent } from '@whiskeysockets/baileys';
+import { generateWAMessageFromContent, prepareWAMessageMedia } from '@whiskeysockets/baileys';
 import fs from 'fs';
+import axios from 'axios';
 
 let handler = async (m, { conn }) => {
   let texto = `🌟 ¡Compra *tu propio bot personalizado*! 🌟
@@ -10,32 +11,31 @@ Controla tu grupo con potentes funciones de administración.
 💰 Precio: *15.43 USD*`;
 
   try {
-    const content = {
-      viewOnceMessage: {
-        message: {
-          templateMessage: {
-            hydratedTemplate: {
-              hydratedContentText: texto,
-              locationMessage: { 
-                jpegThumbnail: 'https://i.postimg.cc/Gt1DPqVs/1758318401491.jpg'
-              },
-              hydratedFooterText: '💳 Pago seguro con PayPal',
-              hydratedButtons: [
-                {
-                  urlButton: {
-                    displayText: 'Pagar con PayPal',
-                    url: 'https://www.paypal.me/DeylinB/15.43' 
-                  }
-                }
-              ]
+    // Descargamos la imagen de la URL y la convertimos en buffer
+    const response = await axios.get('https://i.postimg.cc/Gt1DPqVs/1758318401491.jpg', { responseType: 'arraybuffer' });
+    const thumbnail = Buffer.from(response.data, 'binary');
+
+    const message = {
+      templateMessage: {
+        hydratedTemplate: {
+          hydratedContentText: texto,
+          locationMessage: { 
+            jpegThumbnail: thumbnail
+          },
+          hydratedFooterText: '💳 Pago seguro con PayPal',
+          hydratedButtons: [
+            {
+              urlButton: {
+                displayText: 'Pagar con PayPal',
+                url: 'https://www.paypal.me/DeylinB/15.43'
+              }
             }
-          }
+          ]
         }
       }
     };
 
-    const msg = generateWAMessageFromContent(m.chat, content, { quoted: m });
-
+    const msg = generateWAMessageFromContent(m.chat, message, { quoted: m });
     await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id });
 
   } catch (e) {
