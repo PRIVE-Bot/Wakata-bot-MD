@@ -1,34 +1,50 @@
+import { generateWAMessageFromContent } from '@whiskeysockets/baileys';
+import fs from 'fs';
+
 let handler = async (m, { conn }) => {
   let texto = `🌟 ¡Compra *tu propio bot personalizado*! 🌟
 
 Controla tu grupo con potentes funciones de administración.
 
 🌐 Visita nuestro sitio web: https://deylin.vercel.app
-💰 Precio: *15 USD*`
+💰 Precio: *15.43 USD*`;
 
   try {
-    // Simula el envío de un pago de 15 USD
-    await conn.sendPayment(m.chat, '1500', texto, m)
-
-    // Agrega botón que dirige a PayPal
-    await conn.sendMessage(m.chat, {
-      text: '💳 Haz clic en el botón para completar el pago en PayPal.',
-      footer: 'Pago seguro con PayPal',
-      buttons: [
-        {
-          buttonId: 'https://www.paypal.com/paypalme/tuusuario/15', // <-- cambia con tu enlace de PayPal
-          buttonText: { displayText: 'Pagar con PayPal' },
-          type: 1
+    const content = {
+      viewOnceMessage: {
+        message: {
+          templateMessage: {
+            hydratedTemplate: {
+              hydratedContentText: texto,
+              locationMessage: { 
+                jpegThumbnail: fs.readFileSync('./thumbnail.jpg') 
+              },
+              hydratedFooterText: '💳 Pago seguro con PayPal',
+              hydratedButtons: [
+                {
+                  urlButton: {
+                    displayText: 'Pagar con PayPal',
+                    url: 'https://www.paypal.me/DeylinB/15.43' 
+                  }
+                }
+              ]
+            }
+          }
         }
-      ]
-    }, { quoted: m })
+      }
+    };
+
+    const msg = generateWAMessageFromContent(m.chat, content, { quoted: m });
+
+    await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id });
 
   } catch (e) {
-    await conn.sendMessage(m.chat, '⚠️ Ocurrió un error al generar el enlace de pago.', { quoted: m })
+    console.error(e);
+    await conn.sendMessage(m.chat, '⚠️ Ocurrió un error al generar el enlace de pago.', { quoted: m });
   }
-}
+};
 
-handler.tags = ['main']
-handler.command = handler.help = ['buy', 'comprar']
+handler.tags = ['main'];
+handler.command = handler.help = ['buy', 'comprar'];
 
-export default handler
+export default handler;
