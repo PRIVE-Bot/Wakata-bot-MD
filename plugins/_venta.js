@@ -8,7 +8,7 @@ Controla tu grupo con potentes funciones de administración.
 
   try {
     // Simula el envío de un pago de 15 USD
-    await conn.sendPayment(m.chat, '15', texto, m)
+    await conn.sendPayment(m.chat, '1500', texto, m)
 
     // Agrega botón que dirige a PayPal
     await conn.sendMessage(m.chat, {
