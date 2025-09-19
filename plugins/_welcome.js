@@ -38,7 +38,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
   if (!tipo) return
 
 let avatar = await conn.profilePictureUrl(who).catch(() => tipo2)
-let urlapi = `https://canvas-8zhi.onrender.com/api/welcome?title=${encodeURIComponent(tipo)}&desc=${encodeURIComponent(tipo1)}&profile=${encodeURIComponent(avatar)}&background=${encodeURIComponent(tipo2)}`
+let urlapi = `https://canvas-8zhi.onrender.com/api/welcome2?title=${encodeURIComponent(tipo)}&desc=${encodeURIComponent(tipo1)}&profile=${encodeURIComponent(avatar)}&background=${encodeURIComponent(tipo2)}`
 
   let fkontak
   try {
