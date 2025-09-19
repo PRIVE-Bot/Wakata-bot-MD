@@ -1,105 +1,123 @@
 var handler = async (m, { conn, participants, usedPrefix, command, args }) => {
-    try {
-        if (!m.isGroup) {
-            return conn.reply(m.chat, '❌ Este comando solo se puede usar en grupos.', m);
-        }
+  try {
+    if (!m.isGroup) return conn.reply(m.chat, '❌ Este comando solo se puede usar en grupos.', m);
 
-        const groupInfo = await conn.groupMetadata(m.chat);
-        const ownerGroup = groupInfo.owner || m.chat.split`-`[0] + '@s.whatsapp.net';
-        const ownerBot = global.owner[0][0] + '@s.whatsapp.net';
+    const groupInfo = await conn.groupMetadata(m.chat);
+    const ownerGroup = groupInfo?.owner || (m.chat.split('-')[0] + '@s.whatsapp.net');
+    const ownerBot = (global.owner && global.owner[0] && global.owner[0][0])
+      ? `${global.owner[0][0]}@s.whatsapp.net`
+      : conn.user?.jid;
 
-        let usersToKick = m.mentionedJid || [];
-        const prefix = args[0]?.startsWith('+') ? args[0].replace(/\D/g, '') : null;
+    // --- Normalizar participants (por si la forma cambia entre versiones) ---
+    const participantJids = (participants || [])
+      .map(p => p.id || p.jid || p.participant || (typeof p === 'string' ? p : null))
+      .filter(Boolean);
+    const participantSet = new Set(participantJids);
 
-        if (m.quoted && !usersToKick.includes(m.quoted.sender)) {
-            usersToKick.push(m.quoted.sender);
-        }
-
-        if (prefix) {
-            let usersFoundByPrefix = [];
-            for (let user of participants) {
-                const number = user.id.split('@')[0];
-                if (number.startsWith(prefix) && !usersToKick.includes(user.id)) {
-                    usersToKick.push(user.id);
-                    usersFoundByPrefix.push(user.id);
-                }
-            }
-            if (usersFoundByPrefix.length === 0) {
-                return conn.reply(m.chat, `⚠️ No se encontraron usuarios en el grupo con el prefijo *${prefix}*.`, m);
-            }
-        }
-
-        if (!usersToKick.length) {
-            return conn.reply(
-                m.chat,
-                `⚠️ Debes mencionar a alguien, responder a un mensaje o usar un prefijo como:\n*${usedPrefix + command} +504*`,
-                m
-            );
-        }
-
-        let notAllowed = [];
-        let notKicked = [];
-
-        for (let user of usersToKick) {
-            if (user === conn.user.jid) {
-                notAllowed.push('🤖 El bot no puede eliminarse a sí mismo.');
-                continue;
-            }
-            if (user === ownerGroup) {
-                notAllowed.push('👑 No se puede expulsar al dueño del grupo.');
-                continue;
-            }
-            if (user === ownerBot) {
-                notAllowed.push('🧑‍💻 No se puede expulsar al creador del bot.');
-                continue;
-            }
-
-            try {
-                await conn.groupParticipantsUpdate(m.chat, [user], 'remove');
-
-                // Si se eliminó un mensaje citado del usuario expulsado
-                if (m.quoted && m.quoted.sender === user) {
-                    await conn.sendMessage(m.chat, { delete: m.quoted.key });
-                }
-
-            } catch (e) {
-                let reason = '⚠️ Error desconocido';
-                if (String(e).includes('not-authorized')) {
-                    reason = '⚠️ El bot no tiene permisos para expulsar.';
-                } else if (String(e).includes('403')) {
-                    reason = '⚠️ No se pudo expulsar (posible restricción de WhatsApp).';
-                } else if (String(e).includes('not-in-group')) {
-                    reason = '⚠️ El usuario ya no está en el grupo.';
-                }
-
-                notKicked.push(`${reason} → @${user.split('@')[0]}`);
-            }
-        }
-
-        if (notAllowed.length) {
-            await conn.reply(m.chat, `❌ *No expulsados:*\n${notAllowed.join('\n')}`, m);
-        }
-
-        if (notKicked.length) {
-            const notKickedMentions = notKicked.map(line => line.match(/@\d+/)[0]);
-            await conn.reply(
-                m.chat,
-                `❌ *Errores al expulsar:*\n${notKicked.join('\n')}`,
-                m,
-                { mentions: notKickedMentions }
-            );
-        }
-
-        if (!notAllowed.length && !notKicked.length) {
-            await conn.sendMessage(m.chat, { react: { text: "✅", key: m.key } });
-        } else {
-            await conn.sendMessage(m.chat, { react: { text: "⚠️", key: m.key } });
-        }
-
-    } catch (e) {
-        console.error(e);
-        conn.reply(m.chat, `❌ Error inesperado: ${e.message}`, m);
+    // --- Normalizar usersToKick (m.mentionedJid puede venir como string, array o undefined) ---
+    let usersToKick = [];
+    if (m.mentionedJid) {
+      usersToKick = Array.isArray(m.mentionedJid) ? [...m.mentionedJid] : [String(m.mentionedJid)];
     }
+
+    // quoted sender (robusto)
+    const quotedSender = m.quoted?.sender || m.quoted?.key?.participant || null;
+    if (quotedSender && !usersToKick.includes(quotedSender)) usersToKick.push(quotedSender);
+
+    // prefijo tipo +504
+    const prefix = args[0]?.startsWith('+') ? args[0].replace(/\D/g, '') : null;
+    if (prefix) {
+      const found = [];
+      for (const member of participantJids) {
+        const number = member.split('@')[0];
+        if (number.startsWith(prefix) && !usersToKick.includes(member)) {
+          usersToKick.push(member);
+          found.push(member);
+        }
+      }
+      if (found.length === 0) {
+        return conn.reply(m.chat, `⚠️ No se encontraron usuarios en el grupo con el prefijo *${prefix}*.`, m);
+      }
+    }
+
+    if (!usersToKick.length) {
+      return conn.reply(
+        m.chat,
+        `⚠️ Debes mencionar a alguien, responder a un mensaje o usar un prefijo. Ejemplo:\n*${usedPrefix + command} +504*`,
+        m
+      );
+    }
+
+    // deduplicar y filtrar
+    usersToKick = [...new Set(usersToKick)].filter(Boolean);
+
+    const kicked = [];
+    const notAllowed = [];
+    const notKicked = [];
+
+    for (const user of usersToKick) {
+      // validaciones de protección
+      if (user === conn.user.jid) {
+        notAllowed.push({ jid: user, reason: '🤖 El bot no puede eliminarse a sí mismo.' });
+        continue;
+      }
+      if (user === ownerGroup) {
+        notAllowed.push({ jid: user, reason: '👑 No se puede expulsar al dueño del grupo.' });
+        continue;
+      }
+      if (user === ownerBot) {
+        notAllowed.push({ jid: user, reason: '🧑‍💻 No se puede expulsar al creador del bot.' });
+        continue;
+      }
+
+      // está en el grupo?
+      if (!participantSet.has(user)) {
+        notKicked.push({ jid: user, reason: '⚠️ El usuario no está en el grupo.' });
+        continue;
+      }
+
+      try {
+        await conn.groupParticipantsUpdate(m.chat, [user], 'remove');
+        kicked.push(user);
+
+        // si el mensaje citado pertenece al expulsado, intentar borrarlo
+        if (quotedSender === user && m.quoted && m.quoted.key) {
+          try { await conn.sendMessage(m.chat, { delete: m.quoted.key }); } catch (_) { /* ignore */ }
+        }
+
+      } catch (e) {
+        // razon legible según mensaje de error
+        let reason = e && e.message ? e.message : String(e);
+        if (reason.includes('not-authorized') || reason.includes('401')) reason = '⚠️ El bot no tiene permisos administrativos para expulsar.';
+        else if (reason.includes('403')) reason = '⚠️ Acción bloqueada por WhatsApp (403).';
+        else if (reason.includes('not-in-group')) reason = '⚠️ El usuario ya no está en el grupo.';
+        notKicked.push({ jid: user, reason });
+        console.error('Error expulsando', user, e);
+      }
+    }
+
+    // Construir respuesta resumida
+    const parts = [];
+    if (kicked.length) parts.push('✅ *Expulsados:*\n' + kicked.map(j => `@${j.split('@')[0]}`).join('\n'));
+    if (notAllowed.length) parts.push('❌ *No expulsados (protección):*\n' + notAllowed.map(x => `@${x.jid.split('@')[0]} → ${x.reason}`).join('\n'));
+    if (notKicked.length) parts.push('⚠️ *Errores al expulsar:*\n' + notKicked.map(x => `@${x.jid.split('@')[0]} → ${x.reason}`).join('\n'));
+
+    const mentions = [
+      ...kicked,
+      ...notAllowed.map(x => x.jid),
+      ...notKicked.map(x => x.jid)
+    ].filter(Boolean);
+
+    await conn.reply(m.chat, parts.length ? parts.join('\n\n') : '✅ Proceso terminado.', m, { mentions });
+
+    // reaccion final
+    const hadErrors = notAllowed.length || notKicked.length;
+    await conn.sendMessage(m.chat, { react: { text: hadErrors ? '⚠️' : '✅', key: m.key } });
+
+  } catch (e) {
+    console.error('Handler error:', e);
+    await conn.reply(m.chat, `❌ Error inesperado: ${e && e.message ? e.message : String(e)}`, m);
+  }
 };
 
 handler.help = ['kick'];
