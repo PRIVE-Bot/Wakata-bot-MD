@@ -22,7 +22,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
 
   if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_ADD) {
     tipo = 'Bienvenido'
-    tipo1 = 'al grupo'
+    tipo1 = `al grupo: ${groupMetadata.subject}`
     tipo2 = global.img
   }
 
@@ -31,7 +31,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
     m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_REMOVE
   ) {
     tipo = 'Adiós'
-    tipo1 = 'del grupo'
+    tipo1 = `del grupo: ${groupMetadata.subject}`
     tipo2 = global.img
   }
 
