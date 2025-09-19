@@ -17,7 +17,7 @@ Controla tu grupo con potentes funciones de administración.
             hydratedTemplate: {
               hydratedContentText: texto,
               locationMessage: { 
-                jpegThumbnail: fs.readFileSync('./thumbnail.jpg') 
+                jpegThumbnail: 'https://i.postimg.cc/Gt1DPqVs/1758318401491.jpg'
               },
               hydratedFooterText: '💳 Pago seguro con PayPal',
               hydratedButtons: [
