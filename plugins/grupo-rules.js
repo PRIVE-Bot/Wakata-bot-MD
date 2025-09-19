@@ -5,7 +5,7 @@ return conn.reply(m.chat, `${reglas}`, m, rcanal);
 }
 
 handler.command = handler.help = ['reglas', 'rules', 'descripcion', 'description']
-handler.tags = ['group']
+handler.tags = ['grupo']
 handler.group = true;
 
 export default handler;
