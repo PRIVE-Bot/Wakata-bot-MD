@@ -9,7 +9,7 @@ let tags = {
   'serbot': 'SUB BOTS',
   'rpg': 'RPG',
   'sticker': 'STICKER',
-  'group': 'GROUPS',
+  'grupo': 'GROUPS',
   'nable': 'ON / OFF',
   'premium': 'PREMIUM',
   'downloader': 'DOWNLOAD',
