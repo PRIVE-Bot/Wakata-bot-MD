@@ -7,32 +7,39 @@ Controla tu grupo con potentes funciones de administración.
 
 💰 Precio: *15.43 USD*`;
 
-  try {
-    const message = {
-      templateMessage: {
-        hydratedTemplate: {
-          hydratedContentText: texto,
-          hydratedFooterText: '💳 Pago seguro con PayPal',
-          hydratedButtons: [
+  let message = {
+  viewOnceMessage: {
+    message: {
+      interactiveMessage: {
+        body: { text: texto },
+        footer: { text: "💳 Pago seguro con PayPal" },
+        nativeFlowMessage: {
+          buttons: [
             {
-              urlButton: {
-                displayText: 'Pagar con PayPal',
-                url: 'https://www.paypal.me/DeylinB/15.43'
-              }
+              name: "cta_url",
+              buttonParamsJson: JSON.stringify({
+                display_text: "Pagar con PayPal",
+                url: "https://www.paypal.me/DeylinB/15.43",
+                merchant_url: "https://www.paypal.me"
+              })
             },
             {
-              urlButton: {
-                displayText: 'Visitar sitio web',
-                url: 'https://deylin.vercel.app'
-              }
+              name: "cta_url",
+              buttonParamsJson: JSON.stringify({
+                display_text: "Visitar sitio web",
+                url: "https://deylin.vercel.app",
+                merchant_url: "https://deylin.vercel.app"
+              })
             }
           ]
         }
       }
-    };
+    }
+  }
+};
 
     const msg = generateWAMessageFromContent(m.chat, message, { quoted: m });
-    await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id });
+await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id });
 
   } catch (e) {
     console.error(e);
