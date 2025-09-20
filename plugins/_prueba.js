@@ -7,3 +7,5 @@ let handler = async (m, { conn }) => {
   }
 }
 handler.command = command
+
+export default handler;
