@@ -225,6 +225,12 @@ export async function handler(chatUpdate) {
 
                 global.comando = command;
 
+                const settings = global.db.data.settings[this.user.jid];
+                if (settings.soloParaJid && m.sender !== settings.soloParaJid) {
+                    continue; 
+                }
+
+
                 if (!isAccept) continue;
                 
                 m.plugin = name;
