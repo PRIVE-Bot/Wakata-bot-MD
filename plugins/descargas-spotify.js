@@ -4,7 +4,7 @@ const handler = async (m, { args, conn, command, prefix }) => {
   if (!args[0]) {
     let q1 = ['adele', 'Natalia Jiménez', 'Sia', 'Maroon 5', 'Karol G'];
     let q = q1[Math.floor(Math.random() * q1.length)];
-    return conn.reply(m.chat, `${emoji} Ejemplo de uso:\n${(prefix || '.') + command} ${q}`, m, racnal);
+    return conn.reply(m.chat, `${emoji} Ejemplo de uso:\n${. + command} ${q}`, m, racnal);
   }
 
   await conn.sendMessage(m.chat, {
