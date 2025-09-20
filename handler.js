@@ -143,13 +143,14 @@ export async function handler(chatUpdate) {
         if (opts['swonly'] && m.chat !== 'status@broadcast') return;
         if (typeof m.text !== 'string') m.text = '';
 
-        const groupMetadata = m.isGroup ? ((this.chats[m.chat] || {}).metadata || await this.groupMetadata(m.chat).catch(_ => null)) : {};
-        const participants = m.isGroup ? (groupMetadata.participants || []) : [];
-        const userParticipant = participants.find(p => p.id === senderJid || p.jid === senderJid);
-        const botParticipant = participants.find(p => p.id === this.user.jid);
-        const isRAdmin = userParticipant?.admin === "superadmin";
-        const isAdmin = isRAdmin || userParticipant?.admin === "admin";
-        const isBotAdmin = !!botParticipant?.admin;
+        const groupMetadata = m.isGroup ? await this.groupMetadata(m.chat).catch(_ => null) : {} || {}
+const participants = m.isGroup ? groupMetadata.participants : []
+const userGroup = m.isGroup ? participants.find(p => p.id === m.sender) : {}
+const botGroup = m.isGroup ? participants.find(p => p.id === this.user.jid) : {}
+const isRAdmin = userGroup?.admin === 'superadmin' || false
+const isAdmin = isRAdmin || userGroup?.admin === 'admin' || false
+const isBotAdmin = botGroup?.admin === 'admin' || botGroup?.admin === 'superadmin' || false
+
 
         const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './plugins');
         let usedPrefix = '';
