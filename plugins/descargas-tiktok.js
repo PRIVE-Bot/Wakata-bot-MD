@@ -1,7 +1,7 @@
 import fetch from "node-fetch"
 
 let handler = async (m, { conn, args, usedPrefix, command }) => {
-  if (!args[0]) return m.reply(`⚠️ Ingresa un enlace de TikTok.\n\nEjemplo:\n${usedPrefix + command} https://vm.tiktok.com/ZMj4xxxx/`)
+  if (!args[0]) return m.reply(`${emoji} Ingresa un enlace de TikTok.`)
   try {
     let res = await fetch(`https://g-mini-ia.vercel.app/api/tiktok?url=${encodeURIComponent(args[0])}`)
     if (!res.ok) throw await res.text()
