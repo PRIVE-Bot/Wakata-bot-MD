@@ -2,8 +2,8 @@ import fetch from 'node-fetch';
 
 const handler = async (m, { args, conn, command, prefix }) => {
   if (!args[0]) {
-let q? = ['adele', 'Natalia Jiménez','sia','Maroon 5','Karol g']
-let q = q?[Math.floor(Math.random() * q?.length)];
+let q1 = ['adele', 'Natalia Jiménez','sia','Maroon 5','Karol g']
+let q = q1[Math.floor(Math.random() * q1.length)];
 
     return conn.reply(m.chat, `${enoji} Ejemplo de uso:\n${(prefix || '.') + command} ${q}`, m, rcanal);
   }
