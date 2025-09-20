@@ -128,7 +128,6 @@ export async function handler(chatUpdate) {
             };
         }
         
-        const user = global.db.data.users[senderJid];
         const chat = global.db.data.chats[chatJid];
         const settings = global.db.data.settings[settingsJid];
 
