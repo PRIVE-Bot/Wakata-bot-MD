@@ -1,4 +1,4 @@
-export async function handler(m) {
+let handler = async (m, { conn }) => {
   let command = '❤️';
 
   if (m.text === command) {
@@ -6,3 +6,4 @@ export async function handler(m) {
     await m.reply('Hola');
   }
 }
+handler.command = command
