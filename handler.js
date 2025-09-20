@@ -128,6 +128,7 @@ export async function handler(chatUpdate) {
             };
         }
         
+        const user = global.db.data.users[senderJid];
         const chat = global.db.data.chats[chatJid];
         const settings = global.db.data.settings[settingsJid];
 
@@ -152,10 +153,10 @@ export async function handler(chatUpdate) {
         const botJid = conn.user.jid;
         const groupMetadata = m.isGroup ? ((conn.chats[m.chat] || {}).metadata || await this.groupMetadata(m.chat).catch(_ => null)) : {};
         const participants = m.isGroup ? (groupMetadata.participants || []) : [];
-        const user = participants.find(p => p.id === senderLid || p.jid === senderJid) || {};
+        const user2 = participants.find(p => p.id === senderLid || p.jid === senderJid) || {};
         const bot = participants.find(p => p.id === botLid || p.id === botJid) || {};
-        const isRAdmin = user?.admin === "superadmin";
-        const isAdmin = isRAdmin || user?.admin === "admin";
+        const isRAdmin = user2?.admin === "superadmin";
+        const isAdmin = isRAdmin || user2?.admin === "admin";
         const isBotAdmin = !!bot?.admin;
 
 
