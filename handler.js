@@ -143,13 +143,22 @@ export async function handler(chatUpdate) {
         if (opts['swonly'] && m.chat !== 'status@broadcast') return;
         if (typeof m.text !== 'string') m.text = '';
 
-        const groupMetadata = m.isGroup ? await this.groupMetadata(m.chat).catch(_ => null) : {} || {}
-const participants = m.isGroup ? groupMetadata.participants : []
-const userGroup = m.isGroup ? participants.find(p => p.id === m.sender) : {}
-const botGroup = m.isGroup ? participants.find(p => p.id === this.user.jid) : {}
-const isRAdmin = userGroup?.admin === 'superadmin' || false
-const isAdmin = isRAdmin || userGroup?.admin === 'admin' || false
-const isBotAdmin = botGroup?.admin === 'admin' || botGroup?.admin === 'superadmin' || false
+                async function getLidFromJid(id, conn) {
+            if (id.endsWith('@lid')) return id;
+            const res = await conn.onWhatsApp(id).catch(() => []);
+            return res[0]?.lid || id;
+        }
+        const senderLid = await getLidFromJid(m.sender, conn);
+        const botLid = await getLidFromJid(conn.user.jid, conn);
+        const senderJid = m.sender;
+        const botJid = conn.user.jid;
+        const groupMetadata = m.isGroup ? ((conn.chats[m.chat] || {}).metadata || await this.groupMetadata(m.chat).catch(_ => null)) : {};
+        const participants = m.isGroup ? (groupMetadata.participants || []) : [];
+        const user = participants.find(p => p.id === senderLid || p.jid === senderJid) || {};
+        const bot = participants.find(p => p.id === botLid || p.id === botJid) || {};
+        const isRAdmin = user?.admin === "superadmin";
+        const isAdmin = isRAdmin || user?.admin === "admin";
+        const isBotAdmin = !!bot?.admin;
 
 
         const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './plugins');
