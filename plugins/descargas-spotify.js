@@ -2,9 +2,9 @@ import fetch from 'node-fetch';
 
 const handler = async (m, { args, conn, command, prefix }) => {
   if (!args[0]) {
-    let q1 = ['adele', 'Natalia Jiménez', 'Sia', 'Maroon 5', 'Karol G'];
-    let q = q1[Math.floor(Math.random() * q1.length)];
-    return conn.reply(m.chat, `${emoji} Ejemplo de uso:\n${. + command} ${q}`, m, racnal);
+    let ejemplos = ['adele', 'Natalia Jiménez', 'Sia', 'Maroon 5', 'Karol G'];
+    let random = ejemplos[Math.floor(Math.random() * ejemplos.length)];
+    return conn.reply(m.chat, `${emoji} Ejemplo de uso:\n${(prefix || '.') + command} ${random}`, m, rcanal);
   }
 
   await conn.sendMessage(m.chat, {
@@ -18,37 +18,46 @@ const handler = async (m, { args, conn, command, prefix }) => {
     const res = await fetch(searchUrl);
     const json = await res.json();
 
-    if (!json.status || !json.data || json.data.length === 0) {
+    if (!json.estado || !json.datos || json.datos.length === 0) {
       return m.reply('❌ No encontré la canción que estás buscando.', m);
     }
 
-    const data = json.data[0]; 
+    const data = json.datos[0]; 
     if (!data || !data.url) {
       return m.reply('⚠️ La API no devolvió un resultado válido.', m);
     }
 
     const downloadUrl = `https://api.delirius.store/download/spotifydl?url=${encodeURIComponent(data.url)}`;
+    const dl = await fetch(downloadUrl).then(r => r.json()).catch(() => null);
+
+    const audioUrl = dl?.datos?.url;
+    if (!audioUrl || audioUrl.includes('undefined')) {
+      return m.reply('⚠️ Error al obtener el enlace de descarga.', m);
+    }
 
     const caption = `
-⟟⟟⟟⟟⟟⟟⟟⟟⟟⟟⟟⟟⟟⟟⟟⟟⟟⟟⟟⟟⟟⟟⟟⟟⟟⟟⟟⟟⟟⟟⟟
-  ⌬  SPOTIFY SYSTEM v2.0  ⌬
-  
-  ◉ TÍTULO: ${data.title || 'Desconocido'}
-  ◉ ARTISTA: ${data.artist || 'Desconocido'}
-  ◉ ÁLBUM: ${data.album || 'Desconocido'}
-  ◉ LINK: ${data.url}
+╔══ ✦ ⋆ ── ✧ ── ⋆ ✦ ══╗
+   ⟡  SPOTIFY TRACK INFO  ⟡
+   
+   ⌬ TÍTULO » ${data.título || 'Desconocido'}
+   ⌬ ARTISTA » ${data.artista || 'Desconocido'}
+   ⌬ ÁLBUM » ${data.álbum || 'Desconocido'}
+   ⌬ DURACIÓN » ${data.duración || 'N/A'}
+   ⌬ POPULARIDAD » ${data.popularidad || 'N/A'}
+   ⌬ PUBLICADO » ${data.publicar || 'N/A'}
+   ⌬ LINK » ${data.url}
 
-⟟⟟⟟⟟⟟⟟⟟⟟⟟⟟⟟⟟⟟⟟⟟⟟⟟⟟⟟⟟⟟⟟⟟⟟⟟⟟⟟⟟⟟⟟⟟`;
+╚══ ✦ ⋆ ── ✧ ── ⋆ ✦ ══╝`;
 
     await conn.sendMessage(m.chat, {
-      image: { url: data.thumbnail || 'https://i.ibb.co/sQpZwdd/music.jpg' },
+      image: { url: data.imagen || 'https://i.ibb.co/sQpZwdd/music.jpg' },
       caption
     }, { quoted: m });
 
     await conn.sendMessage(m.chat, {
-      audio: { url: downloadUrl },
+      audio: { url: audioUrl },
       mimetype: 'audio/mpeg',
-      fileName: `${data.title || 'cancion'}.mp3`
+      fileName: `${data.título || 'cancion'}.mp3`
     }, { quoted: m });
 
     await conn.sendMessage(m.chat, {
