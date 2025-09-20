@@ -150,7 +150,6 @@ export async function handler(chatUpdate) {
         }
         const senderLid = await getLidFromJid(m.sender, conn);
         const botLid = await getLidFromJid(conn.user.jid, conn);
-        const senderJid = m.sender;
         const botJid = conn.user.jid;
         const groupMetadata = m.isGroup ? ((conn.chats[m.chat] || {}).metadata || await this.groupMetadata(m.chat).catch(_ => null)) : {};
         const participants = m.isGroup ? (groupMetadata.participants || []) : [];
