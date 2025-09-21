@@ -58,7 +58,7 @@ const fkontak = {
 
 handler.help = ['invite'];
 handler.tags = ['owner', 'tools'];
-handler.command = ['invite', 'join'];
+handler.command = ['invite', 'join2'];
 handler.rowner = true;
 
 export default handler;
