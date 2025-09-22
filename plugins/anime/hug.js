@@ -17,7 +17,7 @@ let handler = async (m, { conn }) => {
     let name2 = m.pushName || m.sender.split('@')[0];
     let name = await conn.getName(who) || who.split('@')[0];
 
-    m.react('🐄');
+    m.react('🫂');
 
     let str;
     if (who !== m.sender) {
@@ -40,7 +40,7 @@ let handler = async (m, { conn }) => {
             video: { url: video },
             gifPlayback: true,
             caption: str,
-            mentions: [who] 
+            mentions: [who, m.sender]  // ¡Aquí está el cambio! Ahora incluye ambos IDs.
         }, { quoted: m });
     }
 };
