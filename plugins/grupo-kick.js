@@ -25,7 +25,7 @@ var handler = async (m, { conn, participants, usedPrefix, command }) => {
 
     try {
         await conn.groupParticipantsUpdate(m.chat, [user], 'remove');
-        conn.reply(m.chat, `✅ Usuario eliminado del grupo.`, m);
+       // conn.reply(m.chat, `✅ Usuario eliminado del grupo.`, m);
     } catch (e) {
         conn.reply(m.chat, `${emoji} No se pudo eliminar al usuario. Verifica que el bot sea administrador.`, m);
     }
