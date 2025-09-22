@@ -2,9 +2,9 @@ import fs from 'fs';
 import path from 'path';
 
 let handler = async (m, { conn, usedPrefix }) => {
-    let who;
-
-        let mentionedJid = m.message?.extendedTextMessage?.contextInfo?.mentionedJid?.[0];
+        let who;
+    let mentionedJid = m.message?.extendedTextMessage?.contextInfo?.mentionedJid?.[0];
+    let userId = m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.sender;
 
     if (mentionedJid) {
         who = mentionedJid;
@@ -14,10 +14,8 @@ let handler = async (m, { conn, usedPrefix }) => {
         who = m.sender;
     }
 
-
-    let name = await conn.getName(who) || who;
-    let name2 = await conn.getName(m.sender) || m.sender;
-
+    let name2 = m.sender.split('@')[0];
+    let name = who.split('@')[0];
     m.react('🏳️‍🌈');
 
     let str;
@@ -44,7 +42,7 @@ let handler = async (m, { conn, usedPrefix }) => {
             video: { url: video },
             gifPlayback: true,
             caption: str,
-            mentions
+            mentions: [who, m.sender]  
         }, { quoted: m });
     }
 };
