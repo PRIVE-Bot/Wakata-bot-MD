@@ -4,7 +4,7 @@ import path from 'path';
 let handler = async (m, { conn }) => {
     let who;
     let mentionedJid = m.message?.extendedTextMessage?.contextInfo?.mentionedJid?.[0];
-        let userId = m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.sender
+    let userId = m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.sender;
 
     if (mentionedJid) {
         who = mentionedJid;
@@ -17,7 +17,7 @@ let handler = async (m, { conn }) => {
     let name2 = m.pushName || m.sender.split('@')[0];
     let name = await conn.getName(who) || who.split('@')[0];
 
-    m.react('🫂');
+    m.react('🐄');
 
     let str;
     if (who !== m.sender) {
@@ -35,12 +35,12 @@ let handler = async (m, { conn }) => {
         ];
 
         const video = videos[Math.floor(Math.random() * videos.length)];
-        
+
         conn.sendMessage(m.chat, {
             video: { url: video },
             gifPlayback: true,
             caption: str,
-            mentions: [userId]  
+            mentions: [who] 
         }, { quoted: m });
     }
 };
