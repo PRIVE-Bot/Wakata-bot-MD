@@ -14,9 +14,10 @@ let handler = async (m, { conn, usedPrefix }) => {
         who = m.sender;
     }
 
-    let name = await conn.getName(who) || who;
-    let name2 = await conn.getName(m.sender) || m.sender;
-
+    let name2 = m.pushName || await conn.getName(m.sender);
+let name = mentionedJid 
+  ? (await conn.getName(mentionedJid)) || mentionedJid.split('@')[0]
+  : (m.quoted ? (await conn.getName(m.quoted.sender)) || m.quoted.sender.split('@')[0] : name2);
     m.react('🫂');
 
     let str;
