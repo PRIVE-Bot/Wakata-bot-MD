@@ -41,7 +41,7 @@ let handler = async (m, { text, usedPrefix, command, conn }) => {
       temperature: 0.7
     }
 
-    const res = await fetch('https://g-mini-ia.vercel.app/api/gemini', {
+    const res = await fetch('https://api-log-fun.vercel.app/api/gemini', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
