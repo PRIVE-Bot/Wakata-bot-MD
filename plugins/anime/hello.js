@@ -22,7 +22,7 @@ let handler = async (m, { conn, usedPrefix }) => {
 
         str = `👋 *${name2}* saluda a ${mentionText}, ¿cómo están?`;
     } else {
-        str = `👋 *${name2}* saluda a todos los integrantes del grupo.\n\n¿Cómo se encuentran hoy? 😄`;
+        str = `👋 *${name2}* saluda a todos los integrantes del grupo.\n\n¿Cómo se encuentran hoy?`;
     }
 
     if (m.isGroup) {
