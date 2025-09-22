@@ -947,7 +947,7 @@ if (readBotPath.includes(creds)) {
 JadiBot({pathJadiBot: botPath, m: null, conn, args: '', usedPrefix: '/', command: 'serbot'})
 }}}}
 
-const pluginFolder = global.__dirname(join(__dirname, './plugins/index'))
+const pluginFolder = global.__dirname(join(__dirname, './plugins'))
 
 const pluginFilter = (filename) => /\.js$/.test(filename)
 global.plugins = {}
