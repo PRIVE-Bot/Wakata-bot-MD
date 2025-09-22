@@ -2,27 +2,28 @@ import fs from 'fs';
 import path from 'path';
 
 let handler = async (m, { conn, usedPrefix }) => {
-    let users = [];
+        let who;
+    let mentionedJid = m.message?.extendedTextMessage?.contextInfo?.mentionedJid?.[0];
+    let userId = m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.sender;
 
-    if (m.mentionedJid && m.mentionedJid.length > 0) {
-        users = m.mentionedJid;
-    } 
-    else if (m.quoted) {
-        users = [m.quoted.sender];
+    if (mentionedJid) {
+        who = mentionedJid;
+    } else if (m.quoted) {
+        who = m.quoted.sender;
+    } else {
+        who = m.sender;
     }
 
-    let name2 = await conn.getName(m.sender) || m.sender;
-
+    let name2 = m.sender.split('@')[0];
+    let name = who.split('@')[0];
     m.react('👋');
 
     let str;
-    if (users.length > 0) {
-        let names = await Promise.all(users.map(u => conn.getName(u) || u));
-        let mentionText = names.map((n, i) => `*${n}*`).join(', ');
+        if (who !== m.sender) {
 
-        str = `👋 *${name2}* saluda a ${mentionText}, ¿cómo están?`;
+        str = `👋 *@${name2}* saluda a @${name}, ¿cómo están?`;
     } else {
-        str = `👋 *${name2}* saluda a todos los integrantes del grupo.\n\n¿Cómo se encuentran hoy?`;
+        str = `👋 *@${name2}* saluda a todos los integrantes del grupo.\n\n¿Cómo se encuentran hoy?`;
     }
 
     if (m.isGroup) {
@@ -38,7 +39,7 @@ let handler = async (m, { conn, usedPrefix }) => {
             video: { url: video },
             gifPlayback: true,
             caption: str,
-            mentions: users.length > 0 ? users : [m.sender] 
+            mentions: [who, m.sender]  
         }, { quoted: m });
     }
 };
