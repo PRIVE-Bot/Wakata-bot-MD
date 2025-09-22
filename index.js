@@ -947,10 +947,10 @@ if (readBotPath.includes(creds)) {
 JadiBot({pathJadiBot: botPath, m: null, conn, args: '', usedPrefix: '/', command: 'serbot'})
 }}}}
 
-const pluginFolder = global.__dirname(join(__dirname, './plugins/index'))
+const pluginFolder = global.__dirname(join(__dirname, './plugins'));
 
-const pluginFilter = (filename) => /\.js$/.test(filename)
-global.plugins = {}
+const pluginFilter = (filename) => /\.js$/.test(filename);
+global.plugins = {};
 
 async function readRecursive(folder) {
   for (const filename of readdirSync(folder)) {
@@ -961,8 +961,9 @@ async function readRecursive(folder) {
       await readRecursive(file);
     } else if (pluginFilter(filename)) {
       try {
+        const pluginPath = file.replace(pluginFolder + '/', '');
         const module = await import(global.__filename(file));
-        global.plugins[filename] = module.default || module;
+        global.plugins[pluginPath] = module.default || module;
       } catch (e) {
         conn.logger.error(`Error al cargar el plugin '${filename}':`);
         conn.logger.error(e);
@@ -976,7 +977,8 @@ async function filesInit() {
   await readRecursive(pluginFolder);
 }
 
-filesInit().then((_) => Object.keys(global.plugins)).catch(console.error)
+filesInit().then((_) => Object.keys(global.plugins)).catch(console.error);
+
 
 global.reload = async (_ev, filename) => {
 if (pluginFilter(filename)) {
