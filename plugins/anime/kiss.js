@@ -2,28 +2,29 @@ import fs from 'fs';
 import path from 'path';
 
 let handler = async (m, { conn, usedPrefix }) => {
-    let who;
+        let who;
+    let mentionedJid = m.message?.extendedTextMessage?.contextInfo?.mentionedJid?.[0];
+    let userId = m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.sender;
 
-    if (m.mentionedJid.length > 0) {
-        who = m.mentionedJid[0];
+    if (mentionedJid) {
+        who = mentionedJid;
     } else if (m.quoted) {
         who = m.quoted.sender;
     } else {
         who = m.sender;
     }
 
-    let name = await conn.getName(who) || who;
-    let name2 = await conn.getName(m.sender) || m.sender;
-
+    let name2 = m.sender.split('@')[0];
+    let name = who.split('@')[0];
     m.react('💋');
 
     let str;
-    if (m.mentionedJid.length > 0) {
-        str = `💋 *${name2}* le da un beso a *${name}*`;
+        if (who !== m.sender) {
+        str = `💋 *@${name2}* le da un beso a *@${name}*`;
     } else if (m.quoted) {
-        str = `😘 *${name2}* besa suavemente a *${name}*`;
+        str = `😘 *@${name2}* besa suavemente a *@${name}*`;
     } else {
-        str = `😍 *${name2}* lanza un beso para todos los del grupo 😘`;
+        str = `😍 *@${name2}* lanza un beso para todos los del grupo 😘`;
     }
 
     if (m.isGroup) {
@@ -41,7 +42,7 @@ let handler = async (m, { conn, usedPrefix }) => {
             video: { url: video },
             gifPlayback: true,
             caption: str,
-            mentions
+            mentions: [who, m.sender]  
         }, { quoted: m });
     }
 };
