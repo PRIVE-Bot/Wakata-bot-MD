@@ -14,8 +14,8 @@ let handler = async (m, { conn }) => {
         who = m.sender;
     }
 
-    let name2 = m.pushName || m.sender.split('@')[0];
-    let name = await conn.getName(who) || who.split('@')[0];
+    let name2 = m.sender.split('@')[0];
+    let name = who.split('@')[0];
 
     m.react('🫂');
 
