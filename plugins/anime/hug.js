@@ -1,9 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 
-let handler = async (m, { conn, usedPrefix }) => {
+let handler = async (m, { conn }) => {
     let who;
-    // Intentar obtener el JID del usuario etiquetado de forma más directa y fiable
     let mentionedJid = m.message?.extendedTextMessage?.contextInfo?.mentionedJid?.[0];
 
     if (mentionedJid) {
@@ -14,17 +13,16 @@ let handler = async (m, { conn, usedPrefix }) => {
         who = m.sender;
     }
 
-    let name2 = m.pushName || await conn.getName(m.sender);
-let name = mentionedJid 
-  ? (await conn.getName(mentionedJid)) || mentionedJid.split('@')[0]
-  : (m.quoted ? (await conn.getName(m.quoted.sender)) || m.quoted.sender.split('@')[0] : name2);
+    let name2 = m.pushName || m.sender.split('@')[0];
+    let name = await conn.getName(who) || who.split('@')[0];
+
     m.react('🫂');
 
     let str;
     if (who !== m.sender) {
-        str = `🫂 *${name2}* le da un abrazo a *${name}*`;
+        str = `🫂 *@${name2}* le da un abrazo a *@${name}*`;
     } else {
-        str = `🫂 *${name2}* se abraza a sí mismo. ¡Necesitas un abrazo!`;
+        str = `🫂 *@${name2}* se abraza a sí mismo. ¡Necesitas un abrazo!*`;
     }
 
     if (m.isGroup) {
@@ -36,13 +34,12 @@ let name = mentionedJid
         ];
 
         const video = videos[Math.floor(Math.random() * videos.length)];
-        let mentions = [who];
-
+        
         conn.sendMessage(m.chat, {
             video: { url: video },
             gifPlayback: true,
             caption: str,
-            mentions
+            mentions: [m.sender, who]  
         }, { quoted: m });
     }
 };
