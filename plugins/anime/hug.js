@@ -2,26 +2,37 @@ import fs from 'fs';
 import path from 'path';
 
 let handler = async (m, { conn, usedPrefix }) => {
-    let who = m.mentionedJid?.[0] || m.quoted?.sender || m.sender;
-    
+    let who;
+    let mentionedJid = m.message?.extendedTextMessage?.contextInfo?.mentionedJid?.[0];
+
+    if (mentionedJid) {
+        who = mentionedJid;
+    } else if (m.quoted) {
+        who = m.quoted.sender;
+    } else {
+        who = m.sender;
+    }
+
     let name = await conn.getName(who) || who;
     let name2 = await conn.getName(m.sender) || m.sender;
 
-    m.react('🫂');
+    m.react('👋');
 
     let str;
-    if (who !== m.sender) {
-        str = `🫂 *${name2}* le da un abrazo a *${name}*`;
+    if (m.mentionedJid && m.mentionedJid.length > 0) {
+        str = `👋 *${name2}* saluda a *${name}*, ¿cómo estás?`;
+    } else if (m.quoted) {
+        str = `👋 *${name2}* saluda a *${name}*, ¿cómo te encuentras hoy?`;
     } else {
-        str = `🫂 *${name2}* se abraza a sí mismo. ¡Necesitas un abrazo!`;
+        str = `👋 *${name2}* saluda a todos los integrantes del grupo.\n\n¿Cómo se encuentran hoy? 😄`;
     }
 
     if (m.isGroup) {
         const videos = [
-            'https://files.catbox.moe/7blmee.mp4',
-            'https://files.catbox.moe/atcpvb.mp4',
-            'https://files.catbox.moe/gnoark.mp4',
-            'https://files.catbox.moe/pudeqm.mp4'
+            'https://files.catbox.moe/v05c03.mp4',
+            'https://h.uguu.se/ohgkrYFc.mp4',
+            'https://files.catbox.moe/s6vqf2.mp4',
+            'https://files.catbox.moe/til83t.mp4'
         ];
 
         const video = videos[Math.floor(Math.random() * videos.length)];
@@ -36,9 +47,9 @@ let handler = async (m, { conn, usedPrefix }) => {
     }
 };
 
-handler.help = ['hug @tag', 'abrazar @tag'];
+handler.help = ['hello @tag', 'hola @tag'];
 handler.tags = ['anime'];
-handler.command = ['hug', 'abrazar'];
+handler.command = ['hello', 'hola'];
 handler.group = true;
 
 export default handler;
