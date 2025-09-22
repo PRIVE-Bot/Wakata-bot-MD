@@ -483,7 +483,7 @@ global.reload = async (_ev, filename) => {
 };
 
 Object.freeze(global.reload);
-watch(pluginFolder, global.reload);
+watch(pluginFolder, { recursive: true }, global.reload);
 await global.reloadHandler();
 async function _quickTest() {
   const test = await Promise.all([
