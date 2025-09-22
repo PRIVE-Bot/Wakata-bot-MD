@@ -4,6 +4,7 @@ import path from 'path';
 let handler = async (m, { conn }) => {
     let who;
     let mentionedJid = m.message?.extendedTextMessage?.contextInfo?.mentionedJid?.[0];
+        let userId = m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.sender
 
     if (mentionedJid) {
         who = mentionedJid;
@@ -39,7 +40,7 @@ let handler = async (m, { conn }) => {
             video: { url: video },
             gifPlayback: true,
             caption: str,
-            mentions: [m.sender, who]  
+            mentions: [userId]  
         }, { quoted: m });
     }
 };
