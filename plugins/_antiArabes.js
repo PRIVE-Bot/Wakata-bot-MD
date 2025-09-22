@@ -6,7 +6,6 @@ handler.before = async function (m, { conn }) {
   const senderNumber = m.sender.split('@')[0];
   const user = global.db.data.users[m.sender];
 
-  if (["120363297379773397@newsletter", "120363355261011910@newsletter"].includes(m.chat)) return;
   if (m.fromMe) return;
   if (!bot.anticommand) return;
   if (user.banned) return !1;
