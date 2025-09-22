@@ -3,9 +3,10 @@ import path from 'path';
 
 let handler = async (m, { conn, usedPrefix }) => {
     let who;
+    let mentionedJid = m.message?.extendedTextMessage?.contextInfo?.mentionedJid?.[0];
 
-    if (m.mentionedJid.length > 0) {
-        who = m.mentionedJid[0];
+    if (mentionedJid) {
+        who = mentionedJid;
     } else if (m.quoted) {
         who = m.quoted.sender;
     } else {
@@ -18,7 +19,7 @@ let handler = async (m, { conn, usedPrefix }) => {
     m.react('👋');
 
     let str;
-    if (m.mentionedJid.length > 0) {
+    if (m.mentionedJid && m.mentionedJid.length > 0) {
         str = `👋 *${name2}* saluda a *${name}*, ¿cómo estás?`;
     } else if (m.quoted) {
         str = `👋 *${name2}* saluda a *${name}*, ¿cómo te encuentras hoy?`;
