@@ -2,27 +2,25 @@ import fs from 'fs';
 import path from 'path';
 
 let handler = async (m, { conn, usedPrefix }) => {
-    let who;
-    let mentionedJid = m.message?.extendedTextMessage?.contextInfo?.mentionedJid?.[0];
+    let users = [];
 
-    if (mentionedJid) {
-        who = mentionedJid;
-    } else if (m.quoted) {
-        who = m.quoted.sender;
-    } else {
-        who = m.sender;
+    if (m.mentionedJid && m.mentionedJid.length > 0) {
+        users = m.mentionedJid;
+    } 
+    else if (m.quoted) {
+        users = [m.quoted.sender];
     }
 
-    let name = await conn.getName(who) || who;
     let name2 = await conn.getName(m.sender) || m.sender;
 
     m.react('👋');
 
     let str;
-    if (m.mentionedJid && m.mentionedJid.length > 0) {
-        str = `👋 *${name2}* saluda a *${name}*, ¿cómo estás?`;
-    } else if (m.quoted) {
-        str = `👋 *${name2}* saluda a *${name}*, ¿cómo te encuentras hoy?`;
+    if (users.length > 0) {
+        let names = await Promise.all(users.map(u => conn.getName(u) || u));
+        let mentionText = names.map((n, i) => `*${n}*`).join(', ');
+
+        str = `👋 *${name2}* saluda a ${mentionText}, ¿cómo están?`;
     } else {
         str = `👋 *${name2}* saluda a todos los integrantes del grupo.\n\n¿Cómo se encuentran hoy? 😄`;
     }
@@ -36,13 +34,12 @@ let handler = async (m, { conn, usedPrefix }) => {
         ];
 
         const video = videos[Math.floor(Math.random() * videos.length)];
-        let mentions = [who];
 
         conn.sendMessage(m.chat, {
             video: { url: video },
             gifPlayback: true,
             caption: str,
-            mentions
+            mentions: users.length > 0 ? users : [m.sender] 
         }, { quoted: m });
     }
 };
