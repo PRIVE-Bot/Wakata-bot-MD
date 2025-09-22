@@ -1,4 +1,4 @@
-import {toAudio} from '../lib/converter.js';
+import {toAudio} from '.../lib/converter.js';
 
 const handler = async (m, {conn, usedPrefix, command}) => {
 const res = await fetch('https://i.postimg.cc/pdCvMMvP/1755841606616.jpg'); 
