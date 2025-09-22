@@ -1,28 +1,35 @@
-// Brayan>> https://github.com/BrayanOFC
-
 import fs from 'fs';
 import path from 'path';
 
 var handler = async (m, { usedPrefix, command }) => {
     try {
-        await m.react('🕒'); 
+        await m.react('🕒');
         conn.sendPresenceUpdate('composing', m.chat);
 
         const pluginsDir = './plugins';
-
-        const files = fs.readdirSync(pluginsDir).filter(file => file.endsWith('.js'));
-
         let response = `📂 *Revisión de Syntax Errors:*\n\n`;
         let hasErrors = false;
 
-        for (const file of files) {
-            try {
-                await import(path.resolve(pluginsDir, file));
-            } catch (error) {
-                hasErrors = true;
-                response += `🚩 *Error en:* ${file}\n${error.message}\n\n`;
+        async function checkRecursive(dir) {
+            const items = fs.readdirSync(dir);
+            for (const item of items) {
+                const fullPath = path.join(dir, item);
+                const stats = fs.statSync(fullPath);
+
+                if (stats.isDirectory()) {
+                    await checkRecursive(fullPath); // Llamada recursiva para subcarpetas
+                } else if (item.endsWith('.js')) {
+                    try {
+                        await import(path.resolve(fullPath));
+                    } catch (error) {
+                        hasErrors = true;
+                        response += `🚩 *Error en:* ${fullPath.replace(pluginsDir + '/', '')}\n${error.message}\n\n`;
+                    }
+                }
             }
         }
+
+        await checkRecursive(pluginsDir);
 
         if (!hasErrors) {
             response += '✅ ¡Todo está en orden! No se detectaron errores de sintaxis.';
@@ -31,7 +38,7 @@ var handler = async (m, { usedPrefix, command }) => {
         await conn.reply(m.chat, response, m);
         await m.react('✅');
     } catch (err) {
-        await m.react('✖️'); 
+        await m.react('✖️');
         console.error(err);
         conn.reply(m.chat, '🚩 *Ocurrió un fallo al verificar los plugins.*', m);
     }
