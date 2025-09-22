@@ -20,7 +20,7 @@ let handler = async (m, { conn, usedPrefix }) => {
 
     let str;
         if (who !== m.sender) {
-    str = `🏳️‍🌈 *#${name2}* le da un tierno beso a *@${name}* 🏳️‍🌈\n\n¡El amor no tiene límites! 🌈✨`;
+    str = `🏳️‍🌈 *@${name2}* le da un tierno beso a *@${name}* 🏳️‍🌈\n\n¡El amor no tiene límites! 🌈✨`;
 } else if (m.quoted) {
     str = `🏳️‍🌈 *@${name2}* besa suavemente a *@${name}* 💞\n\nQué momento tan especial 😳💕`;
 } else {
