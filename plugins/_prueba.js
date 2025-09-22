@@ -37,14 +37,22 @@ async function sendTenorAlbum(conn, jid, medias, options = {}) {
 
   for (let i = 0; i < medias.length; i++) {
     const { url } = medias[i]
+
     const msg = await baileys.generateWAMessage(
       album.key.remoteJid,
-      { video: { url }, mimetype: 'video/mp4', gifPlayback: true, ...(i === 0 ? { caption } : {}) },
+      {
+        video: { url },
+        mimetype: 'video/mp4',
+        gifPlayback: true,
+        ...(i === 0 ? { caption } : {})
+      },
       { upload: conn.waUploadToServer }
     )
+
     msg.message.messageContextInfo = {
       messageAssociation: { associationType: 1, parentMessageKey: album.key }
     }
+
     await conn.relayMessage(msg.key.remoteJid, msg.message, { messageId: msg.key.id })
     await baileys.delay(delay)
   }
@@ -56,12 +64,20 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
   if (!text) return conn.reply(m.chat, `❗️Uso: ${usedPrefix + command} <texto>\nEjemplo: ${usedPrefix + command} anime matando`, m)
 
   try {
-    const { data } = await axios.get(`https://api.tenor.com/v1/search?q=${encodeURIComponent(text)}&key=LIVDSRZULELA&limit=4`)
-    if (!data.results || data.results.length === 0) return conn.reply(m.chat, `❌ No encontré GIFs para *${text}*`, m)
+    const { data } = await axios.get(
+      `https://api.tenor.com/v1/search?q=${encodeURIComponent(text)}&key=LIVDSRZULELA&limit=4`
+    )
 
+    if (!data.results || data.results.length === 0)
+      return conn.reply(m.chat, `❌ No encontré GIFs para *${text}*`, m)
+
+    // ✅ Corregido: cada media tiene type y data
     const medias = data.results.map(gif => {
       const url = gif.media[0].mp4?.url || gif.media[0].tinygif?.url || gif.media[0].gif?.url
-      return { url }
+      return {
+        type: 'video',
+        data: { url }
+      }
     })
 
     if (medias.length < 2) return conn.reply(m.chat, '❌ Se necesitan al menos 2 GIFs para enviar álbum.', m)
