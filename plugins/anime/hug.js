@@ -2,15 +2,8 @@ import fs from 'fs';
 import path from 'path';
 
 let handler = async (m, { conn, usedPrefix }) => {
-    let who;
-    if (m.mentionedJid && m.mentionedJid[0]) {
-        who = m.mentionedJid[0];
-    } else if (m.quoted && m.quoted.sender) {
-        who = m.quoted.sender;
-    } else {
-        who = m.sender;
-    }
-
+    let who = m.mentionedJid?.[0] || m.quoted?.sender || m.sender;
+    
     let name = await conn.getName(who) || who;
     let name2 = await conn.getName(m.sender) || m.sender;
 
