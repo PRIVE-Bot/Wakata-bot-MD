@@ -9,7 +9,7 @@ const handler = async (m, { isOwner, isAdmin, conn, text, participants, args, co
         return;
     }
 
-      const countryFlags = {
+    const countryFlags = {
     "1": "🇺🇸", "7": "🇷🇺", "20": "🇪🇬", "27": "🇿🇦", "30": "🇬🇷", "31": "🇳🇱",
   "32": "🇧🇪", "33": "🇫🇷", "34": "🇪🇸", "36": "🇭🇺", "39": "🇮🇹", "40": "🇷🇴",
   "41": "🇨🇭", "43": "🇦🇹", "44": "🇬🇧", "45": "🇩🇰", "46": "🇸🇪", "47": "🇳🇴",
@@ -45,9 +45,10 @@ const handler = async (m, { isOwner, isAdmin, conn, text, participants, args, co
   "970": "🇵🇸", "971": "🇦🇪", "972": "🇮🇱", "973": "🇧🇭", "974": "🇶🇦", "975": "🇧🇹",
   "976": "🇲🇳", "977": "🇳🇵", "992": "🇹🇯", "993": "🇹🇲", "994": "🇦🇿", "995": "🇬🇪",
   "996": "🇰🇬", "998": "🇺🇿"
-};
+    };
 
     function getPrefix(number) {
+        // La función de prefijo está bien, el problema está en cómo se obtiene 'number'
         for (let i = 4; i >= 1; i--) {
             const sub = number.slice(0, i);
             if (countryFlags[sub]) return sub;
@@ -56,20 +57,21 @@ const handler = async (m, { isOwner, isAdmin, conn, text, participants, args, co
     }
 
     const mensaje = args.join(' ');
-const info = mensaje ? `📢 *Mensaje:* ${mensaje}` : '📢 *Invocación general*';
-let texto = '╔════════════════════════════╗\n';
-texto += `║  *LLAMADO A TODOS LOS MIEMBROS* ⚡️ \n║ (${participants.length})  ║\n`;
-texto += '╚════════════════════════════╝\n\n';
-texto += `${info}\n\n`;
+    const info = mensaje ? `📢 *Mensaje:* ${mensaje}` : '📢 *Invocación general*';
+    let texto = '╔════════════════════════════╗\n';
+    texto += `║  *LLAMADO A TODOS LOS MIEMBROS* ⚡️ \n║ (${participants.length})  ║\n`;
+    texto += '╚════════════════════════════╝\n\n';
+    texto += `${info}\n\n`;
 
-for (const miembro of participants) {
-  // ---
-  const number = miembro.id.match(/\d+/) ? miembro.id.match(/\d+/)[0] : '';
-  // -------------------------
-  const prefix = getPrefix(number);
-  const flag = countryFlags[prefix] || '🛸';
-  texto += `• ${flag} @${number}\n`;
-}
+    for (const miembro of participants) {
+      // Extrae el número de manera segura, manejando @s.whatsapp.net y @lid
+      const memberId = miembro.id.split('@')[0];
+      const number = memberId.includes(':') ? memberId.split(':')[0] : memberId;
+      
+      const prefix = getPrefix(number);
+      const flag = countryFlags[prefix] || '🛸';
+      texto += `• ${flag} @${number}\n`;
+    }
 
     texto += `\n*${dev}*`;
 
@@ -78,7 +80,7 @@ for (const miembro of participants) {
 
 handler.help = ['todos *<mensaje opcional>*'];
 handler.tags = ['grupo'];
-handler.command = ['tagall', 'todos']
+handler.command = ['tagall', 'todos'];
 handler.group = true;
 
 export default handler;
