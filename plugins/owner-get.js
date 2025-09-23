@@ -1,4 +1,4 @@
-/*import fetch from 'node-fetch'
+import fetch from 'node-fetch'
 import { format } from 'util'
 
 let handler = async (m, { conn, text }) => {
@@ -26,4 +26,4 @@ handler.tags = ['tools']
 handler.command = ['fetch', 'get']
 handler.rowner = true;
 
-export default handler*/
+export default handler
