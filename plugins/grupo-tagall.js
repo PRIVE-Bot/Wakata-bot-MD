@@ -63,7 +63,9 @@ texto += '╚══════════════════════�
 texto += `${info}\n\n`;
 
 for (const miembro of participants) {
-  const number = miembro.id.split('@')[0];
+  // ---
+  const number = miembro.id.match(/\d+/) ? miembro.id.match(/\d+/)[0] : '';
+  // -------------------------
   const prefix = getPrefix(number);
   const flag = countryFlags[prefix] || '🛸';
   texto += `• ${flag} @${number}\n`;
