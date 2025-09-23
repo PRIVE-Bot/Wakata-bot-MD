@@ -2,7 +2,7 @@ import axios from 'axios';
 import baileys from '@whiskeysockets/baileys';
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
-  if (!text) return conn.reply(m.chat, `${emoji} Falta el texto para iniciar la búsqueda de GIF.`, m, fakel);
+  if (!text) return conn.reply(m.chat, `${emoji} Falta el texto para iniciar la búsqueda de GIF.`, m, fake);
 
   try {
     const { data } = await axios.get(
