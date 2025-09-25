@@ -1,6 +1,6 @@
 let handler = async (m, { conn, isAdmin, isOwner, text, usedPrefix, command }) => {
     if (command === 'setinfo') {
-        if (!(isAdmin || isOwner)) return conn.reply(m.chat, '${emoji} Solo administradores pueden configurar la info del grupo.', m, fake)
+        if (!(isAdmin || isOwner)) return conn.reply(m.chat, `${emoji} Solo administradores pueden configurar la info del grupo.`, m, fake)
         if (!text) return conn.reply(m.chat, `${emoji} Por favor ingresa un texto junto con el comando.`, m, fake)
         global.db.data.chats[m.chat].groupInfo = text
         conn.reply(m.chat, `${emoji} La información del grupo se guardó correctamente:\n\n➠ ${text}`, m, fake)
