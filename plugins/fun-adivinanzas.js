@@ -4,7 +4,7 @@ global.adivinanzasActivas = global.adivinanzasActivas || {}
 
 let handler = async (m, { conn, command }) => {
   if (command === 'adivinanza' || command === 'prueba') {
-    let preguntas = JSON.parse(fs.readFileSync('./src/database/adivinanzas.json'))
+    let preguntas = JSON.parse(fs.readFileSync('./extras/riddles.json'))
     let pregunta = preguntas[Math.floor(Math.random() * preguntas.length)]
 
     let texto = `🧠 *Adivinanza:*\n\n${pregunta.pregunta}\n\n` +
