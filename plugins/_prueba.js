@@ -1,37 +1,47 @@
-import axios from 'axios';
-import baileys from '@whiskeysockets/baileys';
+let handler = async (m, { conn, isAdmin, isOwner, text, usedPrefix, command }) => {
+    if (command === 'setinfo') {
+        if (!(isAdmin || isOwner)) {
+            return conn.reply(m.chat, '🚫 Solo administradores pueden configurar la info del grupo.', m)
+        }
+        if (!text) {
+            return conn.reply(m.chat, `⚡ Uso correcto:\n${usedPrefix + command} <información del grupo>`, m)
+        }
 
-let handler = async (m, { conn, text, usedPrefix, command }) => {
-  if (!text) return conn.reply(m.chat, `${emoji} Falta el texto para iniciar la búsqueda de GIF.`, m, fake);
+        global.db.data.chats[m.chat].groupInfo = text
+        conn.reply(m.chat, `✅ La información del grupo se guardó correctamente:\n\n📌 ${text}`, m)
+    }
+}
 
-  try {
-    const { data } = await axios.get(
-      `https://api.tenor.com/v1/search?q=${encodeURIComponent(text)}&key=LIVDSRZULELA&limit=5`
-    );
+handler.before = async (m, { conn }) => {
+    if (!m.isGroup) return false
+    if (!m.text) return false
 
-    if (!data?.results || data.results.length === 0)
-      return conn.reply(m.chat, `❌ No encontré GIFs para *${text}*`, m);
+    let keywords = [
+        /para que es el grupo/i,
+        /de que es el grupo/i,
+        /cual es la info del grupo/i,
+        /informacion del grupo/i,
+        /grupo para que/i
+    ]
 
-    for (let gif of data.results) {
-      const mediaObj = gif.media[0];
-      const url = mediaObj?.mp4?.url || mediaObj?.gif?.url || mediaObj?.tinygif?.url;
+    let match = keywords.some(k => k.test(m.text))
+    if (!match) return false
 
-      if (!url) continue; 
-      await conn.sendMessage(m.chat, {
-        video: { url },
-        mimetype: 'video/mp4',
-        gifPlayback: true
-      });
+    let info = global.db.data.chats[m.chat].groupInfo
+    if (!info) {
+        return conn.reply(m.chat, 'ℹ️ Aún no se ha configurado información para este grupo.', m)
     }
 
-  } catch (err) {
-    console.error('Error Tenor:', err.message);
-    conn.reply(m.chat, '❌ Error al obtener GIFs desde Tenor.', m);
-  }
-};
+    await conn.reply(
+        m.chat,
+        `👋 Hola @${m.sender.split('@')[0]}\n\n📖 El grupo es para:\n${info}`,
+        m,
+        { mentions: [m.sender] }
+    )
+    return true
+}
 
-handler.help = ['gif <texto>'];
-handler.tags = ['media', 'search'];
-handler.command = /^gif$/i;
+handler.command = ['setinfo']
+handler.group = true
 
-export default handler;
+export default handler
