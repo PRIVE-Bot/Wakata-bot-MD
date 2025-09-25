@@ -1,68 +1,117 @@
-import { sticker } from '../lib/sticker.js'
-import uploadFile from '../lib/uploadFile.js'
-import uploadImage from '../lib/uploadImage.js'
-import { webp2png } from '../lib/webp2mp4.js'
+import fetch from 'node-fetch'
+import { sticker as makeSticker } from '../lib/sticker.js'
 
-let handler = async (m, { conn, args, usedPrefix, command }) => {
-  const res1 = await fetch('https://files.catbox.moe/p87uei.jpg');
-  const thumb5 = Buffer.from(await res1.arrayBuffer());
-
-  const fkontak = {
-    key: { fromMe: false, participant: "0@s.whatsapp.net" },
-    message: {
-      documentMessage: {
-        title: '𝗦𝗧𝗜𝗞𝗘𝗥',
-        fileName: `𝗦𝗧𝗜𝗞𝗘𝗥 𝗚𝗘𝗡𝗘𝗥𝗔𝗗𝗢 𝗖𝗢𝗡 𝗘𝗫𝗜𝗧𝗢`,
-        jpegThumbnail: thumb5
-      }
+async function makeFkontak() {
+  try {
+    const res = await fetch('https://i.postimg.cc/rFfVL8Ps/image.jpg')
+    const thumb2 = Buffer.from(await res.arrayBuffer())
+    return {
+      key: { participants: '0@s.whatsapp.net', remoteJid: 'status@broadcast', fromMe: false, id: 'Halo' },
+      message: { locationMessage: { name: 'Sticker Exito', jpegThumbnail: thumb2 } },
+      participant: '0@s.whatsapp.net'
     }
-  };
-
-let stiker = false
-try {
-let q = m.quoted ? m.quoted : m
-let mime = (q.msg || q).mimetype || q.mediaType || ''
-if (/webp|image|video/g.test(mime)) {
-if (/video/g.test(mime)) if ((q.msg || q).seconds > 15) return m.reply(`${emoji} ᴇʟ ᴠɪᴅᴇᴏ ɴᴏ ᴘᴜᴇᴅᴇ ᴅᴜʀᴀʀ ᴍᴀs ᴅᴇ (10) sᴇɢᴜɴᴅᴏs.`)
-let img = await q.download?.()
-
-if (!img) return conn.reply(m.chat, `${emoji} ᴘᴏʀ ғᴀᴠᴏʀ, ᴇɴᴠÍᴀ ᴜɴ ᴠɪᴅᴇᴏ, ɢɪғ ᴏ ɪᴍᴀɢᴇɴ ᴘᴀʀᴀ ᴄᴏɴᴠᴇʀᴛɪʀ ᴀ sᴛɪᴄᴋᴇʀ.`, m, fake)
-
-let out
-try {
-stiker = await sticker(img, false, global.packsticker, global.packsticker2)
-} catch (e) {
-console.error(e)
-} finally {
-if (!stiker) {
-if (/webp/g.test(mime)) out = await webp2png(img)
-else if (/image/g.test(mime)) out = await uploadImage(img)
-else if (/video/g.test(mime)) out = await uploadFile(img)
-if (typeof out !== 'string') out = await uploadImage(img)
-stiker = await sticker(false, out, global.packsticker, global.packsticker2)
-}}
-} else if (args[0]) {
-if (isUrl(args[0])) stiker = await sticker(false, args[0], global.packsticker, global.packsticker2)
-
-else return m.reply(`${emoji2} El url es incorrecto...`)
-
+  } catch {
+    return undefined
+  }
 }
-} catch (e) {
-console.error(e)
-if (!stiker) stiker = e
-} finally {
-if (stiker) conn.sendFile(m.chat, stiker, 'sticker.webp', '', fkontak, true)
 
-else return conn.reply(m.chat, `${emoji} ᴘᴏʀ ғᴀᴠᴏʀ, ᴇɴᴠÍᴀ ᴜɴ ᴠɪᴅᴇᴏ, ɢɪғ ᴏ ɪᴍᴀɢᴇɴ ᴘᴀʀᴀ ᴄᴏɴᴠᴇʀᴛɪʀ ᴀ sᴛɪᴄᴋᴇʀ.`, m, fake)
+const handler = async (m, { conn, usedPrefix, command, text }) => {
+  const qmsg = m.quoted || m
+  const mime = (qmsg.msg || qmsg).mimetype || ''
+  const isImg = /image\/(jpe?g|png)/i.test(mime)
+  const isWebp = /image\/webp/i.test(mime)
+  const isVideo = /video\/(mp4|gif)/i.test(mime)
 
-}}
-handler.help = ['stiker <img>', 'sticker <url>']
+  if (!(isImg || isWebp || isVideo) && !text) {
+    return conn.reply(
+      m.chat,
+      `Envia o responde a una imagen/video corto \nEj: ${usedPrefix + command} > texto`,
+      m,
+      (typeof rcanalx === 'object' ? rcanalx : {})
+    )
+  }
+
+  try { await conn.reply(m.chat, '', m, (typeof rcanalw === 'object' ? rcanalw : {}) ) } catch {}
+
+  let buffer
+  try {
+    if (text && /^https?:\/\//i.test(text)) {
+      const res = await fetch(text)
+      if (!res.ok) throw new Error('No se pudo descargar URL')
+      buffer = Buffer.from(await res.arrayBuffer())
+    } else if (qmsg?.download) {
+      buffer = await qmsg.download?.()
+    }
+    if (!buffer && !text) throw new Error('No se obtuvo buffer')
+  } catch (e) {
+    return conn.reply(m.chat, `❌ Error obteniendo media: ${e?.message || e}`, m, fake)
+  }
+
+  if (isVideo) {
+    if ((qmsg.msg || {}).seconds > 30) {
+      return conn.reply(m.chat, '⚠️ El video no debe superar 30s', m, rcanal)
+    }
+  }
+
+  try {
+    const pack = (global.packnameSticker || global.packname || 'StickerPack')
+    const auth = (global.authorSticker || global.author || 'Bot')
+    const mode = /\bcontain\b/i.test(text || '') ? 'contain' : 'cover'
+    const position = (/\btop\b|\bcenter\b|\bbottom\b/i.exec(text || '') || ['bottom'])[0]
+  const wantBox = /\bbox\b/i.test(text || '') && !/\bnobox\b/i.test(text || '')
+  const boxColor = wantBox ? 'rgba(0,0,0,0.35)' : null
+    const colorMatch = /color=([#a-z0-9(),.]+)/i.exec(text || '')
+    const strokeMatch = /stroke(?:=([0-9]+))?/i.exec(text || '')
+    const nostroke = /\bnostroke\b/i.test(text || '')
+  const textColor = colorMatch ? colorMatch[1] : undefined
+  const strokeWidth = nostroke ? 0 : (strokeMatch ? (strokeMatch[1] ? parseInt(strokeMatch[1], 10) : 6) : 0)
+  const fontMaxMatch = /fontmax=(\d{1,3})/i.exec(text || '')
+  const fontScaleMatch = /fontscale=([0-9.]{1,5})/i.exec(text || '')
+  const fontMax = fontMaxMatch ? parseInt(fontMaxMatch[1], 10) : undefined
+  const fontScale = fontScaleMatch ? Math.max(0.3, Math.min(2, parseFloat(fontScaleMatch[1]))) : undefined
+  const strokeColorMatch = /strokecolor=([#a-z0-9(),.]+)/i.exec(text || '')
+  const strokeColor = strokeColorMatch ? strokeColorMatch[1] : undefined
+
+    let overlay = ''
+    if (text) {
+      overlay = text
+        .replace(/\bcontain\b/ig, '')
+        .replace(/\btop\b|\bcenter\b|\bbottom\b/ig, '')
+        .replace(/\bbox\b|\bnobox\b/ig, '')
+        .replace(/color=([#a-z0-9(),.]+)/ig, '')
+        .replace(/stroke(=\d+)?/ig, '')
+        .replace(/fontmax=\d+/ig, '')
+        .replace(/fontscale=[0-9.]+/ig, '')
+        .replace(/strokecolor=([#a-z0-9(),.]+)/ig, '')
+        .replace(/\bnostroke\b/ig, '')
+        .trim()
+    }
+    const result = await makeSticker(buffer || overlay, null, pack, auth, {
+      mode,
+      text: overlay || (buffer ? '' : (text || '')),
+      position,
+      boxColor,
+      ...(textColor ? { textColor } : {}),
+      ...(Number.isFinite(strokeWidth) ? { strokeWidth } : {}),
+      ...(Number.isFinite(fontMax) ? { fontMax } : {}),
+      ...(Number.isFinite(fontScale) ? { fontScale } : {}),
+      ...(strokeColor ? { strokeColor } : {})
+    })
+    const fancyQuoted = await makeFkontak()
+    await conn.sendMessage(
+      m.chat,
+      { sticker: result, ...(typeof rcanalr === 'object' ? rcanalr : {}) },
+      { quoted: fancyQuoted || m }
+    )
+  } catch (e) {
+    return conn.reply(m.chat, `❌ Error creando sticker: ${e?.message || e}`, m, (typeof rcanalx === 'object' ? rcanalx : {}))
+  }
+}
+
+handler.help = ['s', 'sticker']
 handler.tags = ['sticker']
-//handler.group = true;
+handler.alias = ['s']
+handler.command = /^(s|sticker)$/i
 handler.register = true
-handler.command = ['s', 'sticker', 'stiker']
 
 export default handler
-
-const isUrl = (text) => {
-return text.match(new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)(jpe?g|gif|png)/, 'gi'))}
