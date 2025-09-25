@@ -1,9 +1,9 @@
 let handler = async (m, { conn, isAdmin, isOwner, text, usedPrefix, command }) => {
     if (command === 'setinfo') {
-        if (!(isAdmin || isOwner)) return conn.reply(m.chat, '${emoji} Solo administradores pueden configurar la info del grupo.', m, rcanal)
-        if (!text) return conn.reply(m.chat, `${emoji} Por favor ingresa un texto junto con el comando.`, m, racanl)
+        if (!(isAdmin || isOwner)) return conn.reply(m.chat, '${emoji} Solo administradores pueden configurar la info del grupo.', m, fake)
+        if (!text) return conn.reply(m.chat, `${emoji} Por favor ingresa un texto junto con el comando.`, m, fake)
         global.db.data.chats[m.chat].groupInfo = text
-        conn.reply(m.chat, `${emoji} La información del grupo se guardó correctamente:\n\n➠ ${text}`, m, racnal)
+        conn.reply(m.chat, `${emoji} La información del grupo se guardó correctamente:\n\n➠ ${text}`, m, fake)
     }
 }
 
@@ -37,7 +37,7 @@ handler.before = async (m, { conn }) => {
     if (!match) return false
 
     let info = global.db.data.chats[m.chat].groupInfo
-    if (!info) return conn.reply(m.chat, '${emoji} Hola, aún no se ha configurado información para este grupo.', m, racanl)
+    if (!info) return conn.reply(m.chat, '${emoji} Hola, aún no se ha configurado información para este grupo.', m, fake)
 
     await conn.reply(
         m.chat,
