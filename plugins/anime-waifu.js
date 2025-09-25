@@ -1,6 +1,10 @@
 import fetch from 'node-fetch'
 
 let handler = async (m, { conn, usedPrefix, command }) => {
+  if (m.isGroup && db?.data?.chats[m.chat] && !db.data.chats[m.chat].nsfw) {
+    return m.reply(`${emoji} El contenido *NSFW* está desactivado en este grupo.\n> Un administrador puede activarlo con » *${usedPrefix}nsfw on*`)
+  }
+
   try {
 
     await m.react(emojis)
