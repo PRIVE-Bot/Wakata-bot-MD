@@ -37,7 +37,7 @@ handler.before = async (m, { conn }) => {
     if (!match) return false
 
     let info = global.db.data.chats[m.chat].groupInfo
-    if (!info) return conn.reply(m.chat, '${emoji} Hola, aún no se ha configurado información para este grupo.', m, fake)
+    if (!info) return conn.reply(m.chat, `${emoji} Hola, aún no se ha configurado información para este grupo.`, m, fake)
 
     await conn.reply(
         m.chat,
