@@ -4,16 +4,20 @@ import uploadImage from '../../lib/uploadImage.js'
 import { webp2png } from '../../lib/webp2mp4.js'
 
 let handler = async (m, { conn, args, usedPrefix, command }) => {
-  const res1 = await fetch('https://files.catbox.moe/p87uei.jpg')
-  const thumb5 = Buffer.from(await res1.arrayBuffer())
-  let userjid = m.sender
+  const isAndroid = /android/i.test(m.userAgent || m.senderDevice || '')
+  let fkontak = null
 
-  const fkontak = {
-    key: { fromMe: false, participant: userjid },
-    message: {
-      imageMessage: {
-        jpegThumbnail: thumb5,
-        caption: '𝗦𝗧𝗜𝗖𝗞𝗘𝗥 𝗚𝗘𝗡𝗘𝗥𝗔𝗗𝗢 𝗖𝗢𝗡 𝗘𝗫𝗜𝗧𝗢 ✨',
+  if (isAndroid) {
+    const res1 = await fetch('https://files.catbox.moe/p87uei.jpg')
+    const thumb5 = Buffer.from(await res1.arrayBuffer())
+    let userjid = m.sender
+    fkontak = {
+      key: { fromMe: false, participant: userjid },
+      message: {
+        imageMessage: {
+          jpegThumbnail: thumb5,
+          caption: '𝗦𝗧𝗜𝗖𝗞𝗘𝗥 𝗚𝗘𝗡𝗘𝗥𝗔𝗗𝗢 𝗖𝗢𝗡 𝗘𝗫𝗜𝗧𝗢 ✨',
+        }
       }
     }
   }
@@ -21,11 +25,8 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
   let stiker = false
   try {
     let q = m.quoted ? m.quoted : m
-
-    let mime = q.mimetype || q.msg?.mimetype || 
-               q.message?.imageMessage?.mimetype ||
-               q.message?.videoMessage?.mimetype ||
-               q.message?.stickerMessage?.mimetype || ''
+    let mime = q.mimetype || q.msg?.mimetype || q.message?.imageMessage?.mimetype ||
+               q.message?.videoMessage?.mimetype || q.message?.stickerMessage?.mimetype || ''
 
     if (/webp|image|video/.test(mime)) {
       if (/video/.test(mime) && (q.msg || q).seconds > 15) {
@@ -33,7 +34,7 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
       }
 
       let img = await q.download?.()
-      if (!img) return conn.reply(m.chat, `✰ ᴘᴏʀ ғᴀᴠᴏʀ, ᴇɴᴠÍᴀ ᴜɴ ᴠɪᴅᴇᴏ, ɢɪғ ᴏ ɪᴍᴀɢᴇɴ ᴘᴀʀᴀ ᴄᴏɴᴠᴇʀᴛɪʀ ᴀ sᴛɪᴄᴋᴇʀ.`, m, fake)
+      if (!img) return conn.reply(m.chat, `✰ ᴘᴏʀ ғᴀᴠᴏʀ, ᴇɴᴠÍᴀ ᴜɴ ᴠɪᴅᴇᴏ, ɢɪғ ᴏ ɪᴍᴀɢᴇɴ ᴘᴀʀᴀ ᴄᴏɴᴠᴇʀᴛɪʀ ᴀ sᴛɪᴄᴋᴇʀ.`, m)
 
       let out
       try {
@@ -61,9 +62,10 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
     if (!stiker) stiker = e
   } finally {
     if (stiker) {
-      await conn.sendFile(m.chat, stiker, 'sticker.webp', '', fkontak, true)
+      if (fkontak) await conn.sendFile(m.chat, stiker, 'sticker.webp', '', fkontak, true)
+      else await conn.sendFile(m.chat, stiker, 'sticker.webp', '', m)
     } else {
-      return conn.reply(m.chat, `✰ ᴘᴏʀ ғᴀᴠᴏʀ, ᴇɴᴠÍᴀ ᴜɴ ᴠɪᴅᴇᴏ, ɢɪғ ᴏ ɪᴍᴀɢᴇɴ ᴘᴀʀᴀ ᴄᴏɴᴠᴇʀᴛɪʀ ᴀ sᴛɪᴄᴋᴇʀ.`, m, fkontak)
+      return conn.reply(m.chat, `✰ ᴘᴏʀ ғᴀᴠᴏʀ, ᴇɴᴠÍᴀ ᴜɴ ᴠɪᴅᴇᴏ, ɢɪғ ᴏ ɪᴍᴀɢᴇɴ ᴘᴀʀᴀ ᴄᴏɴᴠᴇʀᴛɪʀ ᴀ sᴛɪᴄᴋᴇʀ.`, m)
     }
   }
 }
