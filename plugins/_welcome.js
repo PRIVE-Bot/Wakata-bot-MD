@@ -81,7 +81,7 @@ let urlapi = `https://canvas-8zhi.onrender.com/api/welcome2?title=${encodeURICom
       productId: "24526030470358430",
       productImageCount: 1,
     },
-    businessOwnerJid: "50432955554@s.whatsapp.net"
+    businessOwnerJid: "5043295554@s.whatsapp.net"
   }
 
   await conn.sendMessage(m.chat, productMessage, {
