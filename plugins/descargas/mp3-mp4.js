@@ -17,7 +17,7 @@ const savetube = {
     cdn: "/random-cdn"
   },
   headers: {
-    accept: "/",
+    accept: "*/*",
     "content-type": "application/json",
     origin: "https://yt.savetube.me",
     referer: "https://yt.savetube.me/",
@@ -109,7 +109,8 @@ const savetube = {
         result: {
           title: decrypted.title || "Desconocido",
           format: type === "audio" ? "mp3" : "mp4",
-          download: downloadData.data.data.downloadUrl
+          download: downloadData.data.data.downloadUrl,
+          thumbnail: decrypted.thumbnail || null
         }
       };
     } catch (error) {
@@ -121,17 +122,37 @@ const savetube = {
 const handler = async (m, { conn, text, command }) => {
   await m.react("🔎");
   if (!text?.trim()) {
-    return conn.reply(m.chat, "🎧 Dime el nombre de la canción o video que buscas", m);
+    return conn.reply(m.chat, "🎧 Dame el link de YouTube o el nombre de la canción/video", m);
   }
   try {
-    const search = await yts.search({ query: text, pages: 1 });
-    if (!search.videos.length) {
-      return m.reply("❌ No se encontró nada con ese nombre.");
+    let url, title, thumbnail;
+
+    if (savetube.isUrl(text)) {
+      // 👉 Descargar directo por URL
+      url = text;
+      title = "YouTube Video";
+      thumbnail = "https://i.postimg.cc/rFfVL8Ps/image.jpg"; // fallback si no hay
+    } else {
+      // 👉 Buscar en YouTube si no es URL
+      const search = await yts.search({ query: text, pages: 1 });
+      if (!search.videos.length) {
+        return m.reply("❌ No se encontró nada con ese nombre.");
+      }
+      const videoInfo = search.videos[0];
+      url = videoInfo.url;
+      title = videoInfo.title;
+      thumbnail = videoInfo.thumbnail;
     }
-    const videoInfo = search.videos[0];
-    const { title, thumbnail, url } = videoInfo;
-    const thumbFileRes = await conn.getFile(thumbnail);
-    const thumbResized = await resizeImage(thumbFileRes.data, 300);
+
+    // Generar miniatura
+    let thumbResized;
+    try {
+      const thumbFileRes = await conn.getFile(thumbnail);
+      thumbResized = await resizeImage(thumbFileRes.data, 300);
+    } catch {
+      thumbResized = null;
+    }
+
     const fkontak = {
       key: { fromMe: false, participant: "0@s.whatsapp.net" },
       message: {
@@ -141,10 +162,11 @@ const handler = async (m, { conn, text, command }) => {
           surface: 1,
           message: `「 ${title} 」`,
           orderTitle: "Descarga",
-          thumbnail: thumbResized
+          thumbnail: thumbResized || undefined
         }
       }
     };
+
     if (command === "mp3") {
       await m.react("🎧");
       const dl = await savetube.download(url, "audio");
