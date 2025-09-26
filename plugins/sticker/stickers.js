@@ -6,15 +6,14 @@ import { webp2png } from '../../lib/webp2mp4.js'
 let handler = async (m, { conn, args, usedPrefix, command }) => {
   const res1 = await fetch('https://files.catbox.moe/p87uei.jpg')
   const thumb5 = Buffer.from(await res1.arrayBuffer())
-let userjid = m.sender
+  let userjid = m.sender
 
   const fkontak = {
     key: { fromMe: false, participant: userjid },
     message: {
-      documentMessage: {
-        title: '𝗦𝗧𝗜𝗞𝗘𝗥',
-        fileName: `𝗦𝗧𝗜𝗞𝗘𝗥 𝗚𝗘𝗡𝗘𝗥𝗔𝗗𝗢 𝗖𝗢𝗡 𝗘𝗫𝗜𝗧𝗢`,
-        jpegThumbnail: thumb5
+      imageMessage: {
+        jpegThumbnail: thumb5,
+        caption: '𝗦𝗧𝗜𝗞𝗘𝗥 𝗚𝗘𝗡𝗘𝗥𝗔𝗗𝗢 𝗖𝗢𝗡 𝗘𝗫𝗜𝗧𝗢 ✨',
       }
     }
   }
