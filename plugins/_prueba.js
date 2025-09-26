@@ -26,7 +26,7 @@ let handler = async (m, { conn, text, args, usedPrefix, command }) => {
     }
   }
 
-if (!args[0]) return conn.reply(m.chat, `${emoji} Mal usó del comando, Ejemplo: *${usedPrefix + command}* 😎+🤑`, m, fake)
+if (!args[0]) return conn.reply(m.chat, `${emoji} Mal usó del comando, Ejemplo: *${usedPrefix + command}* 😎+🤑`, m)
 let [emoji, emoji2] = text.split`+`
 let anu = await fetchJson(`https://tenor.googleapis.com/v2/featured?key=AIzaSyAyimkuYQYF_FXVALexPuGQctUWRURdCYQ&contentfilter=high&media_filter=png_transparent&component=proactive&collection=emoji_kitchen_v5&q=${encodeURIComponent(emoji)}_${encodeURIComponent(emoji2)}`)
 for (let res of anu.results) {
