@@ -13,59 +13,67 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
     message: {
       imageMessage: {
         jpegThumbnail: thumb5,
-        caption: '𝗦𝗧𝗜𝗞𝗘𝗥 𝗚𝗘𝗡𝗘𝗥𝗔𝗗𝗢 𝗖𝗢𝗡 𝗘𝗫𝗜𝗧𝗢 ✨',
+        caption: '𝗦𝗧𝗜𝗖𝗞𝗘𝗥 𝗚𝗘𝗡𝗘𝗥𝗔𝗗𝗢 𝗖𝗢𝗡 𝗘𝗫𝗜𝗧𝗢 ✨',
       }
     }
   }
 
-let stiker = false
-try {
-let q = m.quoted ? m.quoted : m
-let mime = (q.msg || q).mimetype || q.mimetype || 
-           q.message?.imageMessage?.mimetype || 
-           q.message?.videoMessage?.mimetype || 
-           q.message?.stickerMessage?.mimetype || ''
-if (/webp|image|video/g.test(mime)) {
-if (/video/g.test(mime)) if ((q.msg || q).seconds > 15) return m.reply(`${emoji} ᴇʟ ᴠɪᴅᴇᴏ ɴᴏ ᴘᴜᴇᴅᴇ ᴅᴜʀᴀʀ ᴍᴀs ᴅᴇ (10) sᴇɢᴜɴᴅᴏs.`)
-let img = await q.download?.()
+  let stiker = false
+  try {
+    let q = m.quoted ? m.quoted : m
 
-if (!img) return conn.reply(m.chat, `${emoji} ᴘᴏʀ ғᴀᴠᴏʀ, ᴇɴᴠÍᴀ ᴜɴ ᴠɪᴅᴇᴏ, ɢɪғ ᴏ ɪᴍᴀɢᴇɴ ᴘᴀʀᴀ ᴄᴏɴᴠᴇʀᴛɪʀ ᴀ sᴛɪᴄᴋᴇʀ.`, m, fake)
+    let mime = q.mimetype || q.msg?.mimetype || 
+               q.message?.imageMessage?.mimetype ||
+               q.message?.videoMessage?.mimetype ||
+               q.message?.stickerMessage?.mimetype || ''
 
-let out
-try {
-stiker = await sticker(img, false, global.packsticker, global.packsticker2)
-} catch (e) {
-console.error(e)
-} finally {
-if (!stiker) {
-if (/webp/g.test(mime)) out = await webp2png(img)
-else if (/image/g.test(mime)) out = await uploadImage(img)
-else if (/video/g.test(mime)) out = await uploadFile(img)
-if (typeof out !== 'string') out = await uploadImage(img)
-stiker = await sticker(false, out, global.packsticker, global.packsticker2)
-}}
-} else if (args[0]) {
-if (isUrl(args[0])) stiker = await sticker(false, args[0], global.packsticker, global.packsticker2)
+    if (/webp|image|video/.test(mime)) {
+      if (/video/.test(mime) && (q.msg || q).seconds > 15) {
+        return m.reply(`⚠️ El video no puede durar más de 15 segundos.`)
+      }
 
-else return m.reply(`${emoji2} El url es incorrecto...`)
+      let img = await q.download?.()
+      if (!img) return m.reply(`✰ ᴘᴏʀ ғᴀᴠᴏʀ, ᴇɴᴠÍᴀ ᴜɴ ᴠɪᴅᴇᴏ, ɢɪғ ᴏ ɪᴍᴀɢᴇɴ ᴘᴀʀᴀ ᴄᴏɴᴠᴇʀᴛɪʀ ᴀ sᴛɪᴄᴋᴇʀ.`)
 
+      let out
+      try {
+        stiker = await sticker(img, false, global.packsticker, global.packsticker2)
+      } catch (e) {
+        console.error(e)
+      } finally {
+        if (!stiker) {
+          if (/webp/.test(mime)) out = await webp2png(img)
+          else if (/image/.test(mime)) out = await uploadImage(img)
+          else if (/video/.test(mime)) out = await uploadFile(img)
+          if (typeof out !== 'string') out = await uploadImage(img)
+          stiker = await sticker(false, out, global.packsticker, global.packsticker2)
+        }
+      }
+    } else if (args[0]) {
+      if (isUrl(args[0])) {
+        stiker = await sticker(false, args[0], global.packsticker, global.packsticker2)
+      } else {
+        return m.reply(`❌ La URL es incorrecta.`)
+      }
+    }
+  } catch (e) {
+    console.error(e)
+    if (!stiker) stiker = e
+  } finally {
+    if (stiker) {
+      await conn.sendFile(m.chat, stiker, 'sticker.webp', '', fkontak, true)
+    } else {
+      return conn.reply(m.chat, `✰ ᴘᴏʀ ғᴀᴠᴏʀ, ᴇɴᴠÍᴀ ᴜɴ ᴠɪᴅᴇᴏ, ɢɪғ ᴏ ɪᴍᴀɢᴇɴ ᴘᴀʀᴀ ᴄᴏɴᴠᴇʀᴛɪʀ ᴀ sᴛɪᴄᴋᴇʀ.`, m, fkontak)
+    }
+  }
 }
-} catch (e) {
-console.error(e)
-if (!stiker) stiker = e
-} finally {
-if (stiker) conn.sendFile(m.chat, stiker, 'sticker.webp', '', fkontak, true)
 
-else return conn.reply(m.chat, `${emoji} ᴘᴏʀ ғᴀᴠᴏʀ, ᴇɴᴠÍᴀ ᴜɴ ᴠɪᴅᴇᴏ, ɢɪғ ᴏ ɪᴍᴀɢᴇɴ ᴘᴀʀᴀ ᴄᴏɴᴠᴇʀᴛɪʀ ᴀ sᴛɪᴄᴋᴇʀ.`, m, fake)
-
-}}
-handler.help = ['stiker <img>', 'sticker <url>']
+handler.help = ['sticker', 's', 'stiker']
 handler.tags = ['sticker']
-//handler.group = true;
-handler.register = true
 handler.command = ['s', 'sticker', 'stiker']
 
 export default handler
 
 const isUrl = (text) => {
-return text.match(new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)(jpe?g|gif|png)/, 'gi'))}
+  return text.match(new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)(jpe?g|gif|png)/, 'gi'))
+}
