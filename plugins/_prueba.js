@@ -29,11 +29,12 @@ let handler = async (m, { conn, text, command }) => {
             
             const json = await response.json()
 
-            if (!json.status || !json.res || json.res.length === 0) {
+            // ⚠️ Cambiado de json.res a json.data (o la clave correcta que hayas encontrado)
+            if (!json.status || !json.data || json.data.length === 0) {
                 return m.reply(`❌ No se encontraron paquetes de stickers de Sticker.ly con el término: *${text}*`)
             }
 
-            const results = json.res.slice(0, 10)
+            const results = json.data.slice(0, 10)
             let listMessage = `*✨ Resultados de Sticker.ly para "${text}"*:\n\n_Selecciona un paquete para enviar los primeros 5 stickers._\n\n`
             
             const sections = [{
@@ -95,12 +96,13 @@ let handler = async (m, { conn, text, command }) => {
             
             const json = await response.json()
 
-            if (!json.status || !json.res || json.res.length === 0) {
+            // ⚠️ Cambiado de json.res a json.data
+            if (!json.status || !json.data || json.data.length === 0) {
                 return m.reply(`❌ La API no devolvió stickers para esta URL.`)
             }
 
             // Límite de 5 stickers
-            const stickerUrls = json.res.slice(0, 5).map(item => item.url)
+            const stickerUrls = json.data.slice(0, 5).map(item => item.url)
             
             const packName = json.name || 'Sticker.ly Pack'
             const packAuthor = json.author || 'WhatsApp Bot'
@@ -114,7 +116,6 @@ let handler = async (m, { conn, text, command }) => {
             for (const url of stickerUrls) {
                 let stiker
                 try {
-                    // Se usa el mismo packName y packAuthor para que WhatsApp lo reconozca como un paquete
                     stiker = await sticker(false, url, packName, packAuthor) 
                 } catch (e) {
                     console.error('Error al generar sticker:', url, e)
