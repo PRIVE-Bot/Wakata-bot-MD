@@ -20,8 +20,11 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
 
 let stiker = false
 try {
-let q = m.quoted ? m.quoted : m.sender
-let mime = (q.msg || q).mimetype || q.mediaType || ''
+let q = m.quoted ? m.quoted : m
+let mime = (q.msg || q).mimetype || q.mimetype || 
+           q.message?.imageMessage?.mimetype || 
+           q.message?.videoMessage?.mimetype || 
+           q.message?.stickerMessage?.mimetype || ''
 if (/webp|image|video/g.test(mime)) {
 if (/video/g.test(mime)) if ((q.msg || q).seconds > 15) return m.reply(`${emoji} ᴇʟ ᴠɪᴅᴇᴏ ɴᴏ ᴘᴜᴇᴅᴇ ᴅᴜʀᴀʀ ᴍᴀs ᴅᴇ (10) sᴇɢᴜɴᴅᴏs.`)
 let img = await q.download?.()
