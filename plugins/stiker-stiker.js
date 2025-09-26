@@ -25,7 +25,7 @@ const handler = async (m, { conn, usedPrefix, command, text }) => {
   if (!(isImg || isWebp || isVideo) && !text) {
     return conn.reply(
       m.chat,
-      `Envia o responde a una imagen/video corto \nEj: ${usedPrefix + command} > texto`,
+      `Envia o responde a una imagen/video corto \nEj: ${usedPrefix + command} texto aquí`,
       m,
       (typeof rcanalx === 'object' ? rcanalx : {})
     )
@@ -56,27 +56,27 @@ const handler = async (m, { conn, usedPrefix, command, text }) => {
   try {
     const pack = (global.packnameSticker || global.packname || 'StickerPack')
     const auth = (global.authorSticker || global.author || 'Bot')
-    const mode = /\bcontain\b/i.test(text || '') ? 'contain' : 'cover'
-    const position = (/\btop\b|\bcenter\b|\bbottom\b/i.exec(text || '') || ['bottom'])[0]
-  const wantBox = /\bbox\b/i.test(text || '') && !/\bnobox\b/i.test(text || '')
-  const boxColor = wantBox ? 'rgba(0,0,0,0.35)' : null
+
+    // Siempre el texto en la parte inferior
+    const position = 'bottom'
+
+    const wantBox = /\bbox\b/i.test(text || '') && !/\bnobox\b/i.test(text || '')
+    const boxColor = wantBox ? 'rgba(0,0,0,0.35)' : null
     const colorMatch = /color=([#a-z0-9(),.]+)/i.exec(text || '')
     const strokeMatch = /stroke(?:=([0-9]+))?/i.exec(text || '')
     const nostroke = /\bnostroke\b/i.test(text || '')
-  const textColor = colorMatch ? colorMatch[1] : undefined
-  const strokeWidth = nostroke ? 0 : (strokeMatch ? (strokeMatch[1] ? parseInt(strokeMatch[1], 10) : 6) : 0)
-  const fontMaxMatch = /fontmax=(\d{1,3})/i.exec(text || '')
-  const fontScaleMatch = /fontscale=([0-9.]{1,5})/i.exec(text || '')
-  const fontMax = fontMaxMatch ? parseInt(fontMaxMatch[1], 10) : undefined
-  const fontScale = fontScaleMatch ? Math.max(0.3, Math.min(2, parseFloat(fontScaleMatch[1]))) : undefined
-  const strokeColorMatch = /strokecolor=([#a-z0-9(),.]+)/i.exec(text || '')
-  const strokeColor = strokeColorMatch ? strokeColorMatch[1] : undefined
+    const textColor = colorMatch ? colorMatch[1] : undefined
+    const strokeWidth = nostroke ? 0 : (strokeMatch ? (strokeMatch[1] ? parseInt(strokeMatch[1], 10) : 6) : 0)
+    const fontMaxMatch = /fontmax=(\d{1,3})/i.exec(text || '')
+    const fontScaleMatch = /fontscale=([0-9.]{1,5})/i.exec(text || '')
+    const fontMax = fontMaxMatch ? parseInt(fontMaxMatch[1], 10) : undefined
+    const fontScale = fontScaleMatch ? Math.max(0.3, Math.min(2, parseFloat(fontScaleMatch[1]))) : undefined
+    const strokeColorMatch = /strokecolor=([#a-z0-9(),.]+)/i.exec(text || '')
+    const strokeColor = strokeColorMatch ? strokeColorMatch[1] : undefined
 
     let overlay = ''
     if (text) {
       overlay = text
-        .replace(/\bcontain\b/ig, '')
-        .replace(/\btop\b|\bcenter\b|\bbottom\b/ig, '')
         .replace(/\bbox\b|\bnobox\b/ig, '')
         .replace(/color=([#a-z0-9(),.]+)/ig, '')
         .replace(/stroke(=\d+)?/ig, '')
@@ -86,8 +86,9 @@ const handler = async (m, { conn, usedPrefix, command, text }) => {
         .replace(/\bnostroke\b/ig, '')
         .trim()
     }
+
     const result = await makeSticker(buffer || overlay, null, pack, auth, {
-      mode,
+      mode: 'cover',
       text: overlay || (buffer ? '' : (text || '')),
       position,
       boxColor,
@@ -97,6 +98,7 @@ const handler = async (m, { conn, usedPrefix, command, text }) => {
       ...(Number.isFinite(fontScale) ? { fontScale } : {}),
       ...(strokeColor ? { strokeColor } : {})
     })
+
     const fancyQuoted = await makeFkontak()
     await conn.sendMessage(
       m.chat,
