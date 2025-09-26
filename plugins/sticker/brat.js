@@ -2,6 +2,8 @@ import fetch from 'node-fetch'
 import { Sticker } from 'wa-sticker-formatter'
 
 let handler = async (m, { conn, args }) => {
+  const res1 = await fetch('https://files.catbox.moe/p87uei.jpg')
+  const thumb5 = Buffer.from(await res1.arrayBuffer())
 const fkontak = {
     key: { fromMe: false, participant: "0@s.whatsapp.net" },
     message: {
