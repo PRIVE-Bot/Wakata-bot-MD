@@ -6,9 +6,10 @@ import { webp2png } from '../../lib/webp2mp4.js'
 let handler = async (m, { conn, args, usedPrefix, command }) => {
   const res1 = await fetch('https://files.catbox.moe/p87uei.jpg')
   const thumb5 = Buffer.from(await res1.arrayBuffer())
+let userjid = m.sender
 
   const fkontak = {
-    key: { fromMe: false, participant: "0@s.whatsapp.net" },
+    key: { fromMe: false, participant: userjid },
     message: {
       documentMessage: {
         title: '𝗦𝗧𝗜𝗞𝗘𝗥',
