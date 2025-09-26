@@ -1,23 +1,21 @@
 let handler = async (m, { conn }) => {
-  try {
-    // Si el usuario citó un mensaje, se toma el ID del citado
-    let target = m.quoted ? m.quoted : m
+  let who = m.quoted ? m.quoted.sender : m.sender
+  let id = m.quoted ? m.quoted.key?.id : m.key?.id
 
-    // Extraemos el ID del mensaje
-    let messageId = target.key?.id || target.id || null
+  if (!id) return m.reply("⚠️ No se pudo detectar el dispositivo.")
 
-    if (!messageId) {
-      return m.reply("✰ No se pudo obtener el ID del mensaje.")
-    }
-
-    // Respuesta con el ID
-    await m.reply(`🆔 ID del mensaje:\n${messageId}`)
-    
-  } catch (e) {
-    console.error(e)
-    await m.reply("⚠️ Ocurrió un error al obtener el ID.")
+  // Detectar dispositivo según el ID del mensaje
+  let device
+  if (id.endsWith("BAE5") || id.endsWith("BAE6")) {
+    device = "🍏 iOS"
+  } else if (id.endsWith("BAE0") || id.endsWith("BAE1") || id.endsWith("BAE2") || id.endsWith("BAE3")) {
+    device = "🤖 Android"
+  } else {
+    device = "💻 WhatsApp Web / Desconocido"
   }
+
+  await conn.reply(m.chat, `👤 *Usuario:* @${who.split("@")[0]}\n📱 *Dispositivo:* ${device}`, m, { mentions: [who] })
 }
 
-handler.command = /^idmsg$/i
+handler.command = /^device$/i
 export default handler
