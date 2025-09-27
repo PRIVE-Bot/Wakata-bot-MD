@@ -24,7 +24,7 @@ let handler = async (m, { conn, usedPrefix, command }) => {
 }
 
 handler.help = ['waifu']
-handler.tags = ['anime']
+handler.tags = ['nsfw']
 handler.command = ['waifu']
 handler.group = true
 
