@@ -232,11 +232,13 @@ export async function handler(chatUpdate) {
 
                 const chatID = m.chat;
                 const ID_GRUPO_RESTRINGIDO = '120363421094353744@g.us';
-                const comandosBloqueados = ['code', 'qr'];
-                const isComandoBloqueado = comandosBloqueados.includes(command);
+                const comandosPermitidos = ['code', 'qr'];
 
-                if (chatID === ID_GRUPO_RESTRINGIDO && isComandoBloqueado) {
-                    continue; 
+                if (chatID === ID_GRUPO_RESTRINGIDO) {
+                    const isComandoPermitido = comandosPermitidos.includes(command);
+                    if (!isComandoPermitido) {
+                        continue; 
+                    }
                 }
 
                 if (!isAccept) continue;
