@@ -59,7 +59,7 @@ ${emoji} Tu imagen ha sido mejorada al doble de resolución.
 }
 
 handler.help = ['hd']
-handler.tags = ['herramientas', 'imagen']
+handler.tags = ['ia']
 handler.command = ['hd'];
 
 export default handler
