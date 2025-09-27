@@ -86,6 +86,8 @@ ${commandsForTag.map(menu => menu.help.map(help =>
 ⌬⌬➩ © Powered by Deylin - ${botname}
 `.trim()
 
+let imgurl = global.img
+
     await m.react('👑')
 
     await conn.sendMessage(m.chat, {
@@ -97,7 +99,7 @@ ${commandsForTag.map(menu => menu.help.map(help =>
         externalAdReply: {
           title: textbot,
           body: dev,
-          thumbnailUrl: global.img,
+          thumbnailUrl: imgurl,
           sourceUrl: redes,
           mediaType: 1,
           showAdAttribution: true,
