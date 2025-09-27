@@ -78,8 +78,6 @@ global.inc = icono1[Math.floor(Math.random() * icono1.length)];
 const res = await fetch(inc);
 const img = Buffer.from(await res.arrayBuffer());
 
-global.rcanal1 = { contextInfo: { isForwarded: true, forwardedNewsletterMessageInfo: { newsletterJid: channelRD.id, newsletterName: channelRD.name, serverMessageId: -1 }
-}}/*, { quoted: m }*/
 
 async function getRandomChannel() {
 let randomIndex = Math.floor(Math.random() * canalIdM.length)
