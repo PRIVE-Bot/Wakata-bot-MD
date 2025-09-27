@@ -40,9 +40,6 @@ global.sessions = 'Sessions'
 global.jadi = 'JadiBots' 
 global.Jadibts = true
 
-global.canalIdM = ["120363403593951965@newsletter", "120363403593951965@newsletter"]
-global.canalNombreM = ["𐌏𐌁𐌉𐌕𐍉 ႮᏟᏂᎥᏂᎯ ✦ ᴀᴠɪsᴏ TOᑕᗩ ᗩᑫᑌI", "ᴼᵇᶦᵗᵒ ႮᏟᏂᎥᏂᎯ✦ ᴜᴘᴅᴀᴛᴇ TOᑕᗩ ᗩᑫᑌI"]
-global.channelRD = await getRandomChannel()
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
 
 global.packname = '🅾🅱🅸🆃🅾 ႮᏟᏂᎥᏂᎯ';
@@ -76,23 +73,7 @@ let icono1 = [
   'https://i.postimg.cc/qMdtkHPn/1756167135980.jpg',
 ]
 
-/*function getRandomIcon() {
-  return global.icono1[Math.floor(Math.random() * global.icono1.length)]
-}*/
 global.inc = icono1[Math.floor(Math.random() * icono1.length)];
-
-/*global.rcanal = {
-  contextInfo: {
-    externalAdReply: {
-      showAdAttribution: true,
-      title: botname,
-      body: dev,
-      mediaType: 2,
-      thumbnailUrl: inc, 
-      sourceUrl: "https://deylin.vercel.app"
-    }
-  }
-}*/
 
 const res = await fetch(inc);
 const img = Buffer.from(await res.arrayBuffer());
