@@ -45,16 +45,12 @@ global.textbot = 'ᴋɪʀɪᴛᴏ-ʙᴏᴛ ᴍᴅ • ꉣꄲꅐꏂꋪꏂ꒯ ꃳ�
 global.etiqueta = '𝑫𝒆𝒚𝒍𝒊𝒏'
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
 
-global.catalogo = fs.readFileSync('./src/catalogo.jpg');
-global.photoSity = [catalogo]
 global.ch = {
 ch1: '120363403593951965@newsletter',
 ch2: '120363403593951965@newsletter',
 }
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
-
-global.catalogo = fs.readFileSync('./src/catalogo.jpg');
 
 global.cheerio = cheerio
 global.fs = fs
