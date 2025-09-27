@@ -31,27 +31,6 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
     }
 
     let userId = m.mentionedJid?.[0] || m.sender
-    const res1 = await fetch(global.img)
-    const img2 = Buffer.from(await res1.arrayBuffer())
-    let userjid = m.sender
-
-    // contacto falso
-    const fkontak = {
-      key: { fromMe: false, participant: userjid },
-      message: {
-        productMessage: {
-          product: {
-            productImage: { jpegThumbnail: img2 },
-            title: '𝗟𝗜𝗦𝗧𝗔 𝗗𝗘 𝗙𝗨𝗡𝗖𝗜𝗢𝗡𝗘𝗦',
-            description: 'Funciones disponibles',
-            currencyCode: "USD",
-            priceAmount1000: "15000",
-            retailerId: "BOT"
-          },
-          businessOwnerJid: userjid
-        }
-      }
-    }
 
     if (!global.db.data.users[userId]) {
       global.db.data.users[userId] = { exp: 0, level: 1 }
@@ -92,6 +71,7 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
 ╰━━━━━━━━━━━━━━━━━━━━━⌬
 
 ${emoji} 𝐋𝐈𝐒𝐓𝐀 𝐃𝐄 𝐂𝐎𝐌𝐀𝐍𝐃𝐎𝐒↷↷
+${rmr}
 ${Object.entries(tagGroups).map(([decoratedName, aliases]) => {
       const commandsForTag = help.filter(menu => menu.tags.some(t => aliases.includes(t)))
       if (commandsForTag.length === 0) return ''
@@ -124,7 +104,7 @@ ${commandsForTag.map(menu => menu.help.map(help =>
           renderLargerThumbnail: true,
         },
       },
-    }, { quoted: fkontak })
+    }, { quoted: m })
 
   } catch (e) {
     conn.reply(m.chat, `❎ Lo sentimos, el menú tiene un error.\n\n${e}`, m)
@@ -139,7 +119,6 @@ handler.register = true
 
 export default handler
 
-// 🔹 funciones extras
 function clockString(ms) {
   let h = Math.floor(ms / 3600000)
   let m = Math.floor(ms / 60000) % 60
