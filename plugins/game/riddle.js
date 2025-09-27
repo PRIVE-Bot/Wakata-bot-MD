@@ -55,7 +55,7 @@ handler.before = async (m, { conn }) => {
 }
 
 handler.help = ['adivinanza', 'prueba']
-handler.tags = ['juegos']
+handler.tags = ['game']
 handler.command = ['adivinanza', 'prueba']
 
 
