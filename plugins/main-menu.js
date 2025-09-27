@@ -90,23 +90,27 @@ let imgurl = global.img
 
     await m.react('👑')
 
-    await conn.sendMessage(m.chat, {
-      text: menuText,
-      contextInfo: {
-        mentionedJid: [m.sender],
-        isForwarded: true,
-        forwardingScore: 999,
-        externalAdReply: {
-          title: textbot,
-          body: dev,
-          thumbnailUrl: imgurl,
-          sourceUrl: redes,
-          mediaType: 1,
-          showAdAttribution: true,
-          renderLargerThumbnail: true,
-        },
-      },
-    }, { quoted: m })
+    await conn.sendMessage(m.chat, { 
+text: menuText,
+contextInfo: {
+mentionedJid: [userId],
+isForwarded: true,
+forwardedNewsletterMessageInfo: {
+newsletterJid: channelRD.id,
+serverMessageId: '',
+newsletterName: channelRD.name
+},
+externalAdReply: {
+title: botname,
+body: textbot,
+mediaType: 1,
+mediaUrl: redes,
+sourceUrl: redes,
+thumbnail: await (await fetch(imgurl)).buffer(),
+showAdAttribution: false,
+containsAutoReply: true,
+renderLargerThumbnail: true
+}}}, { quoted: m })
 
   } catch (e) {
     conn.reply(m.chat, `❎ Lo sentimos, el menú tiene un error.\n\n${e}`, m)
