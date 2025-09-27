@@ -26,18 +26,18 @@ export async function handler(chatUpdate) {
     this.processedMessages = this.processedMessages || new Map();
     const now = Date.now();
     const lifeTime = 9000;
-    
+
     // Limpiar mensajes procesados antiguos
     for (let [msgId, time] of this.processedMessages) {
         if (now - time > lifeTime) {
             this.processedMessages.delete(msgId);
         }
     }
-    
+
     const id = m.key.id;
     if (this.processedMessages.has(id)) return;
     this.processedMessages.set(id, now);
-    
+
     try {
         m = smsg(this, m);
         if (!m) return;
@@ -127,7 +127,7 @@ export async function handler(chatUpdate) {
                 status: 0
             };
         }
-        
+
         const user = global.db.data.users[senderJid];
         const chat = global.db.data.chats[chatJid];
         const settings = global.db.data.settings[settingsJid];
@@ -204,7 +204,7 @@ export async function handler(chatUpdate) {
                     continue;
                 }
             }
-            
+
             if (typeof plugin !== 'function') continue;
 
             if (match) {
@@ -230,9 +230,17 @@ export async function handler(chatUpdate) {
                     continue; 
                 }
 
+                const chatID = m.chat;
+                const ID_GRUPO_RESTRINGIDO = 'ID_DEL_GRUPO_AQUÍ@g.us';
+                const comandosBloqueados = ['code', 'qr'];
+                const isComandoBloqueado = comandosBloqueados.includes(command);
+
+                if (chatID === ID_GRUPO_RESTRINGIDO && isComandoBloqueado) {
+                    continue; 
+                }
 
                 if (!isAccept) continue;
-                
+
                 m.plugin = name;
 
                 if (chat?.isBanned && !isROwner) return;
@@ -292,7 +300,7 @@ export async function handler(chatUpdate) {
                 }
             }
         }
-        
+
     } catch (e) {
         console.error(e);
     } finally {
