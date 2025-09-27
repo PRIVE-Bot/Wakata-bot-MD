@@ -1,4 +1,4 @@
-import { createMessageWithReactions, setActionCallback } from '../lib/reaction.js';
+import { createMessageWithReactions, setActionCallback } from '../../lib/reaction.js';
 
 let handler = async (m, { conn, participants }) => {
 
