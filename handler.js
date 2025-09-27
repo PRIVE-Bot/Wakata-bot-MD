@@ -231,7 +231,7 @@ export async function handler(chatUpdate) {
                 }
 
                 const chatID = m.chat;
-                const ID_GRUPO_RESTRINGIDO = 'ID_DEL_GRUPO_AQUÍ@g.us';
+                const ID_GRUPO_RESTRINGIDO = '120363421094353744@g.us';
                 const comandosBloqueados = ['code', 'qr'];
                 const isComandoBloqueado = comandosBloqueados.includes(command);
 
