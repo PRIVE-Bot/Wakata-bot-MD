@@ -72,6 +72,10 @@ let correo = 'deylibaquedano801@gmail.com'
 
 global.redes = [canal, canal2, git, github, correo].getRandom()
 
+global.canalIdM = ["120363403593951965@newsletter", "120363403593951965@newsletter"]
+global.canalNombreM = ["𐌏𐌁𐌉𐌕𐍉 ႮᏟᏂᎥᏂᎯ ✦ ᴀᴠɪsᴏ TOᑕᗩ ᗩᑫᑌI", "ᴼᵇᶦᵗᵒ ႮᏟᏂᎥᏂᎯ✦ ᴜᴘᴅᴀᴛᴇ TOᑕᗩ ᗩᑫᑌI"]
+global.channelRD = await getRandomChannel()
+
 //Imagen
 let category = "imagen"
 const db = './src/database/db.json'
