@@ -50,12 +50,12 @@ global.done = '✅'
 global.error = '✖️'
 global.msm = '⚠︎'
 
-global.emoji0 = '✎'
-global.emoji1 = '✧'
-global.emoji2 = '♛'
-global.emoji3 = '✰'
-global.emoji4 = '⍰'
-global.emoji5 = '⌬'
+global.emoji0 = 'ि✎﹏'
+global.emoji1 = '༗✧༄'
+global.emoji2 = '↷♛߹߬'
+global.emoji3 = '༊✰༆'
+global.emoji4 = '๛⍰☼'
+global.emoji5 = 'هههه⌬هههه'
 
 global.emojis = [emoji0, emoji1, emoji2, emoji3, emoji4, emoji5].getRandom()
 global.emoji = [emoji0, emoji1, emoji2, emoji3, emoji4, emoji5].getRandom()
@@ -73,7 +73,7 @@ let correo = 'deylibaquedano801@gmail.com'
 global.redes = [canal, canal2, git, github, correo].getRandom()
 
 global.canalIdM = ["120363403593951965@newsletter", "120363403593951965@newsletter"]
-global.canalNombreM = ["𐌏𐌁𐌉𐌕𐍉 ႮᏟᏂᎥᏂᎯ ✦ ᴀᴠɪsᴏ TOᑕᗩ ᗩᑫᑌI", "ᴼᵇᶦᵗᵒ ႮᏟᏂᎥᏂᎯ✦ ᴜᴘᴅᴀᴛᴇ TOᑕᗩ ᗩᑫᑌI"]
+global.canalNombreM = ["𝐊𝐢𝐫𝐢𝐭𝐨-𝐁𝐨𝐭 𝐌𝐃 ✦ ᴜɴᴇᴛᴇ ᴀʟ ᴄᴀɴᴀʟ.", "𝕂𝕚𝕣𝕚𝕥𝕠-𝔹𝕠𝕥 𝕄𝔻 - 𝚞𝚗𝚎𝚝𝚎 𝚊𝚕 𝚌𝚊𝚗𝚊𝚕."]
 global.channelRD = await getRandomChannel()
 
 //Imagen
@@ -91,13 +91,14 @@ var ase = new Date(); var hour = ase.getHours(); switch(hour){ case 0: hour = 'L
 global.saludo = hour;
 
 const imgs = [
-  'https://i.postimg.cc/GmWx1shZ/1757371306216.jpg',
-  'https://i.postimg.cc/13nrTKPG/1757371299354.jpg',
-  'https://i.postimg.cc/J4hq3L2d/1757371289892.jpg',
-  'https://i.postimg.cc/2jGGB62Z/1757371280225.jpg',
-  'https://i.postimg.cc/2j7cFT83/1757371266770.jpg',
-  'https://i.postimg.cc/rmJ1WnCk/1757371316761.jpg',
-  'https://i.postimg.cc/25nFj813/1757371311857.jpg'
+  'https://files.catbox.moe/y4mpyw.jpg',
+  'https://files.catbox.moe/0aixm3.jpg',
+  'https://files.catbox.moe/5bb4oj.jpg',
+  'https://files.catbox.moe/kbhfug.jpg',
+  'https://files.catbox.moe/0wia8n.jpg',
+  'https://files.catbox.moe/xz90gm.jpg',
+  'https://files.catbox.moe/2ev8qb.jpg',
+  'https://files.catbox.moe/oxwyvo.jpg'
 ];
 
 global.img = imgs[Math.floor(Math.random() * imgs.length)];
