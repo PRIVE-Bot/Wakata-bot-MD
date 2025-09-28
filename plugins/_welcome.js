@@ -43,7 +43,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
   }
 
   let texto = `
-✎ Usuario: @${taguser}
+✎ Usuario: ${taguser}
 ✎ Grupo: ${groupMetadata.subject}
 ✎ Miembros: ${totalMembers}
 ✎ Fecha: ${date}
