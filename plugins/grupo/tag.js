@@ -60,24 +60,24 @@ var handler = async (m, { conn, text, participants, isOwner, isAdmin }) => {
     let htextos = `${tagText}`
 
     if ((isMedia && quoted.mtype === 'imageMessage') && htextos) {
-      var mediax = await quoted.download?.()
-      conn.sendMessage(m.chat, { image: mediax, mentions: users, caption: htextos }, { quoted: m })
-    } else if ((isMedia && quoted.mtype === 'videoMessage') && htextos) {
-      var mediax = await quoted.download?.()
-      conn.sendMessage(m.chat, { video: mediax, mentions: users, mimetype: 'video/mp4', caption: htextos }, { quoted: fkontak })
-    } else if ((isMedia && quoted.mtype === 'audioMessage') && htextos) {
-      var mediax = await quoted.download?.()
-      conn.sendMessage(m.chat, { audio: mediax, mentions: users, mimetype: 'audio/mp4', fileName: `Hidetag.mp3` }, { quoted: fkontak })
-    } else if ((isMedia && quoted.mtype === 'stickerMessage') && htextos) {
-      var mediax = await quoted.download?.()
-      conn.sendMessage(m.chat, { sticker: mediax, mentions: users }, { quoted: fkontak })
-    } else {
-      await conn.relayMessage(
-  m.chat, 
-  { extendedTextMessage: { text: `${htextos}\n`, contextInfo: { mentionedJid: users } } }, 
-  { quoted: fkontak }
-      )
-    }
+  var mediax = await quoted.download?.()
+  conn.sendMessage(m.chat, { image: mediax, mentions: users, caption: htextos }, { quoted: fkontak })
+} else if ((isMedia && quoted.mtype === 'videoMessage') && htextos) {
+  var mediax = await quoted.download?.()
+  conn.sendMessage(m.chat, { video: mediax, mentions: users, mimetype: 'video/mp4', caption: htextos }, { quoted: fkontak })
+} else if ((isMedia && quoted.mtype === 'audioMessage') && htextos) {
+  var mediax = await quoted.download?.()
+  conn.sendMessage(m.chat, { audio: mediax, mentions: users, mimetype: 'audio/mp4', fileName: `Hidetag.mp3` }, { quoted: fkontak })
+} else if ((isMedia && quoted.mtype === 'stickerMessage') && htextos) {
+  var mediax = await quoted.download?.()
+  conn.sendMessage(m.chat, { sticker: mediax, mentions: users }, { quoted: fkontak })
+} else {
+  await conn.relayMessage(
+    m.chat, 
+    { extendedTextMessage: { text: `${htextos}\n`, contextInfo: { mentionedJid: users } } }, 
+    { quoted: fkontak }
+  )
+}
   }
 }
 handler.help = ['hidetag']
