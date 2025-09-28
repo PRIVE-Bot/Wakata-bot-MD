@@ -82,7 +82,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
       productId: "24526030470358430",
       productImageCount: 1,
     },
-    businessOwnerJid: "5043295554@s.whatsapp.net"
+    businessOwnerJid: "50432955554@s.whatsapp.net"
   }
 
   await conn.sendMessage(m.chat, productMessage, {
