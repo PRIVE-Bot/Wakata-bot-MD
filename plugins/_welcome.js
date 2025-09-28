@@ -8,14 +8,15 @@ export async function before(m, { conn, participants, groupMetadata }) {
 
   const totalMembers = participants.length
   const date = new Date().toLocaleString('es-ES', { timeZone: 'America/Mexico_City' })
-  const who = m.messageStubParameters[0]
+  const who = m.messageStubParameters?.[0]
+  if (!who) return
+
   const taguser = `@${who.split('@')[0]}`
   const chat = global.db.data.chats[m.chat]
   const botname = global.botname || "Bot"
+  if (!chat?.welcome) return
 
-  if (!chat.welcome) return
-
-  let userName = (await conn.getName(who).catch(() => 'sigue sin funcionar'
+  let userName = await conn.getName(who).catch(() => 'Anónimo 😀')
   let tipo = ''
   let tipo2 = global.img || ''
 
