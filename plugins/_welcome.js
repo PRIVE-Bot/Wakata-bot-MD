@@ -57,6 +57,6 @@ export async function before(m, { conn, participants, groupMetadata }) {
   await conn.sendMessage(
     m.chat,
     { image: { url: urlapi }, caption: texto, mentions: [who] },
-    { quoted: fkontak }
+    { quoted: m }
   )
 }
