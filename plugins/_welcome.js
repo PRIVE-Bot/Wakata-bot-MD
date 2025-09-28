@@ -15,8 +15,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
 
   if (!chat.welcome) return
 
-  let participant = groupMetadata.participants.find(u => u.id === who)
-let userName = participant?.notify || participant?.pushName || 'Anónimo'
+  let userName = (await conn.getName(who).catch(() => who.split('@')[0])) || 'sigue sin funcionar'
   let tipo = ''
   let tipo2 = global.img || ''
 
