@@ -1,4 +1,4 @@
-Import { WAMessageStubType } from '@whiskeysockets/baileys'
+import { WAMessageStubType } from '@whiskeysockets/baileys'
 import fetch from 'node-fetch'
 
 export async function before(m, { conn, participants, groupMetadata }) {
@@ -8,7 +8,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
 
   const totalMembers = participants.length
   const date = new Date().toLocaleString('es-ES', { timeZone: 'America/Mexico_City' })
-  const who = m.messageStubParameters[0]
+  const who = m.messageStubParameters?.[0] || m.sender
   const taguser = `@${who.split('@')[0]}`
   const chat = global.db.data.chats[m.chat]
   const botname = global.botname || "Bot"
@@ -39,7 +39,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
     const res2 = await fetch('https://i.postimg.cc/c4t9wwCw/1756162596829.jpg')
     const img3 = Buffer.from(await res2.arrayBuffer())
     fkontak = {
-      key: { fromMe: false, participant: "0@s.whatsapp.net" },
+      key: { fromMe: false, participant: "0@s.whatsapp.net", remoteJid: m.chat },
       message: { locationMessage: { name: `${tipo} ${userName}`, jpegThumbnail: img3 } }
     }
   } catch (e) {
