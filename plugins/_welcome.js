@@ -13,25 +13,41 @@ export async function before(m, { conn, participants, groupMetadata }) {
 
   const taguser = `@${who.split('@')[0]}`
   const chat = global.db.data.chats[m.chat]
-  const botname = global.botname || "Bot"
   if (!chat?.welcome) return
 
-  const addedParticipant = participants.find(p => p.jid === who)
-let userName = addedParticipant?.name || await conn.getName(who).catch(() => 'Anónimo')
-  let tipo = ''
-  let tipo2 = global.img || ''
+  // Obtener nombre confiable
+  let userName = 'Anónimo'
+  try {
+    const addedParticipant = participants.find(p => p.jid === who)
+    if (addedParticipant?.name) {
+      userName = addedParticipant.name
+    } else {
+      const contact = await conn.getContact(who).catch(() => null)
+      userName = contact?.notify || contact?.name || 'Anónimo'
+    }
+  } catch (e) {
+    userName = 'Anónimo'
+  }
 
+  // Tipo de mensaje
+  let tipo = ''
   if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_ADD) tipo = 'Bienvenido'
-  if (
-    m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_LEAVE ||
-    m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_REMOVE
-  ) tipo = 'Adiós'
+  if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_LEAVE || m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_REMOVE) tipo = 'Adiós'
   if (!tipo) return
 
-  let avatar = await conn.profilePictureUrl(who).catch(() => tipo2)
+  const tipo2 = global.img || ''
 
-  let urlapi = `https://canvas-8zhi.onrender.com/api/welcome2?title=${encodeURIComponent(tipo)}&desc=${encodeURIComponent(userName)}&profile=${encodeURIComponent(avatar)}&background=${encodeURIComponent(tipo2)}`
+  // Avatar del usuario
+  let avatar
+  try {
+    avatar = await conn.profilePictureUrl(who)
+  } catch {
+    avatar = tipo2
+  }
 
+  const urlapi = `https://canvas-8zhi.onrender.com/api/welcome2?title=${encodeURIComponent(tipo)}&desc=${encodeURIComponent(userName)}&profile=${encodeURIComponent(avatar)}&background=${encodeURIComponent(tipo2)}`
+
+  // Mensaje citado con miniatura
   let fkontak
   try {
     const res2 = await fetch('https://i.postimg.cc/c4t9wwCw/1756162596829.jpg')
@@ -44,7 +60,7 @@ let userName = addedParticipant?.name || await conn.getName(who).catch(() => 'An
     console.error(e)
   }
 
-  let texto = `
+  const texto = `
 ✎ Usuario: ${taguser}
 ✎ Grupo: ${groupMetadata.subject}
 ✎ Miembros: ${totalMembers}
