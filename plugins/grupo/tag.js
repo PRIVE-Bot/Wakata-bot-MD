@@ -55,7 +55,6 @@ var handler = async (m, { conn, text, participants, isOwner, isAdmin }) => {
     let mime = (quoted.msg || quoted).mimetype || ''
     let isMedia = /image|video|sticker|audio/.test(mime)
     let more = String.fromCharCode(8206)
-    let masss = more.repeat(850)
     let tagText = text ? text : (m.quoted && m.quoted.text ? m.quoted.text : "*Hola!!*")
 
     let htextos = `${tagText}`
@@ -74,9 +73,9 @@ var handler = async (m, { conn, text, participants, isOwner, isAdmin }) => {
       conn.sendMessage(m.chat, { sticker: mediax, mentions: users }, { quoted: fkontak })
     } else {
       await conn.relayMessage(
-        m.chat, 
-        { extendedTextMessage: { text: `${masss}\n${htextos}\n`, contextInfo: { mentionedJid: users } } }, 
-        {}
+  m.chat, 
+  { extendedTextMessage: { text: `${htextos}\n`, contextInfo: { mentionedJid: users } } }, 
+  { quoted: fkontak }
       )
     }
   }
