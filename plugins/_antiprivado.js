@@ -3,7 +3,7 @@ export async function before(m, {conn, isAdmin, isBotAdmin, isOwner, isROwner}) 
   if (m.isGroup) return !1;
   if (!m.message) return !0;
   if (m.text.includes('menu') || m.text.includes('p') || m.text.includes('buy') || m.text.includes('qr') || m.text.includes('code')) return !0;
-const res = await fetch('https://i.postimg.cc/6pjTJPXJ/1755843251131.png');
+const res = await fetch('https://files.catbox.moe/0aa6fw.png');
 const img = Buffer.from(await res.arrayBuffer());
 
 const fkontak = {
