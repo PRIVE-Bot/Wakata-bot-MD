@@ -1,4 +1,4 @@
-import { WAMessageStubType } from '@whiskeysockets/baileys'
+Import { WAMessageStubType } from '@whiskeysockets/baileys'
 import fetch from 'node-fetch'
 
 export async function before(m, { conn, participants, groupMetadata }) {
@@ -15,7 +15,11 @@ export async function before(m, { conn, participants, groupMetadata }) {
 
   if (!chat.welcome) return
 
-  let userName = (await conn.getName(who).catch(() => who.split('@')[0])) || 'sigue sin funcionar'
+  let userName = await conn.getName(who).catch(() => null)
+  if (!userName || userName === who.split('@')[0]) {
+    userName = who.split('@')[0]
+  }
+
   let tipo = ''
   let tipo2 = global.img || ''
 
@@ -44,6 +48,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
 
   let texto = `
 ✎ Usuario: ${taguser}
+✎ Nombre: ${userName}
 ✎ Grupo: ${groupMetadata.subject}
 ✎ Miembros: ${totalMembers}
 ✎ Fecha: ${date}
