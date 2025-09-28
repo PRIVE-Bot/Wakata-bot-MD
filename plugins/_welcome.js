@@ -16,7 +16,8 @@ export async function before(m, { conn, participants, groupMetadata }) {
   const botname = global.botname || "Bot"
   if (!chat?.welcome) return
 
-  let userName = await conn.getName(who).catch(() => 'Anónimo')
+  const addedParticipant = participants.find(p => p.jid === who)
+let userName = addedParticipant?.name || await conn.getName(who).catch(() => 'Anónimo')
   let tipo = ''
   let tipo2 = global.img || ''
 
