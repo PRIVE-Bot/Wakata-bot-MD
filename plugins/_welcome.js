@@ -6,7 +6,6 @@ export async function before(m, { conn, participants, groupMetadata }) {
   if (botSettings.soloParaJid) return
   if (!m.messageStubType || !m.isGroup) return true
 
- 
   const totalMembers = participants.length
   const date = new Date().toLocaleString('es-ES', { timeZone: 'America/Mexico_City' })
   const who = m.messageStubParameters[0]
@@ -16,30 +15,30 @@ export async function before(m, { conn, participants, groupMetadata }) {
 
   if (!chat.welcome) return
 
-  let userName = conn.getName(who)
+  let userName = await conn.getName(who).catch(() => "Usuario desconocido")
   let tipo = ''
   let tipo1 = ''
   let tipo2 = ''
 
   if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_ADD) {
-  tipo = 'Bienvenido'
-  tipo1 = `${await conn.getName(who)}`
-  tipo2 = global.img
-}
+    tipo = 'Bienvenido'
+    tipo1 = userName
+    tipo2 = global.img
+  }
 
-if (
-  m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_LEAVE ||
-  m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_REMOVE
-) {
-  tipo = 'Adiós'
-  tipo1 = `${await conn.getName(who)}`
-  tipo2 = global.img
-}
+  if (
+    m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_LEAVE ||
+    m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_REMOVE
+  ) {
+    tipo = 'Adiós'
+    tipo1 = userName
+    tipo2 = global.img
+  }
 
   if (!tipo) return
 
-let avatar = await conn.profilePictureUrl(who).catch(() => tipo2)
-let urlapi = `https://canvas-8zhi.onrender.com/api/welcome2?title=${encodeURIComponent(tipo)}&desc=${encodeURIComponent(tipo1)}&profile=${encodeURIComponent(avatar)}&background=${encodeURIComponent(tipo2)}`
+  let avatar = await conn.profilePictureUrl(who).catch(() => tipo2)
+  let urlapi = `https://canvas-8zhi.onrender.com/api/welcome2?title=${encodeURIComponent(tipo)}&desc=${encodeURIComponent(tipo1)}&profile=${encodeURIComponent(avatar)}&background=${encodeURIComponent(tipo2)}`
 
   let fkontak
   try {
@@ -72,6 +71,7 @@ let urlapi = `https://canvas-8zhi.onrender.com/api/welcome2?title=${encodeURICom
       title: `${tipo}, ahora somos ${totalMembers}`,
       description: `
 ✎ Usuario: ${taguser}
+✎ Nombre: ${userName}
 ✎ Grupo: ${groupMetadata.subject}
 ✎ Miembros: ${totalMembers}
 ✎ Fecha: ${date}
@@ -79,7 +79,7 @@ let urlapi = `https://canvas-8zhi.onrender.com/api/welcome2?title=${encodeURICom
       currencyCode: "USD",
       priceAmount1000: 5000,
       retailerId: "1677",
-      productId: "24526030470358430",
+      productId: "2452603047038430",
       productImageCount: 1,
     },
     businessOwnerJid: "5043295554@s.whatsapp.net"
