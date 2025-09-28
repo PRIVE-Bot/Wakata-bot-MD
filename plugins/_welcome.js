@@ -16,24 +16,25 @@ export async function before(m, { conn, participants, groupMetadata }) {
 
   if (!chat.welcome) return
 
+  let userName = conn.getName(who)
   let tipo = ''
   let tipo1 = ''
   let tipo2 = ''
 
   if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_ADD) {
-    tipo = 'Bienvenido'
-    tipo1 = `al grupo: ${groupMetadata.subject}`
-    tipo2 = global.img
-  }
+  tipo = 'Bienvenido'
+  tipo1 = `${await conn.getName(who)}`
+  tipo2 = global.img
+}
 
-  if (
-    m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_LEAVE ||
-    m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_REMOVE
-  ) {
-    tipo = 'Adiós'
-    tipo1 = `del grupo: ${groupMetadata.subject}`
-    tipo2 = global.img
-  }
+if (
+  m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_LEAVE ||
+  m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_REMOVE
+) {
+  tipo = 'Adiós'
+  tipo1 = `${await conn.getName(who)}`
+  tipo2 = global.img
+}
 
   if (!tipo) return
 
