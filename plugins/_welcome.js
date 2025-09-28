@@ -15,7 +15,6 @@ export async function before(m, { conn, participants, groupMetadata }) {
   const chat = global.db.data.chats[m.chat]
   if (!chat?.welcome) return
 
-  // Obtener nombre confiable
   let userName = 'Anónimo'
   try {
     const addedParticipant = participants.find(p => p.jid === who)
@@ -29,7 +28,6 @@ export async function before(m, { conn, participants, groupMetadata }) {
     userName = 'Anónimo'
   }
 
-  // Tipo de mensaje
   let tipo = ''
   if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_ADD) tipo = 'Bienvenido'
   if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_LEAVE || m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_REMOVE) tipo = 'Adiós'
@@ -37,7 +35,6 @@ export async function before(m, { conn, participants, groupMetadata }) {
 
   const tipo2 = global.img || ''
 
-  // Avatar del usuario
   let avatar
   try {
     avatar = await conn.profilePictureUrl(who)
@@ -47,7 +44,6 @@ export async function before(m, { conn, participants, groupMetadata }) {
 
   const urlapi = `https://canvas-8zhi.onrender.com/api/welcome2?title=${encodeURIComponent(tipo)}&desc=${encodeURIComponent(userName)}&profile=${encodeURIComponent(avatar)}&background=${encodeURIComponent(tipo2)}`
 
-  // Mensaje citado con miniatura
   let fkontak
   try {
     const res2 = await fetch('https://i.postimg.cc/c4t9wwCw/1756162596829.jpg')
