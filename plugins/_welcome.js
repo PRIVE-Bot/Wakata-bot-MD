@@ -8,18 +8,14 @@ export async function before(m, { conn, participants, groupMetadata }) {
 
   const totalMembers = participants.length
   const date = new Date().toLocaleString('es-ES', { timeZone: 'America/Mexico_City' })
-  const who = m.messageStubParameters?.[0] || m.sender
+  const who = m.messageStubParameters[0]
   const taguser = `@${who.split('@')[0]}`
   const chat = global.db.data.chats[m.chat]
   const botname = global.botname || "Bot"
 
   if (!chat.welcome) return
 
-  let userName = await conn.getName(who).catch(() => null)
-  if (!userName || userName === who.split('@')[0]) {
-    userName = who.split('@')[0]
-  }
-
+  let userName = (await conn.getName(who).catch(() => 'sigue sin funcionar'
   let tipo = ''
   let tipo2 = global.img || ''
 
@@ -39,7 +35,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
     const res2 = await fetch('https://i.postimg.cc/c4t9wwCw/1756162596829.jpg')
     const img3 = Buffer.from(await res2.arrayBuffer())
     fkontak = {
-      key: { fromMe: false, participant: "0@s.whatsapp.net", remoteJid: m.chat },
+      key: { fromMe: false, participant: "0@s.whatsapp.net" },
       message: { locationMessage: { name: `${tipo} ${userName}`, jpegThumbnail: img3 } }
     }
   } catch (e) {
@@ -48,7 +44,6 @@ export async function before(m, { conn, participants, groupMetadata }) {
 
   let texto = `
 ✎ Usuario: ${taguser}
-✎ Nombre: ${userName}
 ✎ Grupo: ${groupMetadata.subject}
 ✎ Miembros: ${totalMembers}
 ✎ Fecha: ${date}
@@ -57,6 +52,6 @@ export async function before(m, { conn, participants, groupMetadata }) {
   await conn.sendMessage(
     m.chat,
     { image: { url: urlapi }, caption: texto, mentions: [who] },
-    { quoted: m }
+    { quoted: fkontak }
   )
 }
