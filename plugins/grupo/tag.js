@@ -50,9 +50,6 @@ var handler = async (m, { conn, text, participants, isOwner, isAdmin }) => {
     await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
 
   } catch {  
-    /**
-    [ By @NeKosmic || https://github.com/NeKosmic/ ]
-    **/  
     let users = participants.map(u => conn.decodeJid(u.id))
     let quoted = m.quoted ? m.quoted : m
     let mime = (quoted.msg || quoted).mimetype || ''
@@ -78,7 +75,7 @@ var handler = async (m, { conn, text, participants, isOwner, isAdmin }) => {
     } else {
       await conn.relayMessage(
         m.chat, 
-        { extendedTextMessage: { text: `${masss}\n${htextos}\n`, contextInfo: { mentionedJid: users, externalAdReply: { thumbnail: icons, sourceUrl: redes } } } }, 
+        { extendedTextMessage: { text: `${masss}\n${htextos}\n`, contextInfo: { mentionedJid: users } }, 
         {}
       )
     }
