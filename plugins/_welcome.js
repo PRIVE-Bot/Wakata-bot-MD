@@ -1,4 +1,4 @@
-import { WAMessageStubType } from '@whiskeysockets/baileys'
+import { WAMessageStubType, generateWAMessageFromContent } from '@whiskeysockets/baileys'
 import fetch from 'node-fetch'
 
 export async function before(m, { conn, participants, groupMetadata }) {
@@ -47,14 +47,44 @@ export async function before(m, { conn, participants, groupMetadata }) {
 
   const texto = `
 ✎ Usuario: ${taguser}
+✎ Nombre: ${userName}
 ✎ Grupo: ${groupMetadata.subject}
 ✎ Miembros: ${totalMembers}
 ✎ Fecha: ${date}
   `
 
-  await conn.sendMessage(
-    m.chat,
-    { image: { url: urlapi }, caption: texto, mentions: [who] },
-    { quoted: fkontak }
-  )
+  const content = {
+    viewOnceMessage: {
+      message: {
+        interactiveMessage: {
+          body: { text: texto },
+          footer: { text: global.botname },
+          header: { title: tipo, hasMediaAttachment: true },
+          nativeFlowMessage: {
+            buttons: [
+              {
+                name: "cta_url",
+                buttonParamsJson: JSON.stringify({
+                  display_text: "📢 Ver Canal Oficial",
+                  url: "https://whatsapp.com/channel/0029VbAzn9GGU3BQw830eA0F",
+                  merchant_url: "https://wa.me"
+                })
+              },
+              {
+                name: "cta_url",
+                buttonParamsJson: JSON.stringify({
+                  display_text: "🌟 Unirse al Grupo",
+                  url: "https://goo.su/iaZ6fO",
+                  merchant_url: "https://wa.me"
+                })
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+
+  const msg = generateWAMessageFromContent(m.chat, content, { quoted: fkontak, mentions: [who] })
+  await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
 }
