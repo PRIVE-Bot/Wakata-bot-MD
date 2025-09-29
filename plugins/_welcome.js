@@ -15,7 +15,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
   const chat = global.db.data.chats[m.chat]
   if (!chat?.welcome) return
 
-  let userName = m.pushName || 'Anónimo'
+  let userName = await conn.getName(who) || 'Anónimo'
 
   let tipo = ''
   if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_ADD) tipo = 'Bienvenido'
