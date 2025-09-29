@@ -44,10 +44,6 @@ export async function handler(chatUpdate) {
 
         await this.readMessages([m.key]);
 
-        if (!m.isGroup) {
-          return
-        }
-
         if (global.db.data == null) {
             await global.loadDatabase();
         }
