@@ -11,8 +11,13 @@ export async function before(m, { conn, participants, groupMetadata }) {
   const who = m.messageStubParameters?.[0]
   if (!who) return
 
-  const user = participants.find(p => p.jid === who)
-  const userName = user?.name || user?.notify || 'Anónimo'
+  let userName = await conn.getName(who) 
+  
+  if (userName === who.split('@')[0]) {
+      const user = participants.find(p => p.jid === who)
+      userName = user?.notify || 'Anónimo' 
+  }
+
   const taguser = `@${who.split('@')[0]}`
   const chat = global.db.data.chats[m.chat]
   if (!chat?.welcome) return
@@ -38,7 +43,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
     const res2 = await fetch('https://i.postimg.cc/c4t9wwCw/1756162596829.jpg')
     const img3 = Buffer.from(await res2.arrayBuffer())
     fkontak = {
-      key: { fromMe: false, participant: user },
+      key: { fromMe: false, participant: who }, 
       message: { locationMessage: { name: `${tipo} ${userName}`, jpegThumbnail: img3 } }
     }
   } catch (e) {
@@ -58,12 +63,12 @@ export async function before(m, { conn, participants, groupMetadata }) {
     image: { url: urlapi }, 
     caption: texto, 
     contextInfo: {
-mentionedJid: [who],
-isForwarded: true,
-forwardedNewsletterMessageInfo: {
-newsletterJid: channelRD.id,
-serverMessageId: '',
-newsletterName: channelRD.name
+      mentionedJid: [who],
+      isForwarded: true,
+      forwardedNewsletterMessageInfo: {
+        newsletterJid: channelRD.id,
+        serverMessageId: '',
+        newsletterName: channelRD.name
       }
     },
   },      
