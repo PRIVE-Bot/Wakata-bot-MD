@@ -1,4 +1,4 @@
-import { WAMessageStubType, generateWAMessageFromContent } from '@whiskeysockets/baileys'
+import { WAMessageStubType } from '@whiskeysockets/baileys'
 import fetch from 'node-fetch'
 
 export async function before(m, { conn, participants, groupMetadata }) {
@@ -53,38 +53,23 @@ export async function before(m, { conn, participants, groupMetadata }) {
 ✎ Fecha: ${date}
   `
 
-  const content = {
-    viewOnceMessage: {
-      message: {
-        interactiveMessage: {
-          body: { text: texto },
-          footer: { text: global.botname },
-          header: { title: tipo, hasMediaAttachment: true },
-          nativeFlowMessage: {
-            buttons: [
-              {
-                name: "cta_url",
-                buttonParamsJson: JSON.stringify({
-                  display_text: "📢 Ver Canal Oficial",
-                  url: "https://whatsapp.com/channel/0029VbAzn9GGU3BQw830eA0F",
-                  merchant_url: "https://wa.me"
-                })
-              },
-              {
-                name: "cta_url",
-                buttonParamsJson: JSON.stringify({
-                  display_text: "🌟 Unirse al Grupo",
-                  url: "https://goo.su/iaZ6fO",
-                  merchant_url: "https://wa.me"
-                })
-              }
-            ]
-          }
+  await conn.sendMessage(
+    m.chat,
+    {
+      image: { url: urlapi },
+      caption: texto,
+      mentions: [who],
+      contextInfo: {
+        externalAdReply: {
+          title: "🌟 Únete al grupo oficial",
+          body: "Presiona para unirte directamente",
+          thumbnailUrl: urlapi,
+          sourceUrl: "https://chat.whatsapp.com/HuMh41LJftl4DH7G5MWcHP",
+          mediaType: 1,
+          renderLargerThumbnail: true
         }
       }
-    }
-  }
-
-  const msg = generateWAMessageFromContent(m.chat, content, { quoted: fkontak, mentions: [who] })
-  await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
+    },
+    { quoted: fkontak }
+  )
 }
