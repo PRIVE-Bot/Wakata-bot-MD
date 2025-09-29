@@ -12,7 +12,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
   if (!who) return
 
   const user = participants.find(p => p.jid === who)
-  const userName = user?.name || user?.notify || 'Anónimo'
+  const userName = user?.notify || ''
   const taguser = `@${who.split('@')[0]}`
   const chat = global.db.data.chats[m.chat]
   if (!chat?.welcome) return
