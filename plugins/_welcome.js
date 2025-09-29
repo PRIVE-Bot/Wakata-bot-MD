@@ -59,11 +59,24 @@ export async function before(m, { conn, participants, groupMetadata }) {
     image: { url: urlapi },
     caption: texto,
     mentions: [who],
-    isForwarded: true,
-    forwardedNewsletterMessageInfo: {
-      newsletterJid: channelRD.id,
-      serverMessageId: '',
-      newsletterName: channelRD.name
+    contextInfo: {
+      isForwarded: true,
+      forwardedNewsletterMessageInfo: {
+        newsletterJid: channelRD.id,
+        serverMessageId: '',
+        newsletterName: channelRD.name
+      },
+      externalAdReply: {
+        title: botname,
+        body: dev,
+        mediaUrl: null,
+        description: null,
+        previewType: "PHOTO",
+        thumbnail: await (await fetch(icono)).buffer(),
+        mediaType: 1,
+        renderLargerThumbnail: false
+      },
+      mentionedJid: null
     }
   },
   { quoted: fkontak }
