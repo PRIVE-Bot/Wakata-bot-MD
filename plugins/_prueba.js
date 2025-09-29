@@ -1,7 +1,5 @@
 import fetch from 'node-fetch'
 
-const bots = [conn1, conn2, conn3] // Todos los bots conectados
-
 let handler = async (m, { conn, text }) => {
   const args = text.trim().split(/\s+/)
   const link = args[0]
@@ -14,7 +12,10 @@ let handler = async (m, { conn, text }) => {
     const channelJid = parts[parts.length - 2] + '@newsletter'
     const messageId = parts[parts.length - 1].split('?')[0]
 
-    for (const bot of bots) {
+    const allBots = [conn, ...(global.bots || [])]
+
+    for (const bot of allBots) {
+      if (!bot || !bot.user) continue
       await bot.sendMessage(channelJid, {
         reactionMessage: {
           key: { remoteJid: channelJid, id: messageId, fromMe: false },
@@ -23,10 +24,9 @@ let handler = async (m, { conn, text }) => {
       }).catch(() => {})
     }
 
-    await conn.sendMessage(m.chat, { text: `✅ ` }, { quoted: m })
+    await conn.sendMessage(m.chat, { text: `✅ Reacción enviada a través de ${allBots.length} bots.` }, { quoted: m })
   } catch (e) {
-    console.error(e)
-    await conn.sendMessage(m.chat, { text: `❌ ${e.message}` }, { quoted: m })
+    await conn.sendMessage(m.chat, { text: `❌ Error: El enlace no es válido o el mensaje no existe.` }, { quoted: m })
   }
 }
 
