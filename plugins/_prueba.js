@@ -23,10 +23,10 @@ let handler = async (m, { conn, text }) => {
       }).catch(() => {})
     }
 
-    await conn.sendMessage(m.chat, { text: `✅ Todos los bots reaccionaron con ${emoji} al mensaje.` }, { quoted: m })
+    await conn.sendMessage(m.chat, { text: `✅ ` }, { quoted: m })
   } catch (e) {
     console.error(e)
-    await conn.sendMessage(m.chat, { text: '❌ Error al intentar reaccionar al mensaje' }, { quoted: m })
+    await conn.sendMessage(m.chat, { text: `❌ ${e.message}` }, { quoted: m })
   }
 }
 
