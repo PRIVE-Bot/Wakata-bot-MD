@@ -12,10 +12,14 @@ export async function before(m, { conn, participants, groupMetadata }) {
   if (!who) return
 
   let userName = await conn.getName(who) 
-  
+
   if (userName === who.split('@')[0]) {
       const user = participants.find(p => p.jid === who)
       userName = user?.notify || 'Anónimo' 
+  }
+
+  if (!userName || userName === 'undefined') {
+      userName = 'Usuario Desconocido' 
   }
 
   const taguser = `@${who.split('@')[0]}`
