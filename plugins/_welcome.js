@@ -39,7 +39,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
     const img3 = Buffer.from(await res2.arrayBuffer())
     fkontak = {
       key: { fromMe: false, participant: "0@s.whatsapp.net" },
-      message: { locationMessage: { name: `${tipo} ${userName}`, jpegThumbnail: img3 } }
+      message: { locationMessage: { name: `Grupo: ${groupMetadata.subject}`, jpegThumbnail: img3 } }
     }
   } catch (e) {
     console.error(e)
