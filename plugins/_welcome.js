@@ -79,4 +79,3 @@ export async function before(m, { conn, participants, groupMetadata }) {
   { quoted: fkontak }      
  )
 }
-
