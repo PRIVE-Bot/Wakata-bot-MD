@@ -59,14 +59,14 @@ export async function before(m, { conn, participants, groupMetadata }) {
     image: { url: urlapi }, 
     caption: texto, 
     contextInfo: {
-      mentions: [who],
-      isForwarded: true,
-      forwardedNewsletterMessageInfo: {
-        newsletterJid: channelRD.id,
-        serverMessageId: '',
-        newsletterName: channelRD.name
+mentionedJid: [userId],
+isForwarded: true,
+forwardedNewsletterMessageInfo: {
+newsletterJid: channelRD.id,
+serverMessageId: '',
+newsletterName: channelRD.name
       }
-    }
+    },
   },      
   { quoted: fkontak }      
  )
