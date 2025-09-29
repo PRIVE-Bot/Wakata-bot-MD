@@ -1,48 +1,57 @@
-// detector-device.js
-// Handler para Baileys — detecta iOS/Android por heurística de longitud del message ID
-
-let handler = async (m, { conn }) => {
+let handler = async (m, { conn, usedPrefix, command }) => {
+  if (command !== '1') return
+  const sender = m.sender
+  const results = {}
   try {
-    // Si respondes a un mensaje, toma el id del citado; si no, el id del mensaje actual
-    const target = m.quoted ? m.quoted : m
-    const id = target.key?.id || target.id || ''
-
-    if (!id) return m.reply('⚠️ No pude obtener el ID del mensaje.')
-
-    const device = detectPlatformFromId(id)
-
-    // Mención opcional a la persona objetivo
-    let who = m.quoted ? (m.quoted.sender || m.sender) : m.sender
-    await conn.reply(m.chat, `👤 Usuario: @${who.split('@')[0]}\n📱 Dispositivo (heurístico): ${device}\n🆔 ID: ${id}`, m, { mentions: [who] })
-
-  } catch (err) {
-    console.error(err)
-    m.reply('❌ Ocurrió un error al intentar detectar el dispositivo.')
+    results.pushName = m.pushName || ''
+  } catch (e) {
+    results.pushName = ''
   }
+  try {
+    results.connContactName = (conn && conn.contacts && conn.contacts[sender] && (conn.contacts[sender].name || conn.contacts[sender].vname)) || ''
+  } catch (e) {
+    results.connContactName = ''
+  }
+  try {
+    results.getName = await (conn.getName ? conn.getName(sender) : Promise.resolve(''))
+  } catch (e) {
+    results.getName = ''
+  }
+  try {
+    results.jidLocalPart = sender ? sender.split('@')[0] : ''
+  } catch (e) {
+    results.jidLocalPart = ''
+  }
+  try {
+    results.vcardName = ''
+    const contact = conn && conn.contacts && conn.contacts[sender]
+    if (contact && contact.vcard) {
+      const mV = contact.vcard.match(/FN:(.*)/i)
+      if (mV && mV[1]) results.vcardName = mV[1].trim()
+    }
+  } catch (e) {
+    results.vcardName = ''
+  }
+  const chosen = [
+    results.pushName,
+    results.vcardName,
+    results.connContactName,
+    results.getName,
+    results.jidLocalPart
+  ].find(x => x && x.trim()) || 'Anónimo'
+  const out = []
+  out.push(`Nombre elegido: ${chosen}`)
+  out.push('---')
+  out.push(`m.pushName: ${results.pushName || '(vacío)'}`)
+  out.push(`contact.vcard FN: ${results.vcardName || '(vacío)'}`)
+  out.push(`conn.contacts[name|vname]: ${results.connContactName || '(vacío)'}`)
+  out.push(`await conn.getName(jid): ${results.getName || '(vacío)'}`)
+  out.push(`JID local (antes de @): ${results.jidLocalPart || '(vacío)'}`)
+  out.push('---')
+  out.push('Usé varios métodos de fallback para intentar obtener el nombre exacto que usa WhatsApp.')
+  await conn.reply(m.chat, out.join('\n'), m)
 }
-
-handler.command = /^device|dispositivo$/i
+handler.command = ['1']
+handler.help = ['1']
+handler.tags = ['info']
 export default handler
-
-// Heurística basada en tus ejemplos:
-// - IDs ~32 caracteres hex => Android
-// - IDs ~20 caracteres hex => iOS
-// Ajusta los umbrales si ves otros patrones en tu entorno.
-function detectPlatformFromId(id) {
-  if (!id || typeof id !== 'string') return 'Desconocido'
-
-  // Normalizar (quitar posibles espacios y no-hex)
-  const hex = id.replace(/[^a-fA-F0-9]/g, '')
-  const len = hex.length
-
-  // Umbrales (basados en tus ejemplos)
-  if (len >= 28) return '🤖 Android (heurístico)'
-  if (len <= 22) return '🍏 iOS (heurístico)'
-
-  // Si queda en zona gris, intentar detectar por prefijo conocido (opcional)
-  // Ejemplo: si comienza con dígito podría indicar iOS en algunos casos
-  if (/^[0-9]/.test(hex)) return '🍏 iOS (posible)'
-  if (/^[A-Fa-f]/.test(hex)) return '🤖 Android (posible)'
-
-  return 'Desconocido'
-}
