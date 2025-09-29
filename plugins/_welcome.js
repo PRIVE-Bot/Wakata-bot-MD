@@ -49,7 +49,8 @@ export async function before(m, { conn, participants, groupMetadata }) {
     const img3 = Buffer.from(await res2.arrayBuffer())
     fkontak = {
       key: { fromMe: false, participant: who }, 
-      message: { locationMessage: { name: `${tipo} ${userName}`, jpegThumbnail: img3 } }
+      message: { locationMessage: { name: `${tipo} ${global.db.data.users[m.key.participant].name || 'Usuario'}
+`, jpegThumbnail: img3 } }
     }
   } catch (e) {
     console.error(e)
