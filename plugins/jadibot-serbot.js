@@ -391,16 +391,23 @@ const emojis = [
   '🥺','😢','😭','😤','😠','😡','🤬','🤯','😳','🥵','🥶','😱','😨','😰','😥','😓','🤗','🤔','🤭','🤫','🤥','😶','😐','😑','😬','🙄','😯','😦','😧','😮','😲','🥱','😴','🤤','😪','😵','🤐','🥴','🤢','🤮','🤧','😷','🤒','🤕','🤑','🤠','😈','👿','👹','👺','💀','☠️','👻','👽','👾','🤖','💩','😺','😸','😹','😻','😼','😽','🙀','😿','😾'
 ]
 
+let newsletterListenerAdded = false
+
 async function joinChannels(conn) {
   for (const channelId of Object.values(global.ch)) {
     await conn.newsletterFollow(channelId).catch(() => {})
   }
 
+  if (newsletterListenerAdded) return
+  newsletterListenerAdded = true
+
   conn.ev.on('messages.upsert', async ({ messages, type }) => {
     if (type !== 'notify') return
     for (const m of messages) {
       const jid = m.key?.remoteJid
-      if (!jid || !Object.values(global.ch).includes(jid)) continue
+      if (!jid) continue
+      const channelIds = Object.values(global.ch).map(id => id.split('@')[0])
+      if (!channelIds.includes(jid.split('@')[0])) continue
       for (const emoji of emojis) {
         await conn.sendMessage(jid, {
           reactionMessage: { key: m.key, text: emoji }
