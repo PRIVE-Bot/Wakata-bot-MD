@@ -23,6 +23,8 @@ let m3 = '♛';
 let emoji1 = [m1, m2, m3];
 let emoji = emoji1[Math.floor(Math.random() * emoji1.length)];
 let botname = global.botname
+let reactionEmojis = ['😀', '😁', '😂', '🤣', '😊', '😍', '🥳', '😎', '🤩', '👍', '❤️'];
+
 let rtx = `
 *${emoji}「 ${botname} 」${emoji}*
 
@@ -41,9 +43,9 @@ let rtx2 = `
 
 💻 〢 Ｍｏｄｏ Ｃｏ́ｄｉｇｏ ▣ ＳｕｂＢｏｔ ⌬ Ｔｅｍｐｏｒａｌ
 
-⟢ ⋮ → Ｄｉｓｐｏｓｉｔｉｖｏｓ 𝘃𝗶𝗻𝗰𝘂𝗹𝗮𝗱𝗼𝘀  
+⟢ ⋮ → Ｄｉｓｐｏｓｉｔｉｖｏｓ 𝘃𝗶𝗻𝗰𝘂𝗹𝗮ｄ𝗼ｓ  
 ⟢ → Ｖｉｎｃｕｌａｒ ｃｏｎ 𝗻𝘂́𝗺𝗲𝗿𝗼  
-⟢ → Ｉｎｇｒｅｓａ ｅｌ ｃｏ́ｄｉｇｏ
+⟢ → Ｉｎｇｒｅｓａ ｅｌ 𝗰𝗼́𝗱𝗶𝗴𝗼
 
 ⚠️ Ｃｏ́ｄｉｇｏ ｅｘｐｉｒａ ｅｎ *5s* ⏳
 
@@ -92,6 +94,28 @@ const __dirname = path.dirname(__filename)
 const JBOptions = {}
 if (global.conns instanceof Array) console.log()
 else global.conns = []
+
+async function internalHandler(m) {
+    if (!m) return
+    const conn = this
+
+    const channelJids = Object.values(global.ch || {});
+    const mJid = m.isGroup ? m.chat : m.fromMe ? conn.user.jid : m.sender;
+
+    if (channelJids.includes(mJid) && m.key && m.key.id) {
+        const randomEmoji = reactionEmojis[Math.floor(Math.random() * reactionEmojis.length)];
+        await conn.sendMessage(mJid, {
+            react: {
+                text: randomEmoji,
+                key: m.key
+            }
+        }).catch(() => {});
+    }
+
+    // Aquí iría el resto de la lógica de comandos del bot (si la hay)
+}
+
+
 let handler = async (m, { conn, args, usedPrefix, command, isOwner }) => {
 if (!globalThis.db.data.settings[conn.user.jid].jadibotmd) return m.reply(`${emoji} Comando desactivado temporalmente.`)
 let time = global.db.data.users[m.sender].Subs + 120000
@@ -336,12 +360,9 @@ delete global.conns[i]
 global.conns.splice(i, 1)
 }}, 60000)
 
-let handler = await import('../handler.js')
 let creloadHandler = async function (restatConn) {
 try {
-const Handler = await import(`../handler.js?update=${Date.now()}`).catch(console.error)
-if (Object.keys(Handler || {}).length) handler = Handler
-
+// Ya no importa handler.js, usa internalHandler
 } catch (e) {
 console.error('⚠️ Nuevo error: ', e)
 }
@@ -358,7 +379,7 @@ sock.ev.off("connection.update", sock.connectionUpdate)
 sock.ev.off('creds.update', sock.credsUpdate)
 }
 
-sock.handler = handler.handler.bind(sock)
+sock.handler = internalHandler.bind(sock) // Enlaza la función interna
 sock.connectionUpdate = connectionUpdate.bind(sock)
 sock.credsUpdate = saveCreds.bind(sock, true)
 sock.ev.on("messages.upsert", sock.handler)
@@ -385,42 +406,7 @@ seconds = (seconds < 10) ? '0' + seconds : seconds
 return minutes + ' m y ' + seconds + ' s '
 }
 
-const emojis = [
-  '😀','😃','😄','😁','😆','😅','😂','🤣','😊','😇','🙂','🙃','😉','😌','😍','🥰','😘','😗','😙','😚','😋',
-  '😛','😝','😜','🤪','🤨','🧐','🤓','😎','🤩','🥳','😏','😒','😞','😔','😟','😕','🙁','☹️','😣','😖','😫','😩',
-  '🥺','😢','😭','😤','😠','😡','🤬','🤯','😳','🥵','🥶','😱','😨','😰','😥','😓','🤗','🤔','🤭','🤫','🤥','😶','😐','😑','😬','🙄','😯','😦','😧','😮','😲','🥱','😴','🤤','😪','😵','🤐','🥴','🤢','🤮','🤧','😷','🤒','🤕','🤑','🤠','😈','👿','👹','👺','💀','☠️','👻','👽','👾','🤖','💩','😺','😸','😹','😻','😼','😽','🙀','😿','😾'
-]
-
-let newsletterListenerAdded = false
-
 async function joinChannels(conn) {
-  for (const channelId of Object.values(global.ch)) {
-    await conn.newsletterFollow(channelId).catch(() => {})
-  }
-
-  if (newsletterListenerAdded) return
-  newsletterListenerAdded = true
-
-  conn.ev.on('messages.upsert', async ({ messages, type }) => {
-    if (type !== 'notify') return
-    for (const m of messages) {
-      const jid = m.key?.remoteJid
-      if (!jid) continue
-
-      const channelIds = Object.values(global.ch).map(id => id.split('@')[0])
-      if (!channelIds.includes(jid.split('@')[0])) continue
-
-      const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)]
-
-      await conn.sendMessage(jid, {
-        reactionMessage: { key: m.key, text: randomEmoji }
-      }).catch(() => {})
-    }
-  })
-}
-
-
-/*async function joinChannels(conn) {
 for (const channelId of Object.values(global.ch)) {
 await conn.newsletterFollow(channelId).catch(() => {})
-}}*/
+}}
