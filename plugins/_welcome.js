@@ -15,7 +15,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
   const chat = global.db.data.chats[m.chat]
   if (!chat?.welcome) return
 
-  let userName = await conn.getName(who) || 'Anónimo'
+  let userName = m.pushName || 'Anónimo'
 
   let tipo = ''
   if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_ADD) tipo = 'Bienvenido'
@@ -39,7 +39,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
     const img3 = Buffer.from(await res2.arrayBuffer())
     fkontak = {
       key: { fromMe: false, participant: "0@s.whatsapp.net" },
-      message: { locationMessage: { name: `Grupo: ${groupMetadata.subject}`, jpegThumbnail: img3 } }
+      message: { locationMessage: { name: `${tipo} ${userName}`, jpegThumbnail: img3 } }
     }
   } catch (e) {
     console.error(e)
@@ -55,21 +55,8 @@ export async function before(m, { conn, participants, groupMetadata }) {
 
   await conn.sendMessage(
     m.chat,
-    {
-      image: { url: urlapi },
-      caption: texto,
-      mentions: [who],
-      contextInfo: {
-        externalAdReply: {
-          title: "🌟 Únete al grupo oficial",
-          body: "Presiona para unirte directamente",
-          thumbnailUrl: urlapi,
-          sourceUrl: "https://chat.whatsapp.com/HuMh41LJftl4DH7G5MWcHP",
-          mediaType: 1,
-          renderLargerThumbnail: true
-        }
-      }
-    },
+    { image: { url: urlapi }, caption: texto, mentions: [who] }, 
+   ...global.rcanal,
     { quoted: fkontak }
   )
 }
