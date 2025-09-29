@@ -17,13 +17,18 @@ export async function before(m, { conn, participants, groupMetadata }) {
 
   let userName = 'Anónimo'
   try {
-    const addedParticipant = participants.find(p => p.jid === who)
-    if (addedParticipant?.name) {
-      userName = addedParticipant.name
-    } else {
-      const contact = await conn.getContact(who).catch(() => null)
-      userName = contact?.notify || contact?.name || 'Anónimo'
-    }
+    const results = {}
+    results.pushName = m.pushName || ''
+    results.connContactName = (conn.contacts?.[who]?.name || conn.contacts?.[who]?.vname) || ''
+    results.getName = await (conn.getName ? conn.getName(who) : Promise.resolve(''))
+    results.jidLocalPart = who ? who.split('@')[0] : ''
+
+    userName = [
+      results.pushName,
+      results.connContactName,
+      results.getName,
+      results.jidLocalPart
+    ].find(x => x && x.trim()) || 'Anónimo'
   } catch (e) {
     userName = 'Anónimo'
   }
@@ -58,6 +63,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
 
   const texto = `
 ✎ Usuario: ${taguser}
+✎ Nombre: ${userName}
 ✎ Grupo: ${groupMetadata.subject}
 ✎ Miembros: ${totalMembers}
 ✎ Fecha: ${date}
