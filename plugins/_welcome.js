@@ -15,23 +15,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
   const chat = global.db.data.chats[m.chat]
   if (!chat?.welcome) return
 
-  let userName = 'Anónimo'
-  try {
-    const results = {}
-    results.pushName = m.pushName || ''
-    results.connContactName = (conn.contacts?.[who]?.name || conn.contacts?.[who]?.vname) || ''
-    results.getName = await (conn.getName ? conn.getName(who) : Promise.resolve(''))
-    results.jidLocalPart = who ? who.split('@')[0] : ''
-
-    userName = [
-      results.pushName,
-      results.connContactName,
-      results.getName,
-      results.jidLocalPart
-    ].find(x => x && x.trim()) || 'Anónimo'
-  } catch (e) {
-    userName = 'Anónimo'
-  }
+  let userName = m.pushName || 'Anónimo'
 
   let tipo = ''
   if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_ADD) tipo = 'Bienvenido'
