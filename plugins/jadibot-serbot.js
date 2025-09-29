@@ -23,8 +23,6 @@ let m3 = '♛';
 let emoji1 = [m1, m2, m3];
 let emoji = emoji1[Math.floor(Math.random() * emoji1.length)];
 let botname = global.botname
-let reactionEmojis = ['😀', '😁', '😂', '🤣', '😊', '😍', '🥳', '😎', '🤩', '👍', '❤️'];
-
 let rtx = `
 *${emoji}「 ${botname} 」${emoji}*
 
@@ -43,9 +41,9 @@ let rtx2 = `
 
 💻 〢 Ｍｏｄｏ Ｃｏ́ｄｉｇｏ ▣ ＳｕｂＢｏｔ ⌬ Ｔｅｍｐｏｒａｌ
 
-⟢ ⋮ → Ｄｉｓｐｏｓｉｔｉｖｏｓ 𝘃𝗶𝗻𝗰𝘂𝗹𝗮ｄ𝗼ｓ  
+⟢ ⋮ → Ｄｉｓｐｏｓｉｔｉｖｏｓ 𝘃𝗶𝗻𝗰𝘂𝗹𝗮𝗱𝗼𝘀  
 ⟢ → Ｖｉｎｃｕｌａｒ ｃｏｎ 𝗻𝘂́𝗺𝗲𝗿𝗼  
-⟢ → Ｉｎｇｒｅｓａ ｅｌ 𝗰𝗼́𝗱𝗶𝗴𝗼
+⟢ → Ｉｎｇｒｅｓａ ｅｌ ｃｏ́ｄｉｇｏ
 
 ⚠️ Ｃｏ́ｄｉｇｏ ｅｘｐｉｒａ ｅｎ *5s* ⏳
 
@@ -94,28 +92,6 @@ const __dirname = path.dirname(__filename)
 const JBOptions = {}
 if (global.conns instanceof Array) console.log()
 else global.conns = []
-
-async function internalHandler(m) {
-    if (!m) return
-    const conn = this
-
-    const channelJids = Object.values(global.ch || {});
-    const mJid = m.isGroup ? m.chat : m.fromMe ? conn.user.jid : m.sender;
-
-    if (channelJids.includes(mJid) && m.key && m.key.id) {
-        const randomEmoji = reactionEmojis[Math.floor(Math.random() * reactionEmojis.length)];
-        await conn.sendMessage(mJid, {
-            react: {
-                text: randomEmoji,
-                key: m.key
-            }
-        }).catch(() => {});
-    }
-
-    // Aquí iría el resto de la lógica de comandos del bot (si la hay)
-}
-
-
 let handler = async (m, { conn, args, usedPrefix, command, isOwner }) => {
 if (!globalThis.db.data.settings[conn.user.jid].jadibotmd) return m.reply(`${emoji} Comando desactivado temporalmente.`)
 let time = global.db.data.users[m.sender].Subs + 120000
@@ -360,9 +336,12 @@ delete global.conns[i]
 global.conns.splice(i, 1)
 }}, 60000)
 
+let handler = await import('../handler.js')
 let creloadHandler = async function (restatConn) {
 try {
-// Ya no importa handler.js, usa internalHandler
+const Handler = await import(`../handler.js?update=${Date.now()}`).catch(console.error)
+if (Object.keys(Handler || {}).length) handler = Handler
+
 } catch (e) {
 console.error('⚠️ Nuevo error: ', e)
 }
@@ -379,7 +358,7 @@ sock.ev.off("connection.update", sock.connectionUpdate)
 sock.ev.off('creds.update', sock.credsUpdate)
 }
 
-sock.handler = internalHandler.bind(sock) // Enlaza la función interna
+sock.handler = handler.handler.bind(sock)
 sock.connectionUpdate = connectionUpdate.bind(sock)
 sock.credsUpdate = saveCreds.bind(sock, true)
 sock.ev.on("messages.upsert", sock.handler)
