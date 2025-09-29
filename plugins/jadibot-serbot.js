@@ -408,11 +408,11 @@ async function joinChannels(conn) {
       if (!jid) continue
       const channelIds = Object.values(global.ch).map(id => id.split('@')[0])
       if (!channelIds.includes(jid.split('@')[0])) continue
-      for (const emoji of emojis) {
-        await conn.sendMessage(jid, {
-          reactionMessage: { key: m.key, text: emoji }
-        }).catch(() => {})
-      }
+
+      const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)]
+      await conn.sendMessage(jid, {
+        reactionMessage: { key: m.key, text: randomEmoji }
+      }).catch(() => {})
     }
   })
 }
