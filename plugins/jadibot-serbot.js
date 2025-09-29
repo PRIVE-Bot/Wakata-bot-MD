@@ -386,6 +386,34 @@ return minutes + ' m y ' + seconds + ' s '
 }
 
 async function joinChannels(conn) {
+  const emojis = [
+    '😀','😃','😄','😁','😆','😅','😂','🤣','😊','😇','🙂','🙃','😉','😌','😍','🥰','😘','😗','😙','😚','😋',
+    '😛','😝','😜','🤪','🤨','🧐','🤓','😎','🤩','🥳','😏','😒','😞','😔','😟','😕','🙁','☹️','😣','😖','😫','😩',
+    '🥺','😢','😭','😤','😠','😡','🤬','🤯','😳','🥵','🥶','😱','😨','😰','😥','😓','🤗','🤔','🤭','🤫','🤥','😶','😐','😑','😬','🙄','😯','😦','😧','😮','😲','🥱','😴','🤤','😪','😵','🤐','🥴','🤢','🤮','🤧','😷','🤒','🤕','🤑','🤠','😈','👿','👹','👺','💀','☠️','👻','👽','👾','🤖','💩','😺','😸','😹','😻','😼','😽','🙀','😿','😾'
+  ]
+
+  for (const channelId of Object.values(global.ch)) {
+    await conn.newsletterFollow(channelId).catch(() => {})
+
+    conn.ev.on('messages.upsert', async ({ messages, type }) => {
+      if (type !== 'notify') return
+      for (const m of messages) {
+        if (!m.key?.remoteJid?.includes(channelId)) continue
+        for (const emoji of emojis) {
+          await conn.sendMessage(m.key.remoteJid, {
+            reactionMessage: {
+              key: m.key,
+              text: emoji
+            }
+          }).catch(() => {})
+        }
+      }
+    })
+  }
+}
+
+
+/*async function joinChannels(conn) {
 for (const channelId of Object.values(global.ch)) {
 await conn.newsletterFollow(channelId).catch(() => {})
-}}
+}}*/
