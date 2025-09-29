@@ -11,14 +11,14 @@ export async function before(m, { conn, participants, groupMetadata }) {
   const who = m.messageStubParameters?.[0]
   if (!who) return
 
+  const user = participants.find(p => p.jid === who)
   let userName = await conn.getName(who) 
 
   if (userName === who.split('@')[0]) {
-      const user = participants.find(p => p.jid === who)
-      userName = user?.notify || 'Anónimo' 
+      userName = user?.notify || null 
   }
 
-  if (!userName || userName === 'undefined') {
+  if (!userName || userName === 'undefined' || userName === who.split('@')[0]) {
       userName = 'Usuario Desconocido' 
   }
 
