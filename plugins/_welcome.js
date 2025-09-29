@@ -53,32 +53,9 @@ export async function before(m, { conn, participants, groupMetadata }) {
 ✎ Fecha: ${date}
   `
 
-  await conn.sendMessage(
-  m.chat,
-  {
-    image: { url: urlapi },
-    caption: texto,
-    mentions: [who],
-    contextInfo: {
-      isForwarded: true,
-      forwardedNewsletterMessageInfo: {
-        newsletterJid: channelRD.id,
-        serverMessageId: '',
-        newsletterName: channelRD.name
-      },
-      externalAdReply: {
-        title: botname,
-        body: dev,
-        mediaUrl: null,
-        description: null,
-        previewType: "PHOTO",
-        thumbnail: await (await fetch(icono)).buffer(),
-        mediaType: 1,
-        renderLargerThumbnail: false
-      },
-      mentionedJid: null
-    }
-  },
-  { quoted: fkontak }
-)
+  await conn.sendMessage(      
+    m.chat,      
+    { image: { url: urlapi }, caption: texto, mentions: [who] },      
+    { quoted: fkontak }      
+  )      
 }
