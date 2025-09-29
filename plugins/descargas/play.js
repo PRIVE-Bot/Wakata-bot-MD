@@ -109,7 +109,7 @@ await m.react('🎧');
             audio: { url: json.res.url },
             mimetype: "audio/mpeg",
             fileName: `${json.res.title || title}.mp3`,
-            ptt: true
+           // ptt: true
           },
           { quoted: fkontak }
         );
