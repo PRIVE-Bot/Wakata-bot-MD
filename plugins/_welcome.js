@@ -47,7 +47,6 @@ export async function before(m, { conn, participants, groupMetadata }) {
 
   const texto = `
 ✎ Usuario: ${taguser}
-✎ Nombre: ${userName}
 ✎ Grupo: ${groupMetadata.subject}
 ✎ Miembros: ${totalMembers}
 ✎ Fecha: ${date}
