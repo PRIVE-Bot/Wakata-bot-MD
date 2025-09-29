@@ -55,7 +55,16 @@ export async function before(m, { conn, participants, groupMetadata }) {
 
   await conn.sendMessage(      
     m.chat,      
-    { image: { url: urlapi }, caption: texto, mentions: [who] },      
+    { 
+     image: { url: urlapi }, 
+     caption: texto, 
+     mentions: [who] },
+isForwarded: true,
+forwardedNewsletterMessageInfo: {
+newsletterJid: channelRD.id,
+serverMessageId: '',
+newsletterName: channelRD.name
+},      
     { quoted: fkontak }      
   )      
 }
