@@ -38,7 +38,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
     const res2 = await fetch('https://i.postimg.cc/c4t9wwCw/1756162596829.jpg')
     const img3 = Buffer.from(await res2.arrayBuffer())
     fkontak = {
-      key: { fromMe: false, participant: "0@s.whatsapp.net" },
+      key: { fromMe: false, participant: user },
       message: { locationMessage: { name: `${tipo} ${userName}`, jpegThumbnail: img3 } }
     }
   } catch (e) {
@@ -47,7 +47,6 @@ export async function before(m, { conn, participants, groupMetadata }) {
 
   const texto = `
 ✎ Usuario: ${taguser}
-✎ Nombre: ${userName}
 ✎ Grupo: ${groupMetadata.subject}
 ✎ Miembros: ${totalMembers}
 ✎ Fecha: ${date}
