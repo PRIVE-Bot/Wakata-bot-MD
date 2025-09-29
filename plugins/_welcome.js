@@ -11,11 +11,11 @@ export async function before(m, { conn, participants, groupMetadata }) {
   const who = m.messageStubParameters?.[0]
   if (!who) return
 
+  const user = participants.find(p => p.jid === who)
+  const userName = user?.name || user?.notify || 'Anónimo'
   const taguser = `@${who.split('@')[0]}`
   const chat = global.db.data.chats[m.chat]
   if (!chat?.welcome) return
-
-  let userName = m.pushName || 'Anónimo'
 
   let tipo = ''
   if (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_ADD) tipo = 'Bienvenido'
@@ -26,7 +26,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
 
   let avatar
   try {
-    avatar = await conn.profilePictureUrl(who)
+    avatar = await conn.profilePictureUrl(who, 'image')
   } catch {
     avatar = tipo2
   }
@@ -54,13 +54,8 @@ export async function before(m, { conn, participants, groupMetadata }) {
   `
 
   await conn.sendMessage(
-  m.chat,
-  {
-    image: { url: urlapi },
-    caption: texto,
-    mentions: [who],
-    ...global.rcanal 
-  },
-  { quoted: fkontak } 
-)
+    m.chat,
+    { image: { url: urlapi }, caption: texto, mentions: [who], ...global.rcanal },
+    { quoted: fkontak }
+  )
 }
