@@ -12,16 +12,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
   if (!who) return
 
   const user = participants.find(p => p.jid === who)
-  let userName = await conn.getName(who) 
-
-  if (userName === who.split('@')[0]) {
-      userName = user?.notify || null 
-  }
-
-  if (!userName || userName === 'undefined' || userName === who.split('@')[0]) {
-      userName = 'Usuario Desconocido' 
-  }
-
+  const userName = user?.name || user?.notify || 'Anónimo'
   const taguser = `@${who.split('@')[0]}`
   const chat = global.db.data.chats[m.chat]
   if (!chat?.welcome) return
@@ -40,17 +31,15 @@ export async function before(m, { conn, participants, groupMetadata }) {
     avatar = tipo2
   }
 
-  const urlapi = `https://canvas-8zhi.onrender.com/api/welcome2?title=${encodeURIComponent(tipo)}&desc=${global.db.data.users[m.key.participant].name || 'Usuario'}
-&profile=${encodeURIComponent(avatar)}&background=${encodeURIComponent(tipo2)}`
+  const urlapi = `https://canvas-8zhi.onrender.com/api/welcome2?title=${encodeURIComponent(tipo)}&desc=${encodeURIComponent(userName)}&profile=${encodeURIComponent(avatar)}&background=${encodeURIComponent(tipo2)}`
 
   let fkontak
   try {
     const res2 = await fetch('https://i.postimg.cc/c4t9wwCw/1756162596829.jpg')
     const img3 = Buffer.from(await res2.arrayBuffer())
     fkontak = {
-      key: { fromMe: false, participant: who }, 
-      message: { locationMessage: { name: `${tipo} ${global.db.data.users[m.key.participant].name || 'Usuario'}
-`, jpegThumbnail: img3 } }
+      key: { fromMe: false, participant: "0@s.whatsapp.net" },
+      message: { locationMessage: { name: `${tipo} ${userName}`, jpegThumbnail: img3 } }
     }
   } catch (e) {
     console.error(e)
@@ -58,6 +47,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
 
   const texto = `
 ✎ Usuario: ${taguser}
+✎ Nombre: ${userName}
 ✎ Grupo: ${groupMetadata.subject}
 ✎ Miembros: ${totalMembers}
 ✎ Fecha: ${date}
