@@ -1,11 +1,8 @@
-// plugins/welcomeTech.js
+
 import { DOMImplementation, XMLSerializer } from '@xmldom/xmldom'
 import JsBarcode from 'jsbarcode'
 import sharp from 'sharp'
 
-/**
- * Genera SVG de bienvenida estilo tecnológico
- */
 const genSVG = async ({ wid = '', name = 'Usuario', title = 'Grupo', text = '¡Bienvenido!', avatarUrl = '' } = {}) => {
   const xmlSerializer = new XMLSerializer()
   const document = new DOMImplementation().createDocument('http://www.w3.org/1999/xhtml', 'html', null)
@@ -15,7 +12,6 @@ const genSVG = async ({ wid = '', name = 'Usuario', title = 'Grupo', text = '¡B
   svgNode.setAttribute('height', '400')
   svgNode.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
 
-  // Fondo con gradiente tecnológico
   const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs')
   const linearGradient = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient')
   linearGradient.setAttribute('id', 'grad1')
@@ -40,7 +36,6 @@ const genSVG = async ({ wid = '', name = 'Usuario', title = 'Grupo', text = '¡B
   rect.setAttribute('fill', 'url(#grad1)')
   svgNode.appendChild(rect)
 
-  // Avatar circular
   if (avatarUrl) {
     const imgEl = document.createElementNS('http://www.w3.org/2000/svg', 'image')
     imgEl.setAttribute('href', avatarUrl)
@@ -52,7 +47,6 @@ const genSVG = async ({ wid = '', name = 'Usuario', title = 'Grupo', text = '¡B
     svgNode.appendChild(imgEl)
   }
 
-  // Título
   const titleEl = document.createElementNS('http://www.w3.org/2000/svg', 'text')
   titleEl.setAttribute('x', '50%')
   titleEl.setAttribute('y', '80')
@@ -63,7 +57,6 @@ const genSVG = async ({ wid = '', name = 'Usuario', title = 'Grupo', text = '¡B
   titleEl.textContent = title
   svgNode.appendChild(titleEl)
 
-  // Nombre
   const nameEl = document.createElementNS('http://www.w3.org/2000/svg', 'text')
   nameEl.setAttribute('x', '50%')
   nameEl.setAttribute('y', '220')
@@ -74,7 +67,6 @@ const genSVG = async ({ wid = '', name = 'Usuario', title = 'Grupo', text = '¡B
   nameEl.textContent = name
   svgNode.appendChild(nameEl)
 
-  // Texto
   const textEl = document.createElementNS('http://www.w3.org/2000/svg', 'text')
   textEl.setAttribute('x', '50%')
   textEl.setAttribute('y', '300')
@@ -85,7 +77,6 @@ const genSVG = async ({ wid = '', name = 'Usuario', title = 'Grupo', text = '¡B
   textEl.textContent = text
   svgNode.appendChild(textEl)
 
-  // Código de barras en la parte inferior
   if (wid) {
     const codeSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
     JsBarcode(codeSvg, wid.replace(/[^0-9]/g, ''), {
@@ -106,18 +97,13 @@ const genSVG = async ({ wid = '', name = 'Usuario', title = 'Grupo', text = '¡B
   return new XMLSerializer().serializeToString(svgNode)
 }
 
-/**
- * Renderiza SVG a PNG usando sharp
- */
 const renderWelcome = async ({ wid, name, title, text, avatarUrl }) => {
   const svg = await genSVG({ wid, name, title, text, avatarUrl })
   const buffer = await sharp(Buffer.from(svg)).png().toBuffer()
   return buffer
 }
 
-/**
- * Handler del comando
- */
+
 let handler = async (m, { conn }) => {
   try {
     const name = await conn.getName(m.sender)
@@ -125,7 +111,7 @@ let handler = async (m, { conn }) => {
     try {
       avatarUrl = await conn.profilePictureUrl(m.sender, 'image')
     } catch {
-      avatarUrl = '' // si no tiene foto de perfil, se deja vacío
+      avatarUrl = '' 
     }
 
     const img = await renderWelcome({
