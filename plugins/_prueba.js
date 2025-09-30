@@ -1,12 +1,12 @@
 // plugins/welcomeHandler.js
 import { DOMImplementation, XMLSerializer } from '@xmldom/xmldom'
 import JsBarcode from 'jsbarcode'
-import { JSDOM } from 'jsdom'
+import sharp from 'sharp'
 
 /**
- * Genera un SVG de bienvenida
+ * Genera SVG de bienvenida
  */
-const genSVG = async ({ wid = '', name = 'Usuario', title = 'Grupo', text = '¡Bienvenido!' } = {}) => {
+const genSVG = ({ wid = '', name = 'Usuario', title = 'Grupo', text = '¡Bienvenido!' } = {}) => {
   const xmlSerializer = new XMLSerializer()
   const document = new DOMImplementation().createDocument('http://www.w3.org/1999/xhtml', 'html', null)
 
@@ -67,12 +67,12 @@ const genSVG = async ({ wid = '', name = 'Usuario', title = 'Grupo', text = '¡B
 }
 
 /**
- * Renderiza el SVG a buffer y lo prepara como imagen
+ * Renderiza SVG a PNG usando sharp
  */
 const renderWelcome = async (options = {}) => {
-  const svg = await genSVG(options)
-  const buffer = Buffer.from(svg) // Nota: sigue siendo SVG pero WhatsApp acepta
-  return { buffer, mimetype: 'image/svg+xml', filename: 'welcome.svg' }
+  const svg = genSVG(options)
+  const buffer = await sharp(Buffer.from(svg)).png().toBuffer()
+  return buffer
 }
 
 /**
@@ -88,8 +88,7 @@ let handler = async (m, { conn }) => {
       text: 'Bienvenido a la familia!',
     })
 
-    // Enviamos como imagen real
-    await conn.sendMessage(m.chat, { image: img.buffer, mimetype: 'image/svg+xml', caption: `✦ 𝐖𝐄𝐋𝐂𝐎𝐌𝐄 ✦\n\nHola ${name}` }, { quoted: m })
+    await conn.sendMessage(m.chat, { image: img, caption: `✦ 𝐖𝐄𝐋𝐂𝐎𝐌𝐄 ✦\n\nHola ${name}` }, { quoted: m })
   } catch (e) {
     console.error(e)
     m.reply('❌ Error al generar el welcome')
