@@ -141,8 +141,6 @@ export async function handler(chatUpdate) {
         const detectwhat = m.sender.includes('@lid') ? '@lid' : '@s.whatsapp.net';
         const isROwner = global.owner.map(([number]) => number.replace(/[^0-9]/g, '') + detectwhat).includes(senderJid);
         const isOwner = isROwner || m.fromMe;
-        const isMods = isROwner || global.mods.map(v => v.replace(/[^0-9]/g, '') + detectwhat).includes(senderJid);
-        const isPrems = isROwner || global.prems.map(v => v.replace(/[^0-9]/g, '') + detectwhat).includes(senderJid) || user.premium;
 
         if (m.isBaileys || opts['nyimak']) return;
         if (!isROwner && opts['self']) return;
@@ -259,8 +257,6 @@ export async function handler(chatUpdate) {
                     const permissions = {
                         rowner: isROwner,
                         owner: isOwner,
-                        mods: isMods,
-                        premium: isPrems,
                         group: m.isGroup,
                         botAdmin: isBotAdmin,
                         admin: isAdmin,
@@ -351,12 +347,6 @@ global.dfail = (type, m, conn) => {
 ┃ » 𝑁𝑖𝑣𝑒𝑙 𝑖𝑛𝑠𝑢𝑓𝑖𝑐𝑖𝑒𝑛𝑡𝑒...
 ┗━━━━━━━━━━━━━━━━╯
 `,
-        premium: `
-┏━━━━━━━━━━━━━╮
-┃  *〘 ${global.comando} 〙*
-┃ ➣ 𝐿𝑢𝑗𝑜 𝑑𝑒 𝑃𝑟𝑒𝑚𝑖𝑢𝑚 ↷
-┃ »ʕ˖͜͡˖ʔ𝑇ú 𝑎𝑢𝑛 𝑛𝑜 𝑒𝑠𝑡á𝑠 𝑎 𝑒𝑠𝑒 𝑛𝑖𝑣𝑒𝑙...
-┗━━━━━━━━━━━━━╯`,
         group: `
 ┏━━━━━━━━━━━━╮
 ┃  *〘 ${global.comando} 〙*
