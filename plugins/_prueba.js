@@ -1,5 +1,5 @@
 // plugins/welcome-cmd.js
-import { renderWelcome } from '../lib/welcome.js'
+import { renderWelcome } from '../lib/welcome.cjs'
 import { writeFileSync } from 'fs'
 
 let handler = async (m, { conn, text, args, usedPrefix, command }) => {
