@@ -204,7 +204,7 @@ export async function handler(chatUpdate) {
             ).find(p => p[0]);
 
             if (typeof plugin.before === 'function') {
-                if (await plugin.before.call(this, m, { match, conn: this, participants, groupMetadata, user, isROwner, isOwner, isRAdmin, isAdmin, isBotAdmin, isPrems, chatUpdate, __dirname: ___dirname, __filename })) {
+                if (await plugin.before.call(this, m, { match, conn: this, participants, groupMetadata, user, isROwner, isOwner, isRAdmin, isAdmin, isBotAdmin, chatUpdate, __dirname: ___dirname, __filename })) {
                     continue;
                 }
             }
