@@ -26,7 +26,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 🎥 Video MP4 (completo)
 
 🍱 ¡Encuentra y descarga tu multimedia favorita! 🎶🎬📖
-    `.trim(), m, ctxWarn)
+    `.trim(), m)
   }
 
   const args = text.split(' ')
@@ -40,7 +40,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
       `• ${usedPrefix}play2 audio <nombre>\n` +
       `• ${usedPrefix}play2 video <nombre>\n\n` +
       `🍱 ¡Especifica si quieres audio o video! 📖`,
-      m, ctxErr
+      m
     )
   }
 
@@ -51,7 +51,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
       `• audio - Para descargar música\n` +
       `• video - Para descargar video\n\n` +
       `🍱 ¡Elige audio o video! 📖`,
-      m, ctxErr
+      m
     )
   }
 
@@ -60,12 +60,12 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
       type === 'audio' ? 
       '🍙🎵 Buscando y descargando tu audio... 📚✨' : 
       '🍙🎥 Buscando y descargando tu video... 📚✨', 
-      m, ctxOk
+      m
     )
 
     const searchResults = await yts(query)
     if (!searchResults?.videos?.length) {
-      return conn.reply(m.chat, '❌ No encontré resultados 🎵\n\n🍙 ¡Por favor, verifica el nombre! 📖', m, ctxErr)
+      return conn.reply(m.chat, '❌ No encontré resultados 🎵\n\n🍙 ¡Por favor, verifica el nombre! 📖', m)
     }
 
     const video = searchResults.videos[0]
