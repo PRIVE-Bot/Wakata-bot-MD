@@ -75,7 +75,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 
     if (type === 'audio') {
       const audioApiUrl = `https://api.platform.web.id/ytdl/audio?url=${encodeURIComponent(video.url)}&quality=128k`
-      const audioResponse = await fetch(audioApiUrl)
+      const audioResponse = await fetch(download)
       mediaData = await audioResponse.json()
 
       if (!mediaData?.url) {
