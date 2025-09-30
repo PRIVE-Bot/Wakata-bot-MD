@@ -121,7 +121,7 @@ const renderWelcome = async ({ wid, name, title, text, avatarUrl }) => {
  */
 let handler = async (m, { conn }) => {
   try {
-    const name = global.nombre
+    const name = m.pushName || 'Anónimo'
       let avatarUrl
   try {
     avatarUrl = await conn.profilePictureUrl(who, 'image')
