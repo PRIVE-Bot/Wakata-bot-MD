@@ -9,7 +9,7 @@ const tagGroups = {
   '⊹ＩＭＡＧＥＮ⊹': ['imagen'],
   '『ＧＲＯＵＰＳ』': ['grupo'],
   '⟦ＨＥＲＲＡＭＩＥＮＴＡＳ⟧': ['herramientas', 'tools'],
-  '⋆ＯＮ / ＯＦＦ⋆': ['enable'],
+  '⋆ＯＮ / ＯＦＦ⋆': ['nable'],
   '☣ＮＳＦＷ☣': ['nsfw'],
   '✦ＯＷＮＥＲ✦': ['owner'],
   '✧ＳＵＢ ＢＯＴＳ✧': ['serbot'],
