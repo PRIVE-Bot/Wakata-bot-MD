@@ -24,6 +24,6 @@ let handler = async (m, { conn, text, args, usedPrefix, command }) => {
 
 handler.help = ['welcome']
 handler.tags = ['tools']
-handler.command = /^welcome|1$/i
+handler.command = ['1']
 
 export default handler
