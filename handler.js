@@ -252,10 +252,6 @@ export async function handler(chatUpdate) {
                 m.plugin = name;
 
                 if (chat?.isBanned && !isROwner) return;
-                if (user?.banned && !isROwner) {
-                    m.reply(`《✦》Estás baneado/a, no puedes usar comandos en este bot!\n\n${user.bannedReason ? `✰ *Motivo:* ${user.bannedReason}` : '✰ *Motivo:* Sin Especificar'}\n\n> ✧ Si este Bot es cuenta oficial y tiene evidencia que respalde que este mensaje es un error, puedes exponer tu caso con un moderador.`);
-                    return;
-                }
 
                 if (chat?.modoadmin && !isOwner && !isROwner && m.isGroup && !isAdmin) return;
 
