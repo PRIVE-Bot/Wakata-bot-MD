@@ -2,32 +2,9 @@
 import { DOMImplementation, XMLSerializer } from '@xmldom/xmldom'
 import JsBarcode from 'jsbarcode'
 import { JSDOM } from 'jsdom'
-import { spawn } from 'child_process'
 
 /**
- * Convierte SVG a PNG/JPG usando ImageMagick si existe, o devuelve buffer crudo
- * (en servidores sin magick, podemos retornar SVG como PNG base64)
- */
-const toImg = (svg, format = 'png') =>
-  new Promise((resolve, reject) => {
-    try {
-      const bufs = []
-      const im = spawn('magick', ['convert', 'svg:-', `${format}:-`])
-      im.on('error', () => {
-        // Si no hay magick, retornamos SVG como buffer (PNG no disponible)
-        return resolve(Buffer.from(svg))
-      })
-      im.stdout.on('data', chunk => bufs.push(chunk))
-      im.stdin.write(Buffer.from(svg))
-      im.stdin.end()
-      im.on('close', code => resolve(Buffer.concat(bufs)))
-    } catch (e) {
-      resolve(Buffer.from(svg))
-    }
-  })
-
-/**
- * Genera un SVG de bienvenida en memoria
+ * Genera un SVG de bienvenida
  */
 const genSVG = async ({ wid = '', name = 'Usuario', title = 'Grupo', text = '¡Bienvenido!' } = {}) => {
   const xmlSerializer = new XMLSerializer()
@@ -90,12 +67,12 @@ const genSVG = async ({ wid = '', name = 'Usuario', title = 'Grupo', text = '¡B
 }
 
 /**
- * Renderiza el welcome como buffer listo para enviar
+ * Renderiza el SVG a buffer y lo prepara como imagen
  */
-const renderWelcome = async (options = {}, format = 'png') => {
+const renderWelcome = async (options = {}) => {
   const svg = await genSVG(options)
-  const img = await toImg(svg, format)
-  return img
+  const buffer = Buffer.from(svg) // Nota: sigue siendo SVG pero WhatsApp acepta
+  return { buffer, mimetype: 'image/svg+xml', filename: 'welcome.svg' }
 }
 
 /**
@@ -109,9 +86,10 @@ let handler = async (m, { conn }) => {
       name,
       title: 'Grupo de Prueba',
       text: 'Bienvenido a la familia!',
-    }, 'png')
+    })
 
-    await conn.sendFile(m.chat, img, 'welcome.png', `✦ 𝐖𝐄𝐋𝐂𝐎𝐌𝐄 ✦\n\nHola ${name}`, m)
+    // Enviamos como imagen real
+    await conn.sendMessage(m.chat, { image: img.buffer, mimetype: 'image/svg+xml', caption: `✦ 𝐖𝐄𝐋𝐂𝐎𝐌𝐄 ✦\n\nHola ${name}` }, { quoted: m })
   } catch (e) {
     console.error(e)
     m.reply('❌ Error al generar el welcome')
