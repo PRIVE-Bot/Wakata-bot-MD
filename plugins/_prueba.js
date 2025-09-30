@@ -1,12 +1,11 @@
 // plugins/welcome-cmd.js
-import { renderWelcome } from '../lib/welcome.cjs'
-import { writeFileSync } from 'fs'
+import pkg from '../lib/welcome.cjs'
+const { renderWelcome } = pkg
 
 let handler = async (m, { conn, text, args, usedPrefix, command }) => {
   try {
     let name = await conn.getName(m.sender)
     let pp = await conn.profilePictureUrl(m.sender, 'image').catch(_ => null)
-    let background = null // aquí puedes poner un fondo personalizado (base64 o url convertida)
 
     let img = await renderWelcome({
       wid: m.sender,
@@ -14,7 +13,6 @@ let handler = async (m, { conn, text, args, usedPrefix, command }) => {
       name,
       title: 'Grupo de Prueba',
       text: 'Bienvenido a la familia!',
-      background
     }, 'jpg')
 
     await conn.sendFile(m.chat, img, 'welcome.jpg', `✦ 𝐖𝐄𝐋𝐂𝐎𝐌𝐄 ✦\n\nHola ${name}`, m)
@@ -26,6 +24,6 @@ let handler = async (m, { conn, text, args, usedPrefix, command }) => {
 
 handler.help = ['welcome']
 handler.tags = ['tools']
-handler.command = /^welcome|1$/i   // aquí activas con `.welcome` o con `.1`
+handler.command = /^welcome|1$/i
 
 export default handler
