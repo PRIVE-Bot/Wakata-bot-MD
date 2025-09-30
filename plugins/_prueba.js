@@ -121,11 +121,13 @@ const renderWelcome = async ({ wid, name, title, text, avatarUrl }) => {
  */
 let handler = async (m, { conn }) => {
   try {
-    const name = await conn.getName(m.sender)
-    let avatarUrl = null
-    try {
-      avatarUrl = await conn.profilePictureUrl(m.sender, 'image')
-    } catch {} // si no tiene, seguimos
+    const name = global.nombre
+      let avatarUrl
+  try {
+    avatarUrl = await conn.profilePictureUrl(who, 'image')
+  } catch {
+    avatar = global.img
+  }
 
     const img = await renderWelcome({
       wid: m.sender,
