@@ -6,10 +6,16 @@ import { readFileSync } from 'fs'
 import { join } from 'path'
 import { spawn } from 'child_process'
 
+// Rutas por defecto
 const src = join(new URL('.', import.meta.url).pathname, '..', 'src')
-const _svg = readFileSync(join(src, 'welcome.svg'), 'utf-8')
 
-// Convierte SVG a imagen usando ImageMagick
+// SVG por defecto si no existe welcome.svg
+const defaultSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="400">
+  <rect width="800" height="400" fill="#222"/>
+  <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#fff" font-size="48">Bienvenido</text>
+</svg>`
+
+// Función para convertir SVG a imagen (PNG/JPG) usando ImageMagick
 const toImg = (svg, format = 'png') =>
   new Promise((resolve, reject) => {
     if (!svg) return resolve(Buffer.alloc(0))
@@ -40,22 +46,48 @@ const barcode = data => {
 const imageSetter = (img, value) => { if (img) img.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', value) }
 const textSetter = (el, value) => { if (el) el.textContent = value }
 
-// Genera SVG dinámico
-const genSVG = async ({ wid = '', pp = join(src, 'avatar_contact.png'), title = '', name = '', text = '', background = '' } = {}) => {
-  const { document: svgDoc } = new JSDOM(_svg).window
+// Genera SVG dinámico con los datos
+const genSVG = async ({ wid = '', pp = null, title = '', name = '', text = '', background = null } = {}) => {
+  const svgContent = defaultSVG
+  const { document: svgDoc } = new JSDOM(svgContent).window
 
-  const el = {
-    code: ['#_1661899539392 > g:nth-child(6) > image', imageSetter, toBase64(await toImg(barcode(wid.replace(/[^0-9]/g, '')), 'png'), 'image/png')],
-    pp: ['#_1661899539392 > g:nth-child(3) > image', imageSetter, pp],
-    text: ['#_1661899539392 > text.fil1.fnt0', textSetter, text],
-    title: ['#_1661899539392 > text.fil2.fnt1', textSetter, title],
-    name: ['#_1661899539392 > text.fil2.fnt2', textSetter, name],
-    bg: ['#_1661899539392 > g:nth-child(2) > image', imageSetter, background],
-  }
+  // Agregar texto dinámico
+  const titleEl = svgDoc.createElement('text')
+  titleEl.setAttribute('x', '50%')
+  titleEl.setAttribute('y', '20%')
+  titleEl.setAttribute('text-anchor', 'middle')
+  titleEl.setAttribute('fill', '#fff')
+  titleEl.setAttribute('font-size', '36')
+  titleEl.textContent = title
+  svgDoc.body.appendChild(titleEl)
 
-  for (let [selector, set, value] of Object.values(el)) {
-    const node = svgDoc.querySelector(selector)
-    set(node, value)
+  const nameEl = svgDoc.createElement('text')
+  nameEl.setAttribute('x', '50%')
+  nameEl.setAttribute('y', '50%')
+  nameEl.setAttribute('text-anchor', 'middle')
+  nameEl.setAttribute('fill', '#fff')
+  nameEl.setAttribute('font-size', '48')
+  nameEl.textContent = name
+  svgDoc.body.appendChild(nameEl)
+
+  const textEl = svgDoc.createElement('text')
+  textEl.setAttribute('x', '50%')
+  textEl.setAttribute('y', '80%')
+  textEl.setAttribute('text-anchor', 'middle')
+  textEl.setAttribute('fill', '#fff')
+  textEl.setAttribute('font-size', '28')
+  textEl.textContent = text
+  svgDoc.body.appendChild(textEl)
+
+  // Agregar código de barras si wid existe
+  if (wid) {
+    const codeImg = svgDoc.createElement('image')
+    codeImg.setAttribute('x', '50')
+    codeImg.setAttribute('y', '320')
+    codeImg.setAttribute('width', '200')
+    codeImg.setAttribute('height', '50')
+    codeImg.setAttribute('xlink:href', toBase64(await toImg(barcode(wid.replace(/[^0-9]/g, '')), 'png'), 'image/png'))
+    svgDoc.body.appendChild(codeImg)
   }
 
   return svgDoc.body.innerHTML
@@ -64,11 +96,11 @@ const genSVG = async ({ wid = '', pp = join(src, 'avatar_contact.png'), title = 
 // Renderiza imagen final desde SVG
 const renderWelcome = async ({
   wid = '',
-  pp = toBase64(readFileSync(join(src, 'avatar_contact.png')), 'image/png'),
-  name = '',
-  title = '',
-  text = '',
-  background = toBase64(readFileSync(join(src, 'Aesthetic', 'Aesthetic_000.jpeg')), 'image/jpeg'),
+  pp = null,
+  name = 'Usuario',
+  title = 'Bienvenido',
+  text = '¡Hola!',
+  background = null
 } = {}, format = 'png') => {
   const svg = await genSVG({ wid, pp, name, title, text, background })
   return await toImg(svg, format)
