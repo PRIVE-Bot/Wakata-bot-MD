@@ -1,5 +1,5 @@
 // plugins/welcome-cmd.js
-import pkg from '../lib/welcome.js'
+import { renderWelcome } from './lib/welcome.js'
 const { renderWelcome } = pkg
 
 let handler = async (m, { conn, text, args, usedPrefix, command }) => {
