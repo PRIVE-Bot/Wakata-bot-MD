@@ -2,7 +2,6 @@
 import { DOMImplementation, XMLSerializer } from '@xmldom/xmldom'
 import JsBarcode from 'jsbarcode'
 import sharp from 'sharp'
-import fetch from 'node-fetch'
 
 /**
  * Genera SVG de bienvenida estilo tecnológico
@@ -121,13 +120,13 @@ const renderWelcome = async ({ wid, name, title, text, avatarUrl }) => {
  */
 let handler = async (m, { conn }) => {
   try {
-    const name = m.pushName || 'Anónimo'
-      let avatarUrl
-  try {
-    avatarUrl = await conn.profilePictureUrl(who, 'image')
-  } catch {
-    avatar = global.img
-  }
+    const name = await conn.getName(m.sender)
+    let avatarUrl
+    try {
+      avatarUrl = await conn.profilePictureUrl(m.sender, 'image')
+    } catch {
+      avatarUrl = '' // si no tiene foto de perfil, se deja vacío
+    }
 
     const img = await renderWelcome({
       wid: m.sender,
