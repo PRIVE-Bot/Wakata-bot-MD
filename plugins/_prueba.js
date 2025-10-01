@@ -1,45 +1,34 @@
-// plugins/searchgroups.js
 import fetch from "node-fetch"
 import * as cheerio from "cheerio"
 
-let handler = async (m, { conn, text, usedPrefix, command }) => {
-  if (!text) return conn.reply(m.chat, `✳️ Uso correcto:\n${usedPrefix + command} anime`, m)
+async function searchGroups(query) {
+  const url = "https://www.gruposwats.com/_search_"
+  const formData = new URLSearchParams()
+  formData.append("q", query)
+  formData.append("qGpais_codigo", "es")
 
-  try {
-    // URL de búsqueda
-    let url = `https://www.gruposwats.com/${encodeURIComponent(text)}.html`
-    let res = await fetch(url)
-    if (!res.ok) throw new Error(`❌ No se pudo acceder a ${url}`)
-    let html = await res.text()
-    let $ = cheerio.load(html)
-
-    let results = []
-
-    // Buscamos los links dentro de #bodyresult
-    $("#bodyresult a").each((i, el) => {
-      let link = $(el).attr("href")
-      let title = $(el).text().trim()
-      if (link && link.includes("chat.whatsapp.com") && title) {
-        results.push({ title, link })
-      }
-    })
-
-    if (!results.length) {
-      return conn.reply(m.chat, `⚠️ No encontré grupos en *${text}*`, m)
+  const res = await fetch(url, {
+    method: "POST",
+    body: formData,
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded"
     }
+  })
+  
+  const html = await res.text()
+  const $ = cheerio.load(html)
+  const results = []
 
-    let replyMsg = `🔎 Resultados para *${text}* en gruposwats:\n\n`
-    replyMsg += results.slice(0, 10).map((g, i) => `${i + 1}. ${g.title}\n🔗 ${g.link}`).join("\n\n")
+  $("a").each((i, el) => {
+    const link = $(el).attr("href")
+    const title = $(el).text().trim()
+    if (link && link.includes("chat.whatsapp.com")) {
+      results.push({ title, link })
+    }
+  })
 
-    await conn.reply(m.chat, replyMsg, m)
-  } catch (e) {
-    console.error(e)
-    conn.reply(m.chat, "❌ Error al scrapear la página, prueba con otra palabra.", m)
-  }
+  return results
 }
 
-handler.help = ["searchgroups <tema>"]
-handler.tags = ["search"]
-handler.command = /^searchgroups$/i
-
-export default handler
+// Uso
+searchGroups("gato").then(console.log)
