@@ -20,10 +20,10 @@ const fkontak = {
     const texto = args.join(' ').trim()
     if (!texto) {
       await conn.sendMessage(m.chat, { react: { text: '✨', key: m.key } })
-      return conn.reply(m.chat, `${emoji} *Ejemplo de uso:* .brat hola mundo`, m, fake)
+      return conn.reply(m.chat, `${emoji} *Falta el texto para continuar.`, m, rcanal)
     }
 
-    const urlApi = `https://canvas-8zhi.onrender.com/api/brat?texto=${encodeURIComponent(texto)}`
+    const urlApi = `https://canvas-8zhi.onrender.com/api/brat2?texto=${encodeURIComponent(texto)}`
 
     const respuesta = await fetch(urlApi)
     if (!respuesta.ok) throw new Error(`API Error: ${respuesta.status} ${respuesta.statusText}`)
@@ -56,8 +56,7 @@ const fkontak = {
   }
 }
 
-handler.help = ['brat <texto>']
 handler.tags = ['sticker']
-handler.command = /^brat$/i
+handler.command = handler.help = ['brat', 'bratimg', 'brati']
 
 export default handler
