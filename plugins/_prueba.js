@@ -1,13 +1,12 @@
-
+// plugins/searchgroups.js
 import fetch from "node-fetch"
 import * as cheerio from "cheerio"
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
-  if (!text) {
-    return conn.reply(m.chat, `✳️ Uso:\n${usedPrefix + command} anime`, m)
-  }
+  if (!text) return conn.reply(m.chat, `✳️ Uso correcto:\n${usedPrefix + command} anime`, m)
 
   try {
+    // URL de búsqueda
     let url = `https://www.gruposwats.com/${encodeURIComponent(text)}.html`
     let res = await fetch(url)
     if (!res.ok) throw new Error(`❌ No se pudo acceder a ${url}`)
@@ -15,10 +14,12 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     let $ = cheerio.load(html)
 
     let results = []
-    $("a.resultado").each((i, el) => {
-      let title = $(el).text().trim()
+
+    // Buscamos los links dentro de #bodyresult
+    $("#bodyresult a").each((i, el) => {
       let link = $(el).attr("href")
-      if (title && link && link.includes("chat.whatsapp.com")) {
+      let title = $(el).text().trim()
+      if (link && link.includes("chat.whatsapp.com") && title) {
         results.push({ title, link })
       }
     })
