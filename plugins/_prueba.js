@@ -1,74 +1,61 @@
-import fs from 'fs';
-import path from 'path';
+import moment from 'moment-timezone';
 
-let reports = {};
-
-let handler = async (m, { conn, text, usedPrefix, command }) => {
-  const emoji = '🚨';
-  const rcanal = null;
-
-  if (['report', 'bug', 'error'].includes(command)) {
-    if (!text && !m.quoted) {
-      return conn.reply(m.chat, `${emoji} Por favor, ingrese su reporte en el siguiente formato:\n\nerror | descripción detallada\n\nEjemplo:\n${usedPrefix}report | El comando /sticker no funciona y arroja un error.`, m, rcanal);
-    }
-
-    let content = text;
-    if (!content && m.quoted && m.quoted.text) content = m.quoted.text;
-
-    let parts = content.split("|").map(p => p.trim());
-    if (parts.length < 2) return conn.reply(m.chat, `${emoji} Formato incorrecto. Use:\nerror | descripción`, m, rcanal);
-
-    let [errorNombre, descripcion] = parts;
-    if (errorNombre.length < 1) return conn.reply(m.chat, `${emoji} El nombre del error es muy corto.`, m, rcanal);
-    if (descripcion.length < 10) return conn.reply(m.chat, `${emoji} La descripción debe tener al menos 10 caracteres.`, m, rcanal);
-    if (descripcion.length > 1000) return conn.reply(m.chat, `${emoji} La descripción debe tener máximo 1000 caracteres.`, m, rcanal);
-
-    let reportId = `RPT-${Date.now()}`;
-    reports[reportId] = {
-      id: reportId,
-      error: errorNombre,
-      descripcion,
-      user: m.sender,
-      pushName: m.pushName || 'Anónimo',
-      chat: m.chat,
-      status: 'pendiente',
-      timestamp: new Date(),
-    };
-
-    let teks = `*🚨 NUEVO REPORTE DE ERROR 🚨*\n\n*ID:* ${reportId}\n*Error reportado:* ${errorNombre}\n*Descripción:* ${descripcion}\n*Usuario:* ${m.pushName || 'Anónimo'}\n*Número:* wa.me/${m.sender.split`@`[0]}\n*Estado:* Pendiente\n\n_Para marcar este reporte como resuelto use:_\n.resuelto ${reportId} [opcional: comentario]\n_Para marcar como no resuelto use:_\n.noresuelto ${reportId} [opcional: comentario]`;
-
-    let quotedMsg = m.quoted ? m.quoted : null;
+const handler = async (m, { conn, text, command }) => {
+  try {
+    const nombre = m.pushName || 'Anónimo';
+    const tag = '@' + m.sender.split('@')[0];
+    const usertag = Array.from(new Set([...m.text.matchAll(/@(\d{5,})/g)]), m => `${m[1]}@s.whatsapp.net`);
+    const chatLabel = m.isGroup ? (await conn.getName(m.chat) || 'Grupal') : 'Privado';
+    const horario = moment.tz('America/Caracas').format('DD/MM/YYYY hh:mm:ss A');
     const ownerJid = '50432955554@s.whatsapp.net';
     const staffGroup = '120363420911001779@g.us';
 
-    if (quotedMsg && quotedMsg.message) {
-      await conn.sendMessage(ownerJid, { text: teks, mentions: [m.sender], quoted: quotedMsg });
-      await conn.sendMessage(staffGroup, { text: teks, mentions: [m.sender], quoted: quotedMsg });
-    } else {
-      await conn.sendMessage(ownerJid, { text: teks, mentions: [m.sender] });
-      await conn.sendMessage(staffGroup, { text: teks, mentions: [m.sender] });
+    switch (command) {
+      case 'report':
+      case 'reportar': {
+        if (!text) return conn.reply(m.chat, '❀ Por favor, ingresa el error que deseas reportar.', m);
+        if (text.length < 10) return conn.reply(m.chat, 'ꕥ Especifique mejor el error, mínimo 10 caracteres.', m);
+
+        await m.react('🕒');
+
+        const rep = `${emoji} 𝗥𝗘𝗣𝗢𝗥𝗧𝗘 𝗥𝗘𝗖𝗜𝗕𝗜𝗗𝗢\n\n${emoji} *Usuario* » ${nombre}\n${emoji} *Tag* » ${tag}\n${emoji} *Reporte* » ${text}\n${emoji} *Chat* » ${chatLabel}\n✰ *Fecha* » ${horario}`;
+
+        if (m.quoted && m.quoted.message) {
+          await conn.sendMessage(ownerJid, { text: rep, mentions: [m.sender], quoted: m.quoted });
+          await conn.sendMessage(staffGroup, { text: rep, mentions: [m.sender], quoted: m.quoted });
+        } else if (m.msg.file || m.msg.image || m.msg.video || m.msg.document) {
+          const mediaType = Object.keys(m.message).find(k => ['imageMessage','videoMessage','documentMessage','stickerMessage'].includes(k));
+          await conn.sendMessage(ownerJid, { [mediaType]: m.message[mediaType], caption: rep, mentions: [m.sender] });
+          await conn.sendMessage(staffGroup, { [mediaType]: m.message[mediaType], caption: rep, mentions: [m.sender] });
+        } else {
+          await conn.sendMessage(ownerJid, { text: rep, mentions: [m.sender] });
+          await conn.sendMessage(staffGroup, { text: rep, mentions: [m.sender] });
+        }
+
+        await m.react('✔️');
+        m.reply('❀ Tu reporte ha sido enviado al desarrollador. Gracias por ayudar a mejorar el Bot.');
+        break;
+      }
+      case 'resuelto':
+      case 'noresuelto': {
+        if (!text) return conn.reply(m.chat, `❌ Debes indicar al usuario a notificar y un comentario opcional.`, m);
+        const [target, ...rest] = text.split(' ');
+        const comment = rest.join(' ') || 'Sin comentario';
+        const jid = target.includes('@s.whatsapp.net') ? target : `${target}@s.whatsapp.net`;
+
+        await conn.sendMessage(jid, { text: `${command === 'resuelto' ? '✅ Tu reporte ha sido marcado como resuelto.' : '❌ Tu reporte ha sido marcado como no resuelto.'}\nComentario del staff: ${comment}` });
+        await conn.reply(m.chat, `${command === 'resuelto' ? '✅' : '❌'} Se notificó al usuario ${jid.replace('@s.whatsapp.net','')} sobre el reporte.`, m);
+        break;
+      }
     }
-
-    await conn.reply(m.chat, `${emoji} *Tu reporte se ha enviado al staff.*\nRecibirás una notificación cuando sea revisado.`, m, rcanal);
-  }
-
-  if (command === 'resuelto' || command === 'noresuelto') {
-    let args = text.split(" ");
-    let id = args[0];
-    let comment = args.slice(1).join(" ") || 'Sin comentario';
-    if (!reports[id]) return conn.reply(m.chat, `❌ No se encontró el reporte con ID: ${id}`, m);
-
-    reports[id].status = command === 'resuelto' ? 'resuelto' : 'no resuelto';
-    reports[id].staffComment = comment;
-
-    let userJid = reports[id].user;
-    await conn.sendMessage(userJid, { text: `${command === 'resuelto' ? '✅ Tu reporte ha sido marcado como resuelto.' : '❌ Tu reporte ha sido marcado como no resuelto.'}\nComentario del staff: ${comment}` });
-    await conn.reply(m.chat, `${command === 'resuelto' ? '✅' : '❌'} El reporte ${id} se ha marcado como ${reports[id].status}.`, m);
+  } catch (err) {
+    await m.react('✖️');
+    conn.reply(m.chat, `⚠︎ Se ha producido un error.\n> Usa *report* para informarlo.\n\n${err.message}`, m);
   }
 }
 
-handler.help = ['report']
+handler.help = ['report', 'resuelto', 'noresuelto']
 handler.tags = ['main']
-handler.command = ['report', 'bug', 'error', 'noresuelto', 'resuelto']
+handler.command = ['report','reportar','resuelto','noresuelto']
 
-export default handler
+export default handler;
