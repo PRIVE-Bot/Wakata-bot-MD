@@ -20,7 +20,7 @@ const fkontak = {
     const texto = args.join(' ').trim()
     if (!texto) {
       await conn.sendMessage(m.chat, { react: { text: '✨', key: m.key } })
-      return conn.reply(m.chat, `${emoji} *Falta el texto para continuar.`, m, rcanal)
+      return conn.reply(m.chat, `${emoji} *Falta el texto para continuar*.`, m, rcanal)
     }
 
     const urlApi = `https://canvas-8zhi.onrender.com/api/brat2?texto=${encodeURIComponent(texto)}`
