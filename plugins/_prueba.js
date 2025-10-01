@@ -58,6 +58,6 @@ const fkontak = {
 
 handler.help = ['brat <texto>']
 handler.tags = ['sticker']
-handler.command = /^brat$/i
+handler.command = /^brat2$/i
 
 export default handler
