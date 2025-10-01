@@ -33,7 +33,7 @@ const handler = async (m, { conn, text, command }) => {
         }
 
         await m.react('✔️');
-        m.reply('❀ Tu reporte ha sido enviado al desarrollador. Gracias por ayudar a mejorar el Bot.');
+        m.reply(`${emoji} Tu reporte ha sido enviado al desarrollador. Gracias por ayudar a mejorar el Bot.`);
         break;
       }
       case 'resuelto':
