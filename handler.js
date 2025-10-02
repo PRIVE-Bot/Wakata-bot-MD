@@ -40,113 +40,8 @@ try {
 m = smsg(this, m) || m
 if (!m) return
 m.coin = false
+
 try {
-let user = global.db.data.users[m.sender]
-if (typeof user !== 'object')  
-global.db.data.users[m.sender] = {}
-if (user) {
-if (!isNumber(user.coin))
-user.coin = 10
-if (!isNumber(user.joincount))
-user.joincount = 1
-if (!isNumber(user.diamond))
-user.diamond = 3
-if (!isNumber(user.lastadventure))
-user.lastadventure = 0
-if (!isNumber(user.lastclaim))
-user.lastclaim = 0
-if (!isNumber(user.health))
-user.health = 100
-if (!isNumber(user.crime))
-user.crime = 0
-if (!isNumber(user.lastcofre))
-user.lastcofre = 0
-if (!isNumber(user.lastdiamantes))
-user.lastdiamantes = 0
-if (!isNumber(user.lastpago))
-user.lastpago = 0
-if (!isNumber(user.lastcode))
-user.lastcode = 0
-if (!isNumber(user.lastcodereg))
-user.lastcodereg = 0
-if (!isNumber(user.lastduel))
-user.lastduel = 0
-if (!isNumber(user.lastmining))
-user.lastmining = 0
-if (!('muto' in user))
-user.muto = false
-if (!('premium' in user))
-user.premium = false
-if (!user.premium)
-user.premiumTime = 0
-if (!('registered' in user))
-user.registered = false
-if (!('genre' in user))
-user.genre = ''
-if (!('birth' in user))
-user.birth = ''
-if (!('marry' in user))
-user.marry = ''
-if (!('description' in user))
-user.description = ''
-if (!('packstickers' in user))
-user.packstickers = null
-if (!user.registered) {
-if (!('name' in user))
-user.name = m.name
-if (!isNumber(user.age))
-user.age = -1
-if (!isNumber(user.regTime))
-user.regTime = -1
-}
-if (!isNumber(user.afk))
-user.afk = -1
-if (!('afkReason' in user))
-user.afkReason = ''
-if (!('role' in user))
-user.role = 'Nuv'
-if (!('banned' in user))
-user.banned = false
-if (!('useDocument' in user))
-user.useDocument = false
-if (!isNumber(user.bank))
-user.bank = 0
-if (!isNumber(user.warn))
-user.warn = 0
-} else
-global.db.data.users[m.sender] = {
-coin: 10,
-joincount: 1,
-diamond: 3,
-lastadventure: 0,
-health: 100,
-lastclaim: 0,
-lastcofre: 0,
-lastdiamantes: 0,
-lastcode: 0,
-lastduel: 0,
-lastpago: 0,
-lastmining: 0,
-lastcodereg: 0,
-muto: false,
-registered: false,
-genre: '',
-birth: '',
-marry: '',
-description: '',
-packstickers: null,
-name: m.name,
-age: -1,
-regTime: -1,
-afk: -1,
-afkReason: '',
-banned: false,
-useDocument: false,
-bank: 0,
-role: 'Nuv',
-premium: false,
-premiumTime: 0,                 
-}
 let chat = global.db.data.chats[m.chat]
 if (typeof chat !== 'object')
 global.db.data.chats[m.chat] = {}
@@ -220,13 +115,11 @@ status: 0
 console.error(e)
 }
 
-let _user = global.db.data && global.db.data.users && global.db.data.users[m.sender]
-
 const detectwhat = m.sender.includes('@lid') ? '@lid' : '@s.whatsapp.net';
 const isROwner = [...global.owner.map(([number]) => number)].map(v => v.replace(/[^0-9]/g, '') + detectwhat).includes(m.sender)
 const isOwner = isROwner || m.fromMe
 const isMods = isROwner || global.mods.map(v => v.replace(/[^0-9]/g, '') + detectwhat).includes(m.sender)
-const isPrems = isROwner || global.prems.map(v => v.replace(/[^0-9]/g, '') + detectwhat).includes(m.sender) || _user.premium == true
+const isPrems = isROwner || global.prems.map(v => v.replace(/[^0-9]/g, '') + detectwhat).includes(m.sender) 
 
 if (m.isBaileys) return
 if (opts['nyimak'])  return
@@ -253,7 +146,6 @@ const res = await conn.onWhatsApp(id).catch(() => [])
 return res[0]?.lid || id
 }
 
-// **OPTIMIZACIÓN:** Usar Promise.all para obtener ambos JID's en paralelo.
 const [senderLid, botLid] = await Promise.all([
     getLidFromJid(m.sender, this),
     getLidFromJid(this.user.jid, this)
@@ -261,7 +153,6 @@ const [senderLid, botLid] = await Promise.all([
 const senderJid = m.sender
 const botJid = this.user.jid
 
-// **OPTIMIZACIÓN:** Cargar groupMetadata solo si es un grupo.
 const groupMetadata = m.isGroup ? ((this.chats[m.chat] || {}).metadata || await this.groupMetadata(m.chat).catch(_ => null)) : {}
 const participants = m.isGroup ? (groupMetadata.participants || []) : []
 const user = participants.find(p => p.id === senderLid || p.jid === senderJid) || {}
@@ -356,17 +247,12 @@ continue
 }
 m.plugin = name
 
-// **OPTIMIZACIÓN:** Reorganización de las verificaciones de baneo/modoAdmin
-// para evitar la doble verificación de db.data.chats y db.data.users.
 let chat = global.db.data.chats[m.chat]
-let usuario = global.db.data.users[m.sender]
 let setting = global.db.data.settings[this.user.jid]
 
 if (!['grupo-unbanchat.js'].includes(name) && chat?.isBanned && !isROwner) return
-if (m.text && usuario?.banned && !isROwner) {
-m.reply(`《✦》Estas baneado/a, no puedes usar comandos en este bot!\n\n${usuario.bannedReason ? `✰ *Motivo:* ${usuario.bannedReason}` : '✰ *Motivo:* Sin Especificar'}\n\n> ✧ Si este Bot es cuenta oficial y tiene evidencia que respalde que este mensaje es un error, puedes exponer tu caso con un moderador.`)
-return
-}
+
+let hl = _prefix 
 let adminMode = chat?.modoadmin
 let mini = `${plugins.botAdmin || plugins.admin || plugins.group || plugins || noPrefix || hl ||  m.text.slice(0, 1) == hl || plugins.command}`
 if (adminMode && !isOwner && !isROwner && m.isGroup && !isAdmin && mini) return   
@@ -406,9 +292,6 @@ fail('private', m, this)
 continue
 }
 m.isCommand = true
-
-// ELIMINADO: m.exp += xp (No hay XP)
-// ELIMINADO: xp en plugin (No hay XP)
 
 let extra = {
 match,
@@ -466,17 +349,8 @@ const quequeIndex = this.msgqueque.indexOf(m.id || m.key.id)
 if (quequeIndex !== -1)
 this.msgqueque.splice(quequeIndex, 1)
 }
-let user, stats = global.db.data.stats
-if (m) { let utente = global.db.data.users[m.sender]
-if (utente?.muto == true) {
-let bang = m.key.id
-let cancellazzione = m.key.participant
-await this.sendMessage(m.chat, { delete: { remoteJid: m.chat, fromMe: false, id: bang, participant: cancellazzione }})
-}
-if (m.sender && (user = global.db.data.users[m.sender])) {
-// ELIMINADO: user.exp += m.exp
-user.coin -= m.coin * 1
-}
+let stats = global.db.data.stats
+if (m) {
 
 let stat
 if (m.plugin) {
@@ -586,7 +460,7 @@ global.dfail = (type, m, conn) => {
 ┗━━━━━━━━━━━━━━╯`
     }[type];
 
-    if (msg) conn.reply(m.chat, msg, m, global.fake).then(_ => m.react('✖️'));
+    if (msg) conn.reply(m.chat, msg, m, global.rcanal).then(_ => m.react('✖️'));
 };
 
 let file = global.__filename(import.meta.url, true)
