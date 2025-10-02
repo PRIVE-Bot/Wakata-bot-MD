@@ -43,7 +43,7 @@
 "formdata-node": "^5.0.0",
 "google-libphonenumber": "3.2.38",
 "human-readable": "^0.2.1",
-"jimp": "^0.16.1",
+"jimp": "^1.6.0",
 "jsdom": "^20.0.1",
 "lodash": "^4.17.21",
 "tempmail.lol": "^4.4.0",
