@@ -28,7 +28,8 @@ const { proto } = (await import('@whiskeysockets/baileys')).default;
 import pkg from 'google-libphonenumber';
 const { PhoneNumberUtil } = pkg;
 const phoneUtil = PhoneNumberUtil.getInstance();
-const { DisconnectReason, useMultiFileAuthState, MessageRetryMap, fetchLatestBaileysVersion, makeCacheableSignalKeyStore, jidNormalizedUser, Browsers } = await import('@whiskeysockets/baileys');
+// CORRECCIÓN: Agregar areJidsSameUser para consistencia global
+const { DisconnectReason, useMultiFileAuthState, MessageRetryMap, fetchLatestBaileysVersion, makeCacheableSignalKeyStore, jidNormalizedUser, Browsers, areJidsSameUser } = await import('@whiskeysockets/baileys');
 import readline, { createInterface } from 'readline';
 import NodeCache from 'node-cache';
 const { CONNECTING } = ws;
@@ -415,7 +416,8 @@ if (global.Jadibts) {
       const botPath = join(rutaJadiBot, gjbts);
       const readBotPath = readdirSync(botPath);
       if (readBotPath.includes(creds)) {
-        JadiBot({ pathJadiBot: botPath, m: null, conn, args: '', usedPrefix: '/', command: 'serbot' });
+        // CORRECCIÓN: Pasar global.conn al Jadibot es CRÍTICO.
+        JadiBot({ pathJadiBot: botPath, m: null, conn: global.conn, args: '', usedPrefix: '/', command: 'serbot' });
       }
     }
   }
