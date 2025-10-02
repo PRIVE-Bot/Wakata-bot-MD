@@ -333,6 +333,7 @@ export async function handler(chatUpdate) {
 
     const res = await fetch('https://files.catbox.moe/d2np6v.jpg');
     const thumb2 = Buffer.from(await res.arrayBuffer());
+    let m = chatUpdate.messages[chatUpdate.messages.length - 1];
     const userJid = m.sender;
 
     const fkontak = {
