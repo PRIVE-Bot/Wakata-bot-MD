@@ -68,8 +68,6 @@ if (!('modoadmin' in chat))
 chat.modoadmin = false   
 if (!('antiLink' in chat))
 chat.antiLink = true
-if (!("primaryBot" in chat)) 
-chat.primaryBot = null
 if (!('reaction' in chat))
 chat.reaction = false
 if (!('nsfw' in chat))
@@ -92,7 +90,6 @@ detect: true,
 antiBot: false,
 antiBot2: false,
 modoadmin: false,
-primaryBot: null,
 antiLink: true,
 antifake: false,
 reaction: false,
