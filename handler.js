@@ -108,7 +108,7 @@ export async function handler(chatUpdate) {
                 autoRechazar: false,
                 detect: true,
                 antiBot: false,
-                antiBot2: true,
+                antiBot2: true, // Asegurar que antiBot2 esté en true por defecto
                 modoadmin: false,
                 antiLink: true,
                 antifake: false,
@@ -164,17 +164,20 @@ export async function handler(chatUpdate) {
         const isAdmin = isRAdmin || user2?.admin === 'admin';
         const isBotAdmin = !!bot?.admin;
 
-        // LÓGICA DE BLOQUEO DE SUBBOTS
+        // LÓGICA DE BLOQUEO DE SUBBOTS CORREGIDA Y OPTIMIZADA
         if (m.isGroup && chat.antiBot2 && global.conn && global.conn.user && global.conn.user.jid) {
             const mainBotJid = global.conn.user.jid;
             const currentBotJid = this.user.jid; 
 
+            // 1. Si la conexión actual NO es el bot principal
             if (!areJidsSameUser(mainBotJid, currentBotJid)) {
-
+                
+                // 2. Comprobar si el bot principal está en el grupo
                 const isMainBotPresent = participants.some(p => areJidsSameUser(mainBotJid, p.id || p.jid));
 
                 if (isMainBotPresent) {
-
+                    
+                    // 3. Comprobar si el mensaje es un comando usando el prefix
                     const str2Regex = str => str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
 
                     const prefixToTest = Array.isArray(global.prefix) 
@@ -183,6 +186,7 @@ export async function handler(chatUpdate) {
 
                     const prefixRegex = new RegExp(`^(${prefixToTest})`, 'i');
 
+                    // Si es un comando Y el bot principal está presente, el subbot debe retornar.
                     if (prefixRegex.test(m.text)) {
                         return; 
                     }
