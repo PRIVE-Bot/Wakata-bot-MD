@@ -15,7 +15,7 @@ global.owner = [
   ['155968113483985'],
 ]; 
 
-global.suittag = ['50488198573'] 
+global.suittag = ['50432955554'] 
 global.sessions = 'Sessions'
 global.jadi = 'JadiBots' 
 global.Jadibts = true
