@@ -46,7 +46,7 @@ const fkontak = {
     const stickerBuffer = await sticker.toBuffer()
     if (!stickerBuffer || stickerBuffer.length === 0) throw new Error('Error al convertir la imagen en sticker')
 
-    await conn.sendMessage(m.chat, { sticker: stickerBuffer }, { quoted: fkontak })
+    await conn.sendMessage(m.chat, { sticker: stickerBuffer, ...global.rcanal }, { quoted: fkontak })
     await conn.sendMessage(m.chat, { react: { text: '✅', key: m.key } })
 
   } catch (e) {
