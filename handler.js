@@ -162,24 +162,22 @@ export async function handler(chatUpdate) {
         const isAdmin = isRAdmin || user2?.admin === "admin";
         const isBotAdmin = !!bot?.admin;
 
-        // LÓGICA ESTRICTA ANTI-INTERFERENCIA DE BOT
-        // Esta sección tiene la máxima prioridad y congela al subbot.
+        // LÓGICA ESTRICTA ANTI-INTERFERENCIA DE BOT (Ajustada)
         if (m.isGroup && chat.antiBot2 && global.conn && global.conn.user && global.conn.user.jid) {
             const mainBotJid = global.conn.user.jid;
             const currentBotJid = this.user.jid;
 
-            // 1. Es un subbot (su JID es diferente al principal)
+            // 1. Verificar si la conexión actual NO es el bot principal
             if (!areJidsSameUser(mainBotJid, currentBotJid)) {
                 
-                // 2. El bot principal está en los participantes del grupo
+                // 2. Verificar si el bot principal está en los participantes del grupo
                 const isMainBotPresent = participants.some(p => areJidsSameUser(mainBotJid, p.id || p.jid));
 
                 if (isMainBotPresent) {
                     
-                    // Función para escapar RegEx (necesaria aquí)
                     const str2Regex = str => str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
 
-                    // Verificar si el mensaje es un comando (usando el prefijo global)
+                    // 3. Verificar si el mensaje es un comando (usando el prefijo global)
                     const prefixToTest = Array.isArray(global.prefix) 
                         ? global.prefix.map(str2Regex).join('|')
                         : str2Regex(global.prefix);
@@ -187,8 +185,7 @@ export async function handler(chatUpdate) {
                     const prefixRegex = new RegExp(`^(${prefixToTest})`, 'i');
                     
                     if (prefixRegex.test(m.text)) {
-                        // ¡ACCIÓN CLAVE! Detener toda ejecución de comandos para el subbot.
-                        return;
+                        return; // Bloquea al subbot de procesar comandos
                     }
                 }
             }
