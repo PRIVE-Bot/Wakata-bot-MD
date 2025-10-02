@@ -39,7 +39,7 @@ var handler = async (m, { conn, usedPrefix, command, text }) => {
         await conn.groupParticipantsUpdate(m.chat, [user], 'demote')
         await conn.sendMessage(m.chat, {
             text: `${emoji} @${name} fue degradado y ya no es administrador.`,
-            contextInfo: { mentionedJid: [user] }
+            contextInfo: { mentionedJid: [user] }, ... global.rcanal
         }, { quoted: fkontak })
     } catch (e) {
         conn.reply(m.chat, `❌ Error al degradar: ${e}`, m, fake)
