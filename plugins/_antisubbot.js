@@ -1,8 +1,12 @@
-
 import { areJidsSameUser } from '@whiskeysockets/baileys'
 export async function before(m, { participants, conn }) {
     if (m.isGroup) {
         let chat = global.db.data.chats[m.chat];
+
+         if (!chat.antiBot2) {
+            return
+        }
+
 
         let botJid = global.conn.user.jid 
 
@@ -13,9 +17,9 @@ export async function before(m, { participants, conn }) {
 
           if (isBotPresent) {
                 setTimeout(async () => {
-                    await conn.reply(m.chat, `*​"Conectado con éxito al servidor. Saliendo del grupo para evitar spam..."*`, m);
+                    await conn.reply(m.chat, `*​"Conectado con éxito al servidor. Saliendo del grupo para evitar spam..."*`, m)
                     await this.groupLeave(m.chat)
-                }, 5000)
+                }, 2000)
             }
         }
     }
