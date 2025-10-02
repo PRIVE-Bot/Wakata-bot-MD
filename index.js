@@ -1,52 +1,43 @@
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '1';
 import './config.js';
 import { setupMaster, fork } from 'cluster';
-import { watchFile, unwatchFile } from 'fs';
+import { watchFile, unwatchFile, readdirSync, statSync, unlinkSync, existsSync, mkdirSync, readFileSync, watch } from 'fs';
 import cfonts from 'cfonts';
 import { createRequire } from 'module';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { platform } from 'process';
 import * as ws from 'ws';
-import { readdirSync, statSync, unlinkSync, existsSync, mkdirSync, readFileSync, rmSync, watch } from 'fs';
 import yargs from 'yargs';
-import { spawn, execSync } from 'child_process';
+import { spawn } from 'child_process';
 import lodash from 'lodash';
 import { JadiBot } from './plugins/jadibot-serbot.js';
 import chalk from 'chalk';
 import syntaxerror from 'syntax-error';
 import { tmpdir } from 'os';
 import { format } from 'util';
-import boxen from 'boxen';
 import pino from 'pino';
 import path, { join, dirname } from 'path';
 import { Boom } from '@hapi/boom';
 import { makeWASocket, protoType, serialize } from './lib/simple.js';
 import { Low, JSONFile } from 'lowdb';
-import { mongoDB, mongoDBV2 } from './lib/mongoDB.js';
 import store from './lib/store.js';
 const { proto } = (await import('@whiskeysockets/baileys')).default;
 import pkg from 'google-libphonenumber';
 const { PhoneNumberUtil } = pkg;
 const phoneUtil = PhoneNumberUtil.getInstance();
-const { DisconnectReason, useMultiFileAuthState, MessageRetryMap, fetchLatestBaileysVersion, makeCacheableSignalKeyStore, jidNormalizedUser, Browsers } = await import('@whiskeysockets/baileys');
-import readline, { createInterface } from 'readline';
+const { DisconnectReason, useMultiFileAuthState, fetchLatestBaileysVersion, makeCacheableSignalKeyStore, jidNormalizedUser, Browsers } = await import('@whiskeysockets/baileys');
+import readline from 'readline';
 import NodeCache from 'node-cache';
+
 const { CONNECTING } = ws;
 const { chain } = lodash;
 const PORT = process.env.PORT || process.env.SERVER_PORT || 3000;
 
 let { say } = cfonts;
 console.log(chalk.magentaBright('\n ...............Iniciando................'));
-say('Bot', {
-  font: 'simple',
-  align: 'left',
-  gradient: ['green', 'white']
-});
-say('developed by Dulce', {
-  font: 'console',
-  align: 'center',
-  colors: ['cyan', 'magenta', 'yellow']
-});
+say('Bot', { font: 'simple', align: 'left', gradient: ['green', 'white'] });
+say('developed by Dulce', { font: 'console', align: 'center', colors: ['cyan', 'magenta', 'yellow'] });
+
 protoType();
 serialize();
 
@@ -65,16 +56,21 @@ const __dirname = global.__dirname(import.meta.url);
 global.opts = new Object(yargs(process.argv.slice(2)).exitProcess(false).parse());
 global.prefix = new RegExp('^[#!./]');
 
-global.db = new Low(/https?:\/\//.test(opts['db'] || '') ? new cloudDBAdapter(opts['db']) : new JSONFile('database.json'));
+global.db = new Low(new JSONFile('database.json'));
 global.DATABASE = global.db;
+
+const lidCache = new Map();
+
 global.loadDatabase = async function loadDatabase() {
   if (global.db.READ) {
-    return new Promise((resolve) => setInterval(async function() {
-      if (!global.db.READ) {
-        clearInterval(this);
-        resolve(global.db.data == null ? global.loadDatabase() : global.db.data);
-      }
-    }, 1 * 1000));
+    return new Promise((resolve) => {
+      const interval = setInterval(async function() {
+        if (!global.db.READ) {
+          clearInterval(interval);
+          resolve(global.db.data == null ? global.loadDatabase() : global.db.data);
+        }
+      }, 1000);
+    });
   }
   if (global.db.data !== null) return;
   global.db.READ = true;
@@ -93,9 +89,8 @@ global.loadDatabase = async function loadDatabase() {
 };
 loadDatabase();
 
-const { state, saveState, saveCreds } = await useMultiFileAuthState(global.sessions);
+const { state, saveCreds } = await useMultiFileAuthState(global.sessions);
 const msgRetryCounterCache = new NodeCache({ stdTTL: 0, checkperiod: 0 });
-const userDevicesCache = new NodeCache({ stdTTL: 0, checkperiod: 0 });
 const { version } = await fetchLatestBaileysVersion();
 let phoneNumber = global.botNumber;
 const methodCodeQR = process.argv.includes("qr");
@@ -107,26 +102,21 @@ const textOption = chalk.cyan;
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 const question = (texto) => new Promise((resolver) => rl.question(texto, resolver));
 let opcion;
+
 if (methodCodeQR) {
   opcion = '1';
 }
-if (!methodCodeQR && !methodCode && !existsSync(`./${sessions}/creds.json`)) {
+
+if (!methodCodeQR && !methodCode && !existsSync(`./${global.sessions}/creds.json`)) {
   do {
     opcion = await question(colors("┏╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍⚃\n┇ ╭┈┈┈┈┈┈┈┈┈┈┈┈┈┈╾\n┇ ┆Seleccione una opción:\n┇") + qrOption(" ┆1. Con código QR\n┇") + textOption(" ┆2. Con código de texto de 8 dígitos\n┇ ╰┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈╾\n┗╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍╍⚃\n\n❑➙➔ "));
     if (!/^[1-2]$/.test(opcion)) {
-      console.log(chalk.bold.redBright(`ム ʕ˖͜͡˖ʔ No se permiten numeros que no sean 1 o 2, tampoco letras o símbolos especiales.`));
+      console.log(chalk.bold.redBright(`No se permiten numeros que no sean 1 o 2, tampoco letras o símbolos especiales.`));
     }
-  } while (opcion !== '1' && opcion !== '2' || existsSync(`./${sessions}/creds.json`));
+  } while (opcion !== '1' && opcion !== '2' || existsSync(`./${global.sessions}/creds.json`));
 }
 
-const filterStrings = [
-  "Q2xvc2luZyBzdGFsZSBvcGVu",
-  "Q2xvc2luZyBvcGVuIHNlc3Npb24=",
-  "RmFpbGVkIHRvIGRlY3J5cHQ=",
-  "U2Vzc2lvbiBlcnJvcg==",
-  "RXJyb3I6IEJhZCBNQUM=",
-  "RGVjcnlwdGVkIG1lc3NhZ2U="
-];
+const filterStrings = ["Q2xvc2luZyBzdGFsZSBvcGVu", "Q2xvc2luZyBvcGVuIHNlc3Npb24=", "RmFpbGVkIHRvIGRlY3J5cHQ=", "U2Vzc2lvbiBlcnJvcg==", "RXJyb3I6IEJhZCBNQUM=", "RGVjcnlwdGVkIG1lc3NhZ2U="];
 
 console.info = () => {};
 console.debug = () => {};
@@ -134,9 +124,9 @@ console.debug = () => {};
 
 const connectionOptions = {
   logger: pino({ level: 'silent' }),
-  printQRInTerminal: opcion == '1' ? true : methodCodeQR ? true : false,
+  printQRInTerminal: opcion == '1' || methodCodeQR,
   mobile: MethodMobile,
-  browser: opcion == '1' ? Browsers.macOS("Desktop") : methodCodeQR ? Browsers.macOS("Desktop") : Browsers.macOS("Chrome"),
+  browser: Browsers.macOS(opcion == '1' || methodCodeQR ? "Desktop" : "Chrome"),
   auth: {
     creds: state.creds,
     keys: makeCacheableSignalKeyStore(state.keys, pino({ level: "fatal" }).child({ level: "fatal" })),
@@ -149,21 +139,21 @@ const connectionOptions = {
       let jid = jidNormalizedUser(key.remoteJid);
       let msg = await store.loadMessage(jid, key.id);
       return msg?.message || "";
-    } catch (error) {
+    } catch {
       return "";
     }
   },
-  msgRetryCounterCache: msgRetryCounterCache || new Map(),
-  userDevicesCache: userDevicesCache || new Map(),
+  msgRetryCounterCache,
   defaultQueryTimeoutMs: undefined,
   cachedGroupMetadata: (jid) => globalThis.conn.chats[jid] ?? {},
-  version: version,
+  version,
   keepAliveIntervalMs: 55000,
   maxIdleTimeMs: 60000,
 };
 
 global.conn = makeWASocket(connectionOptions);
-if (!existsSync(`./${sessions}/creds.json`)) {
+
+if (!existsSync(`./${global.sessions}/creds.json`)) {
   if (opcion === '2' || methodCode) {
     opcion = '2';
     if (!conn.authState.creds.registered) {
@@ -189,14 +179,21 @@ if (!existsSync(`./${sessions}/creds.json`)) {
     }
   }
 }
+
 conn.isInit = false;
 conn.well = false;
 conn.logger.info(`[ ⌨ ]  H E C H O\n`);
+
 if (!opts['test']) {
-  if (global.db) setInterval(async () => {
-    if (global.db.data) await global.db.write();
-    if (opts['autocleartmp'] && (global.support || {}).find) (tmp = [tmpdir(), 'tmp', `${jadi}`], tmp.forEach((filename) => spawn('find', [filename, '-amin', '3', '-type', 'f', '-delete'])));
-  }, 30 * 1000);
+  if (global.db) {
+    setInterval(async () => {
+      if (global.db.data) await global.db.write();
+      if (opts['autocleartmp']) {
+        const tmp = [tmpdir(), 'tmp', `${global.jadi}`];
+        tmp.forEach((filename) => spawn('find', [filename, '-amin', '3', '-type', 'f', '-delete']));
+      }
+    }, 30000);
+  }
 }
 
 async function resolveLidToRealJid(lidJid, groupJid, maxRetries = 3, retryDelay = 1000) {
@@ -219,13 +216,13 @@ async function resolveLidToRealJid(lidJid, groupJid, maxRetries = 3, retryDelay 
             lidCache.set(lidJid, participant.jid);
             return participant.jid;
           }
-        } catch (e) {
+        } catch {
           continue;
         }
       }
       lidCache.set(lidJid, lidJid);
       return lidJid;
-    } catch (e) {
+    } catch {
       attempts++;
       if (attempts >= maxRetries) {
         lidCache.set(lidJid, lidJid);
@@ -321,39 +318,41 @@ async function connectionUpdate(update) {
     }
   }
   if (connection === "open") {
-    const userJid = jidNormalizedUser(conn.user.id);
     const userName = conn.user.name || conn.user.verifiedName || "Desconocido";
     console.log(chalk.green.bold(`[ ☊ ]  Conectado a: ${userName}`));
   }
   let reason = new Boom(lastDisconnect?.error)?.output?.statusCode;
   if (connection === 'close') {
     if (reason === DisconnectReason.badSession) {
-      console.log(chalk.bold.cyanBright(`\n⚠︎ Sin conexión, borra la session principal del Bot, y conectate nuevamente.`));
+      console.log(chalk.bold.cyanBright(`\nSin conexión, borra la session principal del Bot, y conectate nuevamente.`));
     } else if (reason === DisconnectReason.connectionClosed) {
-      console.log(chalk.bold.magentaBright(`\n♻ Reconectando la conexión del Bot...`));
+      console.log(chalk.bold.magentaBright(`\nReconectando la conexión del Bot...`));
       await global.reloadHandler(true).catch(console.error);
     } else if (reason === DisconnectReason.connectionLost) {
-      console.log(chalk.bold.blueBright(`\n⚠︎ Conexión perdida con el servidor, reconectando el Bot...`));
+      console.log(chalk.bold.blueBright(`\nConexión perdida con el servidor, reconectando el Bot...`));
       await global.reloadHandler(true).catch(console.error);
     } else if (reason === DisconnectReason.connectionReplaced) {
-      console.log(chalk.bold.yellowBright(`\nꗇ La conexión del Bot ha sido reemplazada.`));
+      console.log(chalk.bold.yellowBright(`\nLa conexión del Bot ha sido reemplazada.`));
     } else if (reason === DisconnectReason.loggedOut) {
-      console.log(chalk.bold.redBright(`\n⚠︎ Sin conexión, borra la session principal del Bot, y conectate nuevamente.`));
+      console.log(chalk.bold.redBright(`\nSin conexión, borra la session principal del Bot, y conectate nuevamente.`));
       await global.reloadHandler(true).catch(console.error);
     } else if (reason === DisconnectReason.restartRequired) {
-      console.log(chalk.bold.cyanBright(`\n♻ Conectando el Bot con el servidor...`));
+      console.log(chalk.bold.cyanBright(`\nConectando el Bot con el servidor...`));
       await global.reloadHandler(true).catch(console.error);
     } else if (reason === DisconnectReason.timedOut) {
-      console.log(chalk.bold.yellowBright(`\n♻ Conexión agotada, reconectando el Bot...`));
+      console.log(chalk.bold.yellowBright(`\nConexión agotada, reconectando el Bot...`));
       await global.reloadHandler(true).catch(console.error);
     } else {
-      console.log(chalk.bold.redBright(`\n⚠︎ Conexión cerrada, conectese nuevamente.`));
+      console.log(chalk.bold.redBright(`\nConexión cerrada, conectese nuevamente.`));
     }
   }
 }
+
 process.on('uncaughtException', console.error);
+
 let isInit = true;
 let handler = await import('./handler.js');
+
 global.reloadHandler = async function(restatConn) {
   try {
     const Handler = await import(`./handler.js?update=${Date.now()}`).catch(console.error);
@@ -378,41 +377,36 @@ global.reloadHandler = async function(restatConn) {
   conn.handler = handler.handler.bind(global.conn);
   conn.connectionUpdate = connectionUpdate.bind(global.conn);
   conn.credsUpdate = saveCreds.bind(global.conn, true);
-  const currentDateTime = new Date();
-  const messageDateTime = new Date(conn.ev);
-  if (currentDateTime >= messageDateTime) {
-    const chats = Object.entries(conn.chats).filter(([jid, chat]) => !jid.endsWith('@g.us') && chat.isChats).map((v) => v[0]);
-  } else {
-    const chats = Object.entries(conn.chats).filter(([jid, chat]) => !jid.endsWith('@g.us') && chat.isChats).map((v) => v[0]);
-  }
   conn.ev.on('messages.upsert', conn.handler);
   conn.ev.on('connection.update', conn.connectionUpdate);
   conn.ev.on('creds.update', conn.credsUpdate);
   isInit = false;
   return true;
 };
+
 setInterval(() => {
   console.log('[ ↻ ]  Reiniciando...');
   process.exit(0);
 }, 10800000);
-let rtU = join(__dirname, `./${jadi}`);
+
+let rtU = join(__dirname, `./${global.jadi}`);
 if (!existsSync(rtU)) {
   mkdirSync(rtU, { recursive: true });
 }
 
-global.rutaJadiBot = join(__dirname, `./${jadi}`);
+global.rutaJadiBot = join(__dirname, `./${global.jadi}`);
 if (global.Jadibts) {
   if (!existsSync(global.rutaJadiBot)) {
     mkdirSync(global.rutaJadiBot, { recursive: true });
-    console.log(chalk.bold.cyan(`⍰ La carpeta: ${jadi} se creó correctamente.`));
+    console.log(chalk.bold.cyan(`La carpeta: ${global.jadi} se creó correctamente.`));
   } else {
-    console.log(chalk.bold.cyan(`⍰ La carpeta: ${jadi} ya está creada.`));
+    console.log(chalk.bold.cyan(`La carpeta: ${global.jadi} ya está creada.`));
   }
-  const readRutaJadiBot = readdirSync(rutaJadiBot);
+  const readRutaJadiBot = readdirSync(global.rutaJadiBot);
   if (readRutaJadiBot.length > 0) {
     const creds = 'creds.json';
     for (const gjbts of readRutaJadiBot) {
-      const botPath = join(rutaJadiBot, gjbts);
+      const botPath = join(global.rutaJadiBot, gjbts);
       const readBotPath = readdirSync(botPath);
       if (readBotPath.includes(creds)) {
         JadiBot({ pathJadiBot: botPath, m: null, conn, args: '', usedPrefix: '/', command: 'serbot' });
@@ -422,7 +416,6 @@ if (global.Jadibts) {
 }
 
 const pluginFolder = join(__dirname, './plugins');
-
 const pluginFilter = (filename) => /\.js$/.test(filename);
 global.plugins = {};
 
@@ -430,7 +423,6 @@ async function readRecursive(folder) {
   for (const filename of readdirSync(folder)) {
     const file = join(folder, filename);
     const stats = statSync(file);
-
     if (stats.isDirectory()) {
       await readRecursive(file);
     } else if (pluginFilter(filename)) {
@@ -454,7 +446,7 @@ async function filesInit() {
 filesInit().then((_) => Object.keys(global.plugins)).catch(console.error);
 
 global.reload = async (_ev, filename) => {
-  const pluginPath = filename.replace(pluginFolder + '/', ''); // Usar la ruta completa
+  const pluginPath = filename.replace(pluginFolder + '/', '');
   if (pluginFilter(filename)) {
     const dir = global.__filename(join(pluginFolder, filename), true);
     if (pluginPath in global.plugins) {
@@ -485,6 +477,7 @@ global.reload = async (_ev, filename) => {
 Object.freeze(global.reload);
 watch(pluginFolder, { recursive: true }, global.reload);
 await global.reloadHandler();
+
 async function _quickTest() {
   const test = await Promise.all([
     spawn('ffmpeg'),
@@ -510,6 +503,7 @@ async function _quickTest() {
   const s = global.support = { ffmpeg, ffprobe, ffmpegWebp, convert, magick, gm, find };
   Object.freeze(global.support);
 }
+
 function clearTmp() {
   const tmpDir = join(__dirname, 'tmp');
   const filenames = readdirSync(tmpDir);
@@ -521,45 +515,45 @@ function clearTmp() {
 
 function purgeSession() {
   let prekey = [];
-  let directorio = readdirSync(`./${sessions}`);
+  let directorio = readdirSync(`./${global.sessions}`);
   let filesFolderPreKeys = directorio.filter(file => {
     return file.startsWith('pre-key-');
   });
   prekey = [...prekey, ...filesFolderPreKeys];
   filesFolderPreKeys.forEach(files => {
-    unlinkSync(`./${sessions}/${files}`);
+    unlinkSync(`./${global.sessions}/${files}`);
   });
 }
 
 function purgeSessionSB() {
   try {
-    const listaDirectorios = readdirSync(`./${jadi}/`);
+    const listaDirectorios = readdirSync(`./${global.jadi}/`);
     let SBprekey = [];
     listaDirectorios.forEach(directorio => {
-      if (statSync(`./${jadi}/${directorio}`).isDirectory()) {
-        const DSBPreKeys = readdirSync(`./${jadi}/${directorio}`).filter(fileInDir => {
+      if (statSync(`./${global.jadi}/${directorio}`).isDirectory()) {
+        const DSBPreKeys = readdirSync(`./${global.jadi}/${directorio}`).filter(fileInDir => {
           return fileInDir.startsWith('pre-key-');
         });
         SBprekey = [...SBprekey, ...DSBPreKeys];
         DSBPreKeys.forEach(fileInDir => {
           if (fileInDir !== 'creds.json') {
-            unlinkSync(`./${jadi}/${directorio}/${fileInDir}`);
+            unlinkSync(`./${global.jadi}/${directorio}/${fileInDir}`);
           }
         });
       }
     });
     if (SBprekey.length === 0) {
-      console.log(chalk.bold.green(`\n⍰ No hay archivos en ${jadi} para eliminar.`));
+      console.log(chalk.bold.green(`\nNo hay archivos en ${global.jadi} para eliminar.`));
     } else {
-      console.log(chalk.bold.cyanBright(`\n⌦ Archivos de la carpeta ${jadi} han sido eliminados correctamente.`));
+      console.log(chalk.bold.cyanBright(`\nArchivos de la carpeta ${global.jadi} han sido eliminados correctamente.`));
     }
   } catch (err) {
-    console.log(chalk.bold.red(`\n⚠︎ Error para eliminar archivos de la carpeta ${jadi}.\n` + err));
+    console.log(chalk.bold.red(`\nError para eliminar archivos de la carpeta ${global.jadi}.\n` + err));
   }
 }
 
 function purgeOldFiles() {
-  const directories = [`./${sessions}/`, `./${jadi}/`];
+  const directories = [`./${global.sessions}/`, `./${global.jadi}/`];
   directories.forEach(dir => {
     readdirSync(dir, (err, files) => {
       if (err) throw err;
@@ -568,9 +562,9 @@ function purgeOldFiles() {
           const filePath = path.join(dir, file);
           unlinkSync(filePath, err => {
             if (err) {
-              console.log(chalk.bold.red(`\n⚠︎ El archivo ${file} no se logró borrar.\n` + err));
+              console.log(chalk.bold.red(`\nEl archivo ${file} no se logró borrar.\n` + err));
             } else {
-              console.log(chalk.bold.green(`\n⌦ El archivo ${file} se ha borrado correctamente.`));
+              console.log(chalk.bold.green(`\nEl archivo ${file} se ha borrado correctamente.`));
             }
           });
         }
@@ -578,6 +572,7 @@ function purgeOldFiles() {
     });
   });
 }
+
 function redefineConsoleMethod(methodName, filterStrings) {
   const originalConsoleMethod = console[methodName];
   console[methodName] = function() {
@@ -588,26 +583,32 @@ function redefineConsoleMethod(methodName, filterStrings) {
     originalConsoleMethod.apply(console, arguments);
   };
 }
+
 setInterval(async () => {
-  if (stopped === 'close' || !conn || !conn.user) return;
+  if (global.stopped === 'close' || !conn || !conn.user) return;
   await clearTmp();
-  console.log(chalk.bold.cyanBright(`\n⌦ Archivos de la carpeta TMP no necesarios han sido eliminados del servidor.`));
-}, 1000 * 60 * 4);
+  console.log(chalk.bold.cyanBright(`\nArchivos de la carpeta TMP no necesarios han sido eliminados del servidor.`));
+}, 240000);
+
 setInterval(async () => {
-  if (stopped === 'close' || !conn || !conn.user) return;
+  if (global.stopped === 'close' || !conn || !conn.user) return;
   await purgeSession();
-  console.log(chalk.bold.cyanBright(`\n⌦ Archivos de la carpeta ${global.sessions} no necesario han sido eliminados del servidor.`));
-}, 1000 * 60 * 10);
+  console.log(chalk.bold.cyanBright(`\nArchivos de la carpeta ${global.sessions} no necesario han sido eliminados del servidor.`));
+}, 600000);
+
 setInterval(async () => {
-  if (stopped === 'close' || !conn || !conn.user) return;
+  if (global.stopped === 'close' || !conn || !conn.user) return;
   await purgeSessionSB();
-}, 1000 * 60 * 10);
+}, 600000);
+
 setInterval(async () => {
-  if (stopped === 'close' || !conn || !conn.user) return;
+  if (global.stopped === 'close' || !conn || !conn.user) return;
   await purgeOldFiles();
-  console.log(chalk.bold.cyanBright(`\n⌦ Archivos no necesario han sido eliminados del servidor.`));
-}, 1000 * 60 * 10);
+  console.log(chalk.bold.cyanBright(`\nArchivos no necesario han sido eliminados del servidor.`));
+}, 600000);
+
 _quickTest().catch(console.error);
+
 async function isValidPhoneNumber(number) {
   try {
     number = number.replace(/\s+/g, '');
@@ -618,7 +619,7 @@ async function isValidPhoneNumber(number) {
     }
     const parsedNumber = phoneUtil.parseAndKeepRawInput(number);
     return phoneUtil.isValidNumber(parsedNumber);
-  } catch (error) {
+  } catch {
     return false;
   }
 }
