@@ -33,6 +33,7 @@ export async function handler(chatUpdate) {
     const now = Date.now();
     const lifeTime = 9000;
 
+    // Limpiar mensajes procesados antiguos
     for (let [msgId, time] of this.processedMessages) {
         if (now - time > lifeTime) {
             this.processedMessages.delete(msgId);
@@ -108,7 +109,7 @@ export async function handler(chatUpdate) {
                 autoRechazar: false,
                 detect: true,
                 antiBot: false,
-                antiBot2: true,
+                antiBot2: true, // Asumimos que esta opción es el interruptor
                 modoadmin: false,
                 antiLink: true,
                 antifake: false,
@@ -151,9 +152,13 @@ export async function handler(chatUpdate) {
             const res = await conn.onWhatsApp(id).catch(() => []);
             return res[0]?.lid || id;
         }
+        
+        // CORRECCIÓN: Los JIDs se obtienen de la conexión actual (this)
         const senderLid = await getLidFromJid(m.sender, this);
         const botLid = await getLidFromJid(this.user.jid, this);
         const botJid = this.user.jid;
+        
+        // CORRECCIÓN: Usamos 'this' para groupMetadata y no 'conn'
         const groupMetadata = m.isGroup ? ((this.chats[m.chat] || {}).metadata || await this.groupMetadata(m.chat).catch(_ => null)) : {};
         const participants = m.isGroup ? (groupMetadata.participants || []) : [];
         const user2 = participants.find(p => p.id === senderLid || p.jid === senderJid) || {};
@@ -162,15 +167,16 @@ export async function handler(chatUpdate) {
         const isAdmin = isRAdmin || user2?.admin === "admin";
         const isBotAdmin = !!bot?.admin;
 
-        // LÓGICA ESTRICTA ANTI-INTERFERENCIA DE BOT (Ajustada)
+        // LÓGICA DE BLOQUEO DE SUBBOTS (MÁXIMA PRIORIDAD)
+        // Usamos global.conn para el JID del bot principal.
         if (m.isGroup && chat.antiBot2 && global.conn && global.conn.user && global.conn.user.jid) {
             const mainBotJid = global.conn.user.jid;
-            const currentBotJid = this.user.jid;
+            const currentBotJid = this.user.jid; // JID de la conexión actual (Subbot)
 
-            // 1. Verificar si la conexión actual NO es el bot principal
+            // 1. Es un subbot si el JID actual NO es igual al JID principal
             if (!areJidsSameUser(mainBotJid, currentBotJid)) {
                 
-                // 2. Verificar si el bot principal está en los participantes del grupo
+                // 2. El bot principal está en los participantes del grupo
                 const isMainBotPresent = participants.some(p => areJidsSameUser(mainBotJid, p.id || p.jid));
 
                 if (isMainBotPresent) {
@@ -185,12 +191,14 @@ export async function handler(chatUpdate) {
                     const prefixRegex = new RegExp(`^(${prefixToTest})`, 'i');
                     
                     if (prefixRegex.test(m.text)) {
-                        return; // Bloquea al subbot de procesar comandos
+                        // ¡BLOQUEO!
+                        return; 
                     }
                 }
             }
         }
-        // FIN LÓGICA ESTRICTA ANTI-INTERFERENCIA
+        // FIN LÓGICA DE BLOQUEO
+
 
         const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './plugins');
         let usedPrefix = '';
@@ -198,6 +206,9 @@ export async function handler(chatUpdate) {
         for (let name in global.plugins) {
             let plugin = global.plugins[name];
             if (!plugin || plugin.disabled) continue;
+//... (El resto del código del handler es el mismo)
+
+/* CÓDIGO RESTANTE DEL HANDLER */
 
             const __filename = join(___dirname, name);
             if (typeof plugin.all === 'function') {
@@ -360,6 +371,7 @@ export async function handler(chatUpdate) {
 }
 
 global.dfail = (type, m, conn) => {
+// ... (El resto de dfail)
     const messages = {
         rowner: `
 ┏━━━━━━━━━━━━━━━━╮
