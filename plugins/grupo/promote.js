@@ -36,7 +36,7 @@ var handler = async (m, { conn }) => {
 
     try {
         await conn.groupParticipantsUpdate(m.chat, [user], 'promote');
-        conn.reply(m.chat, `✅ @${user.split('@')[0]} fue promovido a administrador con éxito.`, fkontak, {
+        conn.reply(m.chat, `✅ @${user.split('@')[0]} fue promovido a administrador con éxito.`, fkontak, rcanal, {
             mentions: [user]
         });
     } catch (e) {
