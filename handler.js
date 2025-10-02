@@ -342,7 +342,7 @@ export async function handler(chatUpdate) {
           jpegThumbnail: thumb2
         }
       },
-      participant: "0@s.whatsapp.net"
+      participant: global.userJid
     };
 
 global.dfail = (type, m, conn) => {
