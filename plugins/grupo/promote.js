@@ -1,5 +1,4 @@
 var handler = async (m, { conn, usedPrefix, command, text }) => {
-    
     const res = await fetch('https://files.catbox.moe/9xene9.jpg');
     const thumb2 = Buffer.from(await res.arrayBuffer());
 
@@ -19,14 +18,20 @@ var handler = async (m, { conn, usedPrefix, command, text }) => {
         participant: "0@s.whatsapp.net"
     };
 
-   
     let user;
     if (m.quoted) {
        
         user = m.quoted.sender;
     } else if (m.mentionedJid && m.mentionedJid.length > 0) {
-      @
+       
         user = m.mentionedJid[0];
+    } else if (text) {
+        
+        let number = text.replace(/[^0-9]/g, '');
+        if (number.length < 11 || number.length > 13) {
+            return conn.reply(m.chat, `⚠️ Debes responder o mencionar a un usuario para promoverlo.`, m, fkontak);
+        }
+        user = number + "@s.whatsapp.net";
     } else {
         return conn.reply(m.chat, `⚠️ Debes responder o mencionar a un usuario para promoverlo.`, m, fkontak);
     }
