@@ -34,23 +34,23 @@ var handler = async (m, { conn, usedPrefix, command, text }) => {
     else if (text) {
         let number = text.replace(/[^0-9]/g, '');
         if (number.length < 11 || number.length > 13) {
-            return conn.reply(m.chat, `↷♛߹߬ Debe de responder o mencionar a una persona para usar este comando.`, m, fkontak);
+            return conn.reply(m.chat, `${emoji} Debe de responder o mencionar a una persona para usar este comando.`, m, rcanal);
         }
         user = number + "@s.whatsapp.net";
     }
 
  
     else {
-        return conn.reply(m.chat, `↷♛߹߬ Debe de responder o mencionar a una persona para usar este comando.`, m, fkontak);
+        return conn.reply(m.chat, `${emoji} Debe de responder o mencionar a una persona para usar este comando.`, m, rcanal);
     }
 
     try {
         await conn.groupParticipantsUpdate(m.chat, [user], 'promote');
-        conn.reply(m.chat, `✅ @${user.split('@')[0]} fue promovido a administrador con éxito.`, fkontak, {
+        conn.reply(m.chat, `${emoji} @${user.split('@')[0]} fue promovido a administrador con éxito.`, fkontak, {
             mentions: [user]
         });
     } catch (e) {
-        conn.reply(m.chat, `❌ Error al promover: ${e}`, m, fkontak);
+        conn.reply(m.chat, `❌ Error al promover: ${e}`, m, rcanal);
     }
 };
 
