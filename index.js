@@ -28,7 +28,6 @@ const { proto } = (await import('@whiskeysockets/baileys')).default;
 import pkg from 'google-libphonenumber';
 const { PhoneNumberUtil } = pkg;
 const phoneUtil = PhoneNumberUtil.getInstance();
-// CORRECCIÓN: Agregar areJidsSameUser para consistencia global
 const { DisconnectReason, useMultiFileAuthState, MessageRetryMap, fetchLatestBaileysVersion, makeCacheableSignalKeyStore, jidNormalizedUser, Browsers, areJidsSameUser } = await import('@whiskeysockets/baileys');
 import readline, { createInterface } from 'readline';
 import NodeCache from 'node-cache';
@@ -325,6 +324,8 @@ async function connectionUpdate(update) {
     const userJid = jidNormalizedUser(conn.user.id);
     const userName = conn.user.name || conn.user.verifiedName || "Desconocido";
     console.log(chalk.green.bold(`[ ☊ ]  Conectado a: ${userName}`));
+    // ¡CORRECCIÓN CLAVE AQUÍ! Definimos el JID principal
+    global.conn.user.jid = conn.user.jid;
   }
   let reason = new Boom(lastDisconnect?.error)?.output?.statusCode;
   if (connection === 'close') {
@@ -416,7 +417,7 @@ if (global.Jadibts) {
       const botPath = join(rutaJadiBot, gjbts);
       const readBotPath = readdirSync(botPath);
       if (readBotPath.includes(creds)) {
-        // CORRECCIÓN: Pasar global.conn al Jadibot es CRÍTICO.
+        // Mantenemos la corrección de pasar global.conn al Jadibot
         JadiBot({ pathJadiBot: botPath, m: null, conn: global.conn, args: '', usedPrefix: '/', command: 'serbot' });
       }
     }
@@ -449,14 +450,10 @@ async function readRecursive(folder) {
   }
 }
 
-async function filesInit() {
-  await readRecursive(pluginFolder);
-}
-
 filesInit().then((_) => Object.keys(global.plugins)).catch(console.error);
 
 global.reload = async (_ev, filename) => {
-  const pluginPath = filename.replace(pluginFolder + '/', ''); // Usar la ruta completa
+  const pluginPath = filename.replace(pluginFolder + '/', '');
   if (pluginFilter(filename)) {
     const dir = global.__filename(join(pluginFolder, filename), true);
     if (pluginPath in global.plugins) {
