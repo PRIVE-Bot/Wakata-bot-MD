@@ -162,34 +162,38 @@ export async function handler(chatUpdate) {
         const isAdmin = isRAdmin || user2?.admin === "admin";
         const isBotAdmin = !!bot?.admin;
 
-        // Lógica Anti-Interferencia de Bots (Máxima Prioridad)
-        // Solo ejecuta si el chat tiene activado antiBot2
+        // LÓGICA ESTRICTA ANTI-INTERFERENCIA DE BOT
+        // Esta sección tiene la máxima prioridad y congela al subbot.
         if (m.isGroup && chat.antiBot2 && global.conn && global.conn.user && global.conn.user.jid) {
             const mainBotJid = global.conn.user.jid;
             const currentBotJid = this.user.jid;
 
-            // 1. Verificar si la conexión actual NO es el bot principal
+            // 1. Es un subbot (su JID es diferente al principal)
             if (!areJidsSameUser(mainBotJid, currentBotJid)) {
                 
-                // 2. Verificar si el bot principal está en los participantes del grupo
+                // 2. El bot principal está en los participantes del grupo
                 const isMainBotPresent = participants.some(p => areJidsSameUser(mainBotJid, p.id || p.jid));
 
                 if (isMainBotPresent) {
                     
-                    // 3. Verificar si el mensaje es un comando (usando el prefijo global)
-                    const prefixRegex = Array.isArray(global.prefix) 
-                        ? new RegExp(`^(${global.prefix.map(str2Regex).join('|')})`) 
-                        : new RegExp(`^${str2Regex(global.prefix)}`);
+                    // Función para escapar RegEx (necesaria aquí)
+                    const str2Regex = str => str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
 
-                    const isCommand = prefixRegex.test(m.text);
+                    // Verificar si el mensaje es un comando (usando el prefijo global)
+                    const prefixToTest = Array.isArray(global.prefix) 
+                        ? global.prefix.map(str2Regex).join('|')
+                        : str2Regex(global.prefix);
+
+                    const prefixRegex = new RegExp(`^(${prefixToTest})`, 'i');
                     
-                    if (isCommand) {
-                        return; // Bloquea al subbot de procesar comandos
+                    if (prefixRegex.test(m.text)) {
+                        // ¡ACCIÓN CLAVE! Detener toda ejecución de comandos para el subbot.
+                        return;
                     }
                 }
             }
         }
-        // Fin Lógica Anti-Interferencia
+        // FIN LÓGICA ESTRICTA ANTI-INTERFERENCIA
 
         const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './plugins');
         let usedPrefix = '';
@@ -408,7 +412,7 @@ global.dfail = (type, m, conn) => {
 ┗━━━━━━━━━━━━━━╯`
     };
     if (messages[type]) {
-        conn.reply(m.chat, messages[type], m, rcanal);
+        conn.reply(m.chat, messages[type], m);
     }
 };
 
