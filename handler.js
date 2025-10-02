@@ -6,6 +6,7 @@ import { unwatchFile, watchFile } from 'fs';
 import chalk from 'chalk';
 import fetch from 'node-fetch';
 import ws from 'ws';
+import { areJidsSameUser } from '@whiskeysockets/baileys'; 
 
 const { proto } = (await import('@whiskeysockets/baileys')).default;
 const isNumber = x => typeof x === 'number' && !isNaN(x);
@@ -20,7 +21,6 @@ export async function handler(chatUpdate) {
         return;
     }
 
-        // aqui corrigo mi error
     let m = chatUpdate.messages[chatUpdate.messages.length - 1];
     if (!m) return;
 
@@ -33,7 +33,6 @@ export async function handler(chatUpdate) {
     const now = Date.now();
     const lifeTime = 9000;
 
-    // Limpiar mensajes procesados antiguos
     for (let [msgId, time] of this.processedMessages) {
         if (now - time > lifeTime) {
             this.processedMessages.delete(msgId);
@@ -147,15 +146,15 @@ export async function handler(chatUpdate) {
         if (opts['swonly'] && m.chat !== 'status@broadcast') return;
         if (typeof m.text !== 'string') m.text = '';
 
-                async function getLidFromJid(id, conn) {
+        async function getLidFromJid(id, conn) {
             if (id.endsWith('@lid')) return id;
             const res = await conn.onWhatsApp(id).catch(() => []);
             return res[0]?.lid || id;
         }
-        const senderLid = await getLidFromJid(m.sender, conn);
-        const botLid = await getLidFromJid(conn.user.jid, conn);
-        const botJid = conn.user.jid;
-        const groupMetadata = m.isGroup ? ((conn.chats[m.chat] || {}).metadata || await this.groupMetadata(m.chat).catch(_ => null)) : {};
+        const senderLid = await getLidFromJid(m.sender, this);
+        const botLid = await getLidFromJid(this.user.jid, this);
+        const botJid = this.user.jid;
+        const groupMetadata = m.isGroup ? ((this.chats[m.chat] || {}).metadata || await this.groupMetadata(m.chat).catch(_ => null)) : {};
         const participants = m.isGroup ? (groupMetadata.participants || []) : [];
         const user2 = participants.find(p => p.id === senderLid || p.jid === senderJid) || {};
         const bot = participants.find(p => p.id === botLid || p.id === botJid) || {};
@@ -163,6 +162,22 @@ export async function handler(chatUpdate) {
         const isAdmin = isRAdmin || user2?.admin === "admin";
         const isBotAdmin = !!bot?.admin;
 
+        if (m.isGroup && chat.antiBot2) {
+            const mainBotJid = global.conn.user.jid;
+            const currentBotJid = this.user.jid;
+
+            if (!areJidsSameUser(mainBotJid, currentBotJid)) {
+                
+                const isMainBotPresent = participants.some(p => areJidsSameUser(mainBotJid, p.id || p.jid));
+
+                if (isMainBotPresent) {
+                    
+                    if (m.text.startsWith(global.prefix) || (Array.isArray(global.prefix) && global.prefix.some(p => m.text.startsWith(p)))) {
+                        return;
+                    }
+                }
+            }
+        }
 
         const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './plugins');
         let usedPrefix = '';
@@ -381,7 +396,7 @@ global.dfail = (type, m, conn) => {
 ┗━━━━━━━━━━━━━━╯`
     };
     if (messages[type]) {
-        conn.reply(m.chat, messages[type], m);
+        conn.reply(m.chat, messages[type], m, rcanal);
     }
 };
 
