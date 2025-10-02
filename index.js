@@ -324,7 +324,6 @@ async function connectionUpdate(update) {
     const userJid = jidNormalizedUser(conn.user.id);
     const userName = conn.user.name || conn.user.verifiedName || "Desconocido";
     console.log(chalk.green.bold(`[ ☊ ]  Conectado a: ${userName}`));
-    // ¡CORRECCIÓN CLAVE AQUÍ! Definimos el JID principal
     global.conn.user.jid = conn.user.jid;
   }
   let reason = new Boom(lastDisconnect?.error)?.output?.statusCode;
@@ -417,7 +416,6 @@ if (global.Jadibts) {
       const botPath = join(rutaJadiBot, gjbts);
       const readBotPath = readdirSync(botPath);
       if (readBotPath.includes(creds)) {
-        // Mantenemos la corrección de pasar global.conn al Jadibot
         JadiBot({ pathJadiBot: botPath, m: null, conn: global.conn, args: '', usedPrefix: '/', command: 'serbot' });
       }
     }
@@ -448,6 +446,11 @@ async function readRecursive(folder) {
       }
     }
   }
+}
+
+// FUNCIÓN FALTANTE CORREGIDA
+async function filesInit() {
+  await readRecursive(pluginFolder);
 }
 
 filesInit().then((_) => Object.keys(global.plugins)).catch(console.error);
