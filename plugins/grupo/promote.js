@@ -19,21 +19,29 @@ var handler = async (m, { conn, usedPrefix, command, text }) => {
     };
 
     let user;
+
+    
     if (m.quoted) {
-       
         user = m.quoted.sender;
-    } else if (m.mentionedJid && m.mentionedJid.length > 0) {
-       
-        user = m.mentionedJid[0];
-    } else if (text) {
-        
+    }
+
+    
+    else if (m.message?.extendedTextMessage?.contextInfo?.mentionedJid?.length) {
+        user = m.message.extendedTextMessage.contextInfo.mentionedJid[0];
+    }
+
+    
+    else if (text) {
         let number = text.replace(/[^0-9]/g, '');
         if (number.length < 11 || number.length > 13) {
-            return conn.reply(m.chat, `⚠️ Debes responder o mencionar a un usuario para promoverlo.`, m, fkontak);
+            return conn.reply(m.chat, `↷♛߹߬ Debe de responder o mencionar a una persona para usar este comando.`, m, fkontak);
         }
         user = number + "@s.whatsapp.net";
-    } else {
-        return conn.reply(m.chat, `⚠️ Debes responder o mencionar a un usuario para promoverlo.`, m, fkontak);
+    }
+
+ 
+    else {
+        return conn.reply(m.chat, `↷♛߹߬ Debe de responder o mencionar a una persona para usar este comando.`, m, fkontak);
     }
 
     try {
