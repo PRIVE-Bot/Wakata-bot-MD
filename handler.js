@@ -331,20 +331,6 @@ export async function handler(chatUpdate) {
     }
 }
 
-    const res = await fetch('https://files.catbox.moe/d2np6v.jpg');
-    const thumb2 = Buffer.from(await res.arrayBuffer());
-
-    const fkontak = {
-      key: { participants: global.userJid, remoteJid: "status@broadcast", fromMe: false, id: "Halo" },
-      message: {
-        locationMessage: {
-          name: `ACCESO DENEGADO`,
-          jpegThumbnail: thumb2
-        }
-      },
-      participant: global.userJid
-    };
-
 global.dfail = (type, m, conn) => {
     const messages = {
         rowner: `
@@ -395,7 +381,7 @@ global.dfail = (type, m, conn) => {
 ┗━━━━━━━━━━━━━━╯`
     };
     if (messages[type]) {
-        conn.reply(m.chat, messages[type], fkontak, rcanal);
+        conn.reply(m.chat, messages[type], fkontak1, rcanal);
     }
 };
 
