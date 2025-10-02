@@ -236,7 +236,7 @@ export async function handler(chatUpdate) {
 
                 const chatID = m.chat;
                 const ID_GRUPO_RESTRINGIDO = '120363421094353744@g.us';
-                const comandosPermitidos = ['code', 'qr', 'welcome', 'detect', 'kick', 'tag'];
+                const comandosPermitidos = ['code', 'qr', 'welcome', 'detect', 'kick', 'tag', 'antibot2'];
 
                 if (chatID === ID_GRUPO_RESTRINGIDO) {
                     const isComandoPermitido = comandosPermitidos.includes(command);
