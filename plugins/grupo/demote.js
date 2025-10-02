@@ -35,6 +35,7 @@ var handler = async (m, { conn, usedPrefix, command, text }) => {
 
     try {
         let name = await conn.getName(user)
+        if (!name) name = user.split('@')[0]
         await conn.groupParticipantsUpdate(m.chat, [user], 'demote')
         await conn.sendMessage(m.chat, {
             text: `${emoji} @${name} fue degradado y ya no es administrador.`,
