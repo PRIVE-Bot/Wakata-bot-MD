@@ -266,7 +266,7 @@ export async function handler(chatUpdate) {
                     return permissions[perm];
                 };
 
-                const requiredPerms = ['rowner', 'owner', 'mods', 'premium', 'group', 'botAdmin', 'admin', 'private', 'restrict'];
+                const requiredPerms = ['rowner', 'owner', 'mods', 'premium', 'group', 'botAdmin', 'admin', 'private', 'restrict', 'antibot2'];
                 for (const perm of requiredPerms) {
                     if (plugin[perm] && !checkPermissions(perm)) {
                         fail(perm, m, this);
