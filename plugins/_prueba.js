@@ -19,7 +19,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     await conn.reply(`${suittag}@s.whatsapp.net`, mensajeFinal, m, fake, { mentions: conn.parseMention(mensajeFinal) })
     await conn.reply('120363420911001779@g.us', mensajeFinal, m, fake, { mentions: conn.parseMention(mensajeFinal) })
 
-    conn.reply(m.chat, `${emoji} El reporte se envió a mi creador y al grupo correspondiente, cualquier informe falso puede ocasionar baneo.`, m, fake)
+    conn.reply(m.chat, `${emoji} El reporte se envió a mi creador y al grupo correspondiente.`, m, fake)
 }
 
 handler.help = ['reportar']
