@@ -1,4 +1,4 @@
-var handler = async (m, { conn, usedPrefix, command, text }) => {
+var handler = async (m, { conn }) => {
     const res = await fetch('https://files.catbox.moe/9xene9.jpg');
     const thumb2 = Buffer.from(await res.arrayBuffer());
 
@@ -18,45 +18,35 @@ var handler = async (m, { conn, usedPrefix, command, text }) => {
         participant: "0@s.whatsapp.net"
     };
 
-    let user;
+    
+    const ctx = m.message?.extendedTextMessage?.contextInfo || {};
+    let user = ctx.participant || (ctx.mentionedJid && ctx.mentionedJid[0]);
 
     
-    if (m.quoted) {
-        user = m.quoted.sender;
-    }
-
-    
-    else if (m.message?.extendedTextMessage?.contextInfo?.mentionedJid?.length) {
-        user = m.message.extendedTextMessage.contextInfo.mentionedJid[0];
-    }
-
-    
-    else if (text) {
-        let number = text.replace(/[^0-9]/g, '');
-        if (number.length < 11 || number.length > 13) {
-            return conn.reply(m.chat, `${emoji} Debe de responder o mencionar a una persona para usar este comando.`, m, rcanal);
+    if (!user && m.text) {
+        let number = m.text.replace(/[^0-9]/g, '');
+        if (number.length >= 8 && number.length <= 15) {
+            user = number + "@s.whatsapp.net";
         }
-        user = number + "@s.whatsapp.net";
     }
 
- 
-    else {
-        return conn.reply(m.chat, `${emoji} Debe de responder o mencionar a una persona para usar este comando.`, m, rcanal);
+    if (!user) {
+        return conn.reply(m.chat, `↷♛߹߬ Debe de responder o mencionar a una persona para usar este comando.`, m, fkontak);
     }
 
     try {
         await conn.groupParticipantsUpdate(m.chat, [user], 'promote');
-        conn.reply(m.chat, `${emoji} @${user.split('@')[0]} fue promovido a administrador con éxito.`, fkontak, {
+        conn.reply(m.chat, `✅ @${user.split('@')[0]} fue promovido a administrador con éxito.`, fkontak, {
             mentions: [user]
         });
     } catch (e) {
-        conn.reply(m.chat, `❌ Error al promover: ${e}`, m, rcanal);
+        conn.reply(m.chat, `❌ Error al promover: ${e}`, m, fkontak);
     }
 };
 
 handler.help = ['promote']
 handler.tags = ['grupo']
-handler.command = ['promote', 'daradmin', 'promover']
+handler.command = ['promote','daradmin','promover']
 handler.group = true
 handler.admin = true
 handler.botAdmin = true
