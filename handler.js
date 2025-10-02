@@ -533,9 +533,9 @@ export async function handler(chatUpdate) {
 }
 
 global.dfail = (type, m, conn, usedPrefix) => {
-  const ctxDenied = global.rcanalden || {}
-  const ctxDev    = global.rcanaldev || {}
-  const ctxInfo   = global.rcanalx   || {}
+  const ctxDenied = global.rcanal || {}
+  const ctxDev    = global.rcanal || {}
+  const ctxInfo   = global.rcanal  || {}
   const cfg = {
     rowner:   { text: '🌸 ¡Oye! Este comando solo puede usarlo mi creador… ¿acaso quieres pasar por encima de mí? 😤', ctx: ctxDenied },
 owner:    { text: '🌸 Este comando está reservado para mi creador y los sub-bots. No insistas, baka~ 🙄', ctx: ctxDenied },
