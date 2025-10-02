@@ -6,7 +6,6 @@ import { unwatchFile, watchFile } from 'fs';
 import chalk from 'chalk';
 import fetch from 'node-fetch';
 import ws from 'ws';
-import { areJidsSameUser } from '@whiskeysockets/baileys'; 
 
 const { proto } = (await import('@whiskeysockets/baileys')).default;
 const isNumber = x => typeof x === 'number' && !isNaN(x);
@@ -21,13 +20,20 @@ export async function handler(chatUpdate) {
         return;
     }
 
+        // aqui corrigo mi error
     let m = chatUpdate.messages[chatUpdate.messages.length - 1];
     if (!m) return;
+
+    m = smsg(this, m) || m;
+    if (!m) return;
+
+    if (!m.isGroup) return;
 
     this.processedMessages = this.processedMessages || new Map();
     const now = Date.now();
     const lifeTime = 9000;
 
+    // Limpiar mensajes procesados antiguos
     for (let [msgId, time] of this.processedMessages) {
         if (now - time > lifeTime) {
             this.processedMessages.delete(msgId);
@@ -103,7 +109,7 @@ export async function handler(chatUpdate) {
                 autoRechazar: false,
                 detect: true,
                 antiBot: false,
-                antiBot2: true, // Asegurar que antiBot2 esté en true por defecto
+                antiBot2: true,
                 modoadmin: false,
                 antiLink: true,
                 antifake: false,
@@ -141,54 +147,21 @@ export async function handler(chatUpdate) {
         if (opts['swonly'] && m.chat !== 'status@broadcast') return;
         if (typeof m.text !== 'string') m.text = '';
 
-        async function getLidFromJid(id, conn) {
+                async function getLidFromJid(id, conn) {
             if (id.endsWith('@lid')) return id;
             const res = await conn.onWhatsApp(id).catch(() => []);
             return res[0]?.lid || id;
         }
-
-        const senderLid = await getLidFromJid(m.sender, this);
-        const botLid = await getLidFromJid(this.user.jid, this);
-        const botJid = this.user.jid;
-
-        const groupMetadata = m.isGroup ? ((this.chats[m.chat] || {}).metadata || await this.groupMetadata(m.chat).catch(_ => null)) : {};
+        const senderLid = await getLidFromJid(m.sender, conn);
+        const botLid = await getLidFromJid(conn.user.jid, conn);
+        const botJid = conn.user.jid;
+        const groupMetadata = m.isGroup ? ((conn.chats[m.chat] || {}).metadata || await this.groupMetadata(m.chat).catch(_ => null)) : {};
         const participants = m.isGroup ? (groupMetadata.participants || []) : [];
         const user2 = participants.find(p => p.id === senderLid || p.jid === senderJid) || {};
         const bot = participants.find(p => p.id === botLid || p.id === botJid) || {};
-        const isRAdmin = user2?.admin === 'superadmin';
-        const isAdmin = isRAdmin || user2?.admin === 'admin';
+        const isRAdmin = user2?.admin === "superadmin";
+        const isAdmin = isRAdmin || user2?.admin === "admin";
         const isBotAdmin = !!bot?.admin;
-
-        // LÓGICA DE BLOQUEO DE SUBBOTS CORREGIDA Y OPTIMIZADA
-        if (m.isGroup && chat.antiBot2 && global.conn && global.conn.user && global.conn.user.jid) {
-            const mainBotJid = global.conn.user.jid;
-            const currentBotJid = this.user.jid; 
-
-            // 1. Si la conexión actual NO es el bot principal
-            if (!areJidsSameUser(mainBotJid, currentBotJid)) {
-                
-                // 2. Comprobar si el bot principal está en el grupo
-                const isMainBotPresent = participants.some(p => areJidsSameUser(mainBotJid, p.id || p.jid));
-
-                if (isMainBotPresent) {
-                    
-                    // 3. Comprobar si el mensaje es un comando usando el prefix
-                    const str2Regex = str => str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
-
-                    const prefixToTest = Array.isArray(global.prefix) 
-                        ? global.prefix.map(str2Regex).join('|')
-                        : str2Regex(global.prefix);
-
-                    const prefixRegex = new RegExp(`^(${prefixToTest})`, 'i');
-
-                    // Si es un comando Y el bot principal está presente, el subbot debe retornar.
-                    if (prefixRegex.test(m.text)) {
-                        return; 
-                    }
-                }
-            }
-        }
-        // FIN LÓGICA DE BLOQUEO
 
 
         const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './plugins');
@@ -263,7 +236,7 @@ export async function handler(chatUpdate) {
 
                 const chatID = m.chat;
                 const ID_GRUPO_RESTRINGIDO = '120363421094353744@g.us';
-                const comandosPermitidos = ['code', 'qr', 'welcome', 'detect', 'kick', 'tag', 'antibot2'];
+                const comandosPermitidos = ['code', 'qr', 'welcome', 'detect', 'kick', 'tag'];
 
                 if (chatID === ID_GRUPO_RESTRINGIDO) {
                     const isComandoPermitido = comandosPermitidos.includes(command);
@@ -408,7 +381,7 @@ global.dfail = (type, m, conn) => {
 ┗━━━━━━━━━━━━━━╯`
     };
     if (messages[type]) {
-        conn.reply(m.chat, messages[type], m);
+        conn.reply(m.chat, messages[type], m, rcanal);
     }
 };
 
