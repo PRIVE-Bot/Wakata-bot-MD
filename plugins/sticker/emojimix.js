@@ -35,7 +35,7 @@ let handler = async (m, { conn, text, args, usedPrefix, command }) => {
     let img = res.media_formats?.png_transparent?.url || res.media_formats?.webp_transparent?.url
     if (!img) continue
     let stiker = await sticker(false, img, global.botname || "Bot", global.nombre || "Sticker")
-    await conn.sendMessage(m.chat, { sticker: stiker }, { quoted: fkontak }, ...global.rcanal)
+    await conn.sendMessage(m.chat, { sticker: stiker, ...global.rcanal }, { quoted: fkontak })
   }
 }
 
