@@ -56,6 +56,8 @@ if (!('autosticker' in chat))
 chat.autosticker = false
 if (!('autoresponder' in chat))
 chat.autoresponder = false
+if (!('autoresponder2' in chat))
+chat.autoresponder2 = false
 if (!('detect' in chat))
 chat.detect = true
 if (!('antiBot' in chat))
@@ -66,6 +68,8 @@ if (!('modoadmin' in chat))
 chat.modoadmin = false   
 if (!('antiLink' in chat))
 chat.antiLink = true
+if (!("primaryBot" in chat)) 
+chat.primaryBot = null
 if (!('reaction' in chat))
 chat.reaction = false
 if (!('nsfw' in chat))
@@ -82,11 +86,13 @@ isBanned: false,
 sAutoresponder: '',
 welcome: true,
 autoresponder: false,
+autoresponder2: false,
 delete: false,
 detect: true,
 antiBot: false,
 antiBot2: false,
 modoadmin: false,
+primaryBot: null,
 antiLink: true,
 antifake: false,
 reaction: false,
