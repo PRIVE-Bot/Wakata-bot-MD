@@ -99,7 +99,6 @@ global.nombre = m.pushName || 'Anónimo'
 global.taguser = '@' + m.sender.split("@s.whatsapp.net")
 var more = String.fromCharCode(8206)
 global.rmr = more.repeat(850)
-global.userJid = m.sender;
 
 
 global.packsticker = `┏━──────━◆◆━──────━┓\n✰ Usuario: ${nombre}\n⚔✰ Bot: ${botname}\n✰ Fecha: ${fecha}\n✰ Hora: ${tiempo}\n┗━──────━◆◆━──────━┛`;
@@ -108,15 +107,30 @@ global.packsticker2 = `\n┏━──────━◆◆━──────�
 //Fakes
 global.fkontak = { key: {participant: `0@s.whatsapp.net`, ...(m.chat ? { remoteJid: `6285600793871-1614953337@g.us` } : {}) }, message: { 'contactMessage': { 'displayName': `${nombre}`, 'vcard': `BEGIN:VCARD\nVERSION:3.0\nN:XL;${nombre},;;;\nFN:${nombre},\nitem1.TEL;waid=${m.sender.split('@')[0]}:${m.sender.split('@')[0]}\nitem1.X-ABLabel:Ponsel\nEND:VCARD`, 'jpegThumbnail': null, thumbnail: null,sendEphemeral: true}}}
 
+    const res = await fetch('https://files.catbox.moe/d2np6v.jpg');
+    const thumb2 = Buffer.from(await res.arrayBuffer());
+    const userJid = m.sender
+
+    global.fkontak1 = {
+      key: { participants: userJid, remoteJid: "status@broadcast", fromMe: false, id: "Halo" },
+      message: {
+        locationMessage: {
+          name: `ACCESO DENEGADO`,
+          jpegThumbnail: thumb2
+        }
+      },
+      participant: userJid
+    };
+
   
 global.fake = { contextInfo: { isForwarded: true, forwardedNewsletterMessageInfo: { newsletterJid: channelRD.id, newsletterName: channelRD.name, serverMessageId: -1 }
 }}, { quoted: m }
 
 global.icono = [
-'https://files.catbox.moe/6t0lk6.jpg',
-'https://files.catbox.moe/buusb3.jpg',
-'https://files.catbox.moe/nfbmjm.jpg',
-'https://files.catbox.moe/1iftdf.jpg'
+'https://files.catbox.moe/j9oz52.jpg',
+'https://files.catbox.moe/37uut6.jpg',
+'https://files.catbox.moe/0tcilg.jpg',
+'https://files.catbox.moe/w76uu9.jpg'
 ].getRandom()
 
 global.rcanal = { contextInfo: { isForwarded: true, forwardedNewsletterMessageInfo: { newsletterJid: channelRD.id, serverMessageId: '', newsletterName: channelRD.name }, externalAdReply: { title: botname, body: dev, mediaUrl: null, description: null, previewType: "PHOTO", thumbnail: await (await fetch(icono)).buffer(), /*sourceUrl: redes,*/ mediaType: 1, renderLargerThumbnail: false }, mentionedJid: null }}
