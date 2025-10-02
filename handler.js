@@ -162,33 +162,34 @@ export async function handler(chatUpdate) {
         const isAdmin = isRAdmin || user2?.admin === "admin";
         const isBotAdmin = !!bot?.admin;
 
-        // Lógica de Anti-Interferencia Corregida
-        if (m.isGroup && chat.antiBot2) {
-            // Aseguramos que global.conn exista (bot principal)
-            if (global.conn && global.conn.user && global.conn.user.jid) {
-                const mainBotJid = global.conn.user.jid;
-                const currentBotJid = this.user.jid;
+        // Lógica Anti-Interferencia de Bots (Máxima Prioridad)
+        // Solo ejecuta si el chat tiene activado antiBot2
+        if (m.isGroup && chat.antiBot2 && global.conn && global.conn.user && global.conn.user.jid) {
+            const mainBotJid = global.conn.user.jid;
+            const currentBotJid = this.user.jid;
 
-                // 1. Verificar si la conexión actual NO es el bot principal
-                if (!areJidsSameUser(mainBotJid, currentBotJid)) {
+            // 1. Verificar si la conexión actual NO es el bot principal
+            if (!areJidsSameUser(mainBotJid, currentBotJid)) {
+                
+                // 2. Verificar si el bot principal está en los participantes del grupo
+                const isMainBotPresent = participants.some(p => areJidsSameUser(mainBotJid, p.id || p.jid));
+
+                if (isMainBotPresent) {
                     
-                    // 2. Verificar si el bot principal está en los participantes del grupo
-                    const isMainBotPresent = participants.some(p => areJidsSameUser(mainBotJid, p.id || p.jid));
+                    // 3. Verificar si el mensaje es un comando (usando el prefijo global)
+                    const prefixRegex = Array.isArray(global.prefix) 
+                        ? new RegExp(`^(${global.prefix.map(str2Regex).join('|')})`) 
+                        : new RegExp(`^${str2Regex(global.prefix)}`);
 
-                    if (isMainBotPresent) {
-                        
-                        // 3. Verificar si el mensaje es un comando
-                        const isCommand = m.text.startsWith(global.prefix) || 
-                            (Array.isArray(global.prefix) && global.prefix.some(p => m.text.startsWith(p)));
-                        
-                        if (isCommand) {
-                            return; // Bloquea al subbot de procesar comandos
-                        }
+                    const isCommand = prefixRegex.test(m.text);
+                    
+                    if (isCommand) {
+                        return; // Bloquea al subbot de procesar comandos
                     }
                 }
             }
         }
-        // Fin Lógica de Anti-Interferencia
+        // Fin Lógica Anti-Interferencia
 
         const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './plugins');
         let usedPrefix = '';
@@ -407,7 +408,7 @@ global.dfail = (type, m, conn) => {
 ┗━━━━━━━━━━━━━━╯`
     };
     if (messages[type]) {
-        conn.reply(m.chat, messages[type], m);
+        conn.reply(m.chat, messages[type], m, rcanal);
     }
 };
 
