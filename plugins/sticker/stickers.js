@@ -61,7 +61,7 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
     if (!stiker) stiker = e
   } finally {
     if (stiker) {
-      await conn.sendFile(m.chat, stiker, 'sticker.webp', '', fkontak, true)
+      await conn.sendFile(m.chat, stiker, 'sticker.webp', '', fkontak, rcanal)
     } else {
       return conn.reply(m.chat, `✰ ᴘᴏʀ ғᴀᴠᴏʀ, ᴇɴᴠÍᴀ ᴜɴ ᴠɪᴅᴇᴏ, ɢɪғ ᴏ ɪᴍᴀɢᴇɴ ᴘᴀʀᴀ ᴄᴏɴᴠᴇʀᴛɪʀ ᴀ sᴛɪᴄᴋᴇʀ.`, m, fake)
     }
