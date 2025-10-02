@@ -162,22 +162,33 @@ export async function handler(chatUpdate) {
         const isAdmin = isRAdmin || user2?.admin === "admin";
         const isBotAdmin = !!bot?.admin;
 
+        // Lógica de Anti-Interferencia Corregida
         if (m.isGroup && chat.antiBot2) {
-            const mainBotJid = global.conn.user.jid;
-            const currentBotJid = this.user.jid;
+            // Aseguramos que global.conn exista (bot principal)
+            if (global.conn && global.conn.user && global.conn.user.jid) {
+                const mainBotJid = global.conn.user.jid;
+                const currentBotJid = this.user.jid;
 
-            if (!areJidsSameUser(mainBotJid, currentBotJid)) {
-                
-                const isMainBotPresent = participants.some(p => areJidsSameUser(mainBotJid, p.id || p.jid));
-
-                if (isMainBotPresent) {
+                // 1. Verificar si la conexión actual NO es el bot principal
+                if (!areJidsSameUser(mainBotJid, currentBotJid)) {
                     
-                    if (m.text.startsWith(global.prefix) || (Array.isArray(global.prefix) && global.prefix.some(p => m.text.startsWith(p)))) {
-                        return;
+                    // 2. Verificar si el bot principal está en los participantes del grupo
+                    const isMainBotPresent = participants.some(p => areJidsSameUser(mainBotJid, p.id || p.jid));
+
+                    if (isMainBotPresent) {
+                        
+                        // 3. Verificar si el mensaje es un comando
+                        const isCommand = m.text.startsWith(global.prefix) || 
+                            (Array.isArray(global.prefix) && global.prefix.some(p => m.text.startsWith(p)));
+                        
+                        if (isCommand) {
+                            return; // Bloquea al subbot de procesar comandos
+                        }
                     }
                 }
             }
         }
+        // Fin Lógica de Anti-Interferencia
 
         const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './plugins');
         let usedPrefix = '';
@@ -396,7 +407,7 @@ global.dfail = (type, m, conn) => {
 ┗━━━━━━━━━━━━━━╯`
     };
     if (messages[type]) {
-        conn.reply(m.chat, messages[type], m, rcanal);
+        conn.reply(m.chat, messages[type], m);
     }
 };
 
