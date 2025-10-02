@@ -1,6 +1,6 @@
 var handler = async (m, { conn, usedPrefix, command, text }) => {
-    const res = await fetch('https://files.catbox.moe/9xene9.jpg');
-    const thumb2 = Buffer.from(await res.arrayBuffer());
+    const res = await fetch('https://files.catbox.moe/9xene9.jpg')
+    const thumb2 = Buffer.from(await res.arrayBuffer())
 
     const fkontak = {
         key: {
@@ -16,39 +16,34 @@ var handler = async (m, { conn, usedPrefix, command, text }) => {
             }
         },
         participant: "0@s.whatsapp.net"
-    };
+    }
 
-    let user;
-
+    let user
     if (m.quoted) {
-        user = m.quoted.sender;
-    }
-
-    else if (m.message?.extendedTextMessage?.contextInfo?.mentionedJid?.length) {
-        user = m.message.extendedTextMessage.contextInfo.mentionedJid[0];
-    }
-
-    else if (text) {
-        let number = text.replace(/[^0-9]/g, '');
+        user = m.quoted.sender
+    } else if (m.message?.extendedTextMessage?.contextInfo?.mentionedJid?.length) {
+        user = m.message.extendedTextMessage.contextInfo.mentionedJid[0]
+    } else if (text) {
+        let number = text.replace(/[^0-9]/g, '')
         if (number.length < 11 || number.length > 13) {
-            return conn.reply(m.chat, `${emoji} Debes mencionar o responder a un usuario válido para poder degradarlo.`, m, fake);
+            return conn.reply(m.chat, `${emoji} Debes mencionar o responder a un usuario válido para poder degradarlo.`, m, fake)
         }
-        user = number + "@s.whatsapp.net";
-    }
-
-    else {
-        return conn.reply(m.chat, `${emoji} Debes mencionar o responder a un usuario válido para poder degradarlo.`, m, fake);
+        user = number + "@s.whatsapp.net"
+    } else {
+        return conn.reply(m.chat, `${emoji} Debes mencionar o responder a un usuario válido para poder degradarlo.`, m, fake)
     }
 
     try {
-        await conn.groupParticipantsUpdate(m.chat, [user], 'demote');
-        conn.reply(m.chat, `${emoji} @${user.split('@')[0]} fue degradado y ya no es administrador.`, fkontak, fake, {
-            mentionedJid: [user]
-        });
+        let name = await conn.getName(user)
+        await conn.groupParticipantsUpdate(m.chat, [user], 'demote')
+        await conn.sendMessage(m.chat, {
+            text: `${emoji} @${name} fue degradado y ya no es administrador.`,
+            contextInfo: { mentionedJid: [user] }
+        }, { quoted: fkontak })
     } catch (e) {
-        conn.reply(m.chat, `❌ Error al degradar: ${e}`, m, fake);
+        conn.reply(m.chat, `❌ Error al degradar: ${e}`, m, fake)
     }
-};
+}
 
 handler.help = ['demote']
 handler.tags = ['grupo']
