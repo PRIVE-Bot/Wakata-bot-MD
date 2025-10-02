@@ -34,10 +34,13 @@ var handler = async (m, { conn }) => {
         return conn.reply(m.chat, `↷♛߹߬ Debe de responder o mencionar a una persona para usar este comando.`, m, fkontak);
     }
 
+let name = user.split('@')[0]
+        
+
     try {
         await conn.groupParticipantsUpdate(m.chat, [user], 'promote');
-        conn.reply(m.chat, `✅ @${user.split('@')[0]} fue promovido a administrador con éxito.`, fkontak, rcanal1, {
-            mentions: [user]
+        conn.reply(m.chat, `✅ @${name} fue promovido a administrador con éxito.`, fkontak, rcanal1, {
+            mentionedJid: [user]
         });
     } catch (e) {
         conn.reply(m.chat, `❌ Error al promover: ${e}`, m, fkontak);
