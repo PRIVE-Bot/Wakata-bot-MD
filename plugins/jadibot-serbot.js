@@ -40,7 +40,7 @@ let rtx = `
 ⟢ 1 » ⋮ ︱Ｄｉｓｐｏｓｉｔｉｖｏｓ 𝘃𝗶𝗻𝗰𝘂𝗹𝗮𝗱𝗼𝘀  
 ⟢ 2 » Ｅｓｃａｎｅａ ｅｌ Ⓠⓡ
 *
-⚠️ Ｓｅ ａｕ𝘁ｏｄｅｓｔ𝗿𝘂ｉ𝗿á ｅｎ *60s* ⏳
+⚠️ Ｓｅ ａｕｔｏｄｅｓ𝘁𝗿ｕｉｒá ｅｎ *60s* ⏳
 
 > 🔗 𝐂𝐚𝐧𝐚𝐥 𝐎𝐟𝐢𝐜𝐢𝐚l ↓
 `;
@@ -50,11 +50,11 @@ let rtx2 = `
 
 💻 〢 Ｍｏｄｏ Ｃｏ́ｄｉｇｏ ▣ ＳｕｂＢｏｔ ⌬ Ｐｅｒｓｉｓｔｅｎｔｅ
 
-⟢ ⋮ → Ｄｉｓｐｏｓｉｔ𝗶ｖｏｓ 𝘃𝗶𝗻𝗰𝘂𝗹𝗮𝗱𝗼𝘀  
-⟢ → Ｖｉｎｃｕｌａ𝗿 ｃｏｎ 𝗻𝘂́𝗺𝗲𝗿𝗼  
-⟢ → Ｉｎ𝗴𝗿𝗲𝘀𝗮 ｅｌ 𝗰𝗼́𝗱𝗶𝗴𝗼
+⟢ ⋮ → Ｄｉｓｐｏｓｉｔｉｖｏ𝘀 𝘃𝗶𝗻𝗰𝘂𝗹ａ𝗱𝗼𝘀  
+⟢ → Ｖｉｎｃｕｌａｒ ｃｏｎ 𝗻𝘂́𝗺𝗲𝗿𝗼  
+⟢ → Ｉｎｇ𝗿𝗲𝘀𝗮 ｅｌ 𝗰𝗼́𝗱𝗶𝗴𝗼
 
-⚠️ Ｃｏ́𝗱ｉｇｏ ｅｘ𝗽𝗶𝗿𝗮 ｅｎ *60s* ⏳
+⚠️ Ｃｏ́𝗱ｉｇｏ ｅｘ𝗽𝗶𝗿𝗮 𝗲ｎ *60s* ⏳
 
 > 🔗 𝐂𝐚𝐧𝐚l 𝐎𝐟𝐢𝐜𝐢𝐚l ↓
 `;
@@ -190,13 +190,14 @@ const connectionOptions = {
 let sock = makeWASocket(connectionOptions)
 sock.isInit = false
 let isInit = true
+let qrSent = false // AÑADIDO: Bandera para controlar el envío de QR/código
 
 async function connectionUpdate(update) {
     const { connection, lastDisconnect, isNewLogin, qr } = update
     
     if (isNewLogin) sock.isInit = false
 
-    if (qr && !mcode) {
+    if (qr && !mcode && !qrSent) { // MODIFICADO: Solo ejecuta si qrSent es falso
         if (m?.chat) {
             txtQR = await conn.sendMessage(m.chat, {
                 image: await qrcode.toBuffer(qr, { scale: 8 }),
@@ -209,10 +210,11 @@ async function connectionUpdate(update) {
         if (txtQR && txtQR.key) {
             setTimeout(() => { conn.sendMessage(m.sender, { delete: txtQR.key })}, 60000) 
         }
+        qrSent = true // MARCADO: Ya se envió el QR/código
         return
     } 
 
-    if (qr && mcode) {
+    if (qr && mcode && !qrSent) { // MODIFICADO: Solo ejecuta si qrSent es falso
         let secret = await sock.requestPairingCode((m.sender.split`@`[0]))
         secret = secret.match(/.{1,4}/g)?.join("-")
         
@@ -249,10 +251,14 @@ async function connectionUpdate(update) {
         if (codeBot && codeBot.key) {
             setTimeout(() => { conn.sendMessage(m.sender, { delete: codeBot.key })}, 60000) 
         }
+        qrSent = true // MARCADO: Ya se envió el QR/código
     }
-
-    const reason = lastDisconnect?.error?.output?.statusCode || lastDisconnect?.error?.output?.payload?.statusCode
+    
+    // REINICIA qrSent si la conexión se cierra para que se pueda volver a enviar en la reconexión.
     if (connection === 'close') {
+        qrSent = false;
+        // ... el resto de la lógica de desconexión ...
+
         const shouldReconnect = [
             DisconnectReason.timedOut,    
             DisconnectReason.badSession,  
@@ -320,10 +326,12 @@ setInterval(async () => {
     }
 }, 300000) 
 
+// CAMBIO AQUÍ: Importamos el manejador de sub-bots
 let subBotHandler = await import('../sub-handler.js')
 
 let creloadHandler = async function (restatConn) {
     try {
+        // CAMBIO AQUÍ: Apuntamos al nuevo archivo sub-handler.js para recargar
         const SubHandler = await import(`../sub-handler.js?update=${Date.now()}`).catch(console.error)
         if (Object.keys(SubHandler || {}).length) subBotHandler = SubHandler
     } catch (e) {
@@ -342,6 +350,7 @@ let creloadHandler = async function (restatConn) {
         sock.ev.off('creds.update', sock.credsUpdate)
     }
     
+    // CAMBIO AQUÍ: Asignamos el handler del sub-bot
     sock.handler = subBotHandler.handler.bind(sock)
     sock.connectionUpdate = connectionUpdate.bind(sock)
     sock.credsUpdate = saveCreds.bind(sock, true)
