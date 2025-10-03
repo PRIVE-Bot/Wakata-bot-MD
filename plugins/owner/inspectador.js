@@ -84,70 +84,74 @@ return caption
 
 let info
 let finalID
-try {
-let res = text ? null : await conn.groupMetadata(m.chat)
-if (res) {
-info = await MetadataGroupInfo(res)
-finalID = res.id
-}
-} catch {
 const inviteUrl = text?.match(/(?:https:\/\/)?(?:www\.)?(?:chat\.|wa\.)?whatsapp\.com\/(?:invite\/|joinchat\/)?([0-9A-Za-z]{22,24})/i)?.[1]
-let inviteInfo
-if (inviteUrl) {
-try {
-inviteInfo = await conn.groupGetInviteInfo(inviteUrl)
-info = await inviteGroupInfo(inviteInfo)
-finalID = inviteInfo.id
-} catch (e) {
-m.reply('Grupo no encontrado.')
-return
-}}}
+
+if (m.chat.endsWith("@g.us") && !text) {
+    try {
+        let res = await conn.groupMetadata(m.chat)
+        info = await MetadataGroupInfo(res) 
+        finalID = res.id
+    } catch (e) {
+        console.error("Error al obtener MetadataGroupInfo:", e)
+    }
+} else if (inviteUrl) {
+    try {
+        let inviteInfo = await conn.groupGetInviteInfo(inviteUrl)
+        info = await inviteGroupInfo(inviteInfo) 
+        finalID = inviteInfo.id
+    } catch (e) {
+        m.reply('*❌ Enlace no válido.* Verifique que sea un enlace de grupo/comunidad activo.')
+        return
+    }
+}
 
 if (info) {
-await conn.sendMessage(m.chat, { text: info, contextInfo: {
-mentionedJid: [
-    ...(m.sender ? [m.sender] : []),
-    ...(groupMetadata?.owner ? [groupMetadata.owner] : []),
-].filter(Boolean),
-externalAdReply: {
-title: "🔰 Inspector de Grupos",
-body: m.pushName,
-thumbnailUrl: pp || thumb,
-sourceUrl: args[0] ? args[0] : inviteCode ? `https://chat.whatsapp.com/${inviteCode}` : md,
-mediaType: 1,
-showAdAttribution: false,
-renderLargerThumbnail: true
-}}}, { quoted: fkontak })
-if (finalID) conn.reply(m.chat, `*🆔 ID del Grupo/Comunidad:*\n\`${finalID}\``, null)
+    await conn.sendMessage(m.chat, { text: info, contextInfo: {
+    mentionedJid: [
+        ...(m.sender ? [m.sender] : []),
+        ...(groupMetadata?.owner ? [groupMetadata.owner] : []),
+    ].filter(Boolean),
+    externalAdReply: {
+    title: "🔰 Inspector de Grupos",
+    body: m.pushName,
+    thumbnailUrl: pp || thumb,
+    sourceUrl: args[0] ? args[0] : inviteCode ? `https://chat.whatsapp.com/${inviteCode}` : md,
+    mediaType: 1,
+    showAdAttribution: false,
+    renderLargerThumbnail: true
+    }}}, { quoted: fkontak })
+    if (finalID) conn.reply(m.chat, `*🆔 ID del Grupo/Comunidad:*\n\`${finalID}\``, null)
 
 } else {
-let newsletterInfo
-if (!channelUrl) return await conn.reply(m.chat, "*Verifique que sea un enlace de grupo, comunidad o canal de WhatsApp.*", m)
-if (channelUrl) {
-try {
-newsletterInfo = await conn.newsletterMetadata("invite", channelUrl).catch(e => { return null })
-if (!newsletterInfo) return await conn.reply(m.chat, "*No se encontró información del canal.* Verifique que el enlace sea correcto.", m)       
-let caption = "*📢 Inspector de Canales*\n\n" + processObject(newsletterInfo, "", newsletterInfo?.preview)
-if (newsletterInfo?.preview) {
-pp = getUrlFromDirectPath(newsletterInfo.preview)
-} else {
-pp = thumb
+    let newsletterInfo
+    if (!channelUrl) return await conn.reply(m.chat, "*⚠️ Enlace no reconocido.* Debe ser un enlace de grupo, comunidad o canal de WhatsApp.", m)
+    if (channelUrl) {
+    try {
+        newsletterInfo = await conn.newsletterMetadata("invite", channelUrl).catch(e => { return null })
+        if (!newsletterInfo) return await conn.reply(m.chat, "*No se encontró información del canal.* Verifique que el enlace sea correcto.", m)       
+        let caption = "*📢 Inspector de Canales*\n\n" + processObject(newsletterInfo, "", newsletterInfo?.preview)
+        if (newsletterInfo?.preview) {
+        pp = getUrlFromDirectPath(newsletterInfo.preview)
+        } else {
+        pp = thumb
+        }
+        await conn.sendMessage(m.chat, { text: caption, contextInfo: {
+        mentionedJid: null,
+        externalAdReply: {
+        title: "📢 Inspector de Canales",
+        body: m.pushName,
+        thumbnailUrl: pp || thumb,
+        sourceUrl: args[0],
+        mediaType: 1,
+        showAdAttribution: false,
+        renderLargerThumbnail: true
+        }}}, { quoted: fkontak })
+        if (newsletterInfo.id) conn.reply(m.chat, `*🆔 ID del Canal:*\n\`${newsletterInfo.id}\``, null)
+    } catch (e) {
+        console.log(e)
+    }}}
 }
-await conn.sendMessage(m.chat, { text: caption, contextInfo: {
-mentionedJid: null,
-externalAdReply: {
-title: "📢 Inspector de Canales",
-body: m.pushName,
-thumbnailUrl: pp || thumb,
-sourceUrl: args[0],
-mediaType: 1,
-showAdAttribution: false,
-renderLargerThumbnail: true
-}}}, { quoted: fkontak })
-if (newsletterInfo.id) conn.reply(m.chat, `*🆔 ID del Canal:*\n\`${newsletterInfo.id}\``, null)
-} catch (e) {
-console.log(e)
-}}}}
+
 handler.help = ["superinspect", "inspect"]
 handler.tags = ['tools'];
 handler.command = /^(superinspect|inspect|revisar|inspeccionar)$/i;
