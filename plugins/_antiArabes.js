@@ -2,14 +2,20 @@ let handler = m => m;
 
 handler.before = async function (m, { conn }) {
   const prefijosProhibidos = ['91', '92', '222', '93', '265', '61', '62', '966', '229', '40', '49', '20', '963', '967', '234', '210', '249', '212'];
-  const bot = global.db.data.settings[conn.user.jid] || {};
+  
+  // SOLUCIÓN: Usar la propiedad 'jid' directamente de la conexión, que está garantizada.
+  const botJid = conn.jid;
+  const bot = global.db.data.settings[botJid] || {};
+  
   const senderNumber = m.sender.split('@')[0];
   const user = global.db.data.users[m.sender];
 
   if (m.fromMe) return;
   if (!bot.anticommand) return;
   if (user.banned) return !1;
+  
   const esProhibido = prefijosProhibidos.some(prefijo => senderNumber.startsWith(prefijo));
+  
   if (esProhibido) {
     user.banned = true;
     if (m.chat.endsWith('@g.us')) {
