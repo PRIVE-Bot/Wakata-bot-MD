@@ -34,13 +34,18 @@ var handler = async (m, { conn, usedPrefix, command, text }) => {
     }
 
     try {
-        let name = await conn.getName(user).catch(_ => user.split('@')[0])
+        let name
+        try {
+            name = await conn.getName(user)
+        } catch {
+            name = user.split('@')[0]
+        }
 
         
         let groupMetadata = await conn.groupMetadata(m.chat)
         let participant = groupMetadata.participants.find(p => p.id === user)
 
-        if (participant && participant.admin === null) {
+        if (!participant || !participant.admin) {
             
             return conn.sendMessage(m.chat, {
                 text: `${emoji} @${name} ya fue degradado o no es administrador.`,
