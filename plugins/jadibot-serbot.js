@@ -40,7 +40,7 @@ let rtx = `
 ⟢ 1 » ⋮ ︱Ｄｉｓｐｏｓｉｔｉｖｏｓ 𝘃𝗶𝗻𝗰𝘂𝗹𝗮𝗱𝗼𝘀  
 ⟢ 2 » Ｅｓｃａｎｅａ ｅｌ Ⓠⓡ
 *
-⚠️ Ｓｅ ａｕｔｏｄｅｓｔｒｕｉｒá ｅｎ *60s* ⏳
+⚠️ Ｓｅ ａｕ𝘁ｏｄｅｓｔ𝗿𝘂ｉ𝗿á ｅｎ *60s* ⏳
 
 > 🔗 𝐂𝐚𝐧𝐚𝐥 𝐎𝐟𝐢𝐜𝐢𝐚l ↓
 `;
@@ -50,11 +50,11 @@ let rtx2 = `
 
 💻 〢 Ｍｏｄｏ Ｃｏ́ｄｉｇｏ ▣ ＳｕｂＢｏｔ ⌬ Ｐｅｒｓｉｓｔｅｎｔｅ
 
-⟢ ⋮ → Ｄｉｓ𝗽ｏｓｉｔｉｖｏ𝘀 𝘃𝗶𝗻𝗰𝘂𝗹𝗮𝗱𝗼𝘀  
-⟢ → Ｖｉｎｃｕｌａｒ ｃｏｎ 𝗻𝘂́𝗺𝗲𝗿𝗼  
-⟢ → Ｉｎｇ𝗿ｅｓａ ｅ𝗹 𝗰𝗼́𝗱𝗶𝗴𝗼
+⟢ ⋮ → Ｄｉｓｐｏｓｉｔ𝗶ｖｏｓ 𝘃𝗶𝗻𝗰𝘂𝗹𝗮𝗱𝗼𝘀  
+⟢ → Ｖｉｎｃｕｌａ𝗿 ｃｏｎ 𝗻𝘂́𝗺𝗲𝗿𝗼  
+⟢ → Ｉｎ𝗴𝗿𝗲𝘀𝗮 ｅｌ 𝗰𝗼́𝗱𝗶𝗴𝗼
 
-⚠️ Ｃｏ́ｄｉｇｏ ｅｘ𝗽𝗶𝗿𝗮 ｅｎ *60s* ⏳
+⚠️ Ｃｏ́𝗱ｉｇｏ ｅｘ𝗽𝗶𝗿𝗮 ｅｎ *60s* ⏳
 
 > 🔗 𝐂𝐚𝐧𝐚l 𝐎𝐟𝐢𝐜𝐢𝐚l ↓
 `;
@@ -320,13 +320,14 @@ setInterval(async () => {
     }
 }, 300000) 
 
-let handler = await import('../handler.js')
+let subBotHandler = await import('../sub-handler.js')
+
 let creloadHandler = async function (restatConn) {
     try {
-        const Handler = await import(`../handler.js?update=${Date.now()}`).catch(console.error)
-        if (Object.keys(Handler || {}).length) handler = Handler
+        const SubHandler = await import(`../sub-handler.js?update=${Date.now()}`).catch(console.error)
+        if (Object.keys(SubHandler || {}).length) subBotHandler = SubHandler
     } catch (e) {
-        console.error('⚠️ Error al recargar handler: ', e)
+        console.error('⚠️ Error al recargar sub-handler: ', e)
     }
     if (restatConn) {
         const oldChats = sock.chats
@@ -340,8 +341,8 @@ let creloadHandler = async function (restatConn) {
         sock.ev.off("connection.update", sock.connectionUpdate)
         sock.ev.off('creds.update', sock.credsUpdate)
     }
-
-    sock.handler = handler.handler.bind(sock)
+    
+    sock.handler = subBotHandler.handler.bind(sock)
     sock.connectionUpdate = connectionUpdate.bind(sock)
     sock.credsUpdate = saveCreds.bind(sock, true)
     sock.ev.on("messages.upsert", sock.handler)
