@@ -5,7 +5,6 @@ import { platform } from 'process';
 import path, { join } from 'path';
 import { unwatchFile, watchFile } from 'fs';
 import chalk from 'chalk';
-import fetch from 'node-fetch';
 import ws from 'ws';
 import { createRequire } from 'module';
 
@@ -39,7 +38,7 @@ export async function handler(chatUpdate) {
     m = smsg(this, m) || m;
     if (!m) return;
 
-    // if (!m.isGroup) return; // Línea comentada, descomentar si solo se quieren grupos
+    // if (!m.isGroup) return;
 
     this.processedMessages = this.processedMessages || new Map();
     const now = Date.now();
@@ -111,6 +110,7 @@ export async function handler(chatUpdate) {
         if (!global.db.data.chats[chatJid]) {
             global.db.data.chats[chatJid] = {
                 isBanned: false,
+                subbotDisabled: false, // Se mantiene para compatibilidad con la estructura, aunque se ignora en el Handler Principal
                 sAutoresponder: '',
                 welcome: true,
                 autolevelup: false,
@@ -174,6 +174,7 @@ export async function handler(chatUpdate) {
         const isAdmin = isRAdmin || user2?.admin === "admin";
         const isBotAdmin = !!bot?.admin;
 
+        // **AQUÍ SE ELIMINA LA LÓGICA DE bansub/unbansub para el Handler Principal**
 
         const ___dirname = path.join(path.dirname(global.__filename(import.meta.url, true)), './plugins');
         let usedPrefix = '';
@@ -230,6 +231,9 @@ export async function handler(chatUpdate) {
                 let text = args.join(' ');
                 command = (command || '').toLowerCase();
 
+                // **SE ELIMINA LA LÓGICA DE bansub/subtest ESPECÍFICA DEL SUB-BOT**
+
+
                 const fail = plugin.fail || global.dfail;
                 const isAccept = plugin.command instanceof RegExp ? 
                     plugin.command.test(command) :
@@ -246,6 +250,7 @@ export async function handler(chatUpdate) {
                     continue; 
                 }
 
+                // **FILTRO DE GRUPO RESTRINGIDO (Tomado del primer handler)**
                 const chatID = m.chat;
                 const ID_GRUPO_RESTRINGIDO = '120363405640485948@g.us';
                 const comandosPermitidos = ['code', 'qr', 'welcome', 'detect', 'kick', 'tag'];
@@ -256,6 +261,7 @@ export async function handler(chatUpdate) {
                         continue; 
                     }
                 }
+                // **FIN DE FILTRO**
 
                 if (!isAccept) continue;
 
@@ -270,7 +276,7 @@ export async function handler(chatUpdate) {
                         rowner: isROwner,
                         owner: isOwner,
                         mods: false,
-                        premium: user?.premium || false,
+                        premium: user?.premium || false, // Añadido check de premium
                         group: m.isGroup,
                         botAdmin: isBotAdmin,
                         admin: isAdmin,
@@ -345,6 +351,7 @@ export async function handler(chatUpdate) {
     }
 }
 
+// **DFail con mensajes del Handler Principal (Primer formato)**
 global.dfail = (type, m, conn) => {
     const messages = {
         rowner: `
