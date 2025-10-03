@@ -289,7 +289,8 @@ export async function subBotHandler(chatUpdate) {
                 }
 
 
-                const subFail = plugin.fail || global.dfail; // Renombrado a subFail
+                const subFail = plugin.fail || global.dfailg; 
+
                 const subIsAccept = plugin.command instanceof RegExp ? 
                     plugin.command.test(subCommand) : // Usando subCommand
                     Array.isArray(plugin.command) ?
