@@ -1,4 +1,4 @@
-import Jimp from 'jimp'
+import * es Jimp from 'jimp'
 
 let handler = async (m, { conn, text }) => {
 
