@@ -5,7 +5,6 @@ import { webp2png } from '../../lib/webp2mp4.js'
 import Jimp from 'jimp'
 
 let handler = async (m, { conn, args }) => {
-
   
   const baseThumbUrl = 'https://files.catbox.moe/p87uei.jpg'
   const baseImg = await Jimp.read(baseThumbUrl)
@@ -13,7 +12,7 @@ let handler = async (m, { conn, args }) => {
   baseImg.print(
     font,
     0,
-    baseImg.bitmap.height / 2 - 10, 
+    baseImg.bitmap.height / 2 - 10,
     {
       text: '𝗦𝗧𝗜𝗖𝗞𝗘𝗥 𝗚𝗘𝗡𝗘𝗥𝗔𝗗𝗢 ✨',
       alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
@@ -23,14 +22,6 @@ let handler = async (m, { conn, args }) => {
     baseImg.bitmap.height
   )
   const thumb = await baseImg.getBufferAsync(Jimp.MIME_JPEG)
-
-  
-  const fkontakMini = {
-    key: { participant: "0@s.whatsapp.net" },
-    message: {
-      imageMessage: { jpegThumbnail: thumb }
-    }
-  }
 
   let stiker = false
   try {
@@ -75,10 +66,10 @@ let handler = async (m, { conn, args }) => {
   } finally {
     if (stiker) {
       
-      await conn.sendMessage(m.chat, { sticker: stiker }, { quoted: m.quoted || m })
+      await conn.sendMessage(m.chat, { sticker: stiker })
       
       
-      await conn.sendMessage(m.chat, { text: '𝗦𝗧𝗜𝗖𝗞𝗘𝗥 𝗚𝗘𝗡𝗘𝗥𝗔𝗗𝗢 ✨' }, { quoted: fkontakMini })
+      await conn.sendMessage(m.chat, { text: '𝗦𝗧𝗜𝗖𝗞𝗘𝗥 𝗚𝗘𝗡𝗘𝗥𝗔𝗗𝗢 ✨' })
     } else {
       return m.reply(`✰✰ ᴘᴏʀ ғᴀᴠᴏʀ, envía un video, GIF o imagen para convertir a sticker.`, m)
     }
@@ -90,7 +81,6 @@ handler.tags = ['sticker']
 handler.command = ['s2', 'sticker2', 'stiker2']
 
 export default handler
-
 
 const isUrl = (text) => {
   return text.match(new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)(jpe?g|gif|png)/, 'gi'))
