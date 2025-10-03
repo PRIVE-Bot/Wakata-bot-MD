@@ -2,21 +2,33 @@ import { sticker } from '../../lib/sticker.js'
 import uploadFile from '../../lib/uploadFile.js'
 import uploadImage from '../../lib/uploadImage.js'
 import { webp2png } from '../../lib/webp2mp4.js'
+import Jimp from 'jimp'
 
 let handler = async (m, { conn, args }) => {
-  
-  const res1 = await fetch('https://files.catbox.moe/p87uei.jpg')
-  const thumb5 = Buffer.from(await res1.arrayBuffer())
 
   
-  const fkontak = {
+  const baseThumbUrl = 'https://files.catbox.moe/p87uei.jpg'
+  const baseImg = await Jimp.read(baseThumbUrl)
+  const font = await Jimp.loadFont(Jimp.FONT_SANS_16_WHITE)
+  baseImg.print(
+    font,
+    0,
+    baseImg.bitmap.height / 2 - 10, 
+    {
+      text: '𝗦𝗧𝗜𝗖𝗞𝗘𝗥 𝗚𝗘𝗡𝗘𝗥𝗔𝗗𝗢 ✨',
+      alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
+      alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE
+    },
+    baseImg.bitmap.width,
+    baseImg.bitmap.height
+  )
+  const thumb = await baseImg.getBufferAsync(Jimp.MIME_JPEG)
+
+  
+  const fkontakMini = {
     key: { participant: "0@s.whatsapp.net" },
     message: {
-      contactMessage: {
-        displayName: '𝗦𝗧𝗜𝗖𝗞𝗘𝗥 𝗚𝗘𝗡𝗘𝗥𝗔𝗗𝗢',
-        vcard: `BEGIN:VCARD\nVERSION:3.0\nN:;Sticker;;;\nFN:Sticker Generado\nitem1.TEL;waid=0:0\nEND:VCARD`,
-        jpegThumbnail: thumb5
-      }
+      imageMessage: { jpegThumbnail: thumb }
     }
   }
 
@@ -34,7 +46,7 @@ let handler = async (m, { conn, args }) => {
       }
 
       let img = await q.download?.()
-      if (!img) return conn.reply(m.chat, `✰✰ ᴘᴏʀ ғᴀᴠᴏʀ, ᴇɴᴠíᴀ ᴜɴ ᴠɪᴅᴇᴏ, ɢɪғ ᴏ ɪᴍᴀɢᴇɴ ᴘᴀʀᴀ ᴄᴏɴᴠᴇʀᴛɪʀ ᴀ sᴛɪᴄᴋᴇʀ.`, m)
+      if (!img) return m.reply(`✰✰ ᴘᴏʀ ғᴀᴠᴏʀ, envía un video, GIF o imagen para convertir a sticker.`, m)
 
       let out
       try {
@@ -54,7 +66,7 @@ let handler = async (m, { conn, args }) => {
       if (isUrl(args[0])) {
         stiker = await sticker(false, args[0], global.packsticker, global.packsticker2)
       } else {
-        return m.reply(`❌ La URL es incorrecta.`)
+        return m.reply(`❌ La URL es incorrecta.`, m)
       }
     }
   } catch (e) {
@@ -62,9 +74,13 @@ let handler = async (m, { conn, args }) => {
     if (!stiker) stiker = e
   } finally {
     if (stiker) {
-      await conn.sendMessage(m.chat, { sticker: stiker }, { quoted: fkontak })
+      
+      await conn.sendMessage(m.chat, { sticker: stiker }, { quoted: m.quoted || m })
+      
+      
+      await conn.sendMessage(m.chat, { text: '𝗦𝗧𝗜𝗖𝗞𝗘𝗥 𝗚𝗘𝗡𝗘𝗥𝗔𝗗𝗢 ✨' }, { quoted: fkontakMini })
     } else {
-      return conn.reply(m.chat, `✰ ᴘᴏʀ ғᴀᴠᴏʀ, ᴇɴᴠíᴀ ᴜɴ ᴠɪᴅᴇᴏ, ɢɪғ ᴏ ɪᴍᴀɢᴇɴ ᴘᴀʀᴀ ᴄᴏɴᴠᴇʀᴛɪʀ ᴀ sᴛɪᴄᴋᴇʀ.`, m)
+      return m.reply(`✰✰ ᴘᴏʀ ғᴀᴠᴏʀ, envía un video, GIF o imagen para convertir a sticker.`, m)
     }
   }
 }
