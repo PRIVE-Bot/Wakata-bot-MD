@@ -10,7 +10,11 @@ const { spawn, exec } = await import('child_process')
 import { makeWASocket } from '../lib/simple.js'
 import { fileURLToPath } from 'url'
 import * as baileys from "@whiskeysockets/baileys" 
-import { subBotHandler } from '../sub-handler.js' // CAMBIO CLAVE: Importar la función con el nombre correcto
+
+// CAMBIO CLAVE: Importar el módulo completo o la función correcta. 
+// Usaremos la importación dinámica más adelante, así que solo declaramos la variable.
+let subBotHandlerModule = await import('../sub-handler.js').catch(e => console.error('Error al cargar sub-handler inicial:', e))
+let subBotHandlerFunction = subBotHandlerModule?.subBotHandler 
 
 const { 
     useMultiFileAuthState, 
@@ -43,7 +47,7 @@ let rtx = `
 *
 ⚠️ Ｓｅ ａｕｔｏｄｅｓｔｒｕｉｒá ｅｎ *60s* ⏳
 
-> 🔗 𝐂𝐚𝐧𝐚𝐥 𝐎𝐟𝐢𝐜𝐢𝐚l ↓
+> 🔗 𝐂𝐚𝐧𝐚𝐥 𝐎𝐟𝐢𝐜𝐢a𝐥 ↓
 `;
 
 let rtx2 = `
@@ -52,12 +56,12 @@ let rtx2 = `
 💻 〢 Ｍｏｄｏ Ｃｏ́ｄｉｇｏ ▣ ＳｕｂＢｏｔ ⌬ Ｐｅｒｓｉｓｔｅｎｔｅ
 
 ⟢ ⋮ → Ｄｉｓｐｏｓｉｔｉｖｏｓ 𝘃𝗶𝗻𝗰𝘂𝗹𝗮𝗱𝗼𝘀  
-⟢ → Ｖｉｎｃｕｌａｒ ｃｏｎ 𝗻𝘂́𝗺𝗲𝗿𝗼  
-⟢ → Ｉｎ𝗴𝗿𝗲𝘀𝗮 ｅｌ 𝗰𝗼́𝗱𝗶𝗴𝗼
+⟢ → Ｖｉ𝗻ｃｕｌ𝗮𝗿 ｃｏｎ 𝗻𝘂́𝗺𝗲𝗿𝗼  
+⟢ → Ｉｎｇ𝗿ｅ𝘀ａ 𝗲𝗹 𝗰𝗼́𝗱𝗶𝗴𝗼
 
-⚠️ Ｃｏ́ｄｉ𝗴ｏ 𝗲𝘅𝗽𝗶𝗿𝗮 𝗲𝗻 *60s* ⏳
+⚠️ Ｃｏ́𝗱𝗶𝗴ｏ 𝗲𝘅𝗽𝗶𝗿𝗮 𝗲𝗻 *60s* ⏳
 
-> 🔗 𝐂𝐚𝐧𝐚l 𝐎𝐟𝐢𝐜𝐢𝐚l ↓
+> 🔗 𝐂𝐚𝐧𝐚l 𝐎𝐟𝐢𝐜𝐢a𝐥 ↓
 `;
 
 let crm1 = "Y2QgcGx1Z2lucy"
@@ -326,12 +330,9 @@ setInterval(async () => {
     }
 }, 300000) 
 
-// La función subBotHandler ya está importada arriba.
-
 let creloadHandler = async function (restatConn) {
-    let NewSubHandler = subBotHandler // Usa la importación inicial como fallback
+    let NewSubHandler = subBotHandlerFunction 
     try {
-        // CAMBIO CLAVE: Recarga dinámica del sub-handler.js
         const SubHandlerModule = await import(`../sub-handler.js?update=${Date.now()}`).catch(console.error)
         if (SubHandlerModule && SubHandlerModule.subBotHandler) {
              NewSubHandler = SubHandlerModule.subBotHandler
@@ -352,8 +353,8 @@ let creloadHandler = async function (restatConn) {
         sock.ev.off('creds.update', sock.credsUpdate)
     }
 
-    // CAMBIO CLAVE: Asignamos la función exportada 'subBotHandler'
-    sock.handler = NewSubHandler.bind(sock) 
+    // CAMBIO CLAVE: Usa el nombre de la función exportada: subBotHandler
+    sock.handler = NewSubHandler?.bind(sock) || subBotHandlerFunction?.bind(sock)
     
     // Función para recargar el handler del sub-bot de forma externa (desde index.js)
     sock.subreloadHandler = creloadHandler.bind(sock, false) 
