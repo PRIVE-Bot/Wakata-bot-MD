@@ -26,19 +26,19 @@ const delay = ms => isNumber(ms) && new Promise(resolve => setTimeout(function (
 
 export async function subBotHandler(chatUpdate) {
     this.uptime = this.uptime || Date.now();
-    const conn = this;
+    const subConn = this; // Renombrado a subConn
 
     if (!chatUpdate || !chatUpdate.messages || chatUpdate.messages.length === 0) {
         return;
     }
 
-    let m = chatUpdate.messages[chatUpdate.messages.length - 1];
-    if (!m) return;
+    let subM = chatUpdate.messages[chatUpdate.messages.length - 1]; // Renombrado a subM
+    if (!subM) return;
 
-    m = smsg(this, m) || m;
-    if (!m) return;
+    subM = smsg(this, subM) || subM;
+    if (!subM) return;
 
-    // if (!m.isGroup) return; // Línea comentada, descomentar si solo se quieren grupos
+    // if (!subM.isGroup) return; // Línea comentada, descomentar si solo se quieren grupos
 
     this.processedMessages = this.processedMessages || new Map();
     const now = Date.now();
@@ -50,26 +50,26 @@ export async function subBotHandler(chatUpdate) {
         }
     }
 
-    const id = m.key.id;
-    if (this.processedMessages.has(id)) return;
-    this.processedMessages.set(id, now);
+    const subId = subM.key.id; // Renombrado a subId
+    if (this.processedMessages.has(subId)) return;
+    this.processedMessages.set(subId, now);
 
     try {
-        m = smsg(this, m);
-        if (!m) return;
+        subM = smsg(this, subM);
+        if (!subM) return;
 
-        await this.readMessages([m.key]);
+        await this.readMessages([subM.key]);
 
         if (global.db.data == null) {
             await global.loadDatabase();
         }
 
-        m.exp = 0;
-        m.coin = false;
+        subM.exp = 0;
+        subM.coin = false;
 
-        const senderJid = m.sender;
-        if (!global.db.data.users[senderJid]) {
-            global.db.data.users[senderJid] = {
+        const subSenderJid = subM.sender; // Renombrado a subSenderJid
+        if (!global.db.data.users[subSenderJid]) {
+            global.db.data.users[subSenderJid] = {
                 exp: 0,
                 coin: 10,
                 joincount: 1,
@@ -91,7 +91,7 @@ export async function subBotHandler(chatUpdate) {
                 marry: '',
                 description: '',
                 packstickers: null,
-                name: m.name,
+                name: subM.name, // Usando subM
                 age: -1,
                 regTime: -1,
                 afk: -1,
@@ -106,9 +106,9 @@ export async function subBotHandler(chatUpdate) {
             };
         }
 
-        const chatJid = m.chat;
-        if (!global.db.data.chats[chatJid]) {
-            global.db.data.chats[chatJid] = {
+        const subChatJid = subM.chat; // Renombrado a subChatJid
+        if (!global.db.data.chats[subChatJid]) {
+            global.db.data.chats[subChatJid] = {
                 isBanned: false, 
                 subbotDisabled: false, 
                 sAutoresponder: '',
@@ -132,9 +132,9 @@ export async function subBotHandler(chatUpdate) {
             };
         }
 
-        const settingsJid = this.user.jid;
-        if (!global.db.data.settings[settingsJid]) {
-            global.db.data.settings[settingsJid] = {
+        const subSettingsJid = subConn.user.jid; // Usando subConn
+        if (!global.db.data.settings[subSettingsJid]) {
+            global.db.data.settings[subSettingsJid] = {
                 self: false,
                 restrict: true,
                 jadibotmd: true,
@@ -145,73 +145,73 @@ export async function subBotHandler(chatUpdate) {
             };
         }
 
-        const user = global.db.data.users[senderJid];
-        const chat = global.db.data.chats[chatJid];
-        const settings = global.db.data.settings[settingsJid];
+        const subUser = global.db.data.users[subSenderJid]; // Renombrado a subUser
+        const subChat = global.db.data.chats[subChatJid];   // Renombrado a subChat
+        const subSettings = global.db.data.settings[subSettingsJid]; // Renombrado a subSettings
 
-        const detectwhat = m.sender.includes('@lid') ? '@lid' : '@s.whatsapp.net';
-        const isROwner = global.owner.map(([number]) => number.replace(/[^0-9]/g, '') + detectwhat).includes(senderJid);
-        const isOwner = isROwner || m.fromMe;
+        const subDetectwhat = subM.sender.includes('@lid') ? '@lid' : '@s.whatsapp.net';
+        const isROwner = global.owner.map(([number]) => number.replace(/[^0-9]/g, '') + subDetectwhat).includes(subSenderJid);
+        const isOwner = isROwner || subM.fromMe; // Usando subM
 
-        if (m.isBaileys || opts['nyimak']) return;
+        if (subM.isBaileys || opts['nyimak']) return; // Usando subM
         if (!isROwner && opts['self']) return;
-        if (opts['swonly'] && m.chat !== 'status@broadcast') return;
-        if (typeof m.text !== 'string') m.text = '';
+        if (opts['swonly'] && subM.chat !== 'status@broadcast') return; // Usando subM
+        if (typeof subM.text !== 'string') subM.text = ''; // Usando subM
 
-        async function getLidFromJid(id, conn) {
+        async function getLidFromJid(id, connection) { // Renombrado conn a connection
             if (id.endsWith('@lid')) return id;
-            const res = await conn.onWhatsApp(id).catch(() => []);
+            const res = await connection.onWhatsApp(id).catch(() => []);
             return res[0]?.lid || id;
         }
-        const senderLid = await getLidFromJid(m.sender, conn);
-        const botLid = await getLidFromJid(conn.user.jid, conn);
-        const botJid = conn.user.jid;
-        const groupMetadata = m.isGroup ? ((conn.chats[m.chat] || {}).metadata || await this.groupMetadata(m.chat).catch(_ => null)) : {};
-        const participants = m.isGroup ? (groupMetadata.participants || []) : [];
-        const user2 = participants.find(p => p.id === senderLid || p.jid === senderJid) || {};
-        const bot = participants.find(p => p.id === botLid || p.id === botJid) || {};
-        const isRAdmin = user2?.admin === "superadmin";
-        const isAdmin = isRAdmin || user2?.admin === "admin";
-        const isBotAdmin = !!bot?.admin;
+        const subSenderLid = await getLidFromJid(subM.sender, subConn); // Usando subM y subConn
+        const subBotLid = await getLidFromJid(subConn.user.jid, subConn); // Usando subConn
+        const subBotJid = subConn.user.jid; // Usando subConn
+        const subGroupMetadata = subM.isGroup ? ((subConn.chats[subM.chat] || {}).metadata || await subConn.groupMetadata(subM.chat).catch(_ => null)) : {}; // Usando subM y subConn
+        const subParticipants = subM.isGroup ? (subGroupMetadata.participants || []) : []; // Renombrado a subParticipants
+        const subUser2 = subParticipants.find(p => p.id === subSenderLid || p.jid === subSenderJid) || {}; // Renombrado a subUser2
+        const subBot = subParticipants.find(p => p.id === subBotLid || p.id === subBotJid) || {}; // Renombrado a subBot
+        const isRAdmin = subUser2?.admin === "superadmin"; // Usando subUser2
+        const isAdmin = isRAdmin || subUser2?.admin === "admin"; // Usando subUser2
+        const isBotAdmin = !!subBot?.admin; // Usando subBot
 
-        if (m.isGroup && chat.subbotDisabled) {
-            const commandText = m.text.toLowerCase().split(' ')[0];
-            const isUnbanCommand = commandText === '!unbansub';
+        if (subM.isGroup && subChat.subbotDisabled) { // Usando subM y subChat
+            const subCommandText = subM.text.toLowerCase().split(' ')[0]; // Usando subM
+            const subIsUnbanCommand = subCommandText === '!unbansub';
 
-            if (!isUnbanCommand) {
+            if (!subIsUnbanCommand) {
                 return;
             }
 
-            if (isUnbanCommand) {
+            if (subIsUnbanCommand) {
                 if (isOwner || isROwner) {
-                    chat.subbotDisabled = false;
-                    this.reply(m.chat, `
+                    subChat.subbotDisabled = false;
+                    this.reply(subM.chat, `
 ╔═════╸━━━╸═════╗
 ║ 🚀 *SUB-BOT ACTIVO* 🚀 
 ║ 
 ║ ✅ Este Sub-Bot ha sido *HABILITADO* ║    para responder comandos con normalidad.
-╚═════╸━━━╸═════╝`, m);
+╚═════╸━━━╸═════╝`, subM);
                 } else {
-                    global.dfail('owner', m, this); 
+                    global.dfail('owner', subM, this); // Usando subM
                 }
                 return; 
             }
         }
 
-        const ___dirname = path.join(path.dirname(global.__filename(import.meta.url, true)), './plugins');
-        let usedPrefix = '';
+        const subDirname = path.join(path.dirname(global.__filename(import.meta.url, true)), './plugins'); // Renombrado a subDirname
+        let subUsedPrefix = ''; // Renombrado a subUsedPrefix
 
         for (let name in global.plugins) {
             let plugin = global.plugins[name];
             if (!plugin || plugin.disabled) continue;
 
-            const __filename = join(___dirname, name);
+            const subFilename = join(subDirname, name); // Usando subDirname
             if (typeof plugin.all === 'function') {
                 try {
-                    await plugin.all.call(this, m, {
+                    await plugin.all.call(this, subM, { // Usando subM
                         chatUpdate,
-                        __dirname: ___dirname,
-                        __filename
+                        __dirname: subDirname, // Usando subDirname
+                        __filename: subFilename // Usando subFilename
                     });
                 } catch (e) {
                     console.error(e);
@@ -225,93 +225,93 @@ export async function subBotHandler(chatUpdate) {
             const str2Regex = str => str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
             let _prefix = plugin.customPrefix ? plugin.customPrefix : this.prefix ? this.prefix : global.prefix;
 
-            const match = (_prefix instanceof RegExp ? 
-                [[_prefix.exec(m.text), _prefix]] :
+            const subMatch = (_prefix instanceof RegExp ? 
+                [[_prefix.exec(subM.text), _prefix]] : // Usando subM
                 Array.isArray(_prefix) ?
                 _prefix.map(p => {
                     const re = p instanceof RegExp ? p : new RegExp(str2Regex(p));
-                    return [re.exec(m.text), re];
+                    return [re.exec(subM.text), re]; // Usando subM
                 }) :
                 typeof _prefix === 'string' ?
-                [[new RegExp(str2Regex(_prefix)).exec(m.text), new RegExp(str2Regex(_prefix))]] :
+                [[new RegExp(str2Regex(_prefix)).exec(subM.text), new RegExp(str2Regex(_prefix))]] : // Usando subM
                 [[[], new RegExp()]]
-            ).find(p => p[0]);
+            ).find(p => p[0]); // Renombrado a subMatch
 
             if (typeof plugin.before === 'function') {
-                const extra = { match, conn: this, participants, groupMetadata, user, isROwner, isOwner, isRAdmin, isAdmin, isBotAdmin, chatUpdate, __dirname: ___dirname, __filename };
-                if (await plugin.before.call(this, m, extra)) {
+                const subExtra = { subMatch, subConn: this, subParticipants, subGroupMetadata, subUser, isROwner, isOwner, isRAdmin, isAdmin, isBotAdmin, chatUpdate, __dirname: subDirname, __filename: subFilename }; // Renombrado a subExtra
+                if (await plugin.before.call(this, subM, subExtra)) { // Usando subM
                     continue;
                 }
             }
 
             if (typeof plugin !== 'function') continue;
 
-            if (match) {
-                usedPrefix = match[0][0];
-                let noPrefix = m.text.replace(usedPrefix, '');
-                let [command, ...args] = noPrefix.trim().split(/\s+/).filter(v => v);
-                let text = args.join(' ');
-                command = (command || '').toLowerCase();
+            if (subMatch) { // Usando subMatch
+                subUsedPrefix = subMatch[0][0]; // Usando subMatch
+                let subNoPrefix = subM.text.replace(subUsedPrefix, ''); // Renombrado y usando subM, subUsedPrefix
+                let [subCommand, ...subArgs] = subNoPrefix.trim().split(/\s+/).filter(v => v); // Renombrado
+                let subText = subArgs.join(' '); // Renombrado
+                subCommand = (subCommand || '').toLowerCase(); // Usando subCommand
 
 
-                if (command === 'bansub') {
+                if (subCommand === 'bansub') { // Usando subCommand
                     if (!isOwner) {
-                        global.dfail('owner', m, this);
+                        global.dfail('owner', subM, this);
                         return;
                     }
-                    if (!m.isGroup) {
-                        global.dfail('group', m, this);
+                    if (!subM.isGroup) {
+                        global.dfail('group', subM, this);
                         return;
                     }
 
-                    chat.subbotDisabled = true;
-                    this.reply(m.chat, `
+                    subChat.subbotDisabled = true;
+                    this.reply(subM.chat, `
 ╔═════╸━━━╸═════╗
 ║ ⚜️ *SUB-BOT INACTIVO* ⚜️ 
 ║ 
 ║ 🛡️ Este Sub-Bot ha sido *DESHABILITADO* ║    para responder CUALQUIER comando en este 
 ║    grupo de forma PERMANENTE hasta que se 
 ║    use *!unbansub* por el creador.
-╚═════╸━━━╸═════╝`, m);
+╚═════╸━━━╸═════╝`, subM);
                     return;
                 }
 
-                if (command === 'subtest') {
-                    this.reply(m.chat, `
+                if (subCommand === 'subtest') { // Usando subCommand
+                    this.reply(subM.chat, `
 ┏━━━━━━━◥◣ ◆ ◢◤━━━━━━━┓
 ┃ ✨ *POTENCIA SUBORDINADA ACTIVA* ✨
 ┃ 
 ┃ ⚙️ *Estado:* Operacional y aislado.
-┃ 🔑 *Comando único:* *${command}* ejecutado.
-┃ 👤 *Usuario:* ${m.name}
-┗━━━━━━━◢◤ ◆ ◥◣━━━━━━━┛`, m);
+┃ 🔑 *Comando único:* *${subCommand}* ejecutado.
+┃ 👤 *Usuario:* ${subM.name}
+┗━━━━━━━◢◤ ◆ ◥◣━━━━━━━┛`, subM);
                     return;
                 }
 
 
-                const fail = plugin.fail || global.dfail;
-                const isAccept = plugin.command instanceof RegExp ? 
-                    plugin.command.test(command) :
+                const subFail = plugin.fail || global.dfail; // Renombrado a subFail
+                const subIsAccept = plugin.command instanceof RegExp ? 
+                    plugin.command.test(subCommand) : // Usando subCommand
                     Array.isArray(plugin.command) ?
-                    plugin.command.some(cmd => cmd instanceof RegExp ? cmd.test(command) : cmd === command) :
+                    plugin.command.some(cmd => cmd instanceof RegExp ? cmd.test(subCommand) : cmd === subCommand) : // Usando subCommand
                     typeof plugin.command === 'string' ? 
-                    plugin.command === command :
-                    false;
+                    plugin.command === subCommand : // Usando subCommand
+                    false; // Renombrado a subIsAccept
 
-                global.comando = command;
+                global.comando = subCommand; // Usando subCommand
 
-                const settings = global.db.data.settings[this.user.jid];
-                if (settings.soloParaJid && m.sender !== settings.soloParaJid) {
+                const subSettings = global.db.data.settings[subConn.user.jid]; // Usando subConn
+                if (subSettings.soloParaJid && subM.sender !== subSettings.soloParaJid) { // Usando subM y subSettings
                     continue; 
                 }
 
-                if (!isAccept) continue;
+                if (!subIsAccept) continue; // Usando subIsAccept
 
-                m.plugin = name;
+                subM.plugin = name; // Usando subM
 
-                if (chat?.isBanned && !isROwner) return;
+                if (subChat?.isBanned && !isROwner) return; // Usando subChat
 
-                if (chat?.modoadmin && !isOwner && !isROwner && m.isGroup && !isAdmin) return;
+                if (subChat?.modoadmin && !isOwner && !isROwner && subM.isGroup && !isAdmin) return; // Usando subChat y subM
 
                 const checkPermissions = (perm) => {
                     const permissions = {
@@ -319,10 +319,10 @@ export async function subBotHandler(chatUpdate) {
                         owner: isOwner,
                         mods: false,
                         premium: false,
-                        group: m.isGroup,
+                        group: subM.isGroup, // Usando subM
                         botAdmin: isBotAdmin,
                         admin: isAdmin,
-                        private: !m.isGroup,
+                        private: !subM.isGroup, // Usando subM
                         restrict: !opts['restrict']
                     };
                     return permissions[perm];
@@ -331,30 +331,30 @@ export async function subBotHandler(chatUpdate) {
                 const requiredPerms = ['rowner', 'owner', 'mods', 'premium', 'group', 'botAdmin', 'admin', 'private', 'restrict'];
                 for (const perm of requiredPerms) {
                     if (plugin[perm] && !checkPermissions(perm)) {
-                        fail(perm, m, this);
+                        subFail(perm, subM, this); // Usando subFail y subM
                         return;
                     }
                 }
 
-                m.isCommand = true;
-                const xp = 'exp' in plugin ? parseInt(plugin.exp) : 10;
-                m.exp += xp;
+                subM.isCommand = true; // Usando subM
+                const subXp = 'exp' in plugin ? parseInt(plugin.exp) : 10; // Renombrado a subXp
+                subM.exp += subXp; // Usando subM y subXp
 
-                const extra = {
-                    match, usedPrefix, noPrefix, args, command, text, conn: this, participants, groupMetadata, user, isROwner, isOwner, isRAdmin, isAdmin, isBotAdmin, chatUpdate, __dirname: ___dirname, __filename
+                const subExtra = { // Renombrado a subExtra
+                    subMatch, subUsedPrefix, subNoPrefix, subArgs, subCommand, subText, subConn: this, subParticipants, subGroupMetadata, subUser, isROwner, isOwner, isRAdmin, isAdmin, isBotAdmin, chatUpdate, __dirname: subDirname, __filename: subFilename
                 };
 
                 try {
-                    await plugin.call(this, m, extra);
+                    await plugin.call(this, subM, subExtra); // Usando subM y subExtra
                 } catch (e) {
-                    m.error = e;
+                    subM.error = e; // Usando subM
                     console.error(e);
                     const errorText = format(e).replace(new RegExp(Object.values(global.APIKeys || {}).join('|'), 'g'), 'Administrador');
-                    m.reply(errorText);
+                    this.reply(subM.chat, errorText, subM); // Usando subM
                 } finally {
                     if (typeof plugin.after === 'function') {
                         try {
-                            await plugin.after.call(this, m, extra);
+                            await plugin.after.call(this, subM, subExtra); // Usando subM y subExtra
                         } catch (e) {
                             console.error(e);
                         }
@@ -366,25 +366,25 @@ export async function subBotHandler(chatUpdate) {
     } catch (e) {
         console.error(e);
     } finally {
-        if (m) {
-            const user = global.db.data.users[m.sender];
-            if (user && user.muto) {
-                await this.sendMessage(m.chat, { delete: m.key });
+        if (subM) { // Usando subM
+            const subUser = global.db.data.users[subM.sender]; // Usando subM
+            if (subUser && subUser.muto) { // Usando subUser
+                await this.sendMessage(subM.chat, { delete: subM.key }); // Usando subM
             }
-            if (user) {
-                user.exp += m.exp;
-                user.coin -= m.coin * 1;
+            if (subUser) { // Usando subUser
+                subUser.exp += subM.exp; // Usando subM
+                subUser.coin -= subM.coin * 1; // Usando subM
             }
-            if (m.plugin) {
+            if (subM.plugin) { // Usando subM
                 const stats = global.db.data.stats;
                 const now = Date.now();
-                if (!stats[m.plugin]) {
-                    stats[m.plugin] = { total: 0, success: 0, last: 0, lastSuccess: 0 };
+                if (!stats[subM.plugin]) { // Usando subM
+                    stats[subM.plugin] = { total: 0, success: 0, last: 0, lastSuccess: 0 };
                 }
-                const stat = stats[m.plugin];
+                const stat = stats[subM.plugin];
                 stat.total += 1;
                 stat.last = now;
-                if (!m.error) {
+                if (!subM.error) { // Usando subM
                     stat.success += 1;
                     stat.lastSuccess = now;
                 }
@@ -393,7 +393,7 @@ export async function subBotHandler(chatUpdate) {
     }
 }
 
-global.dfail = (type, m, conn) => {
+global.dfail = (type, subM, subConn) => { // Renombrado a subM y subConn
     const messages = {
         rowner: `
 ╔═════╸━━━╸═════╗
@@ -450,13 +450,13 @@ global.dfail = (type, m, conn) => {
 ╚═════╸━━━╸═════╝`
     };
     if (messages[type]) {
-        conn.reply(m.chat, messages[type], m, rcanal);
+        subConn.reply(subM.chat, messages[type], subM, rcanal); // Usando subConn y subM
     }
 };
 
-let file = global.__filename(import.meta.url, true);
-watchFile(file, async () => {
-    unwatchFile(file);
+let subFile = global.__filename(import.meta.url, true); // Renombrado a subFile
+watchFile(subFile, async () => { // Usando subFile
+    unwatchFile(subFile); // Usando subFile
     console.log(chalk.magenta("Se actualizó 'sub-handler.js' para sub-bots."));
     if (global.conns && global.conns.length > 0) {
         const users = global.conns.filter((conn) => conn.user && conn.ws.socket && conn.ws.socket.readyState !== ws.CLOSED);
