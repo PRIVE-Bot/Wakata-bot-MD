@@ -26,6 +26,7 @@ const delay = ms => isNumber(ms) && new Promise(resolve => setTimeout(function (
 
 export async function subBotHandler(chatUpdate) {
     this.uptime = this.uptime || Date.now();
+    const conn = this;
 
     if (!chatUpdate || !chatUpdate.messages || chatUpdate.messages.length === 0) {
         return;
@@ -37,7 +38,7 @@ export async function subBotHandler(chatUpdate) {
     m = smsg(this, m) || m;
     if (!m) return;
 
-    if (!m.isGroup) return;
+    // if (!m.isGroup) return; // Línea comentada, descomentar si solo se quieren grupos
 
     this.processedMessages = this.processedMessages || new Map();
     const now = Date.now();
@@ -191,7 +192,7 @@ export async function subBotHandler(chatUpdate) {
 ║ ✅ Este Sub-Bot ha sido *HABILITADO* ║    para responder comandos con normalidad.
 ╚═════╸━━━╸═════╝`, m);
                 } else {
-                    dfail('owner', m, this); 
+                    global.dfail('owner', m, this); 
                 }
                 return; 
             }
@@ -237,7 +238,8 @@ export async function subBotHandler(chatUpdate) {
             ).find(p => p[0]);
 
             if (typeof plugin.before === 'function') {
-                if (await plugin.before.call(this, m, { match, conn: this, participants, groupMetadata, user, isROwner, isOwner, isRAdmin, isAdmin, isBotAdmin, chatUpdate, __dirname: ___dirname, __filename })) {
+                const extra = { match, conn: this, participants, groupMetadata, user, isROwner, isOwner, isRAdmin, isAdmin, isBotAdmin, chatUpdate, __dirname: ___dirname, __filename };
+                if (await plugin.before.call(this, m, extra)) {
                     continue;
                 }
             }
@@ -254,11 +256,11 @@ export async function subBotHandler(chatUpdate) {
 
                 if (command === 'bansub') {
                     if (!isOwner) {
-                        dfail('owner', m, this);
+                        global.dfail('owner', m, this);
                         return;
                     }
                     if (!m.isGroup) {
-                        dfail('group', m, this);
+                        global.dfail('group', m, this);
                         return;
                     }
 
@@ -285,7 +287,6 @@ export async function subBotHandler(chatUpdate) {
 ┗━━━━━━━◢◤ ◆ ◥◣━━━━━━━┛`, m);
                     return;
                 }
-
 
 
                 const fail = plugin.fail || global.dfail;
@@ -348,7 +349,7 @@ export async function subBotHandler(chatUpdate) {
                 } catch (e) {
                     m.error = e;
                     console.error(e);
-                    const errorText = format(e).replace(new RegExp(Object.values(global.APIKeys).join('|'), 'g'), 'Administrador');
+                    const errorText = format(e).replace(new RegExp(Object.values(global.APIKeys || {}).join('|'), 'g'), 'Administrador');
                     m.reply(errorText);
                 } finally {
                     if (typeof plugin.after === 'function') {
