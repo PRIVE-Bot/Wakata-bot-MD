@@ -25,13 +25,13 @@ export async function before(m, { conn, participants, groupMetadata }) {
 
   const botname = "Mejor Bot"
 
-  const thumb2 = Buffer.from(await (await fetch('https://files.catbox.moe/rq6xiz.jpg')).arrayBuffer())
+  const thumb2 = Buffer.from(await (await fetch('https://i.postimg.cc/y8yzWzjW/1756498087639.jpg')).arrayBuffer())
   const thumb3 = Buffer.from(await (await fetch('https://i.postimg.cc/y8yzWzjW/1756498087639.jpg')).arrayBuffer())
-  const thumb4 = Buffer.from(await (await fetch('https://files.catbox.moe/vjx6r8.jpg')).arrayBuffer())
-  const thumb5 = Buffer.from(await (await fetch('https://files.catbox.moe/vjx6r8.jpg')).arrayBuffer())
-  const thumb6 = Buffer.from(await (await fetch('https://files.catbox.moe/eln12h.jpg')).arrayBuffer())
-  const thumb7 = Buffer.from(await (await fetch('https://i.postimg.cc/sDxKyS7b/1756180619692.jpg')).arrayBuffer())
-  const thumb8 = Buffer.from(await (await fetch('https://i.postimg.cc/sDxKyS7b/1756180619692.jpg')).arrayBuffer())
+  const thumb4 = Buffer.from(await (await fetch('https://i.postimg.cc/y8yzWzjW/1756498087639.jpg')).arrayBuffer())
+  const thumb5 = Buffer.from(await (await fetch('https://i.postimg.cc/y8yzWzjW/1756498087639.jpg')).arrayBuffer())
+  const thumb6 = Buffer.from(await (await fetch('https://i.postimg.cc/y8yzWzjW/1756498087639.jpg')).arrayBuffer())
+  const thumb7 = Buffer.from(await (await fetch('https://i.postimg.cc/y8yzWzjW/1756498087639.jpg')).arrayBuffer())
+  const thumb8 = Buffer.from(await (await fetch('https://i.postimg.cc/y8yzWzjW/1756498087639.jpg')).arrayBuffer())
 
   const fkontak  = makeFkontak(thumb2, `𝗘𝗡𝗟𝗔𝗖𝗘 𝗔𝗖𝗧𝗨𝗔𝗟𝗜𝗭𝗔𝗗𝗢`, botname)
   const fkontak2 = makeFkontak(thumb3, `𝗜𝗠𝗔𝗚𝗘𝗡 𝗔𝗖𝗧𝗨𝗔𝗟𝗜𝗭𝗔𝗗𝗔`, botname)
