@@ -120,7 +120,7 @@ if (info) {
     showAdAttribution: false,
     renderLargerThumbnail: true
     }}}, { quoted: fkontak })
-    if (finalID) conn.reply(m.chat, `*🆔 ID del Grupo/Comunidad:*\n\`${finalID}\``, null)
+    if (finalID) conn.reply(m.chat, `${finalID}`, null)
 
 } else {
     let newsletterInfo
@@ -146,7 +146,7 @@ if (info) {
         showAdAttribution: false,
         renderLargerThumbnail: true
         }}}, { quoted: fkontak })
-        if (newsletterInfo.id) conn.reply(m.chat, `*🆔 ID del Canal:*\n\`${newsletterInfo.id}\``, null)
+        if (newsletterInfo.id) conn.reply(m.chat, `${newsletterInfo.id}`, null)
     } catch (e) {
         console.log(e)
     }}}
