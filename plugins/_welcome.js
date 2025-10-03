@@ -45,29 +45,43 @@ export async function before(m, { conn, participants, groupMetadata }) {
     console.error(e)
   }
 
-  const texto = `
-✎ Usuario: ${taguser}
-✎ Nombre: ${userName}
-✎ Grupo: ${groupMetadata.subject}
-✎ Miembros: ${totalMembers}
-✎ Fecha: ${date}
-  `
+  // 📌 Definimos valores que faltaban
+  const groupSubject = groupMetadata.subject
+  const jid = m.chat
+  const number = who.split('@')[0]
 
-  await conn.sendMessage(      
-  m.chat,      
-  { 
-    image: { url: urlapi }, 
-    caption: texto, 
-    contextInfo: {
-      mentionedJid: [who],
-      isForwarded: true,
-      forwardedNewsletterMessageInfo: {
-        newsletterJid: channelRD.id,
-        serverMessageId: '',
-        newsletterName: channelRD.name
-      }
+  const productMessage = {
+    product: {
+      productImage: { url: urlapi },
+      productId: '2452968910',
+      title: `${tipo}, ahora somos ${totalMembers}`,
+      description: '',
+      currencyCode: 'USD',
+      priceAmount1000: '0',
+      retailerId: 1677,
+      url: `https://wa.me/${number}`,
+      productImageCount: 1
     },
-  },      
-  { quoted: fkontak }      
- )
+    businessOwnerJid: who || '0@s.whatsapp.net',
+    caption: `👤𝙐𝙨𝙚𝙧: ${taguser}\n📚𝙂𝙧𝙪𝙥𝙤: ${groupSubject}\n👥𝙈𝙞𝙚𝙢𝙗𝙧𝙤: ${totalMembers}\n📆 𝙁𝙚𝙘𝙝𝙖: ${date}`.trim(),
+    title: '',
+    subtitle: '',
+    footer: groupSubject || '',
+    interactiveButtons: [
+      {
+        name: 'quick_reply',
+        buttonParamsJson: JSON.stringify({
+          display_text: '🌟 ʀᴇɢɪsᴛʀᴀʀᴍᴇ ᴀ ɪᴛsᴜᴋɪ-ɪᴀ 🌟',
+          id: '.reg'
+        })
+      }
+    ],
+    mentions: who ? [who] : []
+  }
+
+  const mentionId = who ? [who] : []
+  await conn.sendMessage(jid, productMessage, {
+    quoted: fkontak || undefined,
+    contextInfo: { mentionedJid: mentionId }
+  })
 }
