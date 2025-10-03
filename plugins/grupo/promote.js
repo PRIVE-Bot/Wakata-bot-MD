@@ -39,7 +39,7 @@ var handler = async (m, { conn, usedPrefix, command, text }) => {
 
         await conn.groupParticipantsUpdate(m.chat, [user], 'promote');
         await conn.sendMessage(m.chat, {
-            text: `✅ @${name} fue promovido a administrador con éxito.`,
+            text: `${emojis} @${name} fue promovido a administrador con éxito.`,
             contextInfo: { mentionedJid: [user] }
         }, { quoted: fkontak })
     } catch (e) {
