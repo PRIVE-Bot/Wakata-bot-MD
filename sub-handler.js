@@ -186,7 +186,8 @@ export async function subBotHandler(chatUpdate) {
                     await plugin.all.call(this, subM, {
                         chatUpdate,
                         __dirname: subDirname,
-                        __filename: subFilename
+                        __filename: subFilename,
+                        conn: this // **FIX**
                     });
                 } catch (e) {
                     console.error(e);
@@ -213,7 +214,7 @@ export async function subBotHandler(chatUpdate) {
             ).find(p => p[0]);
 
             if (typeof plugin.before === 'function') {
-                const subExtra = { subMatch, subConn: this, subParticipants, subGroupMetadata, subUser, isROwner, isOwner, isRAdmin, isAdmin, isBotAdmin, chatUpdate, __dirname: subDirname, __filename: subFilename };
+                const subExtra = { subMatch, subConn: this, subParticipants, subGroupMetadata, subUser, isROwner, isOwner, isRAdmin, isAdmin, isBotAdmin, chatUpdate, __dirname: subDirname, __filename: subFilename, conn: this }; // **FIX: Se pasa 'conn: this'**
                 if (await plugin.before.call(this, subM, subExtra)) {
                     continue;
                 }
@@ -228,7 +229,7 @@ export async function subBotHandler(chatUpdate) {
                 let subText = subArgs.join(' ');
                 subCommand = (subCommand || '').toLowerCase();
                 
-                // Lógica de !bansub y !unbansub
+                // Lógica de !bansub y !unbansub (Corregida)
                 if (subCommand === 'bansub' || subCommand === 'unbansub') {
                     if (!isOwner) {
                         global.dfail('owner', subM, this);
@@ -267,7 +268,7 @@ export async function subBotHandler(chatUpdate) {
                 // Si el subbot está deshabilitado, sale de la ejecución
                 if (subM.isGroup && subChat.subbotDisabled) return;
 
-                const subFail = plugin.fail || global.dfail; // Usa global.dfail
+                const subFail = plugin.fail || global.dfail; // **USA global.dfail**
 
                 const subIsAccept = plugin.command instanceof RegExp ? 
                     plugin.command.test(subCommand) :
@@ -321,7 +322,8 @@ export async function subBotHandler(chatUpdate) {
 
                 const subExtra = {
                     subMatch, subUsedPrefix, subNoPrefix, subArgs, subCommand, subText, subConn: this, subParticipants, subGroupMetadata, subUser, isROwner, isOwner, isRAdmin, isAdmin, isBotAdmin, chatUpdate, __dirname: subDirname, __filename,
-                    fail: subFail // <-- Pasamos la función como 'fail' para plugins
+                    fail: subFail, // Pasamos la función como 'fail'
+                    conn: this // **FIX: Se pasa 'conn: this'**
                 };
 
                 try {
