@@ -3,8 +3,11 @@ let handler = m => m;
 handler.before = async function (m, { conn }) {
   const prefijosProhibidos = ['91', '92', '222', '93', '265', '61', '62', '966', '229', '40', '49', '20', '963', '967', '234', '210', '249', '212'];
   
-  // SOLUCIÓN: Usar la propiedad 'jid' directamente de la conexión, que está garantizada.
-  const botJid = conn.jid;
+  // SOLUCIÓN: Usar 'conn.user.jid' porque el handler ahora lo garantiza al pasar 'conn: this'.
+  // Si conn.user no existiera, la condición se salta y evita el crash.
+  const botJid = conn.user && conn.user.jid; 
+  if (!botJid) return !0; // Si no hay JID, se sale sin hacer nada (evita crash)
+
   const bot = global.db.data.settings[botJid] || {};
   
   const senderNumber = m.sender.split('@')[0];
