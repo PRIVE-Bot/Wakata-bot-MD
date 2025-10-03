@@ -54,7 +54,7 @@ export async function subBotHandler(chatUpdate) {
     this.processedMessages.set(subId, now);
 
     try {
-        m = smsg(this, subM); // Asignación aquí
+        m = smsg(this, subM); // Asignación de 'm' aquí
         if (!m) return;
 
         await this.readMessages([m.key]);
@@ -106,6 +106,7 @@ export async function subBotHandler(chatUpdate) {
         }
 
         const subChatJid = m.chat;
+        // CRÍTICO: Aseguramos que el objeto chat exista para evitar fallos de plugins como _antibot.js
         if (!global.db.data.chats[subChatJid]) {
             global.db.data.chats[subChatJid] = {
                 isBanned: false, 
@@ -127,7 +128,7 @@ export async function subBotHandler(chatUpdate) {
                 nsfw: false,
                 expired: 0, 
                 antiLag: false,
-                per: [],
+                per: [], // <- Si tu _antibot.js intenta leer una lista como esta, debe existir.
             };
         }
 
@@ -184,13 +185,8 @@ export async function subBotHandler(chatUpdate) {
             const subFilename = join(subDirname, name);
             if (typeof plugin.all === 'function') {
                 try {
-                    await plugin.all.call(this, m, {
-                        chatUpdate,
-                        __dirname: subDirname,
-                        __filename: subFilename,
-                        conn: this,
-                        m
-                    });
+                    const subExtraAll = { chatUpdate, __dirname: subDirname, __filename: subFilename, conn: this, m };
+                    await plugin.all.call(this, m, subExtraAll);
                 } catch (e) {
                     console.error(e);
                 }
@@ -216,8 +212,8 @@ export async function subBotHandler(chatUpdate) {
             ).find(p => p[0]);
 
             if (typeof plugin.before === 'function') {
-                const subExtra = { subMatch, subConn: this, subParticipants, subGroupMetadata, subUser, isROwner, isOwner, isRAdmin, isAdmin, isBotAdmin, chatUpdate, __dirname: subDirname, __filename: subFilename, conn: this, m };
-                if (await plugin.before.call(this, m, subExtra)) {
+                const subExtraBefore = { subMatch, subConn: this, subParticipants, subGroupMetadata, subUser, isROwner, isOwner, isRAdmin, isAdmin, isBotAdmin, chatUpdate, __dirname: subDirname, __filename: subFilename, conn: this, m };
+                if (await plugin.before.call(this, m, subExtraBefore)) {
                     continue;
                 }
             }
@@ -349,7 +345,7 @@ export async function subBotHandler(chatUpdate) {
     } catch (e) {
         console.error(e);
     } finally {
-        if (m) {
+        if (m) { // 'm' está disponible aquí
             const subUser = global.db.data.users[m.sender];
             if (subUser && subUser.muto) {
                 await this.sendMessage(m.chat, { delete: m.key });
