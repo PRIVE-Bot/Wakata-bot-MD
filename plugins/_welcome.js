@@ -63,9 +63,9 @@ export async function before(m, { conn, participants, groupMetadata }) {
   },
   businessOwnerJid: who || '0@s.whatsapp.net',
   caption: `✰𝙐𝙨𝙚𝙧: ${taguser}\n✎𝙂𝙧𝙪𝙥𝙤: ${groupSubject}\n✎𝙈𝙞𝙚𝙢𝙗𝙧𝙤: ${totalMembers}\n✰ 𝙁𝙚𝙘𝙝𝙖: ${date}`.trim(),
-  title: '',
+  title: 'gati',
   subtitle: '',
-  footer: groupSubject || '',
+  footer: `✰𝙐𝙨𝙚𝙧: ${taguser}\n✎𝙂𝙧𝙪𝙥𝙤: ${groupSubject}\n✎𝙈𝙞𝙚𝙢𝙗𝙧𝙤: ${totalMembers}\n✰ 𝙁𝙚𝙘𝙝𝙖: ${date}`
   mentions: who ? [who] : []
 }
 
