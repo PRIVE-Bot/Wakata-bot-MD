@@ -393,7 +393,7 @@ export async function subBotHandler(chatUpdate) {
     }
 }
 
-global.dfail = (type, subM, subConn) => { // Renombrado a subM y subConn
+global.dfailg = (type, subM, subConn) => { // Renombrado a subM y subConn
     const messages = {
         rowner: `
 ╔═════╸━━━╸═════╗
