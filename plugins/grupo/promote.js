@@ -1,4 +1,4 @@
-var handler = async (m, { conn }) => {
+var handler = async (m, { conn, usedPrefix, command, text }) => {
     const res = await fetch('https://files.catbox.moe/9xene9.jpg');
     const thumb2 = Buffer.from(await res.arrayBuffer());
 
@@ -18,30 +18,30 @@ var handler = async (m, { conn }) => {
         participant: "0@s.whatsapp.net"
     };
 
-    
-    const ctx = m.message?.extendedTextMessage?.contextInfo || {};
-    let user = ctx.participant || (ctx.mentionedJid && ctx.mentionedJid[0]);
-
-    
-    if (!user && m.text) {
-        let number = m.text.replace(/[^0-9]/g, '');
-        if (number.length >= 8 && number.length <= 15) {
-            user = number + "@s.whatsapp.net";
+    let user
+    if (m.quoted) {
+        user = m.quoted.sender
+    } else if (m.message?.extendedTextMessage?.contextInfo?.mentionedJid?.length) {
+        user = m.message.extendedTextMessage.contextInfo.mentionedJid[0]
+    } else if (text) {
+        let number = text.replace(/[^0-9]/g, '')
+        if (number.length < 11 || number.length > 13) {
+            return conn.reply(m.chat, `↷♛߹߬ Debe de responder o mencionar a una persona válida para usar este comando.`, m, rcanal)
         }
+        user = number + "@s.whatsapp.net"
+    } else {
+        return conn.reply(m.chat, `↷♛߹߬ Debe de responder o mencionar a una persona para usar este comando.`, m, rcanal)
     }
-
-    if (!user) {
-        return conn.reply(m.chat, `↷♛߹߬ Debe de responder o mencionar a una persona para usar este comando.`, m, rcanal);
-    }
-
-let name = user.split('@')[0]
-        
 
     try {
+        let name = await conn.getName(user)
+        if (!name) name = user.split('@')[0]
+
         await conn.groupParticipantsUpdate(m.chat, [user], 'promote');
-        conn.reply(m.chat, `✅ @${name} fue promovido a administrador con éxito.`, fkontak, {
-            mentionedJid: [user]
-        });
+        await conn.sendMessage(m.chat, {
+            text: `✅ @${name} fue promovido a administrador con éxito.`,
+            contextInfo: { mentionedJid: [user] }
+        }, { quoted: fkontak })
     } catch (e) {
         conn.reply(m.chat, `❌ Error al promover: ${e}`, m);
     }
