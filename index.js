@@ -18,7 +18,6 @@ import { tmpdir } from 'os';
 import { format } from 'util';
 import boxen from 'boxen';
 import pino from 'pino';
-import './plugins/main-allfake.js'
 import path, { join, dirname } from 'path';
 import { Boom } from '@hapi/boom';
 import { makeWASocket, protoType, serialize } from './lib/simple.js';
@@ -43,7 +42,7 @@ say('Bot', {
   align: 'left',
   gradient: ['green', 'white']
 });
-say('developed by Dulce', {
+say('developed by Deylin', {
   font: 'console',
   align: 'center',
   colors: ['cyan', 'magenta', 'yellow']
@@ -354,15 +353,11 @@ async function connectionUpdate(update) {
 }
 process.on('uncaughtException', console.error);
 let isInit = true;
-
+let handler = await import('./handler.js');
 global.reloadHandler = async function(restatConn) {
   try {
-    const HandlerModule = await import(`./handler.js?update=${Date.now()}`).catch(console.error);
-
-    if (HandlerModule && HandlerModule.handler) {
-        global.conn.handler = HandlerModule.handler.bind(global.conn); 
-    }
-
+    const Handler = await import(`./handler.js?update=${Date.now()}`).catch(console.error);
+    if (Object.keys(Handler || {}).length) handler = Handler;
   } catch (e) {
     console.error(e);
   }
@@ -380,14 +375,7 @@ global.reloadHandler = async function(restatConn) {
     conn.ev.off('connection.update', conn.connectionUpdate);
     conn.ev.off('creds.update', conn.credsUpdate);
   }
-
-  if (!global.conn.handler) {
-      const HandlerModule = await import(`./handler.js?update=${Date.now()}`).catch(console.error);
-      if (HandlerModule && HandlerModule.handler) {
-          global.conn.handler = HandlerModule.handler.bind(global.conn); 
-      }
-  }
-
+  conn.handler = handler.handler.bind(global.conn);
   conn.connectionUpdate = connectionUpdate.bind(global.conn);
   conn.credsUpdate = saveCreds.bind(global.conn, true);
   const currentDateTime = new Date();
@@ -427,13 +415,7 @@ if (global.Jadibts) {
       const botPath = join(rutaJadiBot, gjbts);
       const readBotPath = readdirSync(botPath);
       if (readBotPath.includes(creds)) {
-        // INICIO: Cambio para cargar sub-bots *después* de que el handler principal esté listo
-        
-        // Simplemente llamamos a la función de forma asíncrona sin esperar,
-        // esto permite que el bot principal termine de cargarse primero.
         JadiBot({ pathJadiBot: botPath, m: null, conn, args: '', usedPrefix: '/', command: 'serbot' });
-        
-        // FIN: Cambio para cargar sub-bots *después* de que el handler principal esté listo
       }
     }
   }
@@ -472,7 +454,7 @@ async function filesInit() {
 filesInit().then((_) => Object.keys(global.plugins)).catch(console.error);
 
 global.reload = async (_ev, filename) => {
-  const pluginPath = filename.replace(pluginFolder + '/', '');
+  const pluginPath = filename.replace(pluginFolder + '/', ''); // Usar la ruta completa
   if (pluginFilter(filename)) {
     const dir = global.__filename(join(pluginFolder, filename), true);
     if (pluginPath in global.plugins) {
