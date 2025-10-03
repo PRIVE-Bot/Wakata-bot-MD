@@ -24,7 +24,6 @@ const delay = ms => isNumber(ms) && new Promise(resolve => setTimeout(function (
     clearTimeout(this);
 }, ms));
 
-// INICIO de la función global.dfail
 global.dfail = (type, m, conn) => {
     const messages = {
         rowner: `
@@ -78,12 +77,11 @@ global.dfail = (type, m, conn) => {
         conn.reply(m.chat, messages[type], m);
     }
 };
-// FIN de la función global.dfail
 
 export async function subBotHandler(chatUpdate) {
     this.uptime = this.uptime || Date.now();
     const subConn = this;
-    let m; // Definida aquí para que esté disponible en el bloque 'finally'
+    let m; 
 
     if (!chatUpdate || !chatUpdate.messages || chatUpdate.messages.length === 0) {
         return;
@@ -110,7 +108,7 @@ export async function subBotHandler(chatUpdate) {
     this.processedMessages.set(subId, now);
 
     try {
-        m = smsg(this, subM); // Asignación de 'm' aquí
+        m = smsg(this, subM); 
         if (!m) return;
 
         await this.readMessages([m.key]);
