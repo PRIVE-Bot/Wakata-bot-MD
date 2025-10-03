@@ -30,16 +30,16 @@ var handler = async (m, { conn, usedPrefix, command, text }) => {
         }
         user = number + "@s.whatsapp.net"
     } else {
-        return conn.reply(m.chat, `↷♛߹߬ Debe de responder o mencionar a una persona para usar este comando.`, m, rcanal)
+        return conn.reply(m.chat, `${emoji} Debe de responder o mencionar a una persona para usar este comando.`, m, rcanal)
     }
 
     try {
-        let name = await conn.getName(user)
-        if (!name) name = user.split('@')[0]
+        let name = user.split('@')[0]
+        
 
         await conn.groupParticipantsUpdate(m.chat, [user], 'promote');
         await conn.sendMessage(m.chat, {
-            text: `${emojis} @${name} fue promovido a administrador con éxito.`,
+            text: `${emoji} @${name} fue promovido a administrador con éxito.`,
             contextInfo: { mentionedJid: [user] }
         }, { quoted: fkontak })
     } catch (e) {
