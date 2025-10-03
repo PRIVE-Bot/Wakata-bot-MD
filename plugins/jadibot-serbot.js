@@ -1,4 +1,3 @@
-const { useMultiFileAuthState, DisconnectReason, makeCacheableSignalKeyStore, fetchLatestBaileysVersion, generateWAMessageFromContent, proto } = (await import("@whiskeysockets/baileys"));
 import qrcode from "qrcode"
 import NodeCache from "node-cache"
 import fs from "fs"
@@ -9,11 +8,19 @@ import util from 'util'
 import * as ws from 'ws'
 const { child, spawn, exec } = await import('child_process')
 const { CONNECTING } = ws
-const {
-    proto
-} = baileys;
 import { makeWASocket } from '../lib/simple.js'
 import { fileURLToPath } from 'url'
+import * as baileys from "@whiskeysockets/baileys" 
+
+const { 
+    useMultiFileAuthState, 
+    DisconnectReason, 
+    makeCacheableSignalKeyStore, 
+    fetchLatestBaileysVersion, 
+    generateWAMessageFromContent, 
+    proto 
+} = baileys; 
+
 let crm1 = "Y2QgcGx1Z2lucy"
 let crm2 = "A7IG1kNXN1b"
 let crm3 = "SBpbmZvLWRvbmFyLmpz"
@@ -219,7 +226,7 @@ txtCode = await conn.sendMessage(m.chat, {
 });
 
 
-const msg = generateWAMessageFromContent(m.chat, baileys.proto.Message.fromObject({
+const msg = generateWAMessageFromContent(m.chat, baileys.proto.Message.create({ 
   interactiveMessage: {
     body: { text: `𝗧𝘂 𝗰𝗼𝗱𝗶𝗴𝗼 𝗽𝗮𝗿𝗲 𝘃𝗶𝗻𝗰𝘂𝗹𝗮𝗿 𝗲𝘀:\n⇶ ${secret}` }, 
     footer: { text: `${dev}` },
@@ -236,6 +243,7 @@ const msg = generateWAMessageFromContent(m.chat, baileys.proto.Message.fromObjec
     }
   }
 }), { quoted: m })
+
 
 const codeBot = await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
 
