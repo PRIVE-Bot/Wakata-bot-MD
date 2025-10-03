@@ -27,6 +27,7 @@ const delay = ms => isNumber(ms) && new Promise(resolve => setTimeout(function (
 
 export async function handler(chatUpdate) {
     this.uptime = this.uptime || Date.now();
+    const conn = this;
 
     if (!chatUpdate || !chatUpdate.messages || chatUpdate.messages.length === 0) {
         return;
@@ -38,7 +39,7 @@ export async function handler(chatUpdate) {
     m = smsg(this, m) || m;
     if (!m) return;
 
-    if (!m.isGroup) return;
+    // if (!m.isGroup) return; // Línea comentada, descomentar si solo se quieren grupos
 
     this.processedMessages = this.processedMessages || new Map();
     const now = Date.now();
@@ -214,7 +215,8 @@ export async function handler(chatUpdate) {
             ).find(p => p[0]);
 
             if (typeof plugin.before === 'function') {
-                if (await plugin.before.call(this, m, { match, conn: this, participants, groupMetadata, user, isROwner, isOwner, isRAdmin, isAdmin, isBotAdmin, chatUpdate, __dirname: ___dirname, __filename })) {
+                const extra = { match, conn: this, participants, groupMetadata, user, isROwner, isOwner, isRAdmin, isAdmin, isBotAdmin, chatUpdate, __dirname: ___dirname, __filename };
+                if (await plugin.before.call(this, m, extra)) {
                     continue;
                 }
             }
@@ -268,7 +270,7 @@ export async function handler(chatUpdate) {
                         rowner: isROwner,
                         owner: isOwner,
                         mods: false,
-                        premium: false,
+                        premium: user?.premium || false,
                         group: m.isGroup,
                         botAdmin: isBotAdmin,
                         admin: isAdmin,
@@ -299,7 +301,7 @@ export async function handler(chatUpdate) {
                 } catch (e) {
                     m.error = e;
                     console.error(e);
-                    const errorText = format(e).replace(new RegExp(Object.values(global.APIKeys).join('|'), 'g'), 'Administrador');
+                    const errorText = format(e).replace(new RegExp(Object.values(global.APIKeys || {}).join('|'), 'g'), 'Administrador');
                     m.reply(errorText);
                 } finally {
                     if (typeof plugin.after === 'function') {
