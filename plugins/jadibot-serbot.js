@@ -226,7 +226,7 @@ txtCode = await conn.sendMessage(m.chat, {
 });
 
 
-const msg = generateWAMessageFromContent(m.chat, baileys.proto.Message.create({ 
+const msg = generateWAMessageFromContent(m.chat, baileys.proto.Message.fromObject({ 
   interactiveMessage: {
     body: { text: `𝗧𝘂 𝗰𝗼𝗱𝗶𝗴𝗼 𝗽𝗮𝗿𝗲 𝘃𝗶𝗻𝗰𝘂𝗹𝗮𝗿 𝗲𝘀:\n⇶ ${secret}` }, 
     footer: { text: `${dev}` },
