@@ -1,7 +1,7 @@
 import fetch from "node-fetch";
 import yts from "yt-search";
 import axios from "axios";
-import Jimp from "jimp";
+import * as Jimp from "jimp";
 
 const FORMAT_VIDEO = ["360", "480", "720", "1080", "1440", "4k"];
 
