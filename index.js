@@ -354,9 +354,13 @@ async function connectionUpdate(update) {
 }
 process.on('uncaughtException', console.error);
 let isInit = true;
-let handler = await import('./handler.js');
+
+// CAMBIO CLAVE: Importación estándar del handler.js del bot principal
+let handler = await import('./handler.js'); 
+
 global.reloadHandler = async function(restatConn) {
   try {
+    // CAMBIO CLAVE: Recargar solo el handler.js, no el sub-handler.js
     const Handler = await import(`./handler.js?update=${Date.now()}`).catch(console.error);
     if (Object.keys(Handler || {}).length) handler = Handler;
   } catch (e) {
@@ -376,7 +380,9 @@ global.reloadHandler = async function(restatConn) {
     conn.ev.off('connection.update', conn.connectionUpdate);
     conn.ev.off('creds.update', conn.credsUpdate);
   }
-  conn.handler = handler.handler.bind(global.conn);
+  // ASIGNACIÓN CLAVE: El bot principal siempre usa el 'handler' exportado de 'handler.js'
+  conn.handler = handler.handler.bind(global.conn); 
+  
   conn.connectionUpdate = connectionUpdate.bind(global.conn);
   conn.credsUpdate = saveCreds.bind(global.conn, true);
   const currentDateTime = new Date();
@@ -455,7 +461,7 @@ async function filesInit() {
 filesInit().then((_) => Object.keys(global.plugins)).catch(console.error);
 
 global.reload = async (_ev, filename) => {
-  const pluginPath = filename.replace(pluginFolder + '/', ''); // Usar la ruta completa
+  const pluginPath = filename.replace(pluginFolder + '/', '');
   if (pluginFilter(filename)) {
     const dir = global.__filename(join(pluginFolder, filename), true);
     if (pluginPath in global.plugins) {
