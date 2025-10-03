@@ -355,14 +355,14 @@ async function connectionUpdate(update) {
 process.on('uncaughtException', console.error);
 let isInit = true;
 
-// CAMBIO CLAVE: Importación estándar del handler.js del bot principal
-let handler = await import('./handler.js'); 
-
 global.reloadHandler = async function(restatConn) {
   try {
-    // CAMBIO CLAVE: Recargar solo el handler.js, no el sub-handler.js
-    const Handler = await import(`./handler.js?update=${Date.now()}`).catch(console.error);
-    if (Object.keys(Handler || {}).length) handler = Handler;
+    const HandlerModule = await import(`./handler.js?update=${Date.now()}`).catch(console.error);
+    
+    if (HandlerModule && HandlerModule.handler) {
+        global.conn.handler = HandlerModule.handler.bind(global.conn); 
+    }
+
   } catch (e) {
     console.error(e);
   }
@@ -380,9 +380,14 @@ global.reloadHandler = async function(restatConn) {
     conn.ev.off('connection.update', conn.connectionUpdate);
     conn.ev.off('creds.update', conn.credsUpdate);
   }
-  // ASIGNACIÓN CLAVE: El bot principal siempre usa el 'handler' exportado de 'handler.js'
-  conn.handler = handler.handler.bind(global.conn); 
   
+  if (!global.conn.handler) {
+      const HandlerModule = await import(`./handler.js?update=${Date.now()}`).catch(console.error);
+      if (HandlerModule && HandlerModule.handler) {
+          global.conn.handler = HandlerModule.handler.bind(global.conn); 
+      }
+  }
+
   conn.connectionUpdate = connectionUpdate.bind(global.conn);
   conn.credsUpdate = saveCreds.bind(global.conn, true);
   const currentDateTime = new Date();
