@@ -1,11 +1,23 @@
 import { smsg } from './lib/simple.js';
 import { format } from 'util'; 
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
+import { platform } from 'process';
 import path, { join } from 'path';
 import { unwatchFile, watchFile } from 'fs';
 import chalk from 'chalk';
 import fetch from 'node-fetch';
 import ws from 'ws';
+import { createRequire } from 'module';
+
+global.__filename = function filename(pathURL = import.meta.url, rmPrefix = platform !== 'win32') {
+  return rmPrefix ? /file:\/\/\//.test(pathURL) ? fileURLToPath(pathURL) : pathURL : pathToFileURL(pathURL).toString();
+};
+global.__dirname = function dirname(pathURL) {
+  return path.dirname(global.__filename(pathURL, true));
+};
+global.__require = function require(dir = import.meta.url) {
+  return createRequire(dir);
+};
 
 const { proto } = (await import('@whiskeysockets/baileys')).default;
 const isNumber = x => typeof x === 'number' && !isNaN(x);
@@ -20,7 +32,6 @@ export async function handler(chatUpdate) {
         return;
     }
 
-        // aqui corrigo mi error
     let m = chatUpdate.messages[chatUpdate.messages.length - 1];
     if (!m) return;
 
@@ -33,7 +44,6 @@ export async function handler(chatUpdate) {
     const now = Date.now();
     const lifeTime = 9000;
 
-    // Limpiar mensajes procesados antiguos
     for (let [msgId, time] of this.processedMessages) {
         if (now - time > lifeTime) {
             this.processedMessages.delete(msgId);
@@ -147,7 +157,7 @@ export async function handler(chatUpdate) {
         if (opts['swonly'] && m.chat !== 'status@broadcast') return;
         if (typeof m.text !== 'string') m.text = '';
 
-                async function getLidFromJid(id, conn) {
+        async function getLidFromJid(id, conn) {
             if (id.endsWith('@lid')) return id;
             const res = await conn.onWhatsApp(id).catch(() => []);
             return res[0]?.lid || id;
@@ -164,7 +174,7 @@ export async function handler(chatUpdate) {
         const isBotAdmin = !!bot?.admin;
 
 
-        const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './plugins');
+        const ___dirname = path.join(path.dirname(global.__filename(import.meta.url, true)), './plugins');
         let usedPrefix = '';
 
         for (let name in global.plugins) {
@@ -257,6 +267,8 @@ export async function handler(chatUpdate) {
                     const permissions = {
                         rowner: isROwner,
                         owner: isOwner,
+                        mods: false,
+                        premium: false,
                         group: m.isGroup,
                         botAdmin: isBotAdmin,
                         admin: isAdmin,
@@ -389,6 +401,9 @@ let file = global.__filename(import.meta.url, true);
 watchFile(file, async () => {
     unwatchFile(file);
     console.log(chalk.magenta("Se actualizo 'handler.js'"));
+    if (global.reloadHandler) {
+        await global.reloadHandler();
+    }
     if (global.conns && global.conns.length > 0) {
         const users = global.conns.filter((conn) => conn.user && conn.ws.socket && conn.ws.socket.readyState !== ws.CLOSED);
         for (const user of users) {
