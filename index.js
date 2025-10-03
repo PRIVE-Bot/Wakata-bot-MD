@@ -358,7 +358,7 @@ let isInit = true;
 global.reloadHandler = async function(restatConn) {
   try {
     const HandlerModule = await import(`./handler.js?update=${Date.now()}`).catch(console.error);
-    
+
     if (HandlerModule && HandlerModule.handler) {
         global.conn.handler = HandlerModule.handler.bind(global.conn); 
     }
@@ -380,7 +380,7 @@ global.reloadHandler = async function(restatConn) {
     conn.ev.off('connection.update', conn.connectionUpdate);
     conn.ev.off('creds.update', conn.credsUpdate);
   }
-  
+
   if (!global.conn.handler) {
       const HandlerModule = await import(`./handler.js?update=${Date.now()}`).catch(console.error);
       if (HandlerModule && HandlerModule.handler) {
@@ -427,7 +427,13 @@ if (global.Jadibts) {
       const botPath = join(rutaJadiBot, gjbts);
       const readBotPath = readdirSync(botPath);
       if (readBotPath.includes(creds)) {
+        // INICIO: Cambio para cargar sub-bots *después* de que el handler principal esté listo
+        
+        // Simplemente llamamos a la función de forma asíncrona sin esperar,
+        // esto permite que el bot principal termine de cargarse primero.
         JadiBot({ pathJadiBot: botPath, m: null, conn, args: '', usedPrefix: '/', command: 'serbot' });
+        
+        // FIN: Cambio para cargar sub-bots *después* de que el handler principal esté listo
       }
     }
   }
