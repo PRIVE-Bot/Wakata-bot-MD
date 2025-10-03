@@ -13,7 +13,6 @@ const delay = ms => isNumber(ms) && new Promise(resolve => setTimeout(function (
     clearTimeout(this);
 }, ms));
 
-// MOVIDO AL INICIO: Definición de global.dfail para que esté disponible antes de usarse
 global.dfail = (type, m, conn) => {
     const messages = {
         rowner: `
@@ -88,7 +87,6 @@ export async function handler(chatUpdate) {
     const now = Date.now();
     const lifeTime = 9000;
 
-    // Limpiar mensajes procesados antiguos
     for (let [msgId, time] of this.processedMessages) {
         if (now - time > lifeTime) {
             this.processedMessages.delete(msgId);
@@ -233,8 +231,8 @@ export async function handler(chatUpdate) {
                         chatUpdate,
                         __dirname: ___dirname,
                         __filename,
-                        conn: this, // Asegurando que 'conn' esté disponible
-                        m: m // Asegurando que 'm' esté disponible
+                        conn: this,
+                        m: m
                     });
                 } catch (e) {
                     console.error(e);
@@ -344,7 +342,6 @@ export async function handler(chatUpdate) {
                 } catch (e) {
                     m.error = e;
                     console.error(e);
-                    // Sustituimos Object.values(global.APIKeys) por Object.values(global.APIKeys || {}) para evitar 'reading 'join'' si global.APIKeys es undefined
                     const errorText = format(e).replace(new RegExp(Object.values(global.APIKeys || {}).join('|'), 'g'), 'Administrador');
                     m.reply(errorText);
                 } finally {
@@ -397,7 +394,11 @@ watchFile(file, async () => {
     if (global.conns && global.conns.length > 0) {
         const users = global.conns.filter((conn) => conn.user && conn.ws.socket && conn.ws.socket.readyState !== ws.CLOSED);
         for (const user of users) {
-            user.subreloadHandler(false);
+            // Se asume que 'subreloadHandler' es una función que existe en el objeto de conexión
+            // y que está bien definida para no causar el error.
+            if (typeof user.subreloadHandler === 'function') {
+                 user.subreloadHandler(false);
+            }
         }
     }
 });
