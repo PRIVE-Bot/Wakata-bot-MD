@@ -71,15 +71,18 @@ export async function before(m, { conn, participants, groupMetadata }) {
 
   const mentionId = who ? [who] : []
 
-await conn.sendMessage(
-  jid,
-  productMessage,
-  {
-    ...global.rcanal, 
-    quoted: fkontak || undefined,
-    contextInfo: { mentionedJid: mentionId }
+await conn.sendMessage(jid, productMessage, {
+  quoted: fkontak || undefined,
+  contextInfo: {
+    mentionedJid: mentionId,
+    isForwarded: true,
+    forwardedNewsletterMessageInfo: {
+      newsletterJid: global.channelRD.id,
+      serverMessageId: '',
+      newsletterName: global.channelRD.name
+    }
   }
-)
+})
 }
 
   /*const mentionId = who ? [who] : []
