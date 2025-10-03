@@ -12,7 +12,7 @@ const delay = ms => isNumber(ms) && new Promise(resolve => setTimeout(function (
     clearTimeout(this);
 }, ms));
 
-export async function handler(chatUpdate) {
+export async function subBotHandler(chatUpdate) {
     this.uptime = this.uptime || Date.now();
 
     if (!chatUpdate || !chatUpdate.messages || chatUpdate.messages.length === 0) {
@@ -161,7 +161,35 @@ export async function handler(chatUpdate) {
         const isAdmin = isRAdmin || user2?.admin === "admin";
         const isBotAdmin = !!bot?.admin;
 
-        if (m.isGroup && chat.subbotDisabled && !isROwner && !m.fromMe) return;
+        // LÓGICA DE BANSUB MEJORADA: Bloqueo completo de todas las acciones y comandos
+        if (m.isGroup && chat.subbotDisabled) {
+            const commandText = m.text.toLowerCase().split(' ')[0];
+            const isUnbanCommand = commandText === '!unbansub';
+            
+            // Si está bloqueado y el mensaje no es el comando para desbloquear, salimos inmediatamente.
+            if (!isUnbanCommand) {
+                return;
+            }
+
+            // Si es el comando !unbansub
+            if (isUnbanCommand) {
+                // Solo el dueño del sub-bot (isOwner) o el dueño principal (isROwner) pueden desbloquear.
+                if (isOwner || isROwner) {
+                    chat.subbotDisabled = false;
+                    this.reply(m.chat, `
+╔═════╸━━━╸═════╗
+║ 🚀 *SUB-BOT ACTIVO* 🚀 
+║ 
+║ ✅ Este Sub-Bot ha sido *HABILITADO* ║    para responder comandos con normalidad.
+╚═════╸━━━╸═════╝`, m);
+                } else {
+                    // Si un usuario normal o admin intenta desbloquear, se le niega el acceso.
+                    dfail('owner', m, this); 
+                }
+                return; 
+            }
+        }
+        // FIN LÓGICA DE BANSUB
 
         const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './plugins');
         let usedPrefix = '';
@@ -218,7 +246,7 @@ export async function handler(chatUpdate) {
                 command = (command || '').toLowerCase();
 
                 
-                if (command === 'bansub' || command === 'unbansub') {
+                if (command === 'bansub') {
                     if (!isOwner) {
                         dfail('owner', m, this);
                         return;
@@ -228,27 +256,17 @@ export async function handler(chatUpdate) {
                         return;
                     }
 
-                    if (command === 'bansub') {
-                        chat.subbotDisabled = true;
-                        this.reply(m.chat, `
+                    chat.subbotDisabled = true;
+                    this.reply(m.chat, `
 ╔═════╸━━━╸═════╗
 ║ ⚜️ *SUB-BOT INACTIVO* ⚜️ 
 ║ 
-║ 🛡️ Este Sub-Bot ha sido *DESHABILITADO* ║    para responder comandos en este grupo.
-║    Solo responderá a su creador.
+║ 🛡️ Este Sub-Bot ha sido *DESHABILITADO* ║    para responder CUALQUIER comando en este 
+║    grupo de forma PERMANENTE hasta que se 
+║    use *!unbansub* por el creador.
 ╚═════╸━━━╸═════╝`, m);
-                    } else if (command === 'unbansub') {
-                        chat.subbotDisabled = false;
-                        this.reply(m.chat, `
-╔═════╸━━━╸═════╗
-║ 🚀 *SUB-BOT ACTIVO* 🚀 
-║ 
-║ ✅ Este Sub-Bot ha sido *HABILITADO* ║    para responder comandos con normalidad.
-╚═════╸━━━╸═════╝`, m);
-                    }
                     return;
                 }
-                
                 
                 if (command === 'subtest') {
                     this.reply(m.chat, `
