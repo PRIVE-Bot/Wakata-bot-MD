@@ -4,10 +4,11 @@ const handler = async (m, { isOwner, isAdmin, conn, text, participants, args, co
     const customEmoji = '✦';
     m.react(customEmoji);
 
-    if (!(isAdmin || isOwner)) {
-        global.dfail('admin', m, conn);
+        if (!(isAdmin || isOwner)) {
+        fail('admin', m, conn);
         return;
     }
+
 
     const mensaje = args.join(' ');
     const info = mensaje ? `▢ Mensaje: ${mensaje}` : '▢ Llamado general a todos los miembros';
