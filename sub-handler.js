@@ -1,14 +1,13 @@
 import { smsg } from './lib/simple.js';
 import { format } from 'util'; 
-import { fileURLToPath, pathToFileURL } from 'url'; 
-import { platform } from 'process'; 
+import { fileURLToPath, pathToFileURL } from 'url';
+import { platform } from 'process';
 import path, { join } from 'path';
 import { unwatchFile, watchFile } from 'fs';
 import chalk from 'chalk';
 import ws from 'ws';
-import { createRequire } from 'module'; 
+import { createRequire } from 'module';
 
-// DEFINICIÓN DE FUNCIONES GLOBALES PARA EVITAR EL TypeError
 global.__filename = function filename(pathURL = import.meta.url, rmPrefix = platform !== 'win32') {
   return rmPrefix ? /file:\/\/\//.test(pathURL) ? fileURLToPath(pathURL) : pathURL : pathToFileURL(pathURL).toString();
 };
@@ -18,8 +17,6 @@ global.__dirname = function dirname(pathURL) {
 global.__require = function require(dir = import.meta.url) {
   return createRequire(dir);
 };
-// FIN DE DEFINICIÓN DE FUNCIONES GLOBALES
-
 
 const { proto } = (await import('@whiskeysockets/baileys')).default;
 const isNumber = x => typeof x === 'number' && !isNaN(x);
