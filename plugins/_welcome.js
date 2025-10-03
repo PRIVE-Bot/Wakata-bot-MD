@@ -45,47 +45,32 @@ export async function before(m, { conn, participants, groupMetadata }) {
     console.error(e)
   }
 
-  // 📌 Variables necesarias
   const groupSubject = groupMetadata.subject
   const jid = m.chat
   const number = who.split('@')[0]
 
-  // 📌 Armamos el productMessage
   const productMessage = {
-    product: {
-      productImage: { url: urlapi },
-      productId: '2452968910',
-      title: `${tipo}, ahora somos ${totalMembers}`,
-      description: '',
-      currencyCode: 'USD',
-      priceAmount1000: '0',
-      retailerId: 1677,
-      url: `https://wa.me/${number}`,
-      productImageCount: 1
-    },
-    businessOwnerJid: who || '0@s.whatsapp.net',
-    caption: `👤𝙐𝙨𝙚𝙧: ${taguser}\n📚𝙂𝙧𝙪𝙥𝙤: ${groupSubject}\n👥𝙈𝙞𝙚𝙢𝙗𝙧𝙤: ${totalMembers}\n📆 𝙁𝙚𝙘𝙝𝙖: ${date}`.trim(),
-    footer: groupSubject || '',
-    title: '',
-    subtitle: '',
-    interactiveButtons: [
-      {
-        name: 'quick_reply',
-        buttonParamsJson: JSON.stringify({
-          display_text: '🌟 ʀᴇɢɪsᴛʀᴀʀᴍᴇ ᴀ ɪᴛsᴜᴋɪ-ɪᴀ 🌟',
-          id: '.reg'
-        })
-      }
-    ],
-    mentions: who ? [who] : []
-  }
+  product: {
+    productImage: { url: urlapi },
+    productId: '2452968910',
+    title: `${tipo}, ahora somos ${totalMembers}`,
+    description: '',
+    currencyCode: 'USD',
+    priceAmount1000: '0',
+    retailerId: 1677,
+    url: `https://wa.me/${number}`,
+    productImageCount: 1
+  },
+  businessOwnerJid: who || '0@s.whatsapp.net',
+  caption: `✰𝙐𝙨𝙚𝙧: ${taguser}\n✎𝙂𝙧𝙪𝙥𝙤: ${groupSubject}\n✎𝙈𝙞𝙚𝙢𝙗𝙧𝙤: ${totalMembers}\n✰ 𝙁𝙚𝙘𝙝𝙖: ${date}`.trim(),
+  title: '',
+  subtitle: '',
+  footer: groupSubject || '',
+  mentions: who ? [who] : []
+}
 
   const mentionId = who ? [who] : []
-
-  // ✅ Enviar como productMessage
-  await conn.sendMessage(jid, { 
-    productMessage 
-  }, { 
+  await conn.sendMessage(jid, productMessage, {
     quoted: fkontak || undefined,
     contextInfo: { mentionedJid: mentionId }
   })
