@@ -24,10 +24,64 @@ const delay = ms => isNumber(ms) && new Promise(resolve => setTimeout(function (
     clearTimeout(this);
 }, ms));
 
+global.dfail = (type, m, conn) => {
+    const messages = {
+        rowner: `
+┏━━━━━━━━━━━━━━━━╮
+┃ *〘 ${global.comando} 〙*
+┃ ➣ 𝑆𝑜𝑙𝑜 𝑝𝑎𝑟𝑎 𝑙𝑜𝑠 𝐶𝑟𝑒𝑎𝑑𝑜𝑟𝑒𝑠 ↷
+┃ » 𝑁𝑜 𝑖𝑛𝑠𝑖𝑠𝑡𝑎𝑠...
+┗━━━━━━━━━━━━━━━━╯
+`,
+        owner: `
+┏━━━━━━━━━━━━━━━━╮
+┃ *〘 ${global.comando} 〙*
+┃ ➣ 𝐸𝑥𝑐𝑙𝑢𝑠𝑖𝑣𝑜 𝑑𝑒 𝐷𝑒𝑠𝑎𝑟𝑟𝑜𝑙𝑙𝑎𝑑𝑜𝑟𝑒𝑠 ↷
+┃ » 𝑁𝑖𝑣𝑒𝑙 𝑖𝑛𝑠𝑢𝑓𝑖𝑐𝑖𝑒𝑛𝑡𝑒...
+┗━━━━━━━━━━━━━━━━╯
+`,
+        group: `
+┏━━━━━━━━━━━━╮
+┃  *〘 ${global.comando} 〙*
+┃ ➣ 𝑆𝑜𝑙𝑜 𝑓𝑢𝑛𝑐𝑖𝑜𝑛𝑎 𝑒𝑛 𝐺𝑟𝑢𝑝𝑜𝑠 ↷
+┃ » 𝑁𝑜 𝑡𝑟𝑎𝑡𝑒𝑠 𝑑𝑒 𝑒𝑛𝑔𝑎ñ𝑎𝑟...
+┗━━━━━━━━━━━━━╯`,
+        private: `
+┏━━━━━╹━━━━━━━╮
+┃  *〘 ${global.comando} 〙*
+┃ ➣ 𝑆𝑜𝑙𝑜 𝑒𝑛 𝑃𝑟𝑖𝑣𝑎𝑑𝑜 ↷
+┃ » 𝐴𝑞𝑢í 𝑛𝑜, 𝑎𝑚𝑖𝑔𝑜...
+┗━━━━━━━━━━━━━╯`,
+        admin: `
+┏━━━━━━━━━━━━━━╮
+┃  *〘 ${global.comando} 〙*
+┃ ➣ 𝑃𝑜𝑑𝑒𝑟 𝑟𝑒𝑠𝑒𝑟𝑣𝑎𝑑𝑜 𝑎 𝐴𝑑𝑚𝑖𝑛𝑠 ↷
+┃ » 𝑅𝑒𝑠𝑝𝑒𝑡𝑎 𝑒𝑠𝑎 𝑟𝑒𝑔𝑙𝑎...
+┗━━━━━━━━━━━━━━╯
+`,
+        botAdmin: `
+┏━━━━━━━━━━━━━━╮
+┃ *〘 ${global.comando} 〙*
+┃ ➣ 𝑁𝑒𝑐𝑒𝑠𝑖𝑡𝑜 𝑠𝑒𝑟 𝐴𝑑𝑚𝑖𝑛 ↷
+┃ » 𝐷𝑎𝑚𝑒 𝑒𝑙 𝑟𝑎𝑛𝑔𝑜 𝑦 𝘩𝑎𝑏𝑙𝑎𝑚𝑜𝑠...
+┗━━━━━━━━━━━━━━╯
+`,
+        restrict: `
+┏━━━━━━━━━━━━━━╮
+┃ *〘 ${global.comando} 〙*
+┃ ➣ 𝐹𝑢𝑛𝑐𝑖ó𝑛 𝐵𝑙𝑜𝑞𝑢𝑒𝑎𝑑𝑎 ↷
+┃ » 𝑁𝑜 𝑖𝑛𝑡𝑒𝑛𝑡𝑒𝑠...
+┗━━━━━━━━━━━━━━╯`
+    };
+    if (messages[type]) {
+        conn.reply(m.chat, messages[type], m);
+    }
+};
+
 export async function subBotHandler(chatUpdate) {
     this.uptime = this.uptime || Date.now();
     const subConn = this;
-    let m; // Definida aquí para que esté disponible en el bloque 'finally'
+    let m; 
 
     if (!chatUpdate || !chatUpdate.messages || chatUpdate.messages.length === 0) {
         return;
@@ -54,7 +108,7 @@ export async function subBotHandler(chatUpdate) {
     this.processedMessages.set(subId, now);
 
     try {
-        m = smsg(this, subM); // Asignación de 'm' aquí
+        m = smsg(this, subM); 
         if (!m) return;
 
         await this.readMessages([m.key]);
@@ -106,7 +160,6 @@ export async function subBotHandler(chatUpdate) {
         }
 
         const subChatJid = m.chat;
-        // CRÍTICO: Aseguramos que el objeto chat exista para evitar fallos de plugins como _antibot.js
         if (!global.db.data.chats[subChatJid]) {
             global.db.data.chats[subChatJid] = {
                 isBanned: false, 
@@ -128,7 +181,7 @@ export async function subBotHandler(chatUpdate) {
                 nsfw: false,
                 expired: 0, 
                 antiLag: false,
-                per: [], // <- Si tu _antibot.js intenta leer una lista como esta, debe existir.
+                per: [], 
             };
         }
 
@@ -345,7 +398,7 @@ export async function subBotHandler(chatUpdate) {
     } catch (e) {
         console.error(e);
     } finally {
-        if (m) { // 'm' está disponible aquí
+        if (m) { 
             const subUser = global.db.data.users[m.sender];
             if (subUser && subUser.muto) {
                 await this.sendMessage(m.chat, { delete: m.key });
