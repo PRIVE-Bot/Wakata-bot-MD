@@ -1,22 +1,11 @@
 import { smsg } from './lib/simple.js';
 import { format } from 'util'; 
-import { fileURLToPath, pathToFileURL } from 'url';
-import { platform } from 'process';
+import { fileURLToPath } from 'url';
 import path, { join } from 'path';
 import { unwatchFile, watchFile } from 'fs';
 import chalk from 'chalk';
+import fetch from 'node-fetch';
 import ws from 'ws';
-import { createRequire } from 'module';
-
-global.__filename = function filename(pathURL = import.meta.url, rmPrefix = platform !== 'win32') {
-  return rmPrefix ? /file:\/\/\//.test(pathURL) ? fileURLToPath(pathURL) : pathURL : pathToFileURL(pathURL).toString();
-};
-global.__dirname = function dirname(pathURL) {
-  return path.dirname(global.__filename(pathURL, true));
-};
-global.__require = function require(dir = import.meta.url) {
-  return createRequire(dir);
-};
 
 const { proto } = (await import('@whiskeysockets/baileys')).default;
 const isNumber = x => typeof x === 'number' && !isNaN(x);
@@ -26,24 +15,25 @@ const delay = ms => isNumber(ms) && new Promise(resolve => setTimeout(function (
 
 export async function handler(chatUpdate) {
     this.uptime = this.uptime || Date.now();
-    const conn = this;
 
     if (!chatUpdate || !chatUpdate.messages || chatUpdate.messages.length === 0) {
         return;
     }
 
+        // aqui corrigo mi error
     let m = chatUpdate.messages[chatUpdate.messages.length - 1];
     if (!m) return;
 
     m = smsg(this, m) || m;
     if (!m) return;
 
-    // if (!m.isGroup) return;
+    if (!m.isGroup) return;
 
     this.processedMessages = this.processedMessages || new Map();
     const now = Date.now();
     const lifeTime = 9000;
 
+    // Limpiar mensajes procesados antiguos
     for (let [msgId, time] of this.processedMessages) {
         if (now - time > lifeTime) {
             this.processedMessages.delete(msgId);
@@ -110,7 +100,6 @@ export async function handler(chatUpdate) {
         if (!global.db.data.chats[chatJid]) {
             global.db.data.chats[chatJid] = {
                 isBanned: false,
-                subbotDisabled: false,
                 sAutoresponder: '',
                 welcome: true,
                 autolevelup: false,
@@ -158,7 +147,7 @@ export async function handler(chatUpdate) {
         if (opts['swonly'] && m.chat !== 'status@broadcast') return;
         if (typeof m.text !== 'string') m.text = '';
 
-        async function getLidFromJid(id, conn) {
+                async function getLidFromJid(id, conn) {
             if (id.endsWith('@lid')) return id;
             const res = await conn.onWhatsApp(id).catch(() => []);
             return res[0]?.lid || id;
@@ -174,7 +163,8 @@ export async function handler(chatUpdate) {
         const isAdmin = isRAdmin || user2?.admin === "admin";
         const isBotAdmin = !!bot?.admin;
 
-        const ___dirname = path.join(path.dirname(global.__filename(import.meta.url, true)), './plugins');
+
+        const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './plugins');
         let usedPrefix = '';
 
         for (let name in global.plugins) {
@@ -214,8 +204,7 @@ export async function handler(chatUpdate) {
             ).find(p => p[0]);
 
             if (typeof plugin.before === 'function') {
-                const extra = { match, conn: this, participants, groupMetadata, user, isROwner, isOwner, isRAdmin, isAdmin, isBotAdmin, chatUpdate, __dirname: ___dirname, __filename };
-                if (await plugin.before.call(this, m, extra)) {
+                if (await plugin.before.call(this, m, { match, conn: this, participants, groupMetadata, user, isROwner, isOwner, isRAdmin, isAdmin, isBotAdmin, chatUpdate, __dirname: ___dirname, __filename })) {
                     continue;
                 }
             }
@@ -228,7 +217,6 @@ export async function handler(chatUpdate) {
                 let [command, ...args] = noPrefix.trim().split(/\s+/).filter(v => v);
                 let text = args.join(' ');
                 command = (command || '').toLowerCase();
-
 
                 const fail = plugin.fail || global.dfail;
                 const isAccept = plugin.command instanceof RegExp ? 
@@ -247,7 +235,7 @@ export async function handler(chatUpdate) {
                 }
 
                 const chatID = m.chat;
-                const ID_GRUPO_RESTRINGIDO = '120363405640485948@g.us';
+                const ID_GRUPO_RESTRINGIDO = '120363421094353744@g.us';
                 const comandosPermitidos = ['code', 'qr', 'welcome', 'detect', 'kick', 'tag'];
 
                 if (chatID === ID_GRUPO_RESTRINGIDO) {
@@ -269,8 +257,6 @@ export async function handler(chatUpdate) {
                     const permissions = {
                         rowner: isROwner,
                         owner: isOwner,
-                        mods: false,
-                        premium: user?.premium || false,
                         group: m.isGroup,
                         botAdmin: isBotAdmin,
                         admin: isAdmin,
@@ -301,7 +287,7 @@ export async function handler(chatUpdate) {
                 } catch (e) {
                     m.error = e;
                     console.error(e);
-                    const errorText = format(e).replace(new RegExp(Object.values(global.APIKeys || {}).join('|'), 'g'), 'Administrador');
+                    const errorText = format(e).replace(new RegExp(Object.values(global.APIKeys).join('|'), 'g'), 'Administrador');
                     m.reply(errorText);
                 } finally {
                     if (typeof plugin.after === 'function') {
@@ -395,7 +381,7 @@ global.dfail = (type, m, conn) => {
 ┗━━━━━━━━━━━━━━╯`
     };
     if (messages[type]) {
-        conn.reply(m.chat, messages[type], m, rcanal);
+        conn.reply(m.chat, messages[type], m);
     }
 };
 
@@ -403,9 +389,6 @@ let file = global.__filename(import.meta.url, true);
 watchFile(file, async () => {
     unwatchFile(file);
     console.log(chalk.magenta("Se actualizo 'handler.js'"));
-    if (global.reloadHandler) {
-        await global.reloadHandler();
-    }
     if (global.conns && global.conns.length > 0) {
         const users = global.conns.filter((conn) => conn.user && conn.ws.socket && conn.ws.socket.readyState !== ws.CLOSED);
         for (const user of users) {
