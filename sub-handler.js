@@ -67,8 +67,7 @@ global.dfail = (type, m, conn) => {
     }
 };
 
-
-export async function handler(chatUpdate) {
+export async function subBotHandler(chatUpdate) {
     this.uptime = this.uptime || Date.now();
 
     if (!chatUpdate || !chatUpdate.messages || chatUpdate.messages.length === 0) {
@@ -386,16 +385,15 @@ export async function handler(chatUpdate) {
     }
 }
 
+export { handler as subBotHandler };
 
-let file = global.__filename(import.meta.url, true);
+const file = fileURLToPath(import.meta.url);
 watchFile(file, async () => {
     unwatchFile(file);
     console.log(chalk.magenta("Se actualizo 'handler.js'"));
     if (global.conns && global.conns.length > 0) {
         const users = global.conns.filter((conn) => conn.user && conn.ws.socket && conn.ws.socket.readyState !== ws.CLOSED);
         for (const user of users) {
-            // Se asume que 'subreloadHandler' es una función que existe en el objeto de conexión
-            // y que está bien definida para no causar el error.
             if (typeof user.subreloadHandler === 'function') {
                  user.subreloadHandler(false);
             }
