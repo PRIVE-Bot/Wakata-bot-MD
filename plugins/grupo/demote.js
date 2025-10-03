@@ -34,7 +34,21 @@ var handler = async (m, { conn, usedPrefix, command, text }) => {
     }
 
     try {
-        let name = user.split('@')[0]
+        let name = await conn.getName(user).catch(_ => user.split('@')[0])
+
+        
+        let groupMetadata = await conn.groupMetadata(m.chat)
+        let participant = groupMetadata.participants.find(p => p.id === user)
+
+        if (participant && participant.admin === null) {
+            
+            return conn.sendMessage(m.chat, {
+                text: `${emoji} @${name} ya fue degradado o no es administrador.`,
+                contextInfo: { mentionedJid: [user] }
+            }, { quoted: fkontak })
+        }
+
+        
         await conn.groupParticipantsUpdate(m.chat, [user], 'demote')
         await conn.sendMessage(m.chat, {
             text: `${emoji} @${name} fue degradado y ya no es administrador.`,
