@@ -1,6 +1,32 @@
 import { WAMessageStubType } from '@whiskeysockets/baileys'
 import fetch from 'node-fetch'
 
+const frasesBienvenida = [
+  "Nos alegra tenerte con nosotros, disfruta tu estadía",
+  "Prepárate para compartir momentos increíbles",
+  "Bienvenido, que tu energía positiva contagie al grupo",
+  "Que tu presencia haga este grupo más fuerte",
+  "Estamos felices de que te unas a nuestra comunidad",
+  "Nuevo integrante, nuevas aventuras por vivir",
+  "Tu participación será muy valiosa, bienvenido",
+  "Esperamos que encuentres apoyo y diversión aquí",
+  "Que cada mensaje tuyo sume alegría al grupo",
+  "Bienvenido, este es un espacio de colaboración y respeto"
+]
+
+const frasesDespedida = [
+  "Nos entristece verte partir, que te vaya bien",
+  "Gracias por tu tiempo con nosotros, hasta luego",
+  "Tu energía hará falta, hasta pronto",
+  "Que encuentres nuevos caminos llenos de éxitos",
+  "Esperamos verte de nuevo en otra ocasión",
+  "Se va un miembro valioso, buen viaje",
+  "Nos dejas un vacío, cuídate mucho",
+  "Hasta la próxima, que todo te vaya excelente",
+  "Tu participación siempre será recordada",
+  "Despedirse es difícil, pero los recuerdos quedan"
+]
+
 export async function before(m, { conn, participants, groupMetadata }) {
   let botSettings = global.db.data.settings[conn.user.jid] || {}
   if (botSettings.soloParaJid) return
@@ -31,7 +57,11 @@ export async function before(m, { conn, participants, groupMetadata }) {
     avatar = tipo2
   }
 
-  const urlapi = `https://canvas-8zhi.onrender.com/api/welcome3?title=${encodeURIComponent(tipo)}&desc=${encodeURIComponent(userName)}&profile=${encodeURIComponent(avatar)}&background=${encodeURIComponent(tipo2)}`
+  const fraseAleatoria = tipo === 'Bienvenido' 
+    ? frasesBienvenida[Math.floor(Math.random() * frasesBienvenida.length)]
+    : frasesDespedida[Math.floor(Math.random() * frasesDespedida.length)]
+
+  const urlapi = `https://canvas-8zhi.onrender.com/api/welcome3?title=${encodeURIComponent(tipo)}&desc=${encodeURIComponent(fraseAleatoria)}&profile=${encodeURIComponent(avatar)}&background=${encodeURIComponent(tipo2)}`
 
   let fkontak
   try {
@@ -50,24 +80,24 @@ export async function before(m, { conn, participants, groupMetadata }) {
   const number = who.split('@')[0]
 
   const productMessage = {
-  product: {
-    productImage: { url: urlapi },
-    productId: '2452968910',
-    title: `${tipo}, ahora somos ${totalMembers}`,
-    description: '',
-    currencyCode: 'USD',
-    priceAmount1000: '0',
-    retailerId: 1677,
-    url: `https://wa.me/${number}`,
-    productImageCount: 1
-  },
-  businessOwnerJid: who || '0@s.whatsapp.net',
-  caption: `✰𝙐𝙨𝙚𝙧: ${taguser}\n✎𝙂𝙧𝙪𝙥𝙤: ${groupSubject}\n✎𝙈𝙞𝙚𝙢𝙗𝙧𝙤: ${totalMembers}\n✰ 𝙁𝙚𝙘𝙝𝙖: ${date}`.trim(),
-  title: 'gati',
-  subtitle: '',
-  footer: `✰𝙐𝙨𝙚𝙧: ${taguser}\n✎𝙂𝙧𝙪𝙥𝙤: ${groupSubject}\n✎𝙈𝙞𝙚𝙢𝙗𝙧𝙤: ${totalMembers}\n✰ 𝙁𝙚𝙘𝙝𝙖: ${date}`,
-  mentions: who ? [who] : []
-}
+    product: {
+      productImage: { url: urlapi },
+      productId: '2452968910',
+      title: `${tipo}, ahora somos ${totalMembers}`,
+      description: '',
+      currencyCode: 'USD',
+      priceAmount1000: '0',
+      retailerId: 1677,
+      url: `https://wa.me/${number}`,
+      productImageCount: 1
+    },
+    businessOwnerJid: who || '0@s.whatsapp.net',
+    caption: `✰𝙐𝙨𝙚𝙧: ${taguser}\n✎𝙂𝙧𝙪𝙥𝙤: ${groupSubject}\n✎𝙈𝙞𝙚𝙢𝙗𝙧𝙤: ${totalMembers}\n✰ 𝙁𝙚𝙘𝙝𝙖: ${date}`.trim(),
+    title: 'gati',
+    subtitle: '',
+    footer: `✰𝙐𝙨𝙚𝙧: ${taguser}\n✎𝙂𝙧𝙪𝙥𝙤: ${groupSubject}\n✎𝙈𝙞𝙚𝙢𝙗𝙧𝙤: ${totalMembers}\n✰ 𝙁𝙚𝙘𝙝𝙖: ${date}`,
+    mentions: who ? [who] : []
+  }
 
   const mentionId = who ? [who] : []
   await conn.sendMessage(jid, productMessage, {
