@@ -10,6 +10,7 @@ const { spawn, exec } = await import('child_process')
 import { makeWASocket } from '../lib/simple.js'
 import { fileURLToPath } from 'url'
 import * as baileys from "@whiskeysockets/baileys" 
+import { subBotHandler } from '../sub-handler.js' // CAMBIO CLAVE: Importar la función con el nombre correcto
 
 const { 
     useMultiFileAuthState, 
@@ -40,7 +41,7 @@ let rtx = `
 ⟢ 1 » ⋮ ︱Ｄｉｓｐｏｓｉｔｉｖｏｓ 𝘃𝗶𝗻𝗰𝘂𝗹𝗮𝗱𝗼𝘀  
 ⟢ 2 » Ｅｓｃａｎｅａ ｅｌ Ⓠⓡ
 *
-⚠️ Ｓｅ ａｕｔｏｄｅｓ𝘁𝗿ｕｉｒá ｅｎ *60s* ⏳
+⚠️ Ｓｅ ａｕｔｏｄｅｓｔｒｕｉｒá ｅｎ *60s* ⏳
 
 > 🔗 𝐂𝐚𝐧𝐚𝐥 𝐎𝐟𝐢𝐜𝐢𝐚l ↓
 `;
@@ -50,11 +51,11 @@ let rtx2 = `
 
 💻 〢 Ｍｏｄｏ Ｃｏ́ｄｉｇｏ ▣ ＳｕｂＢｏｔ ⌬ Ｐｅｒｓｉｓｔｅｎｔｅ
 
-⟢ ⋮ → Ｄｉｓｐｏｓｉｔｉｖｏ𝘀 𝘃𝗶𝗻𝗰𝘂𝗹ａ𝗱𝗼𝘀  
+⟢ ⋮ → Ｄｉｓｐｏｓｉｔｉｖｏｓ 𝘃𝗶𝗻𝗰𝘂𝗹𝗮𝗱𝗼𝘀  
 ⟢ → Ｖｉｎｃｕｌａｒ ｃｏｎ 𝗻𝘂́𝗺𝗲𝗿𝗼  
-⟢ → Ｉｎｇ𝗿𝗲𝘀𝗮 ｅｌ 𝗰𝗼́𝗱𝗶𝗴𝗼
+⟢ → Ｉｎ𝗴𝗿𝗲𝘀𝗮 ｅｌ 𝗰𝗼́𝗱𝗶𝗴𝗼
 
-⚠️ Ｃｏ́𝗱ｉｇｏ ｅｘ𝗽𝗶𝗿𝗮 𝗲ｎ *60s* ⏳
+⚠️ Ｃｏ́ｄｉ𝗴ｏ 𝗲𝘅𝗽𝗶𝗿𝗮 𝗲𝗻 *60s* ⏳
 
 > 🔗 𝐂𝐚𝐧𝐚l 𝐎𝐟𝐢𝐜𝐢𝐚l ↓
 `;
@@ -190,14 +191,14 @@ const connectionOptions = {
 let sock = makeWASocket(connectionOptions)
 sock.isInit = false
 let isInit = true
-let qrSent = false // AÑADIDO: Bandera para controlar el envío de QR/código
+let qrSent = false 
 
 async function connectionUpdate(update) {
     const { connection, lastDisconnect, isNewLogin, qr } = update
-    
+
     if (isNewLogin) sock.isInit = false
 
-    if (qr && !mcode && !qrSent) { // MODIFICADO: Solo ejecuta si qrSent es falso
+    if (qr && !mcode && !qrSent) { 
         if (m?.chat) {
             txtQR = await conn.sendMessage(m.chat, {
                 image: await qrcode.toBuffer(qr, { scale: 8 }),
@@ -210,14 +211,14 @@ async function connectionUpdate(update) {
         if (txtQR && txtQR.key) {
             setTimeout(() => { conn.sendMessage(m.sender, { delete: txtQR.key })}, 60000) 
         }
-        qrSent = true // MARCADO: Ya se envió el QR/código
+        qrSent = true 
         return
     } 
 
-    if (qr && mcode && !qrSent) { // MODIFICADO: Solo ejecuta si qrSent es falso
+    if (qr && mcode && !qrSent) { 
         let secret = await sock.requestPairingCode((m.sender.split`@`[0]))
         secret = secret.match(/.{1,4}/g)?.join("-")
-        
+
         txtCode = await conn.sendMessage(m.chat, {
             image: { url: global.img },
             caption: rtx2,
@@ -242,7 +243,7 @@ async function connectionUpdate(update) {
                 }
             }
         }), { quoted: m })
-        
+
         const codeBot = await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
 
         if (txtCode && txtCode.key) {
@@ -251,14 +252,13 @@ async function connectionUpdate(update) {
         if (codeBot && codeBot.key) {
             setTimeout(() => { conn.sendMessage(m.sender, { delete: codeBot.key })}, 60000) 
         }
-        qrSent = true // MARCADO: Ya se envió el QR/código
+        qrSent = true 
     }
-    
-    // REINICIA qrSent si la conexión se cierra para que se pueda volver a enviar en la reconexión.
+
     if (connection === 'close') {
         qrSent = false;
-        // ... el resto de la lógica de desconexión ...
 
+        const reason = new baileys.Boom(lastDisconnect?.error)?.output?.statusCode;
         const shouldReconnect = [
             DisconnectReason.timedOut,    
             DisconnectReason.badSession,  
@@ -274,7 +274,7 @@ async function connectionUpdate(update) {
 
         if (reason === DisconnectReason.loggedOut || reason === 401 || reason === 405) {
             console.log(chalk.bold.magentaBright(`\n╭┄┄┄┄┄┄┄┄┄┄┄┄┄┄ • • • ┄┄┄┄┄┄┄┄┄┄┄┄┄┄⟡\n┆ SESIÓN CERRADA (+${path.basename(pathJadiBot)}). Borrando datos de sesión.\n╰┄┄┄┄┄┄┄┄┄┄┄┄┄┄ • • • ┄┄┄┄┄┄┄┄┄┄┄┄┄┄⟡`))
-            
+
             try {
                 if (options.fromCommand) m?.chat ? await conn.sendMessage(`${path.basename(pathJadiBot)}@s.whatsapp.net`, {text : '*SESIÓN CERRADA O INVÁLIDA*\n\n> *INTENTE NUEVAMENTE VINCULARSE COMO SUB-BOT*' }, { quoted: m || null }) : ""
             } catch (error) {
@@ -287,19 +287,19 @@ async function connectionUpdate(update) {
     if (global.db.data == null) loadDatabase()
     if (connection == `open`) {
         if (!global.db.data?.users) loadDatabase()
-        
+
         let userName, userJid 
         userName = sock.authState.creds.me.name || 'Anónimo'
         userJid = sock.authState.creds.me.jid || `${path.basename(pathJadiBot)}@s.whatsapp.net`
-        
+
         console.log(chalk.bold.cyanBright(`\n❒⸺⸺⸺⸺【• SUB-BOT •】⸺⸺⸺⸺❒\n│\n│ 🟢 ${userName} (+${path.basename(pathJadiBot)}) CONECTADO exitosamente.\n│\n❒⸺⸺⸺【• CONECTADO •】⸺⸺⸺❒`))
-        
+
         sock.isInit = true
-        
+
         if (!global.conns.some(c => c.user?.jid === sock.user?.jid)) {
             global.conns.push(sock)
         }
-        
+
         await joinChannels(sock)
 
         m?.chat ? await conn.sendMessage(m.chat, {text: args[0] ? `@${m.sender.split('@')[0]}, ya estás conectado, leyendo mensajes entrantes...` : ` 
@@ -326,14 +326,16 @@ setInterval(async () => {
     }
 }, 300000) 
 
-// CAMBIO AQUÍ: Importamos el manejador de sub-bots
-let subBotHandler = await import('../sub-handler.js')
+// La función subBotHandler ya está importada arriba.
 
 let creloadHandler = async function (restatConn) {
+    let NewSubHandler = subBotHandler // Usa la importación inicial como fallback
     try {
-        // CAMBIO AQUÍ: Apuntamos al nuevo archivo sub-handler.js para recargar
-        const SubHandler = await import(`../sub-handler.js?update=${Date.now()}`).catch(console.error)
-        if (Object.keys(SubHandler || {}).length) subBotHandler = SubHandler
+        // CAMBIO CLAVE: Recarga dinámica del sub-handler.js
+        const SubHandlerModule = await import(`../sub-handler.js?update=${Date.now()}`).catch(console.error)
+        if (SubHandlerModule && SubHandlerModule.subBotHandler) {
+             NewSubHandler = SubHandlerModule.subBotHandler
+        }
     } catch (e) {
         console.error('⚠️ Error al recargar sub-handler: ', e)
     }
@@ -349,9 +351,13 @@ let creloadHandler = async function (restatConn) {
         sock.ev.off("connection.update", sock.connectionUpdate)
         sock.ev.off('creds.update', sock.credsUpdate)
     }
+
+    // CAMBIO CLAVE: Asignamos la función exportada 'subBotHandler'
+    sock.handler = NewSubHandler.bind(sock) 
     
-    // CAMBIO AQUÍ: Asignamos el handler del sub-bot
-    sock.handler = subBotHandler.handler.bind(sock)
+    // Función para recargar el handler del sub-bot de forma externa (desde index.js)
+    sock.subreloadHandler = creloadHandler.bind(sock, false) 
+    
     sock.connectionUpdate = connectionUpdate.bind(sock)
     sock.credsUpdate = saveCreds.bind(sock, true)
     sock.ev.on("messages.upsert", sock.handler)
