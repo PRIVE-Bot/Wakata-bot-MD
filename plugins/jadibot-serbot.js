@@ -11,8 +11,6 @@ import { makeWASocket } from '../lib/simple.js'
 import { fileURLToPath } from 'url'
 import * as baileys from "@whiskeysockets/baileys" 
 
-// CAMBIO CLAVE: Importar el módulo completo o la función correcta. 
-// Usaremos la importación dinámica más adelante, así que solo declaramos la variable.
 let subBotHandlerModule = await import('../sub-handler.js').catch(e => console.error('Error al cargar sub-handler inicial:', e))
 let subBotHandlerFunction = subBotHandlerModule?.subBotHandler 
 
@@ -56,12 +54,12 @@ let rtx2 = `
 💻 〢 Ｍｏｄｏ Ｃｏ́ｄｉｇｏ ▣ ＳｕｂＢｏｔ ⌬ Ｐｅｒｓｉｓｔｅｎｔｅ
 
 ⟢ ⋮ → Ｄｉｓｐｏｓｉｔｉｖｏｓ 𝘃𝗶𝗻𝗰𝘂𝗹𝗮𝗱𝗼𝘀  
-⟢ → Ｖｉ𝗻ｃｕｌ𝗮𝗿 ｃｏｎ 𝗻𝘂́𝗺𝗲𝗿𝗼  
-⟢ → Ｉｎｇ𝗿ｅ𝘀ａ 𝗲𝗹 𝗰𝗼́𝗱𝗶𝗴𝗼
+⟢ → Ｖ𝗶𝗻ｃｕｌａ𝗿 ｃｏｎ 𝗻𝘂́𝗺𝗲𝗿𝗼  
+⟢ → Ｉｎｇ𝗿ｅ𝘀𝗮 𝗲ｌ 𝗰𝗼́𝗱𝗶𝗴𝗼
 
-⚠️ Ｃｏ́𝗱𝗶𝗴ｏ 𝗲𝘅𝗽𝗶𝗿𝗮 𝗲𝗻 *60s* ⏳
+⚠️ Ｃｏ́ｄｉｇｏ 𝗲𝘅𝗽𝗶𝗿𝗮 𝗲𝗻 *60s* ⏳
 
-> 🔗 𝐂𝐚𝐧𝐚l 𝐎𝐟𝐢𝐜𝐢a𝐥 ↓
+> 🔗 𝐂a𝐧𝐚l 𝐎𝐟𝐢𝐜𝐢a𝐥 ↓
 `;
 
 let crm1 = "Y2QgcGx1Z2lucy"
@@ -353,10 +351,8 @@ let creloadHandler = async function (restatConn) {
         sock.ev.off('creds.update', sock.credsUpdate)
     }
 
-    // CAMBIO CLAVE: Usa el nombre de la función exportada: subBotHandler
     sock.handler = NewSubHandler?.bind(sock) || subBotHandlerFunction?.bind(sock)
     
-    // Función para recargar el handler del sub-bot de forma externa (desde index.js)
     sock.subreloadHandler = creloadHandler.bind(sock, false) 
     
     sock.connectionUpdate = connectionUpdate.bind(sock)
