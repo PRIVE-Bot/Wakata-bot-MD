@@ -1,4 +1,5 @@
 import os from 'os'
+import { execSync } from 'child_process'
 
 let handler = async (m, { conn }) => {
   try {
@@ -13,12 +14,12 @@ let handler = async (m, { conn }) => {
     let totalMem = os.totalmem()
     let freeMem = os.freemem()
     let usedMem = totalMem - freeMem
-    let memPercent = Math.floor((usedMem / totalMem) * 100)
+    let memPercent = ((usedMem / totalMem) * 100).toFixed(2)
 
     
-    const progressBar = (percent) => {
-      let bars = 10
-      let filled = Math.round((percent / 100) * bars)
+    const progressBar = (percent, max = 100) => {
+      let bars = 20
+      let filled = Math.round((percent / max) * bars)
       let empty = bars - filled
       return '█'.repeat(filled) + '░'.repeat(empty)
     }
@@ -27,30 +28,46 @@ let handler = async (m, { conn }) => {
     const cpus = os.cpus()
     let totalLoad = 0
     for (let cpu of cpus) {
-      let times = cpu.times
-      let load = ((times.user + times.nice + times.sys) / (times.user + times.nice + times.sys + times.idle)) * 100
+      const times = cpu.times
+      const load = ((times.user + times.nice + times.sys) /
+        (times.user + times.nice + times.sys + times.idle)) * 100
       totalLoad += load
     }
-    let cpuPercent = Math.floor(totalLoad / cpus.length)
+    const cpuCores = cpus.length
+    const cpuActual = totalLoad.toFixed(2)
+    const cpuMax = cpuCores * 100 // 
+    const cpuBar = progressBar(cpuActual, cpuMax)
 
     
-    let cpuModel = cpus[0].model
-    let cpuSpeed = cpus[0].speed
+    const cpuModel = cpus[0].model
+    const cpuSpeed = cpus[0].speed
 
     
-    let platform = os.platform()
-    let arch = os.arch()
+    let diskUsed = 0, diskTotal = 0
+    try {
+      const df = execSync('df -BG /').toString().split('\n')[1]
+      diskTotal = parseInt(df.split(/\s+/)[1].replace('G',''))
+      diskUsed = parseInt(df.split(/\s+/)[2].replace('G',''))
+    } catch(e) {
+      diskUsed = 0
+      diskTotal = 0
+    }
+    const diskPercent = ((diskUsed / diskTotal) * 100).toFixed(2)
+    const diskBar = progressBar(diskPercent, 100)
 
     
-    let msg = `
+    const msg = `
 ⏱ *Uptime:* ${uptimeStr}
 
-💻 *Sistema:* ${platform} ${arch}
+💻 *Sistema:* ${os.platform()} ${os.arch()}
 🖥 *CPU:* ${cpuModel} @ ${cpuSpeed}MHz
-${progressBar(cpuPercent)} ${cpuPercent}% carga CPU
+${cpuBar} ${cpuActual}% / ${cpuMax}% CPU Usage
 
-🗄 *RAM:* ${Math.floor(usedMem / 1024 / 1024)}MB / ${Math.floor(totalMem / 1024 / 1024)}MB
+🗄 *RAM:* ${(usedMem / 1024 / 1024).toFixed(2)}MB / ${(totalMem / 1024 / 1024).toFixed(2)}MB
 ${progressBar(memPercent)} ${memPercent}% RAM usada
+
+💽 *Disco:* ${diskUsed} GiB / ${diskTotal} GiB
+${diskBar} ${diskPercent}% Disk Usage
 
 🟢 *Estado del bot:* Online
 `
