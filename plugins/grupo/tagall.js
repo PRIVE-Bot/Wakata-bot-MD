@@ -5,7 +5,7 @@ const handler = async (m, { isOwner, isAdmin, conn, text, participants, args, co
     m.react(customEmoji);
 
         if (!(isAdmin || isOwner)) {
-        fail('admin', m, conn);
+        global.dfail('admin', m, conn);
         return;
     }
 
