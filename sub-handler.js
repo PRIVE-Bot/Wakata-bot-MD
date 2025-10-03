@@ -1,10 +1,25 @@
 import { smsg } from './lib/simple.js';
 import { format } from 'util'; 
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url'; 
+import { platform } from 'process'; 
 import path, { join } from 'path';
 import { unwatchFile, watchFile } from 'fs';
 import chalk from 'chalk';
 import ws from 'ws';
+import { createRequire } from 'module'; 
+
+// DEFINICIÓN DE FUNCIONES GLOBALES PARA EVITAR EL TypeError
+global.__filename = function filename(pathURL = import.meta.url, rmPrefix = platform !== 'win32') {
+  return rmPrefix ? /file:\/\/\//.test(pathURL) ? fileURLToPath(pathURL) : pathURL : pathToFileURL(pathURL).toString();
+};
+global.__dirname = function dirname(pathURL) {
+  return path.dirname(global.__filename(pathURL, true));
+};
+global.__require = function require(dir = import.meta.url) {
+  return createRequire(dir);
+};
+// FIN DE DEFINICIÓN DE FUNCIONES GLOBALES
+
 
 const { proto } = (await import('@whiskeysockets/baileys')).default;
 const isNumber = x => typeof x === 'number' && !isNaN(x);
@@ -161,19 +176,15 @@ export async function subBotHandler(chatUpdate) {
         const isAdmin = isRAdmin || user2?.admin === "admin";
         const isBotAdmin = !!bot?.admin;
 
-        // LÓGICA DE BANSUB MEJORADA: Bloqueo completo de todas las acciones y comandos
         if (m.isGroup && chat.subbotDisabled) {
             const commandText = m.text.toLowerCase().split(' ')[0];
             const isUnbanCommand = commandText === '!unbansub';
-            
-            // Si está bloqueado y el mensaje no es el comando para desbloquear, salimos inmediatamente.
+
             if (!isUnbanCommand) {
                 return;
             }
 
-            // Si es el comando !unbansub
             if (isUnbanCommand) {
-                // Solo el dueño del sub-bot (isOwner) o el dueño principal (isROwner) pueden desbloquear.
                 if (isOwner || isROwner) {
                     chat.subbotDisabled = false;
                     this.reply(m.chat, `
@@ -183,15 +194,13 @@ export async function subBotHandler(chatUpdate) {
 ║ ✅ Este Sub-Bot ha sido *HABILITADO* ║    para responder comandos con normalidad.
 ╚═════╸━━━╸═════╝`, m);
                 } else {
-                    // Si un usuario normal o admin intenta desbloquear, se le niega el acceso.
                     dfail('owner', m, this); 
                 }
                 return; 
             }
         }
-        // FIN LÓGICA DE BANSUB
 
-        const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './plugins');
+        const ___dirname = path.join(path.dirname(global.__filename(import.meta.url, true)), './plugins');
         let usedPrefix = '';
 
         for (let name in global.plugins) {
@@ -245,7 +254,7 @@ export async function subBotHandler(chatUpdate) {
                 let text = args.join(' ');
                 command = (command || '').toLowerCase();
 
-                
+
                 if (command === 'bansub') {
                     if (!isOwner) {
                         dfail('owner', m, this);
@@ -267,7 +276,7 @@ export async function subBotHandler(chatUpdate) {
 ╚═════╸━━━╸═════╝`, m);
                     return;
                 }
-                
+
                 if (command === 'subtest') {
                     this.reply(m.chat, `
 ┏━━━━━━━◥◣ ◆ ◢◤━━━━━━━┓
@@ -279,9 +288,9 @@ export async function subBotHandler(chatUpdate) {
 ┗━━━━━━━◢◤ ◆ ◥◣━━━━━━━┛`, m);
                     return;
                 }
-                
-               
-                
+
+
+
                 const fail = plugin.fail || global.dfail;
                 const isAccept = plugin.command instanceof RegExp ? 
                     plugin.command.test(command) :
@@ -310,6 +319,8 @@ export async function subBotHandler(chatUpdate) {
                     const permissions = {
                         rowner: isROwner,
                         owner: isOwner,
+                        mods: false,
+                        premium: false,
                         group: m.isGroup,
                         botAdmin: isBotAdmin,
                         admin: isAdmin,
