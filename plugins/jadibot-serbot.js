@@ -12,7 +12,7 @@ import { fileURLToPath } from 'url'
 import * as baileys from "@whiskeysockets/baileys" 
 
 let subBotHandlerModule = await import('../sub-handler.js').catch(e => console.error('Error al cargar sub-handler inicial:', e))
-let subBotHandlerFunction = subBotHandlerModule?.subBotHandler 
+let subBotHandlerFunction = subBotHandlerModule?.subBotHandler || (() => {})
 
 const { 
     useMultiFileAuthState, 
@@ -41,9 +41,9 @@ let rtx = `
 🛰️ 〢 Ｍｏｄｏ ＱＲ ▣ ＳｕｂＢｏｔ ⌬ Ｐｅｒｓｉｓｔｅｎｔｅ
 
 ⟢ 1 » ⋮ ︱Ｄｉｓｐｏｓｉｔｉｖｏｓ 𝘃𝗶𝗻𝗰𝘂𝗹𝗮𝗱𝗼𝘀  
-⟢ 2 » Ｅｓｃ𝗮ｎｅａ ｅｌ Ⓠⓡ
+⟢ 2 » Ｅｓｃａｎｅａ ｅｌ Ⓠⓡ
 *
-⚠️ Ｓｅ ａｕｔｏｄｅ𝘀ｔｒｕｉｒá ｅｎ *60s* ⏳
+⚠️ Ｓｅ ａｕｔｏｄｅｓｔｒｕｉｒá ｅｎ *60s* ⏳
 
 > 🔗 𝐂𝐚𝐧𝐚𝐥 𝐎𝐟𝐢𝐜𝐢a𝐥 ↓
 `;
@@ -55,11 +55,11 @@ let rtx2 = `
 
 ⟢ ⋮ → Ｄｉｓｐｏｓｉｔｉｖｏｓ 𝘃𝗶𝗻𝗰𝘂𝗹𝗮𝗱𝗼𝘀  
 ⟢ → Ｖｉｎｃｕｌａｒ ｃｏｎ 𝗻𝘂́𝗺𝗲𝗿𝗼  
-⟢ → Ｉｎｇ𝗿𝗲𝘀𝗮 𝗲𝗹 𝗰𝗼́𝗱𝗶𝗴ｏ
+⟢ → Ｉｎｇ𝗿ｅｓａ 𝗲𝗹 𝗰𝗼́𝗱𝗶𝗴𝗼
 
-⚠️ Ｃｏ́ｄｉｇｏ 𝗲𝘅𝗽𝗶𝗿𝗮 𝗲𝗻 *60s* ⏳
+⚠️ Ｃｏ́ｄｉｇｏ 𝗲𝘅𝗽𝗶𝗿𝗮 ｅ𝗻 *60s* ⏳
 
-> 🔗 𝐂a𝐧𝐚l 𝐎𝐟𝐢𝐜𝐢a𝐥 ↓
+> 🔗 𝐂a𝐧a𝐥 𝐎𝐟𝐢𝐜𝐢a𝐥 ↓
 `;
 
 let crm1 = "Y2QgcGx1Z2lucy"
@@ -260,9 +260,8 @@ async function connectionUpdate(update) {
     if (connection === 'close') {
         qrSent = false;
 
-        // CAMBIO CLAVE: Obtener el código de estado de error directamente
         const reason = lastDisconnect?.error?.output?.statusCode; 
-        
+
         const shouldReconnect = [
             DisconnectReason.timedOut,    
             DisconnectReason.badSession,  
@@ -334,12 +333,18 @@ let creloadHandler = async function (restatConn) {
     let NewSubHandler = subBotHandlerFunction 
     try {
         const SubHandlerModule = await import(`../sub-handler.js?update=${Date.now()}`).catch(console.error)
-        if (SubHandlerModule && SubHandlerModule.subBotHandler) {
+        if (SubHandlerModule && typeof SubHandlerModule.subBotHandler === 'function') {
              NewSubHandler = SubHandlerModule.subBotHandler
         }
     } catch (e) {
         console.error('⚠️ Error al recargar sub-handler: ', e)
     }
+
+    if (typeof NewSubHandler !== 'function') {
+        console.error('❌ FATAL: NewSubHandler no es una función. Usando handler vacío.')
+        NewSubHandler = () => {}
+    }
+
     if (restatConn) {
         const oldChats = sock.chats
         try { sock.ws.close() } catch { }
@@ -353,10 +358,10 @@ let creloadHandler = async function (restatConn) {
         sock.ev.off('creds.update', sock.credsUpdate)
     }
 
-    sock.handler = NewSubHandler?.bind(sock) || subBotHandlerFunction?.bind(sock)
-    
+    sock.handler = NewSubHandler.bind(sock)
+
     sock.subreloadHandler = creloadHandler.bind(sock, false) 
-    
+
     sock.connectionUpdate = connectionUpdate.bind(sock)
     sock.credsUpdate = saveCreds.bind(sock, true)
     sock.ev.on("messages.upsert", sock.handler)
