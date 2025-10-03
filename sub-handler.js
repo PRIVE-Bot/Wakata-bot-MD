@@ -27,6 +27,7 @@ const delay = ms => isNumber(ms) && new Promise(resolve => setTimeout(function (
 export async function subBotHandler(chatUpdate) {
     this.uptime = this.uptime || Date.now();
     const subConn = this;
+    let m; // Definida aquí para que esté disponible en el bloque 'finally'
 
     if (!chatUpdate || !chatUpdate.messages || chatUpdate.messages.length === 0) {
         return;
@@ -53,7 +54,7 @@ export async function subBotHandler(chatUpdate) {
     this.processedMessages.set(subId, now);
 
     try {
-        let m = smsg(this, subM); // Usamos 'm' para la compatibilidad del plugin
+        m = smsg(this, subM); // Asignación aquí
         if (!m) return;
 
         await this.readMessages([m.key]);
@@ -187,8 +188,8 @@ export async function subBotHandler(chatUpdate) {
                         chatUpdate,
                         __dirname: subDirname,
                         __filename: subFilename,
-                        conn: this, // Pasar 'conn' para compatibilidad
-                        m // Pasar 'm'
+                        conn: this,
+                        m
                     });
                 } catch (e) {
                     console.error(e);
@@ -216,7 +217,7 @@ export async function subBotHandler(chatUpdate) {
 
             if (typeof plugin.before === 'function') {
                 const subExtra = { subMatch, subConn: this, subParticipants, subGroupMetadata, subUser, isROwner, isOwner, isRAdmin, isAdmin, isBotAdmin, chatUpdate, __dirname: subDirname, __filename: subFilename, conn: this, m };
-                if (await plugin.before.call(this, m, subExtra)) { // Usar 'm' en la llamada
+                if (await plugin.before.call(this, m, subExtra)) {
                     continue;
                 }
             }
@@ -322,8 +323,8 @@ export async function subBotHandler(chatUpdate) {
                 const subExtra = {
                     subMatch, subUsedPrefix, subNoPrefix, subArgs, subCommand, subText, subConn: this, subParticipants, subGroupMetadata, subUser, isROwner, isOwner, isRAdmin, isAdmin, isBotAdmin, chatUpdate, __dirname: subDirname, __filename,
                     fail: subFail,
-                    conn: this, // Pasar 'conn' para plugins
-                    m // Pasar 'm' para plugins
+                    conn: this,
+                    m
                 };
 
                 try {
@@ -348,7 +349,7 @@ export async function subBotHandler(chatUpdate) {
     } catch (e) {
         console.error(e);
     } finally {
-        if (m) { // Usar 'm' en lugar de 'subM'
+        if (m) {
             const subUser = global.db.data.users[m.sender];
             if (subUser && subUser.muto) {
                 await this.sendMessage(m.chat, { delete: m.key });
