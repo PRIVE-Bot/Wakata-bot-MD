@@ -1,5 +1,5 @@
 var handler = async (m, { conn, usedPrefix, command, text }) => {
-    const res = await fetch('https://files.catbox.moe/9xene9.jpg');
+    const res = await fetch('https://i.postimg.cc/y8yzWzjW/1756498087639.jpg');
     const thumb2 = Buffer.from(await res.arrayBuffer());
 
     const fkontak = {
