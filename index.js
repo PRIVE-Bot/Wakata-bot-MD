@@ -18,6 +18,7 @@ import { tmpdir } from 'os';
 import { format } from 'util';
 import boxen from 'boxen';
 import pino from 'pino';
+import './plugins/main-allfake.js'
 import path, { join, dirname } from 'path';
 import { Boom } from '@hapi/boom';
 import { makeWASocket, protoType, serialize } from './lib/simple.js';
