@@ -120,7 +120,7 @@ renderLargerThumbnail: true
 
 handler.help = ['menu', 'allmenu']
 handler.tags = ['main']
-handler.command = ['menu', 'allmenu', 'menú']
+handler.command = ['menu', 'allmenu', 'menú', 'help']
 handler.register = true
 
 export default handler
