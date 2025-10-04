@@ -1,6 +1,6 @@
 import fetch from "node-fetch";
 import yts from "yt-search";
-import * as Jimp from "jimp";
+import Jimp from "jimp";
 import axios from "axios";
 import crypto from "crypto";
 
