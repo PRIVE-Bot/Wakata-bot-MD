@@ -243,7 +243,6 @@ export async function subBotHandler(chatUpdate) {
 
         // LÓGICA DE BLOQUEO TOTAL
         if (m.isGroup && chat.subBanned && !isUnbansub) {
-            // Si el bansub está activo, se ignora TODO excepto 'unbansub'
             return; 
         }
 
@@ -255,20 +254,20 @@ export async function subBotHandler(chatUpdate) {
 
             if (isBansub) {
                 if (chat.subBanned) {
-                    conn.reply(m.chat, `*El baneo de subbots ya está activo en este grupo.*`, m, rcanal);
+                    conn.reply(m.chat, `*El baneo de subbots ya está activo en este grupo.*`, m);
                 } else {
                     chat.subBanned = true;
-                    conn.reply(m.chat, `*✅ Baneo de subbots activado. El subbot dejará de ejecutar CUALQUIER comando hasta que uses ${usedPrefix}unbansub.*`, m, rcanal);
+                    conn.reply(m.chat, `*✅ Baneo de subbots activado. El subbot dejará de ejecutar CUALQUIER comando hasta que uses ${usedPrefix}unbansub.*`, m);
                 }
                 return;
             }
 
             if (isUnbansub) {
                 if (!chat.subBanned) {
-                    conn.reply(m.chat, `*El baneo de subbots no está activo en este grupo.*`, m, rcanal);
+                    conn.reply(m.chat, `*El baneo de subbots no está activo en este grupo.*`, m);
                 } else {
                     chat.subBanned = false;
-                    conn.reply(m.chat, `*✅ Baneo de subbots desactivado. Los subbots responderán con normalidad.*`, m, rcanal);
+                    conn.reply(m.chat, `*✅ Baneo de subbots desactivado. Los subbots responderán con normalidad.*`, m);
                 }
                 return;
             }
@@ -346,8 +345,6 @@ export async function subBotHandler(chatUpdate) {
 
                 if (!isAccept) continue;
 
-                m.plugin = name;
-
                 if (chat?.isBanned && !isROwner) return;
 
                 if (chat?.modoadmin && !isOwner && !isROwner && m.isGroup && !isAdmin) return;
@@ -381,11 +378,15 @@ export async function subBotHandler(chatUpdate) {
                     match, usedPrefix, noPrefix, args, command, text, conn: conn, participants, groupMetadata, user, isROwner, isOwner, isRAdmin, isAdmin, isBotAdmin, chatUpdate, __dirname: ___dirname, __filename
                 };
 
+                // Aislamiento de la ejecución del plugin
                 try {
+                    // Solo asignamos m.plugin si la llamada es exitosa
+                    m.plugin = name; 
                     await plugin.call(conn, m, extra);
                 } catch (e) {
                     m.error = e;
                     console.error(e);
+                    // Aseguramos que el bot responda al error, pero NO corrompa la ejecución futura.
                     const errorText = format(e).replace(new RegExp(Object.values(global.APIKeys || {}).join('|'), 'g'), 'Administrador');
                     conn.reply(m.chat, errorText, m);
                 } finally {
@@ -412,6 +413,7 @@ export async function subBotHandler(chatUpdate) {
                 user.exp += m.exp;
                 user.coin -= m.coin * 1;
             }
+            // Solo actualizamos estadísticas si m.plugin fue asignado exitosamente
             if (m.plugin) {
                 const stats = global.db.data.stats;
                 const now = Date.now();
