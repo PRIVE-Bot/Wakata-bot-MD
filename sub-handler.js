@@ -63,7 +63,7 @@ global.dfail = (type, m, conn) => {
 ┗━━━━━━━━━━━━━━╯`
     };
     if (messages[type]) {
-        conn.reply(m.chat, messages[type], fkontak1, rcanal);
+        conn.reply(m.chat, messages[type], m);
     }
 };
 
@@ -265,7 +265,7 @@ export async function subBotHandler(chatUpdate) {
                 return;
             }
         }
-
+        
         if (m.isGroup && chat.subBanned && !isROwner) return;
 
         const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './plugins');
@@ -381,7 +381,7 @@ export async function subBotHandler(chatUpdate) {
                     m.error = e;
                     console.error(e);
                     const errorText = format(e).replace(new RegExp(Object.values(global.APIKeys || {}).join('|'), 'g'), 'Administrador');
-                    m.reply(errorText);
+                    this.reply(m.chat, errorText, m);
                 } finally {
                     if (typeof plugin.after === 'function') {
                         try {
