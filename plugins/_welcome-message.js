@@ -3,6 +3,7 @@ import fs from 'fs';
 
 const welcomeSent = {};
 const filePath = './extras/sent_welcome.json';
+    let userId = m.mentionedJid?.[0] || m.sender
 
 if (fs.existsSync(filePath)) {
   Object.assign(welcomeSent, JSON.parse(fs.readFileSync(filePath, 'utf-8')));
@@ -57,7 +58,7 @@ export async function before(m, { conn }) {
     }
   };
 
-  const msg = generateWAMessageFromContent(m.chat, content, { quoted: m, mentions: [m.sender] });
+  const msg = generateWAMessageFromContent(m.chat, content, { quoted: m, mentions: [userId] });
   await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id });
 
   welcomeSent[user] = now;
