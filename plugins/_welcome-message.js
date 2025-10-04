@@ -3,8 +3,7 @@ import fs from 'fs';
 
 const welcomeSent = {};
 const filePath = './extras/sent_welcome.json';
-    let userId = m.mentionedJid?.[0] || m.sender
-
+    
 if (fs.existsSync(filePath)) {
   Object.assign(welcomeSent, JSON.parse(fs.readFileSync(filePath, 'utf-8')));
 }
@@ -19,6 +18,8 @@ export async function before(m, { conn }) {
   if (!m.message) return true;
 
   const user = m.sender;
+  const userId = m.mentionedJid?.[0] || m.sender
+
   const now = Date.now();
   const oneDay = 24 * 60 * 60 * 1000;
 
