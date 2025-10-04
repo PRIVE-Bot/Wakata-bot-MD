@@ -56,8 +56,6 @@ async function sendAlbumMessage(conn, jid, medias, options = {}) {
 
 let handler = async (m, { conn }) => {
   try {
-    const tipo = Math.random() < 0.5 ? 'male' : 'female'
-
     const res = await fetch(`https://api.kirito.my/api/anime?apikey=by_deylin&type=${tipo}`)
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
     const json = await res.json()
@@ -81,7 +79,7 @@ let handler = async (m, { conn }) => {
     }
 
     await sendAlbumMessage(conn, m.chat, medias, {
-      caption: `📸 Aquí tienes ${maxImgs} imágenes anime de ${tipo === 'male' ? 'hombres' : 'mujeres'} 🍥`,
+      caption: `📸 Aquí tienes ${maxImgs} imágenes anime 🍥`,
       quoted: fkontak
     })
 
