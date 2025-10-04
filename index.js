@@ -12,6 +12,7 @@ import yargs from 'yargs';
 import { spawn, execSync } from 'child_process';
 import lodash from 'lodash';
 import { JadiBot } from './plugins/jadibot-serbot.js';
+import './plugins/main-allfake.js';
 import chalk from 'chalk';
 import syntaxerror from 'syntax-error';
 import { tmpdir } from 'os';
