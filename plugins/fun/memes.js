@@ -80,7 +80,7 @@ let handler = async (m, { conn }) => {
     };
 
     await sendAlbumMessage(conn, m.chat, medias, {
-      caption: `Aquí tienes ${maxMemes} memes 😄`,
+      caption: `${emoji} Aquí tienes tus memes aleatorios 😄`,
       quoted: fkontak
     });
 
