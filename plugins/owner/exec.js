@@ -18,16 +18,15 @@ let handler = async (m, _2) => {
     let f = {
       exports: {}
     }
-    let exec = new (async () => { }).constructor('print', 'm', 'handler', 'require', 'conn', 'Array', 'process', 'args', 'groupMetadata', 'module', 'exports', 'argument', _text)
-    _return = await exec.call(conn, (...args) => {
+    let exec = new (async () => { }).constructor('print', 'm', 'handler', 'require', 'conn', 'Array', 'process', 'args', 'groupMetadata', 'module', 'exports', 'argument', 'p', _text)
+    
+    const printFunc = (...args) => {
       if (--i < 1) return
       console.log(...args)
       return conn.reply(m.chat, format(...args), m)
-    }, m, handler, require, conn, CustomArray, process, args, groupMetadata, f, f.exports, [conn, _2], (...args) => {
-      if (--i < 1) return
-      console.log(...args)
-      return conn.reply(m.chat, format(...args), m)
-    })
+    };
+
+    _return = await exec.call(conn, printFunc, m, handler, require, conn, CustomArray, process, args, groupMetadata, f, f.exports, [conn, _2], printFunc)
   } catch (e) {
     let err = syntaxerror(_text, 'Execution Function', {
       allowReturnOutsideFunction: true,
@@ -41,9 +40,10 @@ let handler = async (m, _2) => {
     m.exp = old
   }
 }
-handler.help = ['> ', '=> ']
+handler.help = ['=> '] 
 handler.tags = ['owner']
-handler.customPrefix = /^=?> /
+handler.customPrefix = /^=> / 
+handler.command = /(?:)/i 
 handler.rowner = true
 
 export default handler
