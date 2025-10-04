@@ -2,7 +2,7 @@ import fetch from 'node-fetch';
 
 let handler = async (m, { conn }) => {
   try {
-    const res = await fetch('https://g-mini-ia.vercel.app/api/meme');
+    const res = await fetch('https://API.kirito.my/api/meme?apikey=by_deylin');
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
     const json = await res.json();
