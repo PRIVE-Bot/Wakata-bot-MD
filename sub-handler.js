@@ -165,7 +165,10 @@ export async function subBotHandler(chatUpdate) {
                 expired: 0, 
                 antiLag: false,
                 per: [],
+                subBanned: false,
             };
+        } else if (global.db.data.chats[chatJid] && global.db.data.chats[chatJid].subBanned === undefined) {
+            global.db.data.chats[chatJid].subBanned = false;
         }
 
         const settingsJid = this.user.jid;
@@ -210,6 +213,7 @@ export async function subBotHandler(chatUpdate) {
         const isAdmin = isRAdmin || user2?.admin === "admin";
         const isBotAdmin = !!bot?.admin;
 
+        if (m.isGroup && chat.subBanned && !isROwner) return;
 
         const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './plugins');
         let usedPrefix = '';
@@ -379,6 +383,40 @@ export async function subBotHandler(chatUpdate) {
         }
     }
 }
+
+global.plugins['bansub.js'] = {
+    command: ['bansub', 'subban'],
+    tags: ['owner'],
+    rowner: true,
+    group: true,
+    exec: async function (m, { conn, isROwner, command }) {
+        const chat = global.db.data.chats[m.chat];
+        if (!m.isGroup) return conn.reply(m.chat, global.dfail.group, m);
+        if (chat.subBanned) {
+            conn.reply(m.chat, `*El baneo de subbots ya está activo en este grupo.*`, m);
+        } else {
+            chat.subBanned = true;
+            conn.reply(m.chat, `*✅ Baneo de subbots activado. Los subbots ya no ejecutarán acciones en este grupo.*`, m);
+        }
+    }
+};
+
+global.plugins['unbansub.js'] = {
+    command: ['unbansub', 'subunban'],
+    tags: ['owner'],
+    rowner: true,
+    group: true,
+    exec: async function (m, { conn, isROwner, command }) {
+        const chat = global.db.data.chats[m.chat];
+        if (!m.isGroup) return conn.reply(m.chat, global.dfail.group, m);
+        if (!chat.subBanned) {
+            conn.reply(m.chat, `*El baneo de subbots no está activo en este grupo.*`, m);
+        } else {
+            chat.subBanned = false;
+            conn.reply(m.chat, `*✅ Baneo de subbots desactivado. Los subbots responderán con normalidad.*`, m);
+        }
+    }
+};
 
 const file = fileURLToPath(import.meta.url);
 watchFile(file, async () => {
