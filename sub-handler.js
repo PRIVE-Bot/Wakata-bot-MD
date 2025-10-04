@@ -214,50 +214,34 @@ export async function subBotHandler(chatUpdate) {
         const isAdmin = isRAdmin || user2?.admin === "admin";
         const isBotAdmin = !!bot?.admin;
 
-        const str2Regex = str => str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
-        let _prefix = conn.prefix ? conn.prefix : global.prefix;
 
-        const match = (_prefix instanceof RegExp ? 
-            [[_prefix.exec(m.text), _prefix]] :
-            Array.isArray(_prefix) ?
-            _prefix.map(p => {
-                const re = p instanceof RegExp ? p : new RegExp(str2Regex(p));
-                return [re.exec(m.text), re];
-            }) :
-            typeof _prefix === 'string' ?
-            [[new RegExp(str2Regex(_prefix)).exec(m.text), new RegExp(str2Regex(_prefix))]] :
-            [[[], new RegExp()]]
-        ).find(p => p[0]);
+        const isBansub = ['bansub', 'subban'].includes(m.text.toLowerCase().trim().replace(/[^a-z0-9]/g, ''));
+        const isUnbansub = ['unbansub', 'subunban'].includes(m.text.toLowerCase().trim().replace(/[^a-z0-9]/g, ''));
 
-        let usedPrefix = '';
-        let command = '';
-        if (match) {
-            usedPrefix = match[0][0];
-            let noPrefix = m.text.replace(usedPrefix, '');
-            let [cmd, ...args] = noPrefix.trim().split(/\s+/).filter(v => v);
-            command = (cmd || '').toLowerCase();
-        }
-
-        const isBansub = ['bansub', 'subban'].includes(command);
-        const isUnbansub = ['unbansub', 'subunban'].includes(command);
-
-        // LÓGICA DE BLOQUEO TOTAL
+        
         if (m.isGroup && chat.subBanned && !isUnbansub) {
             return; 
         }
+        
+        
 
-        // COMANDOS BANSUB/UNBANSUB
+        
         if (m.isGroup && (isBansub || isUnbansub)) {
-            global.comando = command;
+            global.comando = isBansub ? 'bansub' : 'unbansub';
             if (!m.isGroup) return conn.reply(m.chat, global.dfail.group, m);
             if (!isROwner && !isAdmin) return conn.reply(m.chat, global.dfail.admin, m);
+
+            
+            let usedPrefixSim = conn.prefix ? conn.prefix : global.prefix;
+            usedPrefixSim = Array.isArray(usedPrefixSim) ? usedPrefixSim[0] : usedPrefixSim;
+
 
             if (isBansub) {
                 if (chat.subBanned) {
                     conn.reply(m.chat, `*El baneo de subbots ya está activo en este grupo.*`, m);
                 } else {
                     chat.subBanned = true;
-                    conn.reply(m.chat, `*✅ Baneo de subbots activado. El subbot dejará de ejecutar CUALQUIER comando hasta que uses ${usedPrefix}unbansub.*`, m);
+                    conn.reply(m.chat, `*✅ Baneo de subbots activado. El subbot dejará de ejecutar CUALQUIER comando hasta que uses ${usedPrefixSim}unbansub.*`, m);
                 }
                 return;
             }
@@ -275,6 +259,11 @@ export async function subBotHandler(chatUpdate) {
 
         const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './plugins');
         
+        
+        let usedPrefix = '';
+        let command = '';
+        let match = null;
+
 
         for (let name in global.plugins) {
             let plugin = global.plugins[name];
@@ -299,8 +288,6 @@ export async function subBotHandler(chatUpdate) {
                 continue;
             }
 
-            
-            
             if (typeof plugin.before === 'function') {
                 if (await plugin.before.call(conn, m, { match, conn: conn, participants, groupMetadata, user, isROwner, isOwner, isRAdmin, isAdmin, isBotAdmin, chatUpdate, __dirname: ___dirname, __filename })) {
                     continue;
@@ -308,13 +295,30 @@ export async function subBotHandler(chatUpdate) {
             }
 
             if (typeof plugin !== 'function') continue;
+            
+            
+            const str2Regex = str => str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
+            let _prefix = plugin.customPrefix ? plugin.customPrefix : conn.prefix ? conn.prefix : global.prefix;
 
-            if (match) {
+            const currentMatch = (_prefix instanceof RegExp ? 
+                [[_prefix.exec(m.text), _prefix]] :
+                Array.isArray(_prefix) ?
+                _prefix.map(p => {
+                    const re = p instanceof RegExp ? p : new RegExp(str2Regex(p));
+                    return [re.exec(m.text), re];
+                }) :
+                typeof _prefix === 'string' ?
+                [[new RegExp(str2Regex(_prefix)).exec(m.text), new RegExp(str2Regex(_prefix))]] :
+                [[[], new RegExp()]]
+            ).find(p => p[0]);
+
+            if (currentMatch) {
                 
+                match = currentMatch;
+                usedPrefix = match[0][0];
                 let noPrefix = m.text.replace(usedPrefix, '');
-                let [command, ...args] = noPrefix.trim().split(/\s+/).filter(v => v);
-                let text = args.join(' ');
-                command = (command || '').toLowerCase();
+                let [cmd, ...args] = noPrefix.trim().split(/\s+/).filter(v => v);
+                command = (cmd || '').toLowerCase();
 
                 const fail = plugin.fail || global.dfail;
                 const isAccept = plugin.command instanceof RegExp ? 
@@ -378,15 +382,15 @@ export async function subBotHandler(chatUpdate) {
                     match, usedPrefix, noPrefix, args, command, text, conn: conn, participants, groupMetadata, user, isROwner, isOwner, isRAdmin, isAdmin, isBotAdmin, chatUpdate, __dirname: ___dirname, __filename
                 };
 
-                // Aislamiento de la ejecución del plugin
+                
                 try {
-                    // Solo asignamos m.plugin si la llamada es exitosa
+                    
                     m.plugin = name; 
                     await plugin.call(conn, m, extra);
                 } catch (e) {
                     m.error = e;
                     console.error(e);
-                    // Aseguramos que el bot responda al error, pero NO corrompa la ejecución futura.
+                    
                     const errorText = format(e).replace(new RegExp(Object.values(global.APIKeys || {}).join('|'), 'g'), 'Administrador');
                     conn.reply(m.chat, errorText, m);
                 } finally {
@@ -398,8 +402,8 @@ export async function subBotHandler(chatUpdate) {
                         }
                     }
                 }
-            }
-        }
+            } 
+        } 
 
     } catch (e) {
         console.error(e);
@@ -413,7 +417,7 @@ export async function subBotHandler(chatUpdate) {
                 user.exp += m.exp;
                 user.coin -= m.coin * 1;
             }
-            // Solo actualizamos estadísticas si m.plugin fue asignado exitosamente
+            
             if (m.plugin) {
                 const stats = global.db.data.stats;
                 const now = Date.now();
