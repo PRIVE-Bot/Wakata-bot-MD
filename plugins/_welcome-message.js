@@ -31,7 +31,7 @@ export async function before(m, { conn }) {
     viewOnceMessage: {
       message: {
         interactiveMessage: {
-          body: { text: `👋 Hola ${}!\n\n¿Presiona el botón? 🚀\n> ¡No tengas miedo!` },
+          body: { text: `👋 Hola ${m.pushName}!\n\n¿Presiona el botón? 🚀\n> ¡No tengas miedo!` },
           footer: { text: "Comparte nuestro grupo y únete" },
           header: { title: "😅", hasMediaAttachment: false },
           nativeFlowMessage: {
