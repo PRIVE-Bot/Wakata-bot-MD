@@ -2,7 +2,7 @@ import { generateWAMessageFromContent } from '@whiskeysockets/baileys';
 import fs from 'fs';
 
 const welcomeSent = {};
-const filePath = './estas/sent_welcome.json';
+const filePath = './extras/sent_welcome.json';
 
 if (fs.existsSync(filePath)) {
   Object.assign(welcomeSent, JSON.parse(fs.readFileSync(filePath, 'utf-8')));
