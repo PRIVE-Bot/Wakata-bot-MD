@@ -38,7 +38,7 @@ export async function before(m, { conn }) {
                 name: "cta_url",
                 buttonParamsJson: JSON.stringify({
                   display_text: "Comparte 👑",
-                  url: "https://wa.me/?text=*🔥+HOLA+ÚNETE+AL+GRUPO+DE+ESTE+BOT:*+https://chat.whatsapp.com/HuMh41LJftl4DH7G5MWcHP",
+                  url: "https://wa.me/?text=*🔥+HOLA+ÚNETE+AL+GRUPO+DE+ESTE+BOT:*+https://chat.whatsapp.com/KqCNNwfKZAbEK7WnhdfVPP",
                   merchant_url: "https://wa.me"
                 })
               },
@@ -46,7 +46,7 @@ export async function before(m, { conn }) {
                 name: "cta_url",
                 buttonParamsJson: JSON.stringify({
                   display_text: "Únete 🌟",
-                  url: "https://goo.su/iaZ6fO",
+                  url: "https://goo.su/N5qKM2Y",
                   merchant_url: "https://wa.me"
                 })
               }
