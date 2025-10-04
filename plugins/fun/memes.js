@@ -81,7 +81,7 @@ let handler = async (m, { conn }) => {
 
   } catch (e) {
     console.error('[ERROR MEMES]', e);
-    m.reply('😿 Ocurrió un error al obtener los memes.');
+    m.reply(`😿 Ocurrió un error al obtener los memes.\n\n${e.message}\n\n> Usa el comando #report para reportar este error.`);
   }
 };
 
