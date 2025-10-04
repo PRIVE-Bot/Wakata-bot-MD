@@ -36,14 +36,19 @@ async function sendAlbumMessage(conn, jid, medias, options = {}) {
 
   for (let i = 0; i < medias.length; i++) {
     const { type, data } = medias[i];
-    const img = await baileys.generateWAMessage(
-      album.key.remoteJid,
-      { [type]: data, ...(i === 0 ? { caption } : {}) },
-      { upload: conn.waUploadToServer }
-    );
-    img.message.messageContextInfo = { messageAssociation: { associationType: 1, parentMessageKey: album.key } };
-    await conn.relayMessage(img.key.remoteJid, img.message, { messageId: img.key.id });
-    await baileys.delay(delay);
+    try {
+      const img = await baileys.generateWAMessage(
+        album.key.remoteJid,
+        { [type]: data, ...(i === 0 ? { caption } : {}) },
+        { upload: conn.waUploadToServer }
+      );
+      img.message.messageContextInfo = { messageAssociation: { associationType: 1, parentMessageKey: album.key } };
+      await conn.relayMessage(img.key.remoteJid, img.message, { messageId: img.key.id });
+      await baileys.delay(delay);
+    } catch (err) {
+      console.warn(`[WARN MEME] No se pudo enviar la imagen ${i + 1}:`, err.message);
+      continue;
+    }
   }
 
   return album;
@@ -69,7 +74,7 @@ let handler = async (m, { conn }) => {
       message: {
         documentMessage: {
           title: "Memes Aleatorios",
-          fileName: `𝗠𝗘𝗠𝗘𝗦 𝗧𝗢𝗧𝗔𝗟 ${maxMemes}`,
+          fileName: `𝗠𝗘𝗠𝗘𝗦_𝗗𝗘_𝗞𝗜𝗥𝗜𝗧𝗢`,
         }
       }
     };
