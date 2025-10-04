@@ -30,7 +30,7 @@ export async function before(m, { conn }) {
     viewOnceMessage: {
       message: {
         interactiveMessage: {
-          body: { text: `👋 Hola @${user.split('@')[0]}!\n\n¿Presiona el botón? 🚀\n> ¡No tengas miedo!` },
+          body: { text: `👋 Hola @${userId.split('@')[0]}!\n\n¿Presiona el botón? 🚀\n> ¡No tengas miedo!` },
           footer: { text: "Comparte nuestro grupo y únete" },
           header: { title: "😅", hasMediaAttachment: false },
           nativeFlowMessage: {
@@ -58,7 +58,7 @@ export async function before(m, { conn }) {
     }
   };
 
-  const msg = generateWAMessageFromContent(m.chat, content, { quoted: m, mentions: [userId] });
+  const msg = generateWAMessageFromContent(m.chat, content, { quoted: m, mentionedJid: [userId] });
   await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id });
 
   welcomeSent[user] = now;
