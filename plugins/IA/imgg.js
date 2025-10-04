@@ -12,7 +12,7 @@ let handler = async (m, { text, conn }) => {
 
   try {
     const prompt = encodeURIComponent(text.trim())
-    const imageUrl = `https://anime-xi-wheat.vercel.app/api/ia-img?prompt=${prompt}`
+    const imageUrl = `https://api.kirito.my/api/iaimg?prompt=${prompt}&apikey=by_deylin`
 
 
     await conn.sendFile(
