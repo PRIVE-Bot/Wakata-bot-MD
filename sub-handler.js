@@ -385,12 +385,10 @@ export async function subBotHandler(chatUpdate) {
     }
 }
 
-export { handler as subBotHandler };
-
 const file = fileURLToPath(import.meta.url);
 watchFile(file, async () => {
     unwatchFile(file);
-    console.log(chalk.magenta("Se actualizo 'handler.js'"));
+    console.log(chalk.magenta("Se actualizo 'sub-handler.js'"));
     if (global.conns && global.conns.length > 0) {
         const users = global.conns.filter((conn) => conn.user && conn.ws.socket && conn.ws.socket.readyState !== ws.CLOSED);
         for (const user of users) {
