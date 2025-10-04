@@ -241,7 +241,7 @@ export async function subBotHandler(chatUpdate) {
                     conn.reply(m.chat, `*${emoji} El baneo de subbots ya está activo en este grupo.*`, m, rcanal);
                 } else {
                     chat.subBanned = true;
-                    conn.reply(m.chat, `*${emoji} Baneo de subbots activado. El subbot dejará de ejecutar CUALQUIER comando hasta que uses ${usedPrefixSim}unbansub.*`, m, rcanal);
+                    conn.reply(m.chat, `*${emoji} Baneo de subbots activado. El subbot dejará de ejecutar CUALQUIER comando hasta que uses /unbansub.*`, m, rcanal);
                 }
                 return;
             }
