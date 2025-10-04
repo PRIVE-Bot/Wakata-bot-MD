@@ -213,10 +213,63 @@ export async function subBotHandler(chatUpdate) {
         const isAdmin = isRAdmin || user2?.admin === "admin";
         const isBotAdmin = !!bot?.admin;
 
+        const str2Regex = str => str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
+        let _prefix = this.prefix ? this.prefix : global.prefix;
+
+        const match = (_prefix instanceof RegExp ? 
+            [[_prefix.exec(m.text), _prefix]] :
+            Array.isArray(_prefix) ?
+            _prefix.map(p => {
+                const re = p instanceof RegExp ? p : new RegExp(str2Regex(p));
+                return [re.exec(m.text), re];
+            }) :
+            typeof _prefix === 'string' ?
+            [[new RegExp(str2Regex(_prefix)).exec(m.text), new RegExp(str2Regex(_prefix))]] :
+            [[[], new RegExp()]]
+        ).find(p => p[0]);
+
+        let usedPrefix = '';
+        let command = '';
+        if (match) {
+            usedPrefix = match[0][0];
+            let noPrefix = m.text.replace(usedPrefix, '');
+            let [cmd, ...args] = noPrefix.trim().split(/\s+/).filter(v => v);
+            command = (cmd || '').toLowerCase();
+        }
+
+        const isBansub = ['bansub', 'subban'].includes(command);
+        const isUnbansub = ['unbansub', 'subunban'].includes(command);
+
+        if (m.isGroup && (isBansub || isUnbansub)) {
+            global.comando = command;
+            if (!m.isGroup) return this.reply(m.chat, global.dfail.group, m);
+            if (!isROwner && !isAdmin) return this.reply(m.chat, global.dfail.admin, m);
+
+            if (isBansub) {
+                if (chat.subBanned) {
+                    this.reply(m.chat, `*El baneo de subbots ya está activo en este grupo.*`, m);
+                } else {
+                    chat.subBanned = true;
+                    this.reply(m.chat, `*✅ Baneo de subbots activado. Los subbots ya no ejecutarán acciones en este grupo.*`, m);
+                }
+                return;
+            }
+
+            if (isUnbansub) {
+                if (!chat.subBanned) {
+                    this.reply(m.chat, `*El baneo de subbots no está activo en este grupo.*`, m);
+                } else {
+                    chat.subBanned = false;
+                    this.reply(m.chat, `*✅ Baneo de subbots desactivado. Los subbots responderán con normalidad.*`, m);
+                }
+                return;
+            }
+        }
+
         if (m.isGroup && chat.subBanned && !isROwner) return;
 
         const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './plugins');
-        let usedPrefix = '';
+        
 
         for (let name in global.plugins) {
             let plugin = global.plugins[name];
@@ -241,21 +294,8 @@ export async function subBotHandler(chatUpdate) {
                 continue;
             }
 
-            const str2Regex = str => str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
-            let _prefix = plugin.customPrefix ? plugin.customPrefix : this.prefix ? this.prefix : global.prefix;
-
-            const match = (_prefix instanceof RegExp ? 
-                [[_prefix.exec(m.text), _prefix]] :
-                Array.isArray(_prefix) ?
-                _prefix.map(p => {
-                    const re = p instanceof RegExp ? p : new RegExp(str2Regex(p));
-                    return [re.exec(m.text), re];
-                }) :
-                typeof _prefix === 'string' ?
-                [[new RegExp(str2Regex(_prefix)).exec(m.text), new RegExp(str2Regex(_prefix))]] :
-                [[[], new RegExp()]]
-            ).find(p => p[0]);
-
+            
+            
             if (typeof plugin.before === 'function') {
                 if (await plugin.before.call(this, m, { match, conn: this, participants, groupMetadata, user, isROwner, isOwner, isRAdmin, isAdmin, isBotAdmin, chatUpdate, __dirname: ___dirname, __filename })) {
                     continue;
@@ -265,7 +305,7 @@ export async function subBotHandler(chatUpdate) {
             if (typeof plugin !== 'function') continue;
 
             if (match) {
-                usedPrefix = match[0][0];
+                
                 let noPrefix = m.text.replace(usedPrefix, '');
                 let [command, ...args] = noPrefix.trim().split(/\s+/).filter(v => v);
                 let text = args.join(' ');
@@ -384,39 +424,6 @@ export async function subBotHandler(chatUpdate) {
     }
 }
 
-global.plugins['bansub.js'] = {
-    command: ['bansub', 'subban'],
-    tags: ['owner'],
-    rowner: true,
-    group: true,
-    exec: async function (m, { conn, isROwner, command }) {
-        const chat = global.db.data.chats[m.chat];
-        if (!m.isGroup) return conn.reply(m.chat, global.dfail.group, m);
-        if (chat.subBanned) {
-            conn.reply(m.chat, `*El baneo de subbots ya está activo en este grupo.*`, m);
-        } else {
-            chat.subBanned = true;
-            conn.reply(m.chat, `*✅ Baneo de subbots activado. Los subbots ya no ejecutarán acciones en este grupo.*`, m);
-        }
-    }
-};
-
-global.plugins['unbansub.js'] = {
-    command: ['unbansub', 'subunban'],
-    tags: ['owner'],
-    rowner: true,
-    group: true,
-    exec: async function (m, { conn, isROwner, command }) {
-        const chat = global.db.data.chats[m.chat];
-        if (!m.isGroup) return conn.reply(m.chat, global.dfail.group, m);
-        if (!chat.subBanned) {
-            conn.reply(m.chat, `*El baneo de subbots no está activo en este grupo.*`, m);
-        } else {
-            chat.subBanned = false;
-            conn.reply(m.chat, `*✅ Baneo de subbots desactivado. Los subbots responderán con normalidad.*`, m);
-        }
-    }
-};
 
 const file = fileURLToPath(import.meta.url);
 watchFile(file, async () => {
