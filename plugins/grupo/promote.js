@@ -45,6 +45,7 @@ var handler = async (m, { conn, usedPrefix, command, text }) => {
         let groupMetadata = await conn.groupMetadata(m.chat)
         let participant = groupMetadata.participants.find(p => p.id === user)
 
+        
         if (participant && participant.admin) {
             return conn.sendMessage(m.chat, {
                 text: `${emoji} @${user.split('@')[0]} ya es administrador.`,
@@ -52,9 +53,12 @@ var handler = async (m, { conn, usedPrefix, command, text }) => {
             }, { quoted: fkontak })
         }
 
+        
         await conn.groupParticipantsUpdate(m.chat, [user], 'promote');
+
+        
         await conn.sendMessage(m.chat, {
-            text: `${emoji} @${user.split('@')[0]} ya es administrador.`,
+            text: `${emoji} @${user.split('@')[0]} fue promovido a administrador con éxito.`,
             contextInfo: { mentionedJid: [user] }
         }, { quoted: fkontak })
     } catch (e) {
