@@ -228,7 +228,6 @@ export async function subBotHandler(chatUpdate) {
             if (!m.isGroup) return conn.reply(m.chat, global.dfail.group, m);
             if (!isROwner && !isAdmin) return conn.reply(m.chat, global.dfail.admin, m);
 
-
             let usedPrefixSim = conn.prefix ? conn.prefix : global.prefix;
             usedPrefixSim = Array.isArray(usedPrefixSim) ? usedPrefixSim[0] : usedPrefixSim;
 
@@ -280,7 +279,6 @@ export async function subBotHandler(chatUpdate) {
                 continue;
             }
 
-           
             if (typeof plugin.before === 'function') {
                 if (await plugin.before.call(conn, m, { conn: conn, participants, groupMetadata, user, isROwner, isOwner, isRAdmin, isAdmin, isBotAdmin, chatUpdate, __dirname: ___dirname, __filename })) {
                     continue;
@@ -306,14 +304,12 @@ export async function subBotHandler(chatUpdate) {
             ).find(p => p[0]);
 
             if (currentMatch) {
-               
                 const match = currentMatch;
                 const usedPrefix = match[0][0];
                 const noPrefix = m.text.replace(usedPrefix, '');
                 let [command, ...args] = noPrefix.trim().split(/\s+/).filter(v => v);
                 const text = args.join(' '); 
                 command = (command || '').toLowerCase();
-
 
                 const fail = plugin.fail || global.dfail;
                 const isAccept = plugin.command instanceof RegExp ? 
