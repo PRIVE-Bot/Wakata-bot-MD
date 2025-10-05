@@ -42,21 +42,19 @@ var handler = async (m, { conn, usedPrefix, command, text }) => {
         }
         if (!name) name = user.split('@')[0]
 
-        
         let groupMetadata = await conn.groupMetadata(m.chat)
         let participant = groupMetadata.participants.find(p => p.id === user)
 
         if (participant && participant.admin) {
             return conn.sendMessage(m.chat, {
-                text: `${emoji} @${name} ya es administrador.`,
+                text: `${emoji} @${user.split('@')[0]} ya es administrador.`,
                 contextInfo: { mentionedJid: [user] }
             }, { quoted: fkontak })
         }
 
-        
         await conn.groupParticipantsUpdate(m.chat, [user], 'promote');
         await conn.sendMessage(m.chat, {
-            text: `${emoji} @${name} fue promovido a administrador con éxito.`,
+            text: `${emoji} @${user.split('@')[0]} ya es administrador.`,
             contextInfo: { mentionedJid: [user] }
         }, { quoted: fkontak })
     } catch (e) {
