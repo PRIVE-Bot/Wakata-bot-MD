@@ -128,12 +128,11 @@ const handler = async (m, { conn, text, command }) => {
     let url, title, thumbnail;
 
     if (savetube.isUrl(text)) {
-      // 👉 Descargar directo por URL
       url = text;
       title = "YouTube Video";
-      thumbnail = "https://i.postimg.cc/rFfVL8Ps/image.jpg"; // fallback si no hay
+      thumbnail = "https://i.postimg.cc/rFfVL8Ps/image.jpg"; 
     } else {
-      // 👉 Buscar en YouTube si no es URL
+      
       const search = await yts.search({ query: text, pages: 1 });
       if (!search.videos.length) {
         return m.reply("❌ No se encontró nada con ese nombre.");
@@ -144,7 +143,7 @@ const handler = async (m, { conn, text, command }) => {
       thumbnail = videoInfo.thumbnail;
     }
 
-    // Generar miniatura
+    
     let thumbResized;
     try {
       const thumbFileRes = await conn.getFile(thumbnail);
@@ -178,8 +177,7 @@ const handler = async (m, { conn, text, command }) => {
         {
           audio: { url: dl.result.download },
           mimetype: "audio/mpeg",
-          fileName: `${dl.result.title}.mp3`,
-          ptt: true
+          fileName: `${dl.result.title}.mp3`
         },
         { quoted: fkontak }
       );
@@ -198,7 +196,7 @@ const handler = async (m, { conn, text, command }) => {
           video: buffer,
           fileName: `${dl.result.title}.mp4`,
           mimetype: "video/mp4",
-          caption: `🎬 ${dl.result.title}`
+          caption: `${emoji} ${dl.result.title}`
         },
         { quoted: fkontak }
       );
