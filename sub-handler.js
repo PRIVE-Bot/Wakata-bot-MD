@@ -223,9 +223,6 @@ export async function subBotHandler(chatUpdate) {
             return; 
         }
 
-
-
-
         if (m.isGroup && (isBansub || isUnbansub)) {
             global.comando = isBansub ? 'bansub' : 'unbansub';
             if (!m.isGroup) return conn.reply(m.chat, global.dfail.group, m);
@@ -260,15 +257,6 @@ export async function subBotHandler(chatUpdate) {
         const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './plugins');
 
 
-        
-        let usedPrefix = '';
-        let command = '';
-        let match = null;
-        let text = ''; 
-        let args = []; 
-        let noPrefix = ''; 
-
-
         for (let name in global.plugins) {
             let plugin = global.plugins[name];
             if (!plugin || plugin.disabled) continue;
@@ -292,9 +280,9 @@ export async function subBotHandler(chatUpdate) {
                 continue;
             }
 
+           
             if (typeof plugin.before === 'function') {
-                
-                if (await plugin.before.call(conn, m, { match, conn: conn, participants, groupMetadata, user, isROwner, isOwner, isRAdmin, isAdmin, isBotAdmin, chatUpdate, __dirname: ___dirname, __filename })) {
+                if (await plugin.before.call(conn, m, { conn: conn, participants, groupMetadata, user, isROwner, isOwner, isRAdmin, isAdmin, isBotAdmin, chatUpdate, __dirname: ___dirname, __filename })) {
                     continue;
                 }
             }
@@ -318,13 +306,14 @@ export async function subBotHandler(chatUpdate) {
             ).find(p => p[0]);
 
             if (currentMatch) {
-
-                match = currentMatch;
-                usedPrefix = match[0][0];
-                noPrefix = m.text.replace(usedPrefix, '');
-                [command, ...args] = noPrefix.trim().split(/\s+/).filter(v => v);
+               
+                const match = currentMatch;
+                const usedPrefix = match[0][0];
+                const noPrefix = m.text.replace(usedPrefix, '');
+                let [command, ...args] = noPrefix.trim().split(/\s+/).filter(v => v);
+                const text = args.join(' '); 
                 command = (command || '').toLowerCase();
-                text = args.join(' '); 
+
 
                 const fail = plugin.fail || global.dfail;
                 const isAccept = plugin.command instanceof RegExp ? 
