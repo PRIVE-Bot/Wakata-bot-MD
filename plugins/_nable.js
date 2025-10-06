@@ -98,19 +98,6 @@ const handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, i
       isEnable = chat.autoresponder = !chat.autoresponder;
       break;
 
-    case 'antisubbots':
-    case 'antisub':
-    case 'antisubot':
-    case 'antibot2':
-      if (m.isGroup) {
-        if (!(isAdmin || isOwner)) {
-          global.dfail('admin', m, conn);
-          throw true;
-        }
-      }
-      isEnable = chat.antiBot2 = !chat.antiBot2;
-      break;
-
     case 'modoadmin':
     case 'soloadmin':
       if (m.isGroup) {
@@ -213,7 +200,6 @@ handler.help = [
   'autorechazar', 'rechazarauto',
   'autoresponder', 'autorespond',
   'autoresponder2', 'autorespond2', 'ar2',
-  'antisubbots', 'antisub', 'antisubot', 'antibot2',
   'modoadmin', 'soloadmin',
   'nsfw', 'nsfwhot', 'nsfwhorny',
   'antidelete', 'antieliminar', 'delete',
@@ -233,7 +219,6 @@ handler.command = [
   'autorechazar', 'rechazarauto',
   'autoresponder', 'autorespond',
   'autoresponder2', 'autorespond2', 'ar2',
-  'antisubbots', 'antisub', 'antisubot', 'antibot2',
   'modoadmin', 'soloadmin',
   'nsfw', 'nsfwhot', 'nsfwhorny',
   'antidelete', 'antieliminar', 'delete',
