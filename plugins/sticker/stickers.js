@@ -59,7 +59,7 @@ let handler = async (m, { conn, args, command }) => {
         const mask = new Jimp(width, height, '#00000000')
         mask.scan(0, 0, width, height, function (x, y, idx) {
           const nx = (x - width / 2) / (width / 2)
-          const ny = (y - height / 2) / (height / 2)
+          const ny = (height / 2 - y) / (height / 2)
           const eq = Math.pow(nx * nx + ny * ny - 1, 3) - nx * nx * ny * ny * ny
           if (eq <= 0) {
             this.bitmap.data[idx + 0] = 255
