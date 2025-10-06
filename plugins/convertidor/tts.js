@@ -16,6 +16,24 @@ const handler = async (m, { conn, args, text }) => {
     txt = args.join(' ')
   }
 
+        const res = await fetch('https://i.postimg.cc/FKm75nJz/1759734148064.jpg');
+        const thumb3 = Buffer.from(await res.arrayBuffer());
+
+        let fkontak = {
+            key: {
+                fromMe: false,
+                remoteJid: "120363368035542631@g.us",
+                participant: m.sender
+            },
+            message: {
+                imageMessage: {
+                    mimetype: 'image/jpeg',
+                    caption: '𝗖𝗢𝗡𝗩𝗘𝗥𝗧𝗜𝗗𝗢𝗥 𝗧𝗧𝗦',
+                    jpegThumbnail: thumb3
+                }
+            }
+        };
+
   txt = txt.replace(/[^\p{L}\p{N}\p{Zs}]/gu, '')
 
   let res
@@ -26,7 +44,7 @@ const handler = async (m, { conn, args, text }) => {
     res = await tts(txt, defaultLang)
   }
 
-  if (res) await conn.sendFile(m.chat, res, 'tts.opus', null, m, fake)
+  if (res) await conn.sendFile(m.chat, res, 'tts.opus', null, fkontak, true)
 }
 
 handler.help = ['tts <lang> <texto>']
