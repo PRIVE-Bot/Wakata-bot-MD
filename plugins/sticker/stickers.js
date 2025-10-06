@@ -74,26 +74,28 @@ let handler = async (m, { conn, args, command }) => {
       fs.unlinkSync(tempOut)
     } else {
       let jimg = await Jimp.read(media)
-      jimg.resize(512,512)
+      jimg.cover(512,512)
       let {width,height} = jimg.bitmap
 
       if(forma==='cp') jimg.contain(512,512)
+
       if(forma==='cc'){
         const mask = new Jimp(width,height,0x00000000)
         mask.scan(0,0,width,height,(x,y,idx)=>{
-          const dx=x-width/2
-          const dy=y-height/2
-          if(Math.sqrt(dx*dx+dy*dy)<width/2) mask.bitmap.data[idx+3]=255
+          const dx = x - width/2
+          const dy = y - height/2
+          if(Math.sqrt(dx*dx+dy*dy) <= width/2) mask.bitmap.data[idx+3]=255
         })
         jimg.mask(mask,0,0)
       }
+
       if(forma==='co'){
         const mask = new Jimp(width,height,0x00000000)
         mask.scan(0,0,width,height,(x,y,idx)=>{
-          const nx=(x-width/2)/(width/2)
-          const ny=(height/2-y)/(height/2)
-          const eq=Math.pow(nx*nx+ny*ny-1,3)-nx*nx*ny*ny*ny
-          if(eq<=0) mask.bitmap.data[idx+3]=255
+          const nx = (x - width/2)/(width/2)
+          const ny = (height/2 - y)/(height/2)
+          const eq = Math.pow(nx*nx + ny*ny - 1,3) - nx*nx*ny*ny*ny
+          if(eq <= 0) mask.bitmap.data[idx+3]=255
         })
         jimg.mask(mask,0,0)
       }
