@@ -56,7 +56,7 @@ let handler = async (m, { conn, args, command }) => {
           .outputOptions([
             '-vcodec libwebp',
             '-vf',
-            'fps=15,scale=512:512:flags=lanczos:force_original_aspect_ratio=decrease,pad=512:512:-1:-1:color=0x00000000',
+            'fps=15,scale=512:512:flags=lanczos:force_original_aspect_ratio=decrease,pad=512:512:(ow-iw)/2:(oh-ih)/2:color=0x00000000',
             '-loop 0',
             '-preset default',
             '-an',
@@ -74,21 +74,20 @@ let handler = async (m, { conn, args, command }) => {
       fs.unlinkSync(tempOut)
     } else {
       let jimg = await Jimp.read(media)
-      jimg.resize(512, 512)
+      jimg.resize(512, 512, Jimp.RESIZE_BEZIER)
       let { width, height } = jimg.bitmap
-      if (forma === 'cp') jimg.contain(500, 500)
+      if (forma === 'cp') jimg.contain(512, 512)
       if (forma === 'cc') {
-        const mask = new Jimp(width, height, '#00000000')
+        const mask = new Jimp(width, height, 0x00000000)
         mask.scan(0, 0, width, height, function (x, y, idx) {
           const dx = x - width / 2
           const dy = y - height / 2
-          const r = Math.sqrt(dx * dx + dy * dy)
-          if (r < width / 2) this.bitmap.data[idx + 3] = 255
+          if (Math.sqrt(dx * dx + dy * dy) < width / 2) this.bitmap.data[idx + 3] = 255
         })
         jimg.mask(mask, 0, 0)
       }
       if (forma === 'co') {
-        const mask = new Jimp(width, height, '#00000000')
+        const mask = new Jimp(width, height, 0x00000000)
         mask.scan(0, 0, width, height, function (x, y, idx) {
           const nx = (x - width / 2) / (width / 2)
           const ny = (height / 2 - y) / (height / 2)
