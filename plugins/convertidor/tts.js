@@ -7,15 +7,13 @@ const defaultLang = 'es';
 
 const handler = async (m, { conn, args, texto, usedPrefix, command }) => {
 
-if (text?) returt conn.reply(m.chta, `Falta el texto para convertir a audio`, m, rcanal)
+ if (!text) returt conn.reply(m.chat, '❗ Por favor, ingresa una frase válida.', m, rcanal);
   let lang = args[0];
   let text = args.slice(1).join(' ');
   if ((args[0] || '').length !== 2) {
     lang = defaultLang;
     text = args.join(' ');
   }
-
-  if (!text && m.quoted?.text) text = m.quoted.text;
 
 
   text = text.replace(/[^\p{L}\p{N}\p{Zs}]/gu, '');
@@ -26,7 +24,7 @@ if (text?) returt conn.reply(m.chta, `Falta el texto para convertir a audio`, m,
   } catch (e) {
     m.reply(e + '');
     text = args.join(' ').replace(/[^\p{L}\p{N}\p{Zs}]/gu, '');
-    if (!text) throw '❗ Por favor, ingresa una frase válida.';
+   
     res = await tts(text, defaultLang);
   } finally {
     if (res) conn.sendFile(m.chat, res, 'tts.opus', null, m, true);
