@@ -69,62 +69,96 @@ let handler = async (m, { conn, args, command }) => {
           .on('error', reject)
       })
       if (!fs.existsSync(tempOut)) throw new Error('No se generó el sticker')
-      stiker = fs.readFileSync(tempOut)
+
+      if (forma === 'co' || forma === 'cc' || forma === 'cp') {
+        const jimg = await Jimp.read(tempOut)
+        let { width, height } = jimg.bitmap
+
+        if (forma === 'cp') jimg.contain(512, 512)
+
+        if (forma === 'cc') {
+          const mask = new Jimp(width, height, 0x00000000)
+          mask.scan(0, 0, width, height, function(x, y, idx) {
+            const dx = x - width / 2
+            const dy = y - height / 2
+            if (Math.sqrt(dx*dx + dy*dy) < width/2) this.bitmap.data[idx + 3] = 255
+          })
+          jimg.mask(mask, 0, 0)
+        }
+
+        if (forma === 'co') {
+          const mask = new Jimp(width, height, 0x00000000)
+          mask.scan(0,0,width,height,function(x,y,idx){
+            const nx = (x-width/2)/(width/2)
+            const ny = (height/2 - y)/(height/2)
+            const eq = Math.pow(nx*nx+ny*ny-1,3)-nx*nx*ny*ny*ny
+            if(eq<=0) this.bitmap.data[idx+3]=255
+          })
+          jimg.mask(mask,0,0)
+        }
+
+        const buffer = await jimg.getBufferAsync(Jimp.MIME_PNG)
+        stiker = await sticker(buffer, false, global.packsticker, global.packsticker2)
+      } else {
+        stiker = fs.readFileSync(tempOut)
+      }
+
       fs.unlinkSync(tempIn)
       fs.unlinkSync(tempOut)
     } else {
       let jimg = await Jimp.read(media)
-      jimg.resize(512, 512, Jimp.RESIZE_BEZIER)
+      jimg.resize(512,512)
       let { width, height } = jimg.bitmap
-      if (forma === 'cp') jimg.contain(512, 512)
+
+      if (forma === 'cp') jimg.contain(512,512)
       if (forma === 'cc') {
-        const mask = new Jimp(width, height, 0x00000000)
-        mask.scan(0, 0, width, height, function (x, y, idx) {
-          const dx = x - width / 2
-          const dy = y - height / 2
-          if (Math.sqrt(dx * dx + dy * dy) < width / 2) this.bitmap.data[idx + 3] = 255
+        const mask = new Jimp(width,height,0x00000000)
+        mask.scan(0,0,width,height,function(x,y,idx){
+          const dx=x-width/2
+          const dy=y-height/2
+          if(Math.sqrt(dx*dx+dy*dy)<width/2) this.bitmap.data[idx+3]=255
         })
-        jimg.mask(mask, 0, 0)
+        jimg.mask(mask,0,0)
       }
       if (forma === 'co') {
-        const mask = new Jimp(width, height, 0x00000000)
-        mask.scan(0, 0, width, height, function (x, y, idx) {
-          const nx = (x - width / 2) / (width / 2)
-          const ny = (height / 2 - y) / (height / 2)
-          const sx = nx * 1.25
-          const sy = ny * 1.4 - 0.25
-          const eq = Math.pow(sx * sx + sy * sy - 1, 3) - sx * sx * sy * sy * sy
-          if (eq <= 0) this.bitmap.data[idx + 3] = 255
+        const mask = new Jimp(width,height,0x00000000)
+        mask.scan(0,0,width,height,function(x,y,idx){
+          const nx=(x-width/2)/(width/2)
+          const ny=(height/2-y)/(height/2)
+          const eq=Math.pow(nx*nx+ny*ny-1,3)-nx*nx*ny*ny*ny
+          if(eq<=0) this.bitmap.data[idx+3]=255
         })
-        jimg.mask(mask, 0, 0)
+        jimg.mask(mask,0,0)
       }
-      if (texto) {
-        const brillo = jimg.bitmap.data.reduce((a, _, i) => i % 4 !== 3 ? a + jimg.bitmap.data[i] : a, 0) / (width * height * 3)
-        const color = brillo > 127 ? '#000000' : '#FFFFFF'
-        const fuente = await Jimp.loadFont(color === '#000000' ? Jimp.FONT_SANS_64_BLACK : Jimp.FONT_SANS_64_WHITE)
-        const sombra = await Jimp.loadFont(color === '#000000' ? Jimp.FONT_SANS_64_WHITE : Jimp.FONT_SANS_64_BLACK)
-        jimg.print(sombra, 3, -3, { text: texto, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_BOTTOM }, width, height - 20)
-        jimg.print(fuente, 0, 0, { text: texto, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_BOTTOM }, width, height - 20)
+
+      if(texto){
+        const brillo=jimg.bitmap.data.reduce((a,_,i)=>i%4!==3?a+jimg.bitmap.data[i]:a,0)/(width*height*3)
+        const color=brillo>127?'#000000':'#FFFFFF'
+        const fuente=await Jimp.loadFont(color===' #000000'?Jimp.FONT_SANS_64_BLACK:Jimp.FONT_SANS_64_WHITE)
+        const sombra=await Jimp.loadFont(color===' #000000'?Jimp.FONT_SANS_64_WHITE:Jimp.FONT_SANS_64_BLACK)
+        jimg.print(sombra,3,-3,{text:texto,alignmentX:Jimp.HORIZONTAL_ALIGN_CENTER,alignmentY:Jimp.VERTICAL_ALIGN_BOTTOM},width,height-20)
+        jimg.print(fuente,0,0,{text:texto,alignmentX:Jimp.HORIZONTAL_ALIGN_CENTER,alignmentY:Jimp.VERTICAL_ALIGN_BOTTOM},width,height-20)
       }
+
       const finalImg = await jimg.getBufferAsync(Jimp.MIME_PNG)
-      stiker = await sticker(finalImg, false, global.packsticker, global.packsticker2)
+      stiker = await sticker(finalImg,false,global.packsticker,global.packsticker2)
     }
   } catch {
-    return conn.reply(m.chat, '⚠️ Ocurrió un error al procesar el sticker.', m, fkontak2)
+    return conn.reply(m.chat,'⚠️ Ocurrió un error al procesar el sticker.',m,fkontak2)
   }
 
-  if (stiker) await conn.sendMessage(m.chat, { sticker: stiker, ...global.rcanal }, { quoted: fkontak })
-  else conn.reply(m.chat, `✰ Envía o responde una imagen, sticker o video para convertirlo a sticker.
+  if(stiker) await conn.sendMessage(m.chat,{sticker:stiker,...global.rcanal},{quoted:fkontak})
+  else conn.reply(m.chat,`✰ Envía o responde una imagen, sticker o video para convertirlo a sticker.
 
 Formas:
 /${command} => normal
 /${command} co => corazón
 /${command} cc => círculo
-/${command} cp => normalizar`, m, fkontak)
+/${command} cp => normalizar`,m,fkontak)
 }
 
-handler.help = ['sticker <texto opcional>', 's <texto opcional>']
-handler.tags = ['sticker']
-handler.command = ['s', 'sticker', 'stiker']
+handler.help=['sticker <texto opcional>','s <texto opcional>']
+handler.tags=['sticker']
+handler.command=['s','sticker','stiker']
 
 export default handler
