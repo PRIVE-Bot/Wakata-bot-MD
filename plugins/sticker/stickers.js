@@ -19,12 +19,18 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
     }
   }
 
-  let textoSticker = args.join(' ').trim() 
+  let textoSticker = args.join(' ').trim()
   let stiker = false
 
   try {
     let q = m.quoted ? m.quoted : m
-    let mime = q.mimetype || q.msg?.mimetype || q.message?.imageMessage?.mimetype || q.message?.videoMessage?.mimetype || q.message?.stickerMessage?.mimetype || ''
+    let mime =
+      q.mimetype ||
+      q.msg?.mimetype ||
+      q.message?.imageMessage?.mimetype ||
+      q.message?.videoMessage?.mimetype ||
+      q.message?.stickerMessage?.mimetype ||
+      ''
 
     if (/webp|image|video/.test(mime)) {
       if (/video/.test(mime) && (q.msg || q).seconds > 15) {
@@ -32,14 +38,18 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
       }
 
       let img = await q.download?.()
-      if (!img) return conn.reply(m.chat, `✰✰ ᴘᴏʀ ғᴀᴠᴏʀ, ᴇɴᴠÍᴀ ᴜɴ ᴠɪᴅᴇᴏ, ɢɪғ ᴏ ɪᴍᴀɢᴇɴ ᴘᴀʀᴀ ᴄᴏɴᴠᴇʀᴛɪʀ ᴀ sᴛɪᴄᴋᴇʀ.`, m, rcanal)
+      if (!img)
+        return conn.reply(
+          m.chat,
+          `✰✰ ᴘᴏʀ ғᴀᴠᴏʀ, ᴇɴᴠÍᴀ ᴜɴ ᴠɪᴅᴇᴏ, ɢɪғ ᴏ ɪᴍᴀɢᴇɴ ᴘᴀʀᴀ ᴄᴏɴᴠᴇʀᴛɪʀ ᴀ sᴛɪᴄᴋᴇʀ.`,
+          m,
+          rcanal
+        )
 
-      
       if (textoSticker) {
         const jimg = await Jimp.read(img)
         const { width, height } = jimg.bitmap
 
-        
         let brilloPromedio = 0
         jimg.scan(0, 0, width, height, function (x, y, idx) {
           const r = this.bitmap.data[idx + 0]
@@ -47,17 +57,48 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
           const b = this.bitmap.data[idx + 2]
           brilloPromedio += (r + g + b) / 3
         })
-        brilloPromedio /= (width * height)
-        const colorTexto = brilloPromedio > 127 ? '#000000' : '#FFFFFF' 
+        brilloPromedio /= width * height
 
-        const fuente = await Jimp.loadFont(colorTexto === '#000000'
-          ? Jimp.FONT_SANS_32_BLACK
-          : Jimp.FONT_SANS_32_WHITE)
-        jimg.print(fuente, 0, 0, {
-          text: textoSticker,
-          alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
-          alignmentY: Jimp.VERTICAL_ALIGN_BOTTOM
-        }, width, height)
+        const colorTexto = brilloPromedio > 127 ? '#000000' : '#FFFFFF'
+
+        const fuente = await Jimp.loadFont(
+          colorTexto === '#000000'
+            ? Jimp.FONT_SANS_64_BLACK
+            : Jimp.FONT_SANS_64_WHITE
+        )
+
+        const sombraColor = colorTexto === '#000000' ? '#FFFFFF' : '#000000'
+        const sombra = await Jimp.loadFont(
+          sombraColor === '#000000'
+            ? Jimp.FONT_SANS_64_BLACK
+            : Jimp.FONT_SANS_64_WHITE
+        )
+
+        jimg.print(
+          sombra,
+          3,
+          -3,
+          {
+            text: textoSticker,
+            alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
+            alignmentY: Jimp.VERTICAL_ALIGN_BOTTOM
+          },
+          width,
+          height - 20
+        )
+
+        jimg.print(
+          fuente,
+          0,
+          0,
+          {
+            text: textoSticker,
+            alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
+            alignmentY: Jimp.VERTICAL_ALIGN_BOTTOM
+          },
+          width,
+          height - 20
+        )
 
         img = await jimg.getBufferAsync(Jimp.MIME_PNG)
       }
@@ -76,7 +117,6 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
           stiker = await sticker(false, out, global.packsticker, global.packsticker2)
         }
       }
-
     } else if (args[0]) {
       if (isUrl(args[0])) {
         stiker = await sticker(false, args[0], global.packsticker, global.packsticker2)
@@ -89,13 +129,14 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
     if (!stiker) stiker = e
   } finally {
     if (stiker) {
-      await conn.sendMessage(
-        m.chat,
-        { sticker: stiker, ...global.rcanal },
-        { quoted: fkontak }
-      )
+      await conn.sendMessage(m.chat, { sticker: stiker, ...global.rcanal }, { quoted: fkontak })
     } else {
-      return conn.reply(m.chat, `✰ ᴘᴏʀ ғᴀᴠᴏʀ, ᴇɴᴠÍᴀ ᴜɴ ᴠɪᴅᴇᴏ, ɢɪғ ᴏ ɪᴍᴀɢᴇɴ ᴘᴀʀᴀ ᴄᴏɴᴠᴇʀᴛɪʀ ᴀ sᴛɪᴄᴋᴇʀ.`, m, fake)
+      return conn.reply(
+        m.chat,
+        `✰ ᴘᴏʀ ғᴀᴠᴏʀ, ᴇɴᴠÍᴀ ᴜɴ ᴠɪᴅᴇᴏ, ɢɪғ ᴏ ɪᴍᴀɢᴇɴ ᴘᴀʀᴀ ᴄᴏɴᴠᴇʀᴛɪʀ ᴀ sᴛɪᴄᴋᴇʀ.`,
+        m,
+        fake
+      )
     }
   }
 }
@@ -107,5 +148,10 @@ handler.command = ['s', 'sticker', 'stiker']
 export default handler
 
 const isUrl = (text) => {
-  return text.match(new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)(jpe?g|gif|png)/, 'gi'))
+  return text.match(
+    new RegExp(
+      /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)(jpe?g|gif|png)/,
+      'gi'
+    )
+  )
 }
