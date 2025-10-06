@@ -157,7 +157,6 @@ export async function subBotHandler(chatUpdate) {
                 autoRechazar: false,
                 detect: true,
                 antiBot: false,
-                antiBot2: true,
                 modoadmin: false,
                 antiLink: true,
                 antifake: false,
