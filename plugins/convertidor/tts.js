@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url'
 const defaultLang = 'es'
 
 const handler = async (m, { conn, args, text }) => {
-  if (!text) return conn.reply(m.chat, '❗ Por favor, ingresa una frase válida.', m)
+  if (!text) return conn.reply(m.chat, `${emoji} Por favor, ingresa el texto para convertir a audio.`, m, rcanal)
 
   let lang = args[0]
   let txt = args.slice(1).join(' ')
@@ -26,7 +26,7 @@ const handler = async (m, { conn, args, text }) => {
     res = await tts(txt, defaultLang)
   }
 
-  if (res) await conn.sendFile(m.chat, res, 'tts.opus', null, m, true)
+  if (res) await conn.sendFile(m.chat, res, 'tts.opus', null, m, rcanal)
 }
 
 handler.help = ['tts <lang> <texto>']
