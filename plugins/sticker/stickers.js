@@ -34,6 +34,7 @@ let handler = async (m, { conn, args, command }) => {
       if (!img) return conn.reply(m.chat, '✰ ᴘᴏʀ ғᴀᴠᴏʀ, ᴇɴᴠÍᴀ ᴜɴᴀ ɪᴍᴀɢᴇɴ ᴘᴀʀᴀ ᴄᴏɴᴠᴇʀᴛɪʀ ᴀ sᴛɪᴄᴋᴇʀ.', m, rcanal)
 
       let jimg = await Jimp.read(img)
+      jimg.resize(512, 512)
       let { width, height } = jimg.bitmap
 
       if (forma === 'cp') jimg.contain(500, 500)
@@ -57,8 +58,8 @@ let handler = async (m, { conn, args, command }) => {
       if (forma === 'co') {
         const mask = new Jimp(width, height, '#00000000')
         mask.scan(0, 0, width, height, function (x, y, idx) {
-          const nx = (x - width / 2) / (width / 18)
-          const ny = (y - height / 2) / (height / 18)
+          const nx = (x - width / 2) / (width / 2)
+          const ny = (y - height / 2) / (height / 2)
           const eq = Math.pow(nx * nx + ny * ny - 1, 3) - nx * nx * ny * ny * ny
           if (eq <= 0) {
             this.bitmap.data[idx + 0] = 255
@@ -68,7 +69,6 @@ let handler = async (m, { conn, args, command }) => {
           }
         })
         jimg.mask(mask, 0, 0)
-        jimg.resize(512, 512)
       }
 
       if (texto) {
@@ -95,7 +95,7 @@ let handler = async (m, { conn, args, command }) => {
 /${command} ᴄᴄ => ᴄɪʀᴄᴜʟᴏ
 /${command} ᴄᴘ => ɴᴏʀᴍᴀʟɪᴢᴀʀ
 
-==> ᴘᴜᴇᴅᴇs ᴜsᴀʀ /${command} ғᴏʀᴍᴀ ʏ ᴛᴇxᴛᴏ ᴘᴀʀᴀ ᴘᴏɴᴇʀ ᴜɴ ᴛᴇxᴛᴏ ᴄᴏʀᴛᴏ ᴀ ᴛᴜ ᴇsᴛɪᴋᴇʀ.`, m, rcanal)
+==> ᴘᴜᴇᴅᴇs ᴜsᴀʀ /${command} ғᴏʀᴍᴀ ʏ ᴛᴇxᴛᴏ ᴘᴀʀᴀ ᴘᴏɴᴇʀ ᴜɴ ᴛᴇxᴛᴏ ᴄᴏʀᴛᴏ ᴀ ᴛᴜ sᴛɪᴋᴇʀ.`, m, rcanal)
   }
 }
 
