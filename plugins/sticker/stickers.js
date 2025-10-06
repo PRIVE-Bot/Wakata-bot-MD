@@ -1,6 +1,4 @@
 import { sticker } from '../../lib/sticker.js'
-import uploadFile from '../../lib/uploadFile.js'
-import uploadImage from '../../lib/uploadImage.js'
 import { webp2png, webp2mp4 } from '../../lib/webp2mp4.js'
 import Jimp from 'jimp'
 import fetch from 'node-fetch'
@@ -38,7 +36,7 @@ let handler = async (m, { conn, args, command }) => {
 
     if (/webp/.test(mime)) {
       const out = await webp2mp4(media)
-      if (out && out.url) {
+      if (out?.url) {
         const buff = await (await fetch(out.url)).arrayBuffer()
         media = Buffer.from(buff)
         mime = 'video/mp4'
@@ -49,20 +47,28 @@ let handler = async (m, { conn, args, command }) => {
     }
 
     if (/video|gif/.test(mime)) {
-      const tempVideo = tmp('mp4')
-      fs.writeFileSync(tempVideo, media)
-      const outWebp = tmp('webp')
+      const tempIn = tmp('mp4')
+      const tempOut = tmp('webp')
+      fs.writeFileSync(tempIn, media)
       await new Promise((resolve, reject) => {
-        ffmpeg(tempVideo)
-          .inputOptions(['-t 6', '-vf scale=512:512:force_original_aspect_ratio=decrease'])
-          .outputOptions(['-vcodec libwebp', '-lossless 1', '-qscale 50', '-preset default', '-loop 0'])
-          .save(outWebp)
+        ffmpeg(tempIn)
+          .inputFormat('mp4')
+          .outputOptions([
+            '-vcodec libwebp',
+            '-vf', 'scale=512:512:force_original_aspect_ratio=decrease,fps=15',
+            '-loop 0',
+            '-preset default',
+            '-an',
+            '-vsync 0',
+            '-t 6'
+          ])
+          .save(tempOut)
           .on('end', resolve)
           .on('error', reject)
       })
-      stiker = fs.readFileSync(outWebp)
-      fs.unlinkSync(tempVideo)
-      fs.unlinkSync(outWebp)
+      stiker = fs.readFileSync(tempOut)
+      fs.unlinkSync(tempIn)
+      fs.unlinkSync(tempOut)
     } else {
       let jimg = await Jimp.read(media)
       jimg.resize(512, 512)
@@ -102,7 +108,7 @@ let handler = async (m, { conn, args, command }) => {
       stiker = await sticker(finalImg, false, global.packsticker, global.packsticker2)
     }
   } catch (e) {
-    console.error(e)
+    console.error('Error:', e)
     return conn.reply(m.chat, '⚠️ Ocurrió un error al procesar el sticker.', m, fkontak2)
   }
 
