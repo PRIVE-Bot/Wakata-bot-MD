@@ -12,31 +12,32 @@ const tmp = ext => path.join(tmpdir(), `${Date.now()}.${ext}`)
 let handler = async (m, { conn, args, command }) => {
   const res = await fetch('https://files.catbox.moe/p87uei.jpg')
   const thumb = Buffer.from(await res.arrayBuffer())
-  const fkontak = { key: { fromMe: false, participant: m.sender }, message: { imageMessage: { jpegThumbnail: thumb, caption: '✨ 𝗦𝗧𝗜𝗖𝗞𝗘𝗥 𝗚𝗘𝗡𝗘𝗥𝗔𝗗𝗢 𝗖𝗢𝗡 𝗘𝗫𝗜𝗧𝗢 ✨' } } }
-  const fkontak2 = { key: { fromMe: false, participant: m.sender }, message: { imageMessage: { jpegThumbnail: thumb, caption: '⚠︎ 𝗘𝗥𝗥𝗢𝗥 ⚠︎' } } }
+  const fkontak = { key:{fromMe:false,participant:m.sender}, message:{imageMessage:{jpegThumbnail:thumb, caption:'✨ 𝗦𝗧𝗜𝗖𝗞𝗘𝗥 𝗚𝗘𝗡𝗘𝗥𝗔𝗗𝗢 𝗖𝗢𝗡 𝗘𝗫𝗜𝗧𝗢 ✨'}}}
+  const fkontak2 = { key:{fromMe:false,participant:m.sender}, message:{imageMessage:{jpegThumbnail:thumb, caption:'⚠︎ 𝗘𝗥𝗥𝗢𝗥 ⚠︎'}}}
 
-  let texto = args.filter(a => !/^(co|cc|cp)$/i.test(a)).join(' ').trim()
-  let forma = (args.find(a => /^(co|cc|cp)$/i.test(a)) || '').toLowerCase()
+  let texto = args.filter(a=>!/^(co|cc|cp)$/i.test(a)).join(' ').trim()
+  let forma = (args.find(a=>/^(co|cc|cp)$/i.test(a))||'').toLowerCase()
   let stiker = false
-  let q = m.quoted ? m.quoted : m
-  let mime = q.mimetype || q.msg?.mimetype || ''
-  let url = args[0] && /https?:\/\//.test(args[0]) ? args[0] : null
-  let media
 
   try {
-    if (url) {
-      let response = await fetch(url)
+    let q = m.quoted ? m.quoted : m
+    let mime = q.mimetype || q.msg?.mimetype || ''
+    let url = args[0] && /https?:\/\//.test(args[0]) ? args[0] : null
+    let media
+
+    if(url){
+      const response = await fetch(url)
       media = Buffer.from(await response.arrayBuffer())
-      mime = response.headers.get('content-type') || ''
-    } else if (/webp|image|video|gif/.test(mime)) {
+      mime = response.headers.get('content-type')||''
+    } else if(/image|webp|video/.test(mime)){
       media = await q.download?.()
-    } else return conn.reply(m.chat, '✰ Envía, responde o adjunta una imagen, sticker o video.', m, fkontak)
+    } else return conn.reply(m.chat,'✰ Envía o responde una imagen, video o sticker para convertirlo a sticker.',m,fkontak)
 
-    if (!media) return conn.reply(m.chat, '⚠️ No se pudo descargar el archivo.', m, fkontak2)
+    if(!media) return conn.reply(m.chat,'⚠️ No se pudo descargar el archivo.',m,fkontak2)
 
-    if (/webp/.test(mime)) {
+    if(/webp/.test(mime)){
       const out = await webp2mp4(media)
-      if (out?.url) {
+      if(out?.url){
         const buff = await (await fetch(out.url)).arrayBuffer()
         media = Buffer.from(buff)
         mime = 'video/mp4'
@@ -46,17 +47,16 @@ let handler = async (m, { conn, args, command }) => {
       }
     }
 
-    if (/video|gif/.test(mime)) {
+    if(/video|gif/.test(mime)){
       const tempIn = tmp('mp4')
       const tempOut = tmp('webp')
       fs.writeFileSync(tempIn, media)
-      await new Promise((resolve, reject) => {
+      await new Promise((resolve,reject)=>{
         ffmpeg(tempIn)
           .inputFormat('mp4')
           .outputOptions([
             '-vcodec libwebp',
-            '-vf',
-            'fps=15,scale=512:512:flags=lanczos:force_original_aspect_ratio=decrease,pad=512:512:(ow-iw)/2:(oh-ih)/2:color=0x00000000',
+            '-vf fps=15,scale=512:512:flags=lanczos:force_original_aspect_ratio=decrease,pad=512:512:-1:-1:color=0x00000000',
             '-loop 0',
             '-preset default',
             '-an',
@@ -65,57 +65,55 @@ let handler = async (m, { conn, args, command }) => {
           ])
           .toFormat('webp')
           .save(tempOut)
-          .on('end', resolve)
-          .on('error', reject)
+          .on('end',resolve)
+          .on('error',reject)
       })
-      if (!fs.existsSync(tempOut)) throw new Error('No se generó el sticker')
+      if(!fs.existsSync(tempOut)) throw new Error('No se generó el sticker')
       stiker = fs.readFileSync(tempOut)
       fs.unlinkSync(tempIn)
       fs.unlinkSync(tempOut)
     } else {
       let jimg = await Jimp.read(media)
       jimg.resize(512,512)
-      let { width, height } = jimg.bitmap
+      let {width,height} = jimg.bitmap
 
-      if (forma === 'cp') jimg.contain(512,512)
-      if (forma === 'cc') {
+      if(forma==='cp') jimg.contain(512,512)
+      if(forma==='cc'){
         const mask = new Jimp(width,height,0x00000000)
         mask.scan(0,0,width,height,(x,y,idx)=>{
           const dx=x-width/2
           const dy=y-height/2
-          if(Math.sqrt(dx*dx+dy*dy)<width/2) this.bitmap.data[idx+3]=255
+          if(Math.sqrt(dx*dx+dy*dy)<width/2) mask.bitmap.data[idx+3]=255
         })
         jimg.mask(mask,0,0)
       }
-      if (forma === 'co') {
+      if(forma==='co'){
         const mask = new Jimp(width,height,0x00000000)
         mask.scan(0,0,width,height,(x,y,idx)=>{
           const nx=(x-width/2)/(width/2)
           const ny=(height/2-y)/(height/2)
           const eq=Math.pow(nx*nx+ny*ny-1,3)-nx*nx*ny*ny*ny
-          if(eq<=0) this.bitmap.data[idx+3]=255
+          if(eq<=0) mask.bitmap.data[idx+3]=255
         })
         jimg.mask(mask,0,0)
       }
 
       if(texto){
-        const brillo=jimg.bitmap.data.reduce((a,_,i)=>i%4!==3?a+jimg.bitmap.data[i]:a,0)/(width*height*3)
-        const color=brillo>127?'#000000':'#FFFFFF'
-        const fuente=await Jimp.loadFont(color===' #000000'?Jimp.FONT_SANS_64_BLACK:Jimp.FONT_SANS_64_WHITE)
-        const sombra=await Jimp.loadFont(color===' #000000'?Jimp.FONT_SANS_64_WHITE:Jimp.FONT_SANS_64_BLACK)
-        jimg.print(sombra,3,-3,{text:texto,alignmentX:Jimp.HORIZONTAL_ALIGN_CENTER,alignmentY:Jimp.VERTICAL_ALIGN_BOTTOM},width,height-20)
+        const fuente = await Jimp.loadFont(Jimp.FONT_SANS_64_WHITE)
         jimg.print(fuente,0,0,{text:texto,alignmentX:Jimp.HORIZONTAL_ALIGN_CENTER,alignmentY:Jimp.VERTICAL_ALIGN_BOTTOM},width,height-20)
       }
 
       const finalImg = await jimg.getBufferAsync(Jimp.MIME_PNG)
       stiker = await sticker(finalImg,false,global.packsticker,global.packsticker2)
     }
-  } catch {
+
+  } catch(e){
+    console.error(e)
     return conn.reply(m.chat,'⚠️ Ocurrió un error al procesar el sticker.',m,fkontak2)
   }
 
   if(stiker) await conn.sendMessage(m.chat,{sticker:stiker,...global.rcanal},{quoted:fkontak})
-  else conn.reply(m.chat,`✰ Envía o responde una imagen, sticker o video para convertirlo a sticker.
+  else conn.reply(m.chat,`✰ Envía o responde una imagen, video o sticker para convertirlo a sticker.
 
 Formas:
 /${command} => normal
