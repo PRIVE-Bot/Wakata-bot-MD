@@ -29,8 +29,6 @@ let handler = async (m, { conn, args, command }) => {
     message: { imageMessage: { jpegThumbnail: thumb, caption: '✨ 𝗦𝗧𝗜𝗖𝗞𝗘𝗥 𝗚𝗘𝗡𝗘𝗥𝗔𝗗𝗢 𝗖𝗢𝗡 𝗘𝗫𝗜𝗧𝗢 ✨' } }
   }
 
-const res = await fetch('https://files.catbox.moe/p87uei.jpg')
-  const thumb = Buffer.from(await res.arrayBuffer())
   const fkontak2 = {
     key: { fromMe: false, participant: m.sender },
     message: { imageMessage: { jpegThumbnail: thumb, caption: '⚠︎      𝗘𝗥𝗥𝗢𝗥    ⚠︎ ' } }
