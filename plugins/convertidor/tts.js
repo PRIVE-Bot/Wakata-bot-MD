@@ -1,57 +1,56 @@
+import gtts from 'node-gtts'
+import { readFileSync, unlinkSync } from 'fs'
+import { join, dirname } from 'path'
+import { fileURLToPath } from 'url'
 
-import gtts from 'node-gtts';
-import { readFileSync, unlinkSync } from 'fs';
-import { join } from 'path';
+const defaultLang = 'es'
 
-const defaultLang = 'es';
+const handler = async (m, { conn, args, text }) => {
+  if (!text) return conn.reply(m.chat, '❗ Por favor, ingresa una frase válida.', m)
 
-const handler = async (m, { conn, args, text, usedPrefix, command }) => {
+  let lang = args[0]
+  let txt = args.slice(1).join(' ')
 
- if (!text) returt conn.reply(m.chat, '❗ Por favor, ingresa una frase válida.', m, rcanal);
-  let lang = args[0];
-  let text = args.slice(1).join(' ');
   if ((args[0] || '').length !== 2) {
-    lang = defaultLang;
-    text = args.join(' ');
+    lang = defaultLang
+    txt = args.join(' ')
   }
 
+  txt = txt.replace(/[^\p{L}\p{N}\p{Zs}]/gu, '')
 
-  text = text.replace(/[^\p{L}\p{N}\p{Zs}]/gu, '');
-
-  let res;
+  let res
   try {
-    res = await tts(text, lang);
+    res = await tts(txt, lang)
   } catch (e) {
-    m.reply(e + '');
-    text = args.join(' ').replace(/[^\p{L}\p{N}\p{Zs}]/gu, '');
-   
-    res = await tts(text, defaultLang);
-  } finally {
-    if (res) conn.sendFile(m.chat, res, 'tts.opus', null, m, true);
+    m.reply(String(e))
+    res = await tts(txt, defaultLang)
   }
-};
 
-handler.help = ['tts <lang> <texto>'];
-handler.tags = ['transformador'];
-handler.command = ['tts'];
-handler.group = true;
-handler.register = true;
+  if (res) await conn.sendFile(m.chat, res, 'tts.opus', null, m, true)
+}
 
-export default handler;
+handler.help = ['tts <lang> <texto>']
+handler.tags = ['transformador']
+handler.command = ['tts']
+handler.group = true
+handler.register = true
 
+export default handler
 
 function tts(text, lang = 'es') {
-  console.log(lang, text);
   return new Promise((resolve, reject) => {
     try {
-      const tts = gtts(lang);
-      const filePath = join(global.__dirname(import.meta.url), '../../tmp', Date.now() + '.wav');
+      const __dirname = dirname(fileURLToPath(import.meta.url))
+      const tts = gtts(lang)
+      const filePath = join(__dirname, '../../tmp', `${Date.now()}.wav`)
+
       tts.save(filePath, text, () => {
-        resolve(readFileSync(filePath));
-        unlinkSync(filePath);
-      });
+        const buffer = readFileSync(filePath)
+        unlinkSync(filePath)
+        resolve(buffer)
+      })
     } catch (e) {
-      reject(e);
+      reject(e)
     }
-  });
+  })
 }
