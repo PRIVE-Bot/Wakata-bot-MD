@@ -44,7 +44,7 @@ const handler = async (m, { conn, args, text }) => {
     res = await tts(txt, defaultLang)
   }
 
-  if (res) await conn.sendFile(m.chat, res, 'tts.opus', null, fkontak, true)
+  if (res) await conn.sendFile(m.chat, res, 'tts.opus', null, fkontak, fake)
 }
 
 handler.help = ['tts <lang> <texto>']
