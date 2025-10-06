@@ -60,7 +60,9 @@ let handler = async (m, { conn, args, command }) => {
         mask.scan(0, 0, width, height, function (x, y, idx) {
           const nx = (x - width / 2) / (width / 2)
           const ny = (height / 2 - y) / (height / 2)
-          const eq = Math.pow(nx * nx + ny * ny - 1, 3) - nx * nx * ny * ny * ny
+          const sx = nx * 1.25
+          const sy = ny * 1.4 - 0.25
+          const eq = Math.pow(sx * sx + sy * sy - 1, 3) - sx * sx * sy * sy * sy
           if (eq <= 0) {
             this.bitmap.data[idx + 0] = 255
             this.bitmap.data[idx + 1] = 255
