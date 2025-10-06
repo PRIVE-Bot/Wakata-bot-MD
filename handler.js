@@ -111,11 +111,9 @@ export async function handler(chatUpdate) {
                 antiBot: false,
                 modoadmin: false,
                 antiLink: true,
-                antifake: false,
-                reaction: false,
                 nsfw: false,
                 expired: 0, 
-                antiLag: false,
+                autoresponder2: false,
                 per: [],
             };
         }
