@@ -87,7 +87,7 @@ let handler = async (m, { conn, args, command }) => {
     console.error(e)
   } finally {
     if (stiker) await conn.sendMessage(m.chat, { sticker: stiker, ...global.rcanal }, { quoted: fkontak })
-    else conn.reply(m.chat, '✰ ᴘᴏʀ ғᴀᴠᴏʀ, ᴇɴᴠÍᴀ ᴜɴᴀ ɪᴍᴀɢᴇɴ ᴠÁʟɪᴅᴀ ᴘᴀʀᴀ ᴄᴏɴᴠᴇʀᴛɪʀ ᴀ sᴛɪᴄᴋᴇʀ.
+    else conn.reply(m.chat, `✰ ᴘᴏʀ ғᴀᴠᴏʀ, ᴇɴᴠÍᴀ ᴜɴᴀ ɪᴍᴀɢᴇɴ ᴠÁʟɪᴅᴀ ᴘᴀʀᴀ ᴄᴏɴᴠᴇʀᴛɪʀ ᴀ sᴛɪᴄᴋᴇʀ.
 
 ғᴏʀᴍᴀs:
 /${command} => ɴᴏʀᴍᴀʟ
@@ -95,7 +95,7 @@ let handler = async (m, { conn, args, command }) => {
 /${command} ᴄᴄ => ᴄɪʀᴄᴜʟᴏ
 /${command} ᴄᴘ => ɴᴏʀᴍᴀʟɪᴢᴀʀ
 
-==> ᴘᴜᴇᴅᴇs ᴜsᴀʀ /${command} ғᴏʀᴍᴀ ʏ ᴛᴇxᴛᴏ ᴘᴀʀᴀ ᴘᴏɴᴇʀ ᴜɴ ᴛᴇxᴛᴏ ᴄᴏʀᴛᴏ ᴀ ᴛᴜ ᴇsᴛɪᴋᴇʀ.', m, rcanal)
+==> ᴘᴜᴇᴅᴇs ᴜsᴀʀ /${command} ғᴏʀᴍᴀ ʏ ᴛᴇxᴛᴏ ᴘᴀʀᴀ ᴘᴏɴᴇʀ ᴜɴ ᴛᴇxᴛᴏ ᴄᴏʀᴛᴏ ᴀ ᴛᴜ ᴇsᴛɪᴋᴇʀ.`, m, rcanal)
   }
 }
 
