@@ -1,79 +1,94 @@
-import { sticker } from '../../lib/sticker.js'
-import uploadFile from '../../lib/uploadFile.js'
-import uploadImage from '../../lib/uploadImage.js'
-import { webp2png } from '../../lib/webp2mp4.js'
+import gtts from 'node-gtts'
+import { readFileSync, unlinkSync } from 'fs'
+import { join, dirname } from 'path'
+import { fileURLToPath } from 'url'
 
-let handler = async (m, { conn, args, usedPrefix, command }) => {
-  const res1 = await fetch('https://files.catbox.moe/p87uei.jpg')
-  const thumb5 = Buffer.from(await res1.arrayBuffer())
-  let userjid = m.sender
+const defaultLang = 'es'
+
+const handler = async (m, { conn, args, text }) => {
+  if (!text) return conn.reply(m.chat, '${emoji} Por favor, ingresa el texto para convertir a audio.', m, rcanal)
+
+  let lang = args[0]
+  let txt = args.slice(1).join(' ')
+
+  if ((args[0] || '').length !== 2) {
+    lang = defaultLang
+    txt = args.join(' ')
+  }
+
+  const idiomasDisponibles = {
+    es: 'Español',
+    en: 'Inglés',
+    fr: 'Francés',
+    pt: 'Portugués',
+    it: 'Italiano',
+    ja: 'Japonés',
+    ko: 'Coreano',
+    de: 'Alemán',
+    hi: 'Hindi',
+    ru: 'Ruso'
+  }
+
+  if (!idiomasDisponibles[lang]) lang = defaultLang
+
+  const res2 = await fetch('https://i.postimg.cc/FKm75nJz/1759734148064.jpg')
+  const thumb3 = Buffer.from(await res2.arrayBuffer())
 
   const fkontak = {
-    key: { fromMe: false, participant: userjid },
+    key: {
+      fromMe: false,
+      remoteJid: '120363368035542631@g.us',
+      participant: m.sender
+    },
     message: {
       imageMessage: {
-        jpegThumbnail: thumb5,
-        caption: '𝗦𝗧𝗜𝗖𝗞𝗘𝗥 𝗚𝗘𝗡𝗘𝗥𝗔𝗗𝗢 𝗖𝗢𝗡 𝗘𝗫𝗜𝗧𝗢 ✨',
+        mimetype: 'image/jpeg',
+        caption: `🎧 𝗖𝗢𝗡𝗩𝗘𝗥𝗧𝗜𝗗𝗢𝗥 𝗧𝗧𝗦 (${idiomasDisponibles[lang] || 'Desconocido'})`,
+        jpegThumbnail: thumb3
       }
     }
   }
 
-  let stiker = false
+  txt = txt.replace(/[^\p{L}\p{N}\p{Zs}]/gu, '')
+
+  let res
   try {
-    let q = m.quoted ? m.quoted : m
-
-    let mime = q.mimetype || q.msg?.mimetype || 
-               q.message?.imageMessage?.mimetype ||
-               q.message?.videoMessage?.mimetype ||
-               q.message?.stickerMessage?.mimetype || ''
-
-    if (/webp|image|video/.test(mime)) {
-      if (/video/.test(mime) && (q.msg || q).seconds > 15) {
-        return m.reply(`⚠️ El video no puede durar más de 15 segundos.`)
-      }
-
-      let img = await q.download?.()
-      if (!img) return conn.reply(m.chat, `✰✰ ᴘᴏʀ ғᴀᴠᴏʀ, ᴇɴᴠÍᴀ ᴜɴ ᴠɪᴅᴇᴏ, ɢɪғ ᴏ ɪᴍᴀɢᴇɴ ᴘᴀʀᴀ ᴄᴏɴᴠᴇʀᴛɪʀ ᴀ sᴛɪᴄᴋᴇʀ.`, m, rcanal)
-
-      let out
-      try {
-        stiker = await sticker(img, false, global.packsticker, global.packsticker2)
-      } catch (e) {
-        console.error(e)
-      } finally {
-        if (!stiker) {
-          if (/webp/.test(mime)) out = await webp2png(img)
-          else if (/image/.test(mime)) out = await uploadImage(img)
-          else if (/video/.test(mime)) out = await uploadFile(img)
-          if (typeof out !== 'string') out = await uploadImage(img)
-          stiker = await sticker(false, out, global.packsticker, global.packsticker2)
-        }
-      }
-    } else if (args[0]) {
-      if (isUrl(args[0])) {
-        stiker = await sticker(false, args[0], global.packsticker, global.packsticker2)
-      } else {
-        return m.reply(`❌ La URL es incorrecta.`)
-      }
-    }
-  } catch (e) {
-    console.error(e)
-    if (!stiker) stiker = e
-  } finally {
-    if (stiker) {
-      await conn.sendMessage(m.chat, { sticker: stiker, ...global.rcanal }, { quoted: fkontak })
-    } else {
-      return conn.reply(m.chat, `✰ ᴘᴏʀ ғᴀᴠᴏʀ, ᴇɴᴠÍᴀ ᴜɴ ᴠɪᴅᴇᴏ, ɢɪғ ᴏ ɪᴍᴀɢᴇɴ ᴘᴀʀᴀ ᴄᴏɴᴠᴇʀᴛɪʀ ᴀ sᴛɪᴄᴋᴇʀ.`, m, fake)
-    }
+    res = await generarTTS(txt, lang)
+  } catch {
+    await conn.reply(m.chat, '⚠ Error con el idioma seleccionado, se usará español por defecto.', m)
+    res = await generarTTS(txt, defaultLang)
   }
+
+  if (res)
+    await conn.sendMessage(
+      m.chat,
+      { audio: res, mimetype: 'audio/mpeg', ptt: true, ...global.rcanal },
+      { quoted: fkontak }
+    )
 }
 
-handler.help = ['sticker', 's', 'stiker']
-handler.tags = ['sticker']
-handler.command = ['s', 'sticker', 'stiker']
+handler.help = ['tts <lang> <texto>']
+handler.tags = ['transformador']
+handler.command = ['tts']
+handler.group = true
+handler.register = true
 
 export default handler
 
-const isUrl = (text) => {
-  return text.match(new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)(jpe?g|gif|png)/, 'gi'))
+function generarTTS(text, lang = 'es') {
+  return new Promise((resolve, reject) => {
+    try {
+      const __dirname = dirname(fileURLToPath(import.meta.url))
+      const voz = gtts(lang)
+      const filePath = join(__dirname, '../../tmp', `${Date.now()}.wav`)
+
+      voz.save(filePath, text, () => {
+        const buffer = readFileSync(filePath)
+        unlinkSync(filePath)
+        resolve(buffer)
+      })
+    } catch (e) {
+      reject(e)
+    }
+  })
 }
