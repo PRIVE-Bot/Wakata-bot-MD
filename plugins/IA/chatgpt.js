@@ -4,7 +4,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
   if (!text) {
     return conn.reply(m.chat, `${emoji} ¡Hola! ¿cómo puedo ayudarte hoy?`, m, rcanal);
   }
-
+    await m.react('✨')
     const res = await fetch('https://files.catbox.moe/j65sl7.jpg');
     const thumb2 = Buffer.from(await res.arrayBuffer());
 
@@ -27,7 +27,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     if (!data || !data.response) {
       return conn.reply(m.chat, "❌ No recibí respuesta de la IA, intenta de nuevo.", m, fake);
     }
-
+    await m.react('🌟')
     await conn.reply(m.chat, `${data.response}`, fkontak, rcanal);
   } catch (e) {
     console.error(e);
