@@ -1,7 +1,7 @@
 import { sticker } from '../../lib/sticker.js'
 import uploadFile from '../../lib/uploadFile.js'
 import uploadImage from '../../lib/uploadImage.js'
-import { webp2png } from '../../lib/webp2mp4.js'
+import { webp2png, webp2mp4 } from '../../lib/webp2mp4.js'
 import Jimp from 'jimp'
 import fetch from 'node-fetch'
 import fs from 'fs'
@@ -9,30 +9,13 @@ import path from 'path'
 import { tmpdir } from 'os'
 import ffmpeg from 'fluent-ffmpeg'
 
-const getFrame = (buffer, outPath) => new Promise((resolve, reject) => {
-  const tmp = path.join(tmpdir(), `video_${Date.now()}.mp4`)
-  fs.writeFileSync(tmp, buffer)
-  ffmpeg(tmp)
-    .on('end', () => {
-      fs.unlinkSync(tmp)
-      resolve(fs.readFileSync(outPath))
-    })
-    .on('error', reject)
-    .screenshots({ count: 1, folder: path.dirname(outPath), filename: path.basename(outPath) })
-})
+const tmp = (ext) => path.join(tmpdir(), `${Date.now()}.${ext}`)
 
 let handler = async (m, { conn, args, command }) => {
   const res = await fetch('https://files.catbox.moe/p87uei.jpg')
   const thumb = Buffer.from(await res.arrayBuffer())
-  const fkontak = {
-    key: { fromMe: false, participant: m.sender },
-    message: { imageMessage: { jpegThumbnail: thumb, caption: '✨ 𝗦𝗧𝗜𝗖𝗞𝗘𝗥 𝗚𝗘𝗡𝗘𝗥𝗔𝗗𝗢 𝗖𝗢𝗡 𝗘𝗫𝗜𝗧𝗢 ✨' } }
-  }
-
-  const fkontak2 = {
-    key: { fromMe: false, participant: m.sender },
-    message: { imageMessage: { jpegThumbnail: thumb, caption: '⚠︎      𝗘𝗥𝗥𝗢𝗥    ⚠︎ ' } }
-  }
+  const fkontak = { key: { fromMe: false, participant: m.sender }, message: { imageMessage: { jpegThumbnail: thumb, caption: '✨ 𝗦𝗧𝗜𝗖𝗞𝗘𝗥 𝗚𝗘𝗡𝗘𝗥𝗔𝗗𝗢 𝗖𝗢𝗡 𝗘𝗫𝗜𝗧𝗢 ✨' } } }
+  const fkontak2 = { key: { fromMe: false, participant: m.sender }, message: { imageMessage: { jpegThumbnail: thumb, caption: '⚠︎      𝗘𝗥𝗥𝗢𝗥    ⚠︎ ' } } }
 
   let texto = args.filter(a => !/^(co|cc|cp)$/i.test(a)).join(' ').trim()
   let forma = (args.find(a => /^(co|cc|cp)$/i.test(a)) || '').toLowerCase()
@@ -54,58 +37,70 @@ let handler = async (m, { conn, args, command }) => {
     if (!media) return conn.reply(m.chat, '⚠️ No se pudo descargar el archivo.', m, fkontak2)
 
     if (/webp/.test(mime)) {
-      media = await webp2png(media)
-      mime = 'image/png'
+      const out = await webp2mp4(media)
+      if (out && out.url) {
+        const buff = await (await fetch(out.url)).arrayBuffer()
+        media = Buffer.from(buff)
+        mime = 'video/mp4'
+      } else {
+        media = await webp2png(media)
+        mime = 'image/png'
+      }
     }
 
     if (/video|gif/.test(mime)) {
-      const out = path.join(tmpdir(), `frame_${Date.now()}.png`)
-      const frame = await getFrame(media, out)
-      media = frame
-      mime = 'image/png'
-    }
-
-    let jimg = await Jimp.read(media)
-    jimg.resize(512, 512)
-    let { width, height } = jimg.bitmap
-
-    if (forma === 'cp') jimg.contain(500, 500)
-    if (forma === 'cc') {
-      const mask = new Jimp(width, height, '#00000000')
-      mask.scan(0, 0, width, height, function (x, y, idx) {
-        const dx = x - width / 2
-        const dy = y - height / 2
-        const r = Math.sqrt(dx * dx + dy * dy)
-        if (r < width / 2) {
-          this.bitmap.data[idx + 3] = 255
-        }
+      const tempVideo = tmp('mp4')
+      fs.writeFileSync(tempVideo, media)
+      const outWebp = tmp('webp')
+      await new Promise((resolve, reject) => {
+        ffmpeg(tempVideo)
+          .inputOptions(['-t 6', '-vf scale=512:512:force_original_aspect_ratio=decrease'])
+          .outputOptions(['-vcodec libwebp', '-lossless 1', '-qscale 50', '-preset default', '-loop 0'])
+          .save(outWebp)
+          .on('end', resolve)
+          .on('error', reject)
       })
-      jimg.mask(mask, 0, 0)
+      stiker = fs.readFileSync(outWebp)
+      fs.unlinkSync(tempVideo)
+      fs.unlinkSync(outWebp)
+    } else {
+      let jimg = await Jimp.read(media)
+      jimg.resize(512, 512)
+      let { width, height } = jimg.bitmap
+      if (forma === 'cp') jimg.contain(500, 500)
+      if (forma === 'cc') {
+        const mask = new Jimp(width, height, '#00000000')
+        mask.scan(0, 0, width, height, function (x, y, idx) {
+          const dx = x - width / 2
+          const dy = y - height / 2
+          const r = Math.sqrt(dx * dx + dy * dy)
+          if (r < width / 2) this.bitmap.data[idx + 3] = 255
+        })
+        jimg.mask(mask, 0, 0)
+      }
+      if (forma === 'co') {
+        const mask = new Jimp(width, height, '#00000000')
+        mask.scan(0, 0, width, height, function (x, y, idx) {
+          const nx = (x - width / 2) / (width / 2)
+          const ny = (height / 2 - y) / (height / 2)
+          const sx = nx * 1.25
+          const sy = ny * 1.4 - 0.25
+          const eq = Math.pow(sx * sx + sy * sy - 1, 3) - sx * sx * sy * sy * sy
+          if (eq <= 0) this.bitmap.data[idx + 3] = 255
+        })
+        jimg.mask(mask, 0, 0)
+      }
+      if (texto) {
+        const brillo = jimg.bitmap.data.reduce((a, _, i) => i % 4 !== 3 ? a + jimg.bitmap.data[i] : a, 0) / (width * height * 3)
+        const color = brillo > 127 ? '#000000' : '#FFFFFF'
+        const fuente = await Jimp.loadFont(color === '#000000' ? Jimp.FONT_SANS_64_BLACK : Jimp.FONT_SANS_64_WHITE)
+        const sombra = await Jimp.loadFont(color === '#000000' ? Jimp.FONT_SANS_64_WHITE : Jimp.FONT_SANS_64_BLACK)
+        jimg.print(sombra, 3, -3, { text: texto, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_BOTTOM }, width, height - 20)
+        jimg.print(fuente, 0, 0, { text: texto, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_BOTTOM }, width, height - 20)
+      }
+      const finalImg = await jimg.getBufferAsync(Jimp.MIME_PNG)
+      stiker = await sticker(finalImg, false, global.packsticker, global.packsticker2)
     }
-    if (forma === 'co') {
-      const mask = new Jimp(width, height, '#00000000')
-      mask.scan(0, 0, width, height, function (x, y, idx) {
-        const nx = (x - width / 2) / (width / 2)
-        const ny = (height / 2 - y) / (height / 2)
-        const sx = nx * 1.25
-        const sy = ny * 1.4 - 0.25
-        const eq = Math.pow(sx * sx + sy * sy - 1, 3) - sx * sx * sy * sy * sy
-        if (eq <= 0) this.bitmap.data[idx + 3] = 255
-      })
-      jimg.mask(mask, 0, 0)
-    }
-
-    if (texto) {
-      const brillo = jimg.bitmap.data.reduce((a, _, i) => i % 4 !== 3 ? a + jimg.bitmap.data[i] : a, 0) / (width * height * 3)
-      const color = brillo > 127 ? '#000000' : '#FFFFFF'
-      const fuente = await Jimp.loadFont(color === '#000000' ? Jimp.FONT_SANS_64_BLACK : Jimp.FONT_SANS_64_WHITE)
-      const sombra = await Jimp.loadFont(color === '#000000' ? Jimp.FONT_SANS_64_WHITE : Jimp.FONT_SANS_64_BLACK)
-      jimg.print(sombra, 3, -3, { text: texto, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_BOTTOM }, width, height - 20)
-      jimg.print(fuente, 0, 0, { text: texto, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_BOTTOM }, width, height - 20)
-    }
-
-    const finalImg = await jimg.getBufferAsync(Jimp.MIME_PNG)
-    stiker = await sticker(finalImg, false, global.packsticker, global.packsticker2)
   } catch (e) {
     console.error(e)
     return conn.reply(m.chat, '⚠️ Ocurrió un error al procesar el sticker.', m, fkontak2)
