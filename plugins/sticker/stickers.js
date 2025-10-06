@@ -55,9 +55,9 @@ let handler = async (m, { conn, args, command }) => {
       if (forma === 'co') {
         const mask = new Jimp(width, height, '#00000000')
         mask.scan(0, 0, width, height, function (x, y, idx) {
-          const scaleX = 1.3
-          const scaleY = 1.1
-          const offsetY = 0.25
+          const scaleX = 1.25
+          const scaleY = 1.35
+          const offsetY = 0.05
           const nx = (x - width / 2) / (width / 2) * scaleX
           const ny = (height / 2 - y) / (height / 2) * scaleY - offsetY
           const eq = Math.pow(nx * nx + ny * ny - 1, 3) - nx * nx * ny * ny * ny
