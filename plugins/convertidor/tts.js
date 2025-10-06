@@ -5,7 +5,9 @@ import { join } from 'path';
 
 const defaultLang = 'es';
 
-const handler = async (m, { conn, args, usedPrefix, command }) => {
+const handler = async (m, { conn, args, texto, usedPrefix, command }) => {
+
+if (text?) returt conn.reply(m.chta, `Falta el texto para convertir a audio`, m, rcanal)
   let lang = args[0];
   let text = args.slice(1).join(' ');
   if ((args[0] || '').length !== 2) {
