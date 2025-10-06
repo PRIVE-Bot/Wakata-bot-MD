@@ -4,7 +4,7 @@ import uploadImage from '../../lib/uploadImage.js'
 import { webp2png } from '../../lib/webp2mp4.js'
 import Jimp from 'jimp'
 
-let handler = async (m, { conn, args }) => {
+let handler = async (m, { conn, args, command }) => {
   const res = await fetch('https://files.catbox.moe/p87uei.jpg')
   const thumb = Buffer.from(await res.arrayBuffer())
   let user = m.sender
@@ -87,7 +87,15 @@ let handler = async (m, { conn, args }) => {
     console.error(e)
   } finally {
     if (stiker) await conn.sendMessage(m.chat, { sticker: stiker, ...global.rcanal }, { quoted: fkontak })
-    else conn.reply(m.chat, '✰ ᴘᴏʀ ғᴀᴠᴏʀ, ᴇɴᴠÍᴀ ᴜɴᴀ ɪᴍᴀɢᴇɴ ᴠÁʟɪᴅᴀ ᴘᴀʀᴀ ᴄᴏɴᴠᴇʀᴛɪʀ ᴀ sᴛɪᴄᴋᴇʀ.', m, fake)
+    else conn.reply(m.chat, '✰ ᴘᴏʀ ғᴀᴠᴏʀ, ᴇɴᴠÍᴀ ᴜɴᴀ ɪᴍᴀɢᴇɴ ᴠÁʟɪᴅᴀ ᴘᴀʀᴀ ᴄᴏɴᴠᴇʀᴛɪʀ ᴀ sᴛɪᴄᴋᴇʀ.
+
+ғᴏʀᴍᴀs:
+/${command} => ɴᴏʀᴍᴀʟ
+/${command} ᴄᴏ => ᴄᴏʀᴀᴢᴏɴ
+/${command} ᴄᴄ => ᴄɪʀᴄᴜʟᴏ
+/${command} ᴄᴘ => ɴᴏʀᴍᴀʟɪᴢᴀʀ
+
+==> ᴘᴜᴇᴅᴇs ᴜsᴀʀ /${command} ғᴏʀᴍᴀ ʏ ᴛᴇxᴛᴏ ᴘᴀʀᴀ ᴘᴏɴᴇʀ ᴜɴ ᴛᴇxᴛᴏ ᴄᴏʀᴛᴏ ᴀ ᴛᴜ ᴇsᴛɪᴋᴇʀ.', m, rcanal)
   }
 }
 
