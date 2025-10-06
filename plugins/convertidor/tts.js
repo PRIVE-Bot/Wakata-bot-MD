@@ -5,7 +5,7 @@ import { join } from 'path';
 
 const defaultLang = 'es';
 
-const handler = async (m, { conn, args, texto, usedPrefix, command }) => {
+const handler = async (m, { conn, args, text, usedPrefix, command }) => {
 
  if (!text) returt conn.reply(m.chat, '❗ Por favor, ingresa una frase válida.', m, rcanal);
   let lang = args[0];
