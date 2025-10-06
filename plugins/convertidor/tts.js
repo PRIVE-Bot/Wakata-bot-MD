@@ -17,8 +17,8 @@ const handler = async (m, { conn, args, text }) => {
     txt = args.join(' ')
   }
 
-        const res = await fetch('https://i.postimg.cc/FKm75nJz/1759734148064.jpg');
-        const thumb3 = Buffer.from(await res.arrayBuffer());
+        const res2 = await fetch('https://i.postimg.cc/FKm75nJz/1759734148064.jpg');
+        const thumb3 = Buffer.from(await res2.arrayBuffer());
 
         let fkontak = {
             key: {
