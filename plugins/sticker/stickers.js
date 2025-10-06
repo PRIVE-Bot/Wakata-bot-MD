@@ -56,17 +56,19 @@ let handler = async (m, { conn, args, command }) => {
           .outputOptions([
             '-vcodec libwebp',
             '-vf',
-            'scale=512:-1:flags=lanczos, pad=512:512:(ow-iw)/2:(oh-ih)/2:color=0x00000000, fps=15',
+            'fps=15,scale=512:512:flags=lanczos:force_original_aspect_ratio=decrease,pad=512:512:-1:-1:color=0x00000000',
             '-loop 0',
             '-preset default',
             '-an',
             '-vsync 0',
             '-t 6'
           ])
+          .toFormat('webp')
           .save(tempOut)
           .on('end', resolve)
           .on('error', reject)
       })
+      if (!fs.existsSync(tempOut)) throw new Error('No se generó el sticker')
       stiker = fs.readFileSync(tempOut)
       fs.unlinkSync(tempIn)
       fs.unlinkSync(tempOut)
@@ -108,8 +110,7 @@ let handler = async (m, { conn, args, command }) => {
       const finalImg = await jimg.getBufferAsync(Jimp.MIME_PNG)
       stiker = await sticker(finalImg, false, global.packsticker, global.packsticker2)
     }
-  } catch (e) {
-    console.error('Error:', e)
+  } catch {
     return conn.reply(m.chat, '⚠️ Ocurrió un error al procesar el sticker.', m, fkontak2)
   }
 
