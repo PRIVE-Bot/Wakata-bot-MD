@@ -68,6 +68,7 @@ let handler = async (m, { conn, args }) => {
           }
         })
         jimg.mask(mask, 0, 0)
+        jimg.resize(512, 512)
       }
 
       if (texto) {
