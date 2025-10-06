@@ -14,7 +14,7 @@ let handler = async (m, { conn, args, command }) => {
     message: {
       imageMessage: {
         jpegThumbnail: thumb,
-        caption: '𝗦𝗧𝗜𝗖𝗞𝗘𝗥 𝗚𝗘𝗡𝗘𝗥𝗔𝗗𝗢 𝗖𝗢𝗡 𝗘𝗫𝗜𝗧𝗢 ✨',
+        caption: '𝗦𝗧𝗜𝗖𝗞𝗘𝗥 𝗚𝗘𝗡𝗘𝗥𝗔𝗗𝗢 𝗖𝗢𝗡 𝗘𝗫𝗜𝗧𝗢 ✨'
       }
     }
   }
@@ -26,13 +26,10 @@ let handler = async (m, { conn, args, command }) => {
   try {
     let q = m.quoted ? m.quoted : m
     let mime = q.mimetype || q.msg?.mimetype || q.message?.imageMessage?.mimetype || ''
-
     if (/video/.test(mime)) return m.reply('⚠️ No se permiten stickers animados o en movimiento.')
-
     if (/webp|image/.test(mime)) {
       let img = await q.download?.()
       if (!img) return conn.reply(m.chat, '✰ ᴘᴏʀ ғᴀᴠᴏʀ, ᴇɴᴠÍᴀ ᴜɴᴀ ɪᴍᴀɢᴇɴ ᴘᴀʀᴀ ᴄᴏɴᴠᴇʀᴛɪʀ ᴀ sᴛɪᴄᴋᴇʀ.', m, rcanal)
-
       let jimg = await Jimp.read(img)
       jimg.resize(512, 512)
       let { width, height } = jimg.bitmap
@@ -58,11 +55,12 @@ let handler = async (m, { conn, args, command }) => {
       if (forma === 'co') {
         const mask = new Jimp(width, height, '#00000000')
         mask.scan(0, 0, width, height, function (x, y, idx) {
-          const nx = (x - width / 2) / (width / 2)
-          const ny = (height / 2 - y) / (height / 2)
-          const sx = nx * 1.25
-          const sy = ny * 1.4 - 0.25
-          const eq = Math.pow(sx * sx + sy * sy - 1, 3) - sx * sx * sy * sy * sy
+          const scaleX = 1.3
+          const scaleY = 1.1
+          const offsetY = 0.25
+          const nx = (x - width / 2) / (width / 2) * scaleX
+          const ny = (height / 2 - y) / (height / 2) * scaleY - offsetY
+          const eq = Math.pow(nx * nx + ny * ny - 1, 3) - nx * nx * ny * ny * ny
           if (eq <= 0) {
             this.bitmap.data[idx + 0] = 255
             this.bitmap.data[idx + 1] = 255
