@@ -7,13 +7,13 @@ import path from 'path'
 import { tmpdir } from 'os'
 import ffmpeg from 'fluent-ffmpeg'
 
-const tmp = (ext) => path.join(tmpdir(), `${Date.now()}.${ext}`)
+const tmp = ext => path.join(tmpdir(), `${Date.now()}.${ext}`)
 
 let handler = async (m, { conn, args, command }) => {
   const res = await fetch('https://files.catbox.moe/p87uei.jpg')
   const thumb = Buffer.from(await res.arrayBuffer())
   const fkontak = { key: { fromMe: false, participant: m.sender }, message: { imageMessage: { jpegThumbnail: thumb, caption: '✨ 𝗦𝗧𝗜𝗖𝗞𝗘𝗥 𝗚𝗘𝗡𝗘𝗥𝗔𝗗𝗢 𝗖𝗢𝗡 𝗘𝗫𝗜𝗧𝗢 ✨' } } }
-  const fkontak2 = { key: { fromMe: false, participant: m.sender }, message: { imageMessage: { jpegThumbnail: thumb, caption: '⚠︎      𝗘𝗥𝗥𝗢𝗥    ⚠︎ ' } } }
+  const fkontak2 = { key: { fromMe: false, participant: m.sender }, message: { imageMessage: { jpegThumbnail: thumb, caption: '⚠︎ 𝗘𝗥𝗥𝗢𝗥 ⚠︎' } } }
 
   let texto = args.filter(a => !/^(co|cc|cp)$/i.test(a)).join(' ').trim()
   let forma = (args.find(a => /^(co|cc|cp)$/i.test(a)) || '').toLowerCase()
@@ -28,7 +28,7 @@ let handler = async (m, { conn, args, command }) => {
       let response = await fetch(url)
       media = Buffer.from(await response.arrayBuffer())
       mime = response.headers.get('content-type') || ''
-    } else if (/webp|image|video/.test(mime)) {
+    } else if (/webp|image|video|gif/.test(mime)) {
       media = await q.download?.()
     } else return conn.reply(m.chat, '✰ Envía, responde o adjunta una imagen, sticker o video.', m, fkontak)
 
@@ -69,40 +69,7 @@ let handler = async (m, { conn, args, command }) => {
           .on('error', reject)
       })
       if (!fs.existsSync(tempOut)) throw new Error('No se generó el sticker')
-
-      if (forma === 'co' || forma === 'cc' || forma === 'cp') {
-        const jimg = await Jimp.read(tempOut)
-        let { width, height } = jimg.bitmap
-
-        if (forma === 'cp') jimg.contain(512, 512)
-
-        if (forma === 'cc') {
-          const mask = new Jimp(width, height, 0x00000000)
-          mask.scan(0, 0, width, height, function(x, y, idx) {
-            const dx = x - width / 2
-            const dy = y - height / 2
-            if (Math.sqrt(dx*dx + dy*dy) < width/2) this.bitmap.data[idx + 3] = 255
-          })
-          jimg.mask(mask, 0, 0)
-        }
-
-        if (forma === 'co') {
-          const mask = new Jimp(width, height, 0x00000000)
-          mask.scan(0,0,width,height,function(x,y,idx){
-            const nx = (x-width/2)/(width/2)
-            const ny = (height/2 - y)/(height/2)
-            const eq = Math.pow(nx*nx+ny*ny-1,3)-nx*nx*ny*ny*ny
-            if(eq<=0) this.bitmap.data[idx+3]=255
-          })
-          jimg.mask(mask,0,0)
-        }
-
-        const buffer = await jimg.getBufferAsync(Jimp.MIME_PNG)
-        stiker = await sticker(buffer, false, global.packsticker, global.packsticker2)
-      } else {
-        stiker = fs.readFileSync(tempOut)
-      }
-
+      stiker = fs.readFileSync(tempOut)
       fs.unlinkSync(tempIn)
       fs.unlinkSync(tempOut)
     } else {
@@ -113,7 +80,7 @@ let handler = async (m, { conn, args, command }) => {
       if (forma === 'cp') jimg.contain(512,512)
       if (forma === 'cc') {
         const mask = new Jimp(width,height,0x00000000)
-        mask.scan(0,0,width,height,function(x,y,idx){
+        mask.scan(0,0,width,height,(x,y,idx)=>{
           const dx=x-width/2
           const dy=y-height/2
           if(Math.sqrt(dx*dx+dy*dy)<width/2) this.bitmap.data[idx+3]=255
@@ -122,7 +89,7 @@ let handler = async (m, { conn, args, command }) => {
       }
       if (forma === 'co') {
         const mask = new Jimp(width,height,0x00000000)
-        mask.scan(0,0,width,height,function(x,y,idx){
+        mask.scan(0,0,width,height,(x,y,idx)=>{
           const nx=(x-width/2)/(width/2)
           const ny=(height/2-y)/(height/2)
           const eq=Math.pow(nx*nx+ny*ny-1,3)-nx*nx*ny*ny*ny
