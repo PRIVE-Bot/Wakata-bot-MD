@@ -59,9 +59,6 @@ let handler = async (m, { conn, args, command }) => {
 
       if (forma === 'cc' || forma === 'co') {
         
-        const buffer = await jimg.getBufferAsync(Jimp.MIME_PNG)
-        const imgToMask = await Jimp.read(buffer) 
-
         const mask = new Jimp(width, height, 0x00000000)
 
         mask.scan(0, 0, width, height, function (x, y, idx) {
@@ -74,9 +71,11 @@ let handler = async (m, { conn, args, command }) => {
             if (r < width / 2) alpha = 255
           } else if (forma === 'co') {
             const nx = (x - width / 2) / (width / 2)
-            const ny_raw = (y - height / 2) / (height / 2)
-            const ny_scaled = ny_raw * 0.95 + 0.15 
+            const ny = (y - height / 2) / (height / 2)
+            
+            const ny_scaled = ny * 1.2 - 0.5
             const eq = Math.pow(nx * nx + ny_scaled * ny_scaled - 1, 3) - nx * nx * ny_scaled * ny_scaled * ny_scaled
+            
             if (eq <= 0) alpha = 255
           }
 
@@ -86,9 +85,21 @@ let handler = async (m, { conn, args, command }) => {
           this.bitmap.data[idx + 3] = alpha
         })
 
-        imgToMask.mask(mask, 0, 0)
-        jimg = new Jimp(width, height, 0x00000000)
-        jimg.composite(imgToMask, 0, 0)
+        jimg.mask(mask, 0, 0)
+        
+        jimg.scan(0, 0, width, height, function(x, y, idx) {
+            const r = this.bitmap.data[idx + 0]
+            const g = this.bitmap.data[idx + 1]
+            const b = this.bitmap.data[idx + 2]
+            const a = this.bitmap.data[idx + 3]
+            
+            if (a === 0) {
+                this.bitmap.data[idx + 3] = 0
+            } 
+            else if (r === 0 && g === 0 && b === 0 && a < 255) {
+                this.bitmap.data[idx + 3] = 0 
+            }
+        })
       }
 
 
@@ -116,7 +127,7 @@ let handler = async (m, { conn, args, command }) => {
 /${command} => ɴᴏʀᴍᴀʟ
 /${command} ᴄᴏ => ᴄᴏʀᴀᴢᴏɴ
 /${command} ᴄᴄ => ᴄɪʀᴄᴜʟᴏ
-/${command} ᴄᴘ => ɴᴏʀᴍᴀʟɪᴢᴀʀ`, m, fkontak)
+/${command} ᴄᴘ => ɴᴏʀᴍᴀʟɪᴢᴀʀ`, m, rcanal)
 }
 
 handler.help = ['sticker <texto opcional>', 's <texto opcional>']
