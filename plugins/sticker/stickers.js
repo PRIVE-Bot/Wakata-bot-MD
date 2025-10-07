@@ -26,29 +26,29 @@ let handler = async (m, { conn, args, command }) => {
     let media
 
     if (/video|gif/.test(mime)) {
-      let vid = await q.download?.()
-      if (!vid) return conn.reply(m.chat, '⚠️ No se pudo descargar el video o gif.', m, fkontak2)
-      const tempIn = tmp('mp4')
-      const tempOut = tmp('webp')
-      fs.writeFileSync(tempIn, vid)
-      await new Promise((resolve, reject) => {
-        ffmpeg(tempIn)
-          .inputFormat('mp4')
-          .outputOptions([
-            '-vcodec libwebp',
-            '-vf fps=15,scale=512:512:flags=lanczos:force_original_aspect_ratio=decrease,pad=512:512:-1:-1:color=0x00000000',
-            '-loop 0','-preset default','-an','-vsync 0','-t 6'
-          ])
-          .toFormat('webp')
-          .save(tempOut)
-          .on('end', resolve)
-          .on('error', reject)
-      })
-      if (!fs.existsSync(tempOut)) throw new Error('No se generó el sticker')
-      stiker = fs.readFileSync(tempOut)
-      fs.unlinkSync(tempIn)
-      fs.unlinkSync(tempOut)
-    } else if (/webp|image/.test(mime)) {
+  let vid = await q.download?.()
+  if (!vid) return conn.reply(m.chat, '⚠️ No se pudo descargar el video o gif.', fkontak2)
+  const tempIn = tmp('mp4')
+  const tempOut = tmp('webp')
+  fs.writeFileSync(tempIn, vid)
+  await new Promise((resolve, reject) => {
+    ffmpeg(tempIn)
+      .inputFormat('mp4')
+      .outputOptions([
+        '-vcodec libwebp',
+        '-vf fps=15,scale=512:512:force_original_aspect_ratio=decrease,pad=512:512:(ow-iw)/2:(oh-ih)/2:color=white@0',
+        '-loop 0','-preset default','-an','-vsync 0','-t 6'
+      ])
+      .toFormat('webp')
+      .save(tempOut)
+      .on('end', resolve)
+      .on('error', reject)
+  })
+  if (!fs.existsSync(tempOut)) throw new Error('No se generó el sticker')
+  stiker = fs.readFileSync(tempOut)
+  fs.unlinkSync(tempIn)
+  fs.unlinkSync(tempOut)
+} else if (/webp|image/.test(mime)) {
       let img = await q.download?.()
       if (!img) return conn.reply(m.chat, '✰ ᴘᴏʀ ғᴀᴠᴏʀ, ᴇɴᴠÍᴀ ᴜɴᴀ ɪᴍᴀɢᴇɴ ᴘᴀʀᴀ ᴄᴏɴᴠᴇʀᴛɪʀ ᴀ sᴛɪᴄᴋᴇʀ.', m, fkontak)
       let jimg = await Jimp.read(img)
@@ -104,10 +104,10 @@ let handler = async (m, { conn, args, command }) => {
 
       img = await jimg.getBufferAsync(Jimp.MIME_PNG)
       stiker = await sticker(img, false, global.packsticker, global.packsticker2)
-    } else return conn.reply(m.chat, '✰ ᴘᴏʀ ғᴀᴠᴏʀ, ᴇɴᴠÍᴀ ᴜɴᴀ ɪᴍᴀɢᴇɴ, ɢɪғ ᴏ ᴠɪᴅᴇᴏ.', m, fkontak)
+    } else return conn.reply(m.chat, '✰ ᴘᴏʀ ғᴀᴠᴏʀ, ᴇɴᴠÍᴀ ᴜɴᴀ ɪᴍᴀɢᴇɴ, ɢɪғ ᴏ ᴠɪᴅᴇᴏ.', fkontak2)
   } catch (e) {
     console.error(e)
-    return conn.reply(m.chat, '⚠️ Ocurrió un error al procesar el sticker.', m, fkontak2)
+    return conn.reply(m.chat, '⚠️ Ocurrió un error al procesar el sticker. ${e.message}`, fkontak2)
   }
 
   if (stiker) await conn.sendMessage(m.chat, { sticker: stiker, ...global.rcanal }, { quoted: fkontak })
@@ -117,7 +117,7 @@ let handler = async (m, { conn, args, command }) => {
 /${command} => ɴᴏʀᴍᴀʟ
 /${command} ᴄᴏ => ᴄᴏʀᴀᴢᴏɴ
 /${command} ᴄᴄ => ᴄɪʀᴄᴜʟᴏ
-/${command} ᴄᴘ => ɴᴏʀᴍᴀʟɪᴢᴀʀ`, m, fkontak)
+/${command} ᴄᴘ => ɴᴏʀᴍᴀʟɪᴢᴀʀ`, m, rcanal)
 }
 
 handler.help = ['sticker <texto opcional>', 's <texto opcional>']
