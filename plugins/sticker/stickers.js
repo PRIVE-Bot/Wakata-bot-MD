@@ -86,25 +86,23 @@ let handler = async (m, { conn, args, command }) => {
         
         const mask = new Jimp(width,height,0x00000000)
         
-        mask.scan(0, 0, width, height, function (x, y, idx) {
+        for(let y=0;y<height;y++){
+          for(let x=0;x<width;x++){
             let alpha = 0
-            if (forma === 'cc') {
-                const dx = x - width / 2
-                const dy = y - height / 2
-                const r = Math.sqrt(dx * dx + dy * dy)
-                if (r < width / 2) alpha = 255
-            } else if (forma === 'co') {
-                const nx = (x - width / 2) / (width / 2)
-                const ny = (height / 2 - y) / (height / 2)
-                const eq = Math.pow(nx * nx + ny * ny - 1, 3) - nx * nx * ny * ny * ny
-                if (eq <= 0) alpha = 255
+            if(forma==='cc'){
+              const dx = x - width/2
+              const dy = y - height/2
+              if(Math.sqrt(dx*dx+dy*dy)<=width/2) alpha=255
+            } else if(forma==='co'){
+              const nx = (x-width/2)/(width/2)
+              const ny = (height/2-y)/(height/2)
+              const eq = Math.pow(nx*nx+ny*ny-1,3)-nx*nx*ny*ny*ny
+              if(eq<=0) alpha=255
             }
-            
-            this.bitmap.data[idx + 0] = 255 
-            this.bitmap.data[idx + 1] = 255 
-            this.bitmap.data[idx + 2] = 255 
-            this.bitmap.data[idx + 3] = alpha 
-        })
+            // Mantenemos color blanco, pero aseguramos la opacidad total de la forma
+            mask.setPixelColor(Jimp.rgbaToInt(255,255,255,alpha),x,y)
+          }
+        }
         
         jimg.mask(mask,0,0)
       }
