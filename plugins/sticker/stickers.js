@@ -25,25 +25,31 @@ let handler = async (m, { conn, args, command }) => {
     let mime = q.mimetype || q.msg?.mimetype || q.message?.imageMessage?.mimetype || ''
     let media
 
-    if (/video|gif/.test(mime)) {
+   if (/video|gif/.test(mime)) {
   let vid = await q.download?.()
   if (!vid) return conn.reply(m.chat, '⚠️ No se pudo descargar el video o gif.', fkontak2)
   const tempIn = tmp('mp4')
   const tempOut = tmp('webp')
   fs.writeFileSync(tempIn, vid)
+
   await new Promise((resolve, reject) => {
     ffmpeg(tempIn)
       .inputFormat('mp4')
       .outputOptions([
         '-vcodec libwebp',
-        '-vf fps=15,scale=512:512:force_original_aspect_ratio=decrease,pad=512:512:(ow-iw)/2:(oh-ih)/2:color=white@0',
-        '-loop 0','-preset default','-an','-vsync 0','-t 6'
+        '-vf fps=15,scale=512:-1:force_original_aspect_ratio=decrease',
+        '-loop 0',
+        '-preset default',
+        '-an',
+        '-vsync 0',
+        '-t 6'
       ])
       .toFormat('webp')
       .save(tempOut)
       .on('end', resolve)
       .on('error', reject)
   })
+
   if (!fs.existsSync(tempOut)) throw new Error('No se generó el sticker')
   stiker = fs.readFileSync(tempOut)
   fs.unlinkSync(tempIn)
