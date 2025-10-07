@@ -75,7 +75,6 @@ let handler = async (m, { conn, args, command }) => {
     } else {
       let jimg = await Jimp.read(media)
       
-      
       jimg.cover(512,512)
       let {width,height} = jimg.bitmap
 
@@ -83,28 +82,29 @@ let handler = async (m, { conn, args, command }) => {
 
       if(forma==='cc' || forma==='co'){
         
-        
         jimg.background(0x00000000)
         
         const mask = new Jimp(width,height,0x00000000)
         
-        for(let y=0;y<height;y++){
-          for(let x=0;x<width;x++){
+        mask.scan(0, 0, width, height, function (x, y, idx) {
             let alpha = 0
-            if(forma==='cc'){
-              const dx = x - width/2
-              const dy = y - height/2
-              if(Math.sqrt(dx*dx+dy*dy)<=width/2) alpha=255
-            } else if(forma==='co'){
-              const nx = (x-width/2)/(width/2)
-              const ny = (height/2-y)/(height/2)
-              const eq = Math.pow(nx*nx+ny*ny-1,3)-nx*nx*ny*ny*ny
-              if(eq<=0) alpha=255
+            if (forma === 'cc') {
+                const dx = x - width / 2
+                const dy = y - height / 2
+                const r = Math.sqrt(dx * dx + dy * dy)
+                if (r < width / 2) alpha = 255
+            } else if (forma === 'co') {
+                const nx = (x - width / 2) / (width / 2)
+                const ny = (height / 2 - y) / (height / 2)
+                const eq = Math.pow(nx * nx + ny * ny - 1, 3) - nx * nx * ny * ny * ny
+                if (eq <= 0) alpha = 255
             }
             
-            mask.setPixelColor(Jimp.rgbaToInt(0,0,0,alpha),x,y)
-          }
-        }
+            this.bitmap.data[idx + 0] = 255 
+            this.bitmap.data[idx + 1] = 255 
+            this.bitmap.data[idx + 2] = 255 
+            this.bitmap.data[idx + 3] = alpha 
+        })
         
         jimg.mask(mask,0,0)
       }
