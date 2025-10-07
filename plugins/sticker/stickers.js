@@ -73,21 +73,28 @@ let handler = async (m, { conn, args, command }) => {
         jimg.mask(mask, 0, 0)
       }
 
-         if (forma === 'co') {
+            if (forma === 'co') {
+        jimg.background(0x00000000)
         const mask = new Jimp(width, height, '#00000000')
         mask.scan(0, 0, width, height, function (x, y, idx) {
           const nx = (x - width / 2) / (width / 2)
-          const ny = (height / 2 - y) / (height / 2)
-          const eq = Math.pow(nx * nx + ny * ny - 1, 3) - nx * nx * ny * ny * ny
+          const ny_raw = (y - height / 2) / (height / 2)
+          const ny_scaled = ny_raw * 0.95 + 0.15 
+          
+          const eq = Math.pow(nx * nx + ny_scaled * ny_scaled - 1, 3) - nx * nx * ny_scaled * ny_scaled * ny_scaled
+          
           if (eq <= 0) {
             this.bitmap.data[idx + 0] = 255
             this.bitmap.data[idx + 1] = 255
             this.bitmap.data[idx + 2] = 255
             this.bitmap.data[idx + 3] = 255
+          } else {
+            this.bitmap.data[idx + 3] = 0
           }
         })
         jimg.mask(mask, 0, 0)
       }
+
 
       if (texto) {
         const brillo = jimg.bitmap.data.reduce((a, _, i) => i % 4 !== 3 ? a + jimg.bitmap.data[i] : a, 0) / (width * height * 3)
