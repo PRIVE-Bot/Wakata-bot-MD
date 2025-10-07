@@ -73,31 +73,21 @@ let handler = async (m, { conn, args, command }) => {
         jimg.mask(mask, 0, 0)
       }
 
-      if (forma === 'co') {
-  const mask = new Jimp(width, height, '#00000000')
-  mask.scan(0, 0, width, height, function (x, y, idx) {
-    const nx = (x - width / 2) / (width / 2)
-    const ny = (y - height / 2) / (height / 2)
-    const eq = Math.pow(nx * nx + ny * ny - 1, 3) - nx * nx * ny * ny * ny
-    if (eq <= 0 && ny < 0.8) { 
-      this.bitmap.data[idx + 0] = 255
-      this.bitmap.data[idx + 1] = 255
-      this.bitmap.data[idx + 2] = 255
-      this.bitmap.data[idx + 3] = 255
-    }
-  })
-  mask.scan(0, 0, width, height, function (x, y, idx) {
-    const nx = (x - width / 2) / (width / 2)
-    const ny = (y - height / 2) / (height / 2)
-    if (ny > 0.3 && nx * nx + ny * ny < 0.8) { 
-      this.bitmap.data[idx + 0] = 255
-      this.bitmap.data[idx + 1] = 255
-      this.bitmap.data[idx + 2] = 255
-      this.bitmap.data[idx + 3] = 255
-    }
-  })
-  jimg.mask(mask, 0, 0)
-}
+         if (forma === 'co') {
+        const mask = new Jimp(width, height, '#00000000')
+        mask.scan(0, 0, width, height, function (x, y, idx) {
+          const nx = (x - width / 2) / (width / 2)
+          const ny = (height / 2 - y) / (height / 2)
+          const eq = Math.pow(nx * nx + ny * ny - 1, 3) - nx * nx * ny * ny * ny
+          if (eq <= 0) {
+            this.bitmap.data[idx + 0] = 255
+            this.bitmap.data[idx + 1] = 255
+            this.bitmap.data[idx + 2] = 255
+            this.bitmap.data[idx + 3] = 255
+          }
+        })
+        jimg.mask(mask, 0, 0)
+      }
 
       if (texto) {
         const brillo = jimg.bitmap.data.reduce((a, _, i) => i % 4 !== 3 ? a + jimg.bitmap.data[i] : a, 0) / (width * height * 3)
