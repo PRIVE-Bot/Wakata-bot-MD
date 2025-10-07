@@ -57,42 +57,40 @@ let handler = async (m, { conn, args, command }) => {
 
       if (forma === 'cp') jimg.contain(500, 500)
 
-      if (forma === 'cc') {
-        const mask = new Jimp(width, height, '#00000000')
+      if (forma === 'cc' || forma === 'co') {
+        
+        
+        const imgToMask = await Jimp.read(jimg.getBufferAsync(Jimp.MIME_PNG))
+        
+        
+        const mask = new Jimp(width, height, 0x00000000)
+        
         mask.scan(0, 0, width, height, function (x, y, idx) {
-          const dx = x - width / 2
-          const dy = y - height / 2
-          const r = Math.sqrt(dx * dx + dy * dy)
-          if (r < width / 2) {
-            this.bitmap.data[idx + 0] = 255
-            this.bitmap.data[idx + 1] = 255
-            this.bitmap.data[idx + 2] = 255
-            this.bitmap.data[idx + 3] = 255
-          }
-        })
-        jimg.mask(mask, 0, 0)
-      }
-
-            if (forma === 'co') {
-        jimg.background(0x00000000)
-        const mask = new Jimp(width, height, '#00000000')
-        mask.scan(0, 0, width, height, function (x, y, idx) {
-          const nx = (x - width / 2) / (width / 2)
-          const ny_raw = (y - height / 2) / (height / 2)
-          const ny_scaled = ny_raw * 0.95 + 0.15 
+          let alpha = 0
           
-          const eq = Math.pow(nx * nx + ny_scaled * ny_scaled - 1, 3) - nx * nx * ny_scaled * ny_scaled * ny_scaled
-          
-          if (eq <= 0) {
-            this.bitmap.data[idx + 0] = 255
-            this.bitmap.data[idx + 1] = 255
-            this.bitmap.data[idx + 2] = 255
-            this.bitmap.data[idx + 3] = 255
-          } else {
-            this.bitmap.data[idx + 3] = 0
+          if (forma === 'cc') {
+            const dx = x - width / 2
+            const dy = y - height / 2
+            const r = Math.sqrt(dx * dx + dy * dy)
+            if (r < width / 2) alpha = 255
+          } else if (forma === 'co') {
+            // Ecuación del Corazón Corregida
+            const nx = (x - width / 2) / (width / 2)
+            const ny_raw = (y - height / 2) / (height / 2)
+            const ny_scaled = ny_raw * 0.95 + 0.15 
+            const eq = Math.pow(nx * nx + ny_scaled * ny_scaled - 1, 3) - nx * nx * ny_scaled * ny_scaled * ny_scaled
+            if (eq <= 0) alpha = 255
           }
+          
+          this.bitmap.data[idx + 0] = 255
+          this.bitmap.data[idx + 1] = 255
+          this.bitmap.data[idx + 2] = 255
+          this.bitmap.data[idx + 3] = alpha
         })
-        jimg.mask(mask, 0, 0)
+        
+        imgToMask.mask(mask, 0, 0)
+        jimg = new Jimp(width, height, 0x00000000)
+        jimg.composite(imgToMask, 0, 0)
       }
 
 
