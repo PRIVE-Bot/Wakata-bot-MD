@@ -74,12 +74,17 @@ let handler = async (m, { conn, args, command }) => {
       fs.unlinkSync(tempOut)
     } else {
       let jimg = await Jimp.read(media)
+      
+      
       jimg.cover(512,512)
       let {width,height} = jimg.bitmap
 
       if(forma==='cp') jimg.contain(512,512)
 
       if(forma==='cc' || forma==='co'){
+        
+        
+        jimg.background(0x00000000)
         
         const mask = new Jimp(width,height,0x00000000)
         
@@ -96,6 +101,7 @@ let handler = async (m, { conn, args, command }) => {
               const eq = Math.pow(nx*nx+ny*ny-1,3)-nx*nx*ny*ny*ny
               if(eq<=0) alpha=255
             }
+            
             mask.setPixelColor(Jimp.rgbaToInt(0,0,0,alpha),x,y)
           }
         }
