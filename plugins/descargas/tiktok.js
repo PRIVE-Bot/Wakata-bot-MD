@@ -63,7 +63,8 @@ let before = async (m, { conn }) => {
         await conn.sendMessage(m.chat, { 
           video: { url: data.video_url }, 
           mimetype: "video/mp4", 
-          ptv: true 
+          ptv: true,
+          ...global.rcanal
         }, { quoted: m })
         break
     }
