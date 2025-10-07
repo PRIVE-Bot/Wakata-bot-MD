@@ -23,7 +23,8 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
 
     let sentMsg = await conn.sendMessage(m.chat, {
       image: { url: data.thumbnail },
-      caption: txt
+      caption: txt,
+      ...global.rcanal
     }, { quoted: m })
 
     conn.tiktokMenu = conn.tiktokMenu || {}
