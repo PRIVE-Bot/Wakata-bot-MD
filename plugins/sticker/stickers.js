@@ -59,35 +59,33 @@ let handler = async (m, { conn, args, command }) => {
 
       if (forma === 'cc' || forma === 'co') {
         
-        
-        const imgToMask = await Jimp.read(jimg.getBufferAsync(Jimp.MIME_PNG))
-        
-        
+        const buffer = await jimg.getBufferAsync(Jimp.MIME_PNG)
+        const imgToMask = await Jimp.read(buffer) 
+
         const mask = new Jimp(width, height, 0x00000000)
-        
+
         mask.scan(0, 0, width, height, function (x, y, idx) {
           let alpha = 0
-          
+
           if (forma === 'cc') {
             const dx = x - width / 2
             const dy = y - height / 2
             const r = Math.sqrt(dx * dx + dy * dy)
             if (r < width / 2) alpha = 255
           } else if (forma === 'co') {
-            // Ecuación del Corazón Corregida
             const nx = (x - width / 2) / (width / 2)
             const ny_raw = (y - height / 2) / (height / 2)
             const ny_scaled = ny_raw * 0.95 + 0.15 
             const eq = Math.pow(nx * nx + ny_scaled * ny_scaled - 1, 3) - nx * nx * ny_scaled * ny_scaled * ny_scaled
             if (eq <= 0) alpha = 255
           }
-          
+
           this.bitmap.data[idx + 0] = 255
           this.bitmap.data[idx + 1] = 255
           this.bitmap.data[idx + 2] = 255
           this.bitmap.data[idx + 3] = alpha
         })
-        
+
         imgToMask.mask(mask, 0, 0)
         jimg = new Jimp(width, height, 0x00000000)
         jimg.composite(imgToMask, 0, 0)
@@ -108,7 +106,7 @@ let handler = async (m, { conn, args, command }) => {
     } else return conn.reply(m.chat, '✰ ᴘᴏʀ ғᴀᴠᴏʀ, ᴇɴᴠÍᴀ ᴜɴᴀ ɪᴍᴀɢᴇɴ, ɢɪғ ᴏ ᴠɪᴅᴇᴏ.', m, fkontak)
   } catch (e) {
     console.error(e)
-    return conn.reply(m.chat, `⚠️ Ocurrió un error al procesar el sticker. ${e.message}`, fkontak2)
+    return conn.reply(m.chat, `⚠️ Ocurrió un error al procesar el sticker. ${e.message}`, m, fkontak2)
   }
 
   if (stiker) await conn.sendMessage(m.chat, { sticker: stiker, ...global.rcanal }, { quoted: fkontak })
