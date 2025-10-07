@@ -57,49 +57,39 @@ let handler = async (m, { conn, args, command }) => {
 
       if (forma === 'cp') jimg.contain(500, 500)
 
-      if (forma === 'cc' || forma === 'co') {
-        
-        const mask = new Jimp(width, height, 0x00000000)
-
+      if (forma === 'cc') {
+        const mask = new Jimp(width, height, '#00000000')
         mask.scan(0, 0, width, height, function (x, y, idx) {
-          let alpha = 0
-
-          if (forma === 'cc') {
-            const dx = x - width / 2
-            const dy = y - height / 2
-            const r = Math.sqrt(dx * dx + dy * dy)
-            if (r < width / 2) alpha = 255
-          } else if (forma === 'co') {
-            const nx = (x - width / 2) / (width / 2)
-            const ny = (y - height / 2) / (height / 2)
-            
-            const ny_scaled = ny * 1.2 - 0.5
-            const eq = Math.pow(nx * nx + ny_scaled * ny_scaled - 1, 3) - nx * nx * ny_scaled * ny_scaled * ny_scaled
-            
-            if (eq <= 0) alpha = 255
+          const dx = x - width / 2
+          const dy = y - height / 2
+          const r = Math.sqrt(dx * dx + dy * dy)
+          if (r < width / 2) {
+            this.bitmap.data[idx + 0] = 255
+            this.bitmap.data[idx + 1] = 255
+            this.bitmap.data[idx + 2] = 255
+            this.bitmap.data[idx + 3] = 255
           }
-
-          this.bitmap.data[idx + 0] = 255
-          this.bitmap.data[idx + 1] = 255
-          this.bitmap.data[idx + 2] = 255
-          this.bitmap.data[idx + 3] = alpha
         })
-
         jimg.mask(mask, 0, 0)
-        
-        jimg.scan(0, 0, width, height, function(x, y, idx) {
-            const r = this.bitmap.data[idx + 0]
-            const g = this.bitmap.data[idx + 1]
-            const b = this.bitmap.data[idx + 2]
-            const a = this.bitmap.data[idx + 3]
-            
-            if (a === 0) {
-                this.bitmap.data[idx + 3] = 0
-            } 
-            else if (r === 0 && g === 0 && b === 0 && a < 255) {
-                this.bitmap.data[idx + 3] = 0 
-            }
+      }
+
+      if (forma === 'co') {
+        const mask = new Jimp(width, height, '#00000000')
+        mask.scan(0, 0, width, height, function (x, y, idx) {
+          const scaleX = 1.25
+          const scaleY = 1.35
+          const offsetY = 0.05
+          const nx = (x - width / 2) / (width / 2) * scaleX
+          const ny = (height / 2 - y) / (height / 2) * scaleY - offsetY
+          const eq = Math.pow(nx * nx + ny * ny - 1, 3) - nx * nx * ny * ny * ny
+          if (eq <= 0) {
+            this.bitmap.data[idx + 0] = 255
+            this.bitmap.data[idx + 1] = 255
+            this.bitmap.data[idx + 2] = 255
+            this.bitmap.data[idx + 3] = 255
+          }
         })
+        jimg.mask(mask, 0, 0)
       }
 
 
@@ -117,7 +107,7 @@ let handler = async (m, { conn, args, command }) => {
     } else return conn.reply(m.chat, '✰ ᴘᴏʀ ғᴀᴠᴏʀ, ᴇɴᴠÍᴀ ᴜɴᴀ ɪᴍᴀɢᴇɴ, ɢɪғ ᴏ ᴠɪᴅᴇᴏ.', m, fkontak)
   } catch (e) {
     console.error(e)
-    return conn.reply(m.chat, `⚠️ Ocurrió un error al procesar el sticker. ${e.message}`, m, fkontak2)
+    return conn.reply(m.chat, '⚠️ Ocurrió un error al procesar el sticker.', m, fkontak2)
   }
 
   if (stiker) await conn.sendMessage(m.chat, { sticker: stiker, ...global.rcanal }, { quoted: fkontak })
@@ -127,7 +117,7 @@ let handler = async (m, { conn, args, command }) => {
 /${command} => ɴᴏʀᴍᴀʟ
 /${command} ᴄᴏ => ᴄᴏʀᴀᴢᴏɴ
 /${command} ᴄᴄ => ᴄɪʀᴄᴜʟᴏ
-/${command} ᴄᴘ => ɴᴏʀᴍᴀʟɪᴢᴀʀ`, m, rcanal)
+/${command} ᴄᴘ => ɴᴏʀᴍᴀʟɪᴢᴀʀ`, m, fkontak)
 }
 
 handler.help = ['sticker <texto opcional>', 's <texto opcional>']
