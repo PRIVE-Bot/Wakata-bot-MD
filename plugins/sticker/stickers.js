@@ -58,7 +58,7 @@ let handler = async (m, { conn, args, command }) => {
 /${command} ᴄᴄ => ᴄɪʀᴄᴜʟᴏ
 /${command} ᴄᴘ => ɴᴏʀᴍᴀʟɪᴢᴀʀ
 
-==> ᴘᴜᴇᴅᴇs ᴜsᴀʀ /s ғᴏʀᴍᴀ ʏ ᴛᴇxᴛᴏ ᴘᴀʀᴀ ᴘᴏɴᴇʀ ᴜɴ ᴛᴇxᴛᴏ ᴄᴏʀᴛᴏ ᴀ ᴛᴜ sᴛɪᴋᴇʀ.`, m, rcanal)
+==> ᴘᴜᴇᴅᴇs ᴜsᴀʀ /${command} ғᴏʀᴍᴀ ʏ ᴛᴇxᴛᴏ ᴘᴀʀᴀ ᴘᴏɴᴇʀ ᴜɴ ᴛᴇxᴛᴏ ᴄᴏʀᴛᴏ ᴀ ᴛᴜ sᴛɪᴋᴇʀ.`, m, rcanal)
       let jimg = await Jimp.read(img)
       jimg.resize(512, 512)
       let { width, height } = jimg.bitmap
@@ -127,7 +127,7 @@ let handler = async (m, { conn, args, command }) => {
 /${command} ᴄᴄ => ᴄɪʀᴄᴜʟᴏ
 /${command} ᴄᴘ => ɴᴏʀᴍᴀʟɪᴢᴀʀ
 
-==> ᴘᴜᴇᴅᴇs ᴜsᴀʀ /s ғᴏʀᴍᴀ ʏ ᴛᴇxᴛᴏ ᴘᴀʀᴀ ᴘᴏɴᴇʀ ᴜɴ ᴛᴇxᴛᴏ ᴄᴏʀᴛᴏ ᴀ ᴛᴜ sᴛɪᴋᴇʀ.`, m, rcanal)
+==> ᴘᴜᴇᴅᴇs ᴜsᴀʀ /${command} ғᴏʀᴍᴀ ʏ ᴛᴇxᴛᴏ ᴘᴀʀᴀ ᴘᴏɴᴇʀ ᴜɴ ᴛᴇxᴛᴏ ᴄᴏʀᴛᴏ ᴀ ᴛᴜ sᴛɪᴋᴇʀ.`, m, rcanal)
 }
 
 handler.help = ['sticker <texto opcional>', 's <texto opcional>']
