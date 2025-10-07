@@ -37,7 +37,8 @@ let handler = async (m, { conn, args, command }) => {
       .inputFormat('mp4')
       .outputOptions([
         '-vcodec libwebp',
-        '-vf fps=15,scale=512:-1:force_original_aspect_ratio=decrease',
+        '-vf fps=15,scale=512:-1:force_original_aspect_ratio=decrease,' +
+        'pad=512:512:(ow-iw)/2:(oh-ih)/2:color=0x00000000',
         '-loop 0',
         '-preset default',
         '-an',
