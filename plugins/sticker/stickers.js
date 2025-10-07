@@ -22,22 +22,22 @@ let handler = async (m, { conn, args, command }) => {
   try {
     let q = m.quoted ? m.quoted : m
     let mime = q.mimetype || q.msg?.mimetype || ''
-    let url = args[0] && /https?:\/\//.test(args[0]) ? args[0] : null
+    let url = args.find(a => /^https?:\/\//.test(a))
     let media
 
-    if(url){
+    if (url) {
       const response = await fetch(url)
       media = Buffer.from(await response.arrayBuffer())
-      mime = response.headers.get('content-type')||''
-    } else if(/image|webp|video/.test(mime)){
+      mime = response.headers.get('content-type') || ''
+    } else if (/image|webp|video|gif/.test(mime)) {
       media = await q.download?.()
-    } else return conn.reply(m.chat,'✰ Envía o responde una imagen, video o sticker para convertirlo a sticker.',m,fkontak)
+    } else return conn.reply(m.chat, '✰ Envía o responde una imagen, video o sticker para convertirlo a sticker.', m, fkontak)
 
-    if(!media) return conn.reply(m.chat,'⚠️ No se pudo descargar el archivo.',m,fkontak2)
+    if (!media) return conn.reply(m.chat, '⚠️ No se pudo descargar el archivo.', m, fkontak2)
 
-    if(/webp/.test(mime)){
+    if (/webp/.test(mime)) {
       const out = await webp2mp4(media)
-      if(out?.url){
+      if (out?.url) {
         const buff = await (await fetch(out.url)).arrayBuffer()
         media = Buffer.from(buff)
         mime = 'video/mp4'
@@ -47,11 +47,11 @@ let handler = async (m, { conn, args, command }) => {
       }
     }
 
-    if(/video|gif/.test(mime)){
+    if (/video|gif/.test(mime)) {
       const tempIn = tmp('mp4')
       const tempOut = tmp('webp')
       fs.writeFileSync(tempIn, media)
-      await new Promise((resolve,reject)=>{
+      await new Promise((resolve, reject) => {
         ffmpeg(tempIn)
           .inputFormat('mp4')
           .outputOptions([
@@ -65,55 +65,48 @@ let handler = async (m, { conn, args, command }) => {
           ])
           .toFormat('webp')
           .save(tempOut)
-          .on('end',resolve)
-          .on('error',reject)
+          .on('end', resolve)
+          .on('error', reject)
       })
-      if(!fs.existsSync(tempOut)) throw new Error('No se generó el sticker')
+      if (!fs.existsSync(tempOut)) throw new Error('No se generó el sticker')
       stiker = fs.readFileSync(tempOut)
       fs.unlinkSync(tempIn)
       fs.unlinkSync(tempOut)
     } else {
       let jimg = await Jimp.read(media)
-      
       jimg.cover(512,512)
       let {width,height} = jimg.bitmap
-
       if(forma==='cp') jimg.contain(512,512)
-
-      if(forma==='cc' || forma==='co'){
-        
+      if(forma==='cc'||forma==='co'){
         jimg.background(0x00000000)
-        
-        const mask = new Jimp(width,height,0x00000000)
-        
+        const mask=new Jimp(width,height,0x00000000)
         for(let y=0;y<height;y++){
           for(let x=0;x<width;x++){
-            let alpha = 0
+            let alpha=0
             if(forma==='cc'){
-              const dx = x - width/2
-              const dy = y - height/2
-              if(Math.sqrt(dx*dx+dy*dy)<=width/2) alpha=255
-            } else if(forma==='co'){
-              const nx = (x-width/2)/(width/2)
-              const ny = (height/2-y)/(height/2)
-              const eq = Math.pow(nx*nx+ny*ny-1,3)-nx*nx*ny*ny*ny
-              if(eq<=0) alpha=255
+              const dx=x-width/2
+              const dy=y-height/2
+              if(Math.sqrt(dx*dx+dy*dy)<=width/2)alpha=255
+            }else if(forma==='co'){
+              const scaleX=1.3
+              const scaleY=1.1
+              const offsetY=0.25
+              const nx=(x-width/2)/(width/2)*scaleX
+              const ny=(height/2-y)/(height/2)*scaleY-offsetY
+              const eq=Math.pow(nx*nx+ny*ny-1,3)-nx*nx*ny*ny*ny
+              if(eq<=0)alpha=255
             }
-            // Mantenemos color blanco, pero aseguramos la opacidad total de la forma
             mask.setPixelColor(Jimp.rgbaToInt(255,255,255,alpha),x,y)
           }
         }
-        
         jimg.mask(mask,0,0)
       }
-
       if(texto){
-        const fuente = await Jimp.loadFont(Jimp.FONT_SANS_64_WHITE)
+        const fuente=await Jimp.loadFont(Jimp.FONT_SANS_64_WHITE)
         jimg.print(fuente,0,0,{text:texto,alignmentX:Jimp.HORIZONTAL_ALIGN_CENTER,alignmentY:Jimp.VERTICAL_ALIGN_BOTTOM},width,height-20)
       }
-
-      const finalImg = await jimg.getBufferAsync(Jimp.MIME_PNG)
-      stiker = await sticker(finalImg,false,global.packsticker,global.packsticker2)
+      const finalImg=await jimg.getBufferAsync(Jimp.MIME_PNG)
+      stiker=await sticker(finalImg,false,global.packsticker,global.packsticker2)
     }
 
   } catch(e){
