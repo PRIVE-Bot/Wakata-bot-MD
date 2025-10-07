@@ -112,7 +112,15 @@ let handler = async (m, { conn, args, command }) => {
 
       img = await jimg.getBufferAsync(Jimp.MIME_PNG)
       stiker = await sticker(img, false, global.packsticker, global.packsticker2)
-    } else return conn.reply(m.chat, '✰ ᴘᴏʀ ғᴀᴠᴏʀ, ᴇɴᴠÍᴀ ᴜɴᴀ ɪᴍᴀɢᴇɴ, ɢɪғ ᴏ ᴠɪᴅᴇᴏ.', fkontak2)
+    } else return conn.reply(m.chat, `✰ ᴘᴏʀ ғᴀᴠᴏʀ, ᴇɴᴠÍᴀ ᴜɴᴀ ɪᴍᴀɢᴇɴ ᴠÁʟɪᴅᴀ ᴘᴀʀᴀ ᴄᴏɴᴠᴇʀᴛɪʀ ᴀ sᴛɪᴄᴋᴇʀ.
+
+ғᴏʀᴍᴀs:
+/${command} => ɴᴏʀᴍᴀʟ
+/${command} ᴄᴏ => ᴄᴏʀᴀᴢᴏɴ
+/${command} ᴄᴄ => ᴄɪʀᴄᴜʟᴏ
+/${command} ᴄᴘ => ɴᴏʀᴍᴀʟɪᴢᴀʀ
+
+==> ᴘᴜᴇᴅᴇs ᴜsᴀʀ /${command} ғᴏʀᴍᴀ ʏ ᴛᴇxᴛᴏ ᴘᴀʀᴀ ᴘᴏɴᴇʀ ᴜɴ ᴛᴇxᴛᴏ ᴄᴏʀᴛᴏ ᴀ ᴛᴜ sᴛɪᴋᴇʀ.`, m, rcanal)
   } catch (e) {
     console.error(e)
     return conn.reply(m.chat, `⚠️ Ocurrió un error al procesar el sticker. ${e.message}`, fkontak2)
