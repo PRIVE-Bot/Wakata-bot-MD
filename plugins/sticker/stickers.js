@@ -50,7 +50,15 @@ let handler = async (m, { conn, args, command }) => {
   fs.unlinkSync(tempOut)
 } else if (/webp|image/.test(mime)) {
       let img = await q.download?.()
-      if (!img) return conn.reply(m.chat, '✰ ᴘᴏʀ ғᴀᴠᴏʀ, ᴇɴᴠÍᴀ ᴜɴᴀ ɪᴍᴀɢᴇɴ ᴘᴀʀᴀ ᴄᴏɴᴠᴇʀᴛɪʀ ᴀ sᴛɪᴄᴋᴇʀ.', m, fkontak)
+      if (!img) return conn.reply(m.chat, `✰ ᴘᴏʀ ғᴀᴠᴏʀ, ᴇɴᴠÍᴀ ᴜɴᴀ ɪᴍᴀɢᴇɴ ᴠÁʟɪᴅᴀ ᴘᴀʀᴀ ᴄᴏɴᴠᴇʀᴛɪʀ ᴀ sᴛɪᴄᴋᴇʀ.
+
+ғᴏʀᴍᴀs:
+/${command} => ɴᴏʀᴍᴀʟ
+/${command} ᴄᴏ => ᴄᴏʀᴀᴢᴏɴ
+/${command} ᴄᴄ => ᴄɪʀᴄᴜʟᴏ
+/${command} ᴄᴘ => ɴᴏʀᴍᴀʟɪᴢᴀʀ
+
+==> ᴘᴜᴇᴅᴇs ᴜsᴀʀ /s ғᴏʀᴍᴀ ʏ ᴛᴇxᴛᴏ ᴘᴀʀᴀ ᴘᴏɴᴇʀ ᴜɴ ᴛᴇxᴛᴏ ᴄᴏʀᴛᴏ ᴀ ᴛᴜ sᴛɪᴋᴇʀ.`, m, rcanal)
       let jimg = await Jimp.read(img)
       jimg.resize(512, 512)
       let { width, height } = jimg.bitmap
@@ -117,7 +125,9 @@ let handler = async (m, { conn, args, command }) => {
 /${command} => ɴᴏʀᴍᴀʟ
 /${command} ᴄᴏ => ᴄᴏʀᴀᴢᴏɴ
 /${command} ᴄᴄ => ᴄɪʀᴄᴜʟᴏ
-/${command} ᴄᴘ => ɴᴏʀᴍᴀʟɪᴢᴀʀ`, m, rcanal)
+/${command} ᴄᴘ => ɴᴏʀᴍᴀʟɪᴢᴀʀ
+
+==> ᴘᴜᴇᴅᴇs ᴜsᴀʀ /s ғᴏʀᴍᴀ ʏ ᴛᴇxᴛᴏ ᴘᴀʀᴀ ᴘᴏɴᴇʀ ᴜɴ ᴛᴇxᴛᴏ ᴄᴏʀᴛᴏ ᴀ ᴛᴜ sᴛɪᴋᴇʀ.`, m, rcanal)
 }
 
 handler.help = ['sticker <texto opcional>', 's <texto opcional>']
