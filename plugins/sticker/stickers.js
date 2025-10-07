@@ -15,8 +15,14 @@ let handler = async (m, { conn, args, command }) => {
   const fkontak = { key:{fromMe:false,participant:m.sender}, message:{imageMessage:{jpegThumbnail:thumb, caption:'✨ 𝗦𝗧𝗜𝗖𝗞𝗘𝗥 𝗚𝗘𝗡𝗘𝗥𝗔𝗗𝗢 𝗖𝗢𝗡 𝗘𝗫𝗜𝗧𝗢 ✨'}}}
   const fkontak2 = { key:{fromMe:false,participant:m.sender}, message:{imageMessage:{jpegThumbnail:thumb, caption:'⚠︎ 𝗘𝗥𝗥𝗢𝗥 ⚠︎'}}}
 
-  let texto = args.filter(a=>!/^(co|cc|cp)$/i.test(a)).join(' ').trim()
-  let forma = (args.find(a=>/^(co|cc|cp)$/i.test(a))||'').toLowerCase()
+  let forma = ''
+  let texto = ''
+
+  for (let arg of args) {
+    if (/^(co|cc|cp)$/i.test(arg)) forma = arg.toLowerCase()
+    else texto += (texto ? ' ' : '') + arg
+  }
+
   let stiker = false
 
   try {
@@ -57,11 +63,7 @@ let handler = async (m, { conn, args, command }) => {
           .outputOptions([
             '-vcodec libwebp',
             '-vf fps=15,scale=512:512:flags=lanczos:force_original_aspect_ratio=decrease,pad=512:512:-1:-1:color=0x00000000',
-            '-loop 0',
-            '-preset default',
-            '-an',
-            '-vsync 0',
-            '-t 6'
+            '-loop 0','-preset default','-an','-vsync 0','-t 6'
           ])
           .toFormat('webp')
           .save(tempOut)
@@ -75,57 +77,61 @@ let handler = async (m, { conn, args, command }) => {
     } else {
       let jimg = await Jimp.read(media)
       jimg.cover(512,512)
-      let {width,height} = jimg.bitmap
-      if(forma==='cp') jimg.contain(512,512)
-      if(forma==='cc'||forma==='co'){
-        jimg.background(0x00000000)
-        const mask=new Jimp(width,height,0x00000000)
-        for(let y=0;y<height;y++){
-          for(let x=0;x<width;x++){
-            let alpha=0
-            if(forma==='cc'){
-              const dx=x-width/2
-              const dy=y-height/2
-              if(Math.sqrt(dx*dx+dy*dy)<=width/2)alpha=255
-            }else if(forma==='co'){
-              const scaleX=1.3
-              const scaleY=1.1
-              const offsetY=0.25
-              const nx=(x-width/2)/(width/2)*scaleX
-              const ny=(height/2-y)/(height/2)*scaleY-offsetY
-              const eq=Math.pow(nx*nx+ny*ny-1,3)-nx*nx*ny*ny*ny
-              if(eq<=0)alpha=255
+      const { width, height } = jimg.bitmap
+      jimg.background(0x00000000)
+
+      if (forma === 'cc' || forma === 'co' || forma === 'cp') {
+        const mask = new Jimp(width, height, 0x00000000)
+        for (let y = 0; y < height; y++) {
+          for (let x = 0; x < width; x++) {
+            let alpha = 0
+            if (forma === 'cc') {
+              const dx = x - width / 2
+              const dy = y - height / 2
+              if (Math.sqrt(dx * dx + dy * dy) <= width / 2) alpha = 255
+            } else if (forma === 'co') {
+              const scaleX = 1.3
+              const scaleY = 1.1
+              const offsetY = 0.25
+              const nx = (x - width / 2) / (width / 2) * scaleX
+              const ny = (height / 2 - y) / (height / 2) * scaleY - offsetY
+              const eq = Math.pow(nx * nx + ny * ny - 1, 3) - nx * nx * ny * ny * ny
+              if (eq <= 0) alpha = 255
+            } else if (forma === 'cp') {
+              alpha = 255
             }
-            mask.setPixelColor(Jimp.rgbaToInt(255,255,255,alpha),x,y)
+            mask.setPixelColor(Jimp.rgbaToInt(255, 255, 255, alpha), x, y)
           }
         }
-        jimg.mask(mask,0,0)
+        jimg.mask(mask, 0, 0)
       }
-      if(texto){
-        const fuente=await Jimp.loadFont(Jimp.FONT_SANS_64_WHITE)
-        jimg.print(fuente,0,0,{text:texto,alignmentX:Jimp.HORIZONTAL_ALIGN_CENTER,alignmentY:Jimp.VERTICAL_ALIGN_BOTTOM},width,height-20)
+
+      if (texto) {
+        const fuente = await Jimp.loadFont(Jimp.FONT_SANS_64_WHITE)
+        jimg.print(fuente, 0, 0, { text: texto, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_BOTTOM }, width, height - 20)
       }
-      const finalImg=await jimg.getBufferAsync(Jimp.MIME_PNG)
-      stiker=await sticker(finalImg,false,global.packsticker,global.packsticker2)
+
+      const finalImg = await jimg.getBufferAsync(Jimp.MIME_PNG)
+      stiker = await sticker(finalImg, false, global.packsticker, global.packsticker2)
     }
 
-  } catch(e){
+  } catch (e) {
     console.error(e)
-    return conn.reply(m.chat,'⚠️ Ocurrió un error al procesar el sticker.',m,fkontak2)
+    return conn.reply(m.chat, '⚠️ Ocurrió un error al procesar el sticker.', m, fkontak2)
   }
 
-  if(stiker) await conn.sendMessage(m.chat,{sticker:stiker,...global.rcanal},{quoted:fkontak})
-  else conn.reply(m.chat,`✰ Envía o responde una imagen, video o sticker para convertirlo a sticker.
+  if (stiker) await conn.sendMessage(m.chat, { sticker: stiker, ...global.rcanal }, { quoted: fkontak })
+  else conn.reply(m.chat, `✰ Envía o responde una imagen, video o sticker para convertirlo a sticker.
 
 Formas:
 /${command} => normal
 /${command} co => corazón
 /${command} cc => círculo
-/${command} cp => normalizar`,m,fkontak)
+/${command} cp => cuadrado`, m, fkontak)
 }
 
-handler.help=['sticker <texto opcional>','s <texto opcional>']
-handler.tags=['sticker']
-handler.command=['s','sticker','stiker']
+handler.help = ['sticker <texto>','s <texto>']
+handler.tags = ['sticker']
+handler.command = ['s','sticker','stiker']
 
 export default handler
