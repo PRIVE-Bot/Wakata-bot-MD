@@ -108,7 +108,7 @@ let handler = async (m, { conn, args, command }) => {
     } else return conn.reply(m.chat, '✰ ᴘᴏʀ ғᴀᴠᴏʀ, ᴇɴᴠÍᴀ ᴜɴᴀ ɪᴍᴀɢᴇɴ, ɢɪғ ᴏ ᴠɪᴅᴇᴏ.', m, fkontak)
   } catch (e) {
     console.error(e)
-    return conn.reply(m.chat, '⚠️ Ocurrió un error al procesar el sticker.', m, fkontak2)
+    return conn.reply(m.chat, `⚠️ Ocurrió un error al procesar el sticker. ${e.message}`, fkontak2)
   }
 
   if (stiker) await conn.sendMessage(m.chat, { sticker: stiker, ...global.rcanal }, { quoted: fkontak })
