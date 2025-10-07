@@ -81,9 +81,6 @@ let handler = async (m, { conn, args, command }) => {
 
       if(forma==='cc' || forma==='co'){
         
-        jimg.hasAlpha(true)
-        jimg.background(0x00000000)
-
         const mask = new Jimp(width,height,0x00000000)
         
         for(let y=0;y<height;y++){
@@ -99,7 +96,7 @@ let handler = async (m, { conn, args, command }) => {
               const eq = Math.pow(nx*nx+ny*ny-1,3)-nx*nx*ny*ny*ny
               if(eq<=0) alpha=255
             }
-            mask.setPixelColor(Jimp.rgbaToInt(255,255,255,alpha),x,y)
+            mask.setPixelColor(Jimp.rgbaToInt(0,0,0,alpha),x,y)
           }
         }
         
