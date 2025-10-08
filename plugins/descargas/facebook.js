@@ -80,6 +80,7 @@ const thumb24 = Buffer.from(await resThumb3.arrayBuffer())
     {
       image: thumb2,
       caption: txt,
+      ...global.rcanal
     },
     { quoted: fkontak }
   )
