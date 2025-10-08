@@ -67,9 +67,13 @@ let handler = async (m, { conn, args }) => {
 💡 Responde con el número de tu elección.
 `.trim()
 
-  let sentMsg = await conn.sendMessage(
+    let sentMsg = await conn.sendMessage(
     m.chat,
-    { image: thumb2, caption: txt },
+    {
+      image: thumb2,
+      caption: txt,
+      ...global.rcanal
+    },
     { quoted: fkontak }
   )
 
