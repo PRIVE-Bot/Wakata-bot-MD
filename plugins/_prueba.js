@@ -1,31 +1,46 @@
-import pkg from '@whiskeysockets/baileys'
-const { proto } = pkg
+import { default as fetch } from "node-fetch"
+import * as cheerio from "cheerio"
 
-var handler = async (m, { conn, text }) => {
+let handler = async (m, { conn, args, usedPrefix, command }) => {
+  if (!args[0]) return conn.reply(m.chat, `❗ Uso: ${usedPrefix}${command} <consulta>`, m)
+
+  const query = args.join(" ")
+  const headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
+    "Accept-Language": "es-ES,es;q=0.9",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Referer": "https://www.google.com/",
+    "Cache-Control": "no-cache",
+  }
+
   try {
-    const example = '+51 973 419 739'
-    const raw = (text && text.trim()) || example
-    let clean = raw.replace(/[\s\-\(\)\.]/g, '')
-    if (clean.startsWith('+')) clean = clean.slice(1)
-    const jid = `${clean}@s.whatsapp.net`
-    let ppUrl = null
-    try {
-      if (typeof conn.profilePictureUrl === 'function') {
-        ppUrl = await conn.profilePictureUrl(jid).catch(() => null)
-      } else if (typeof conn.getProfilePicture === 'function') {
-        ppUrl = await conn.getProfilePicture(jid).catch(() => null)
+    const urlSearch = `https://www.google.com/search?q=${encodeURIComponent(query)}&hl=es`
+    const html = await fetch(urlSearch, { headers }).then(r => r.text())
+    const $ = cheerio.load(html)
+    const results = []
+
+    $("div.g").each((_, el) => {
+      const title = $(el).find("h3").text().trim()
+      const href = $(el).find("a").attr("href")
+      const desc = $(el).find("div.VwiC3b").text().trim()
+      if (href && href.startsWith("/url?q=") && title) {
+        const link = decodeURIComponent(href.split("/url?q=")[1].split("&")[0])
+        results.push(`• ${title}\n${desc || "Sin descripción"}\n${link}`)
       }
-    } catch (e) {
-      ppUrl = null
-    }
-    if (!ppUrl) {
-      return conn.sendMessage(m.chat, { text: `⚠️ No se pudo obtener la foto de perfil de ${raw}.` }, { quoted: m })
-    }
-    await conn.sendMessage(m.chat, { image: { url: ppUrl }, caption: `Foto de perfil de: ${raw}` }, { quoted: m })
+    })
+
+    if (!results.length) throw new Error("No se")
+
+    const text = `🔎 Resultados para: *${query}*\n\n${results.slice(0, 5).join("\n\n")}`
+
+    conn.reply(m.chat, text, m)
   } catch (err) {
-    return conn.sendMessage(m.chat, { text: `❌ Error: ${err.message}` }, { quoted: m })
+    conn.reply(m.chat, `❌ Error real:\n${err.message}`, m)
   }
 }
 
-handler.command = /^(pp|getpp|fotoperfil|profilepic)$/i
+handler.command = /^(search|buscar)$/i
+handler.help = ["search <consulta>"]
+handler.tags = ["internet"]
+
 export default handler
