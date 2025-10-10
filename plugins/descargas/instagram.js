@@ -1,13 +1,12 @@
 import fetch from "node-fetch"
-import { igdl } from "ruhend-scraper"
 
 let handler = async (m, { conn, args }) => {
   if (!args[0]) {
     return conn.reply(m.chat, `${emoji} Necesitas enviar un enlace de *Instagram* para descargar.`, m, rcanal)
   }
 
-  const resThumb3 = await fetch('https://files.catbox.moe/pgomk1.jpg')
-  const thumb24 = Buffer.from(await resThumb3.arrayBuffer())
+  const resThumb = await fetch('https://files.catbox.moe/pgomk1.jpg')
+  const thumb = Buffer.from(await resThumb.arrayBuffer())
 
   const fkontak = {
     key: {
@@ -19,7 +18,7 @@ let handler = async (m, { conn, args }) => {
     message: {
       locationMessage: {
         name: `𝗗𝗘𝗦𝗖𝗔𝗥𝗚𝗔 𝗗𝗘 𝗜𝗡𝗦𝗧𝗔𝗚𝗥𝗔𝗠`,
-        jpegThumbnail: thumb24
+        jpegThumbnail: thumb
       }
     },
     participant: "0@s.whatsapp.net"
@@ -27,37 +26,29 @@ let handler = async (m, { conn, args }) => {
 
   const regexInstagram = /^(https?:\/\/)?(www\.)?(instagram\.com|instagr\.am)\/[^\s]+$/i
   if (!regexInstagram.test(args[0])) {
-    return conn.reply(m.chat, `${emoji} El enlace proporcionado no es válido o no pertenece a *Instagram* ❌`, m, rcanal)
+    return conn.reply(m.chat, `${emoji} El enlace proporcionado no es válido o no pertenece a *Instagram*.`, m, rcanal)
   }
 
-  let res
   try {
     if (m.react) await m.react("⏳")
-    res = await igdl(args[0])
-  } catch (e) {
-    return conn.reply(m.chat, `${emoji} Hubo un error al obtener los datos. ¿Seguro que el enlace es válido?`, m, rcanal)
-  }
 
-  let result = Array.isArray(res) ? res : res?.data
-  if (!result || result.length === 0) {
-    return conn.reply(m.chat, `${emoji} No se encontró nada... prueba con otro link.`, m, rcanal)
-  }
+    const apiUrl = `https://api.kirito.my/api/instagram?url=${encodeURIComponent(args[0])}&apikey=by_deylin`
+    const response = await fetch(apiUrl)
+    const json = await response.json()
 
-  let data = result[0]
-  if (!data?.url) {
-    return conn.reply(m.chat, `${emoji} No se pudo procesar el video.`, m, rcanal)
-  }
+    if (!json.estado || !json.resultados?.estado || !json.resultados.datos?.length) {
+      return conn.reply(m.chat, `❌ No se pudo obtener información del video.`, m, rcanal)
+    }
 
-  let video = data.url
+    const data = json.resultados.datos[0]
+    const video = data.url
+    const tipo = data.type || "video/mp4"
 
-  const resThumb = await fetch("https://files.catbox.moe/pgomk1.jpg")
-  const thumb2 = Buffer.from(await resThumb.arrayBuffer())
-
-  let txt = `
+    const caption = `
 🎥 𝗜𝗡𝗦𝗧𝗔𝗚𝗥𝗔𝗠 𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗𝗘𝗥  
 
 🌐 Plataforma: Instagram  
-📺 Formato: ${data.type || "Desconocido"}  
+📺 Formato: ${tipo}  
 
 ⚙️ Opciones de descarga:  
 1️⃣ Vídeo normal 📽️  
@@ -67,28 +58,39 @@ let handler = async (m, { conn, args }) => {
 💡 Responde con el número de tu elección.
 `.trim()
 
-    let sentMsg = await conn.sendMessage(
-    m.chat,
-    {
-      image: thumb2,
-      caption: txt,
-      ...global.rcanal
-    },
-    { quoted: fkontak }
-  )
+    const sentMsg = await conn.sendMessage(
+      m.chat,
+      { image: { url: data.miniatura }, caption, ...global.rcanal },
+      { quoted: fkontak }
+    )
 
-  conn.igMenu = conn.igMenu || {}
-  conn.igMenu[sentMsg.key.id] = { video }
-  if (m.react) await m.react("✅")
+    conn.igMenu = conn.igMenu || {}
+    conn.igMenu[sentMsg.key.id] = { video }
+    if (m.react) await m.react("✅")
+
+  } catch (e) {
+    console.error(e)
+    conn.reply(m.chat, `⚠️ Ocurrió un error al procesar tu solicitud.\n\nDetalles: ${e.message}`, m, rcanal)
+  }
 }
 
 handler.help = ['instagram <url>', 'ig <url>']
 handler.tags = ['descargas']
 handler.command = ['instagram', 'ig']
 
+// --- SECCIÓN BEFORE PARA RESPUESTA A OPCIONES ---
 let before = async (m, { conn }) => {
-  const resThumb34 = await fetch('https://files.catbox.moe/pgomk1.jpg')
-  const thumb246 = Buffer.from(await resThumb34.arrayBuffer())
+  if (!m.quoted || !conn.igMenu) return
+
+  const msgId = m.quoted.id || m.quoted.key?.id
+  const data = conn.igMenu[msgId]
+  if (!data) return
+
+  const choice = m.text.trim()
+  if (!["1", "2", "3"].includes(choice)) return
+
+  const resThumb = await fetch('https://files.catbox.moe/pgomk1.jpg')
+  const thumb = Buffer.from(await resThumb.arrayBuffer())
 
   const fkontak = {
     key: {
@@ -100,19 +102,11 @@ let before = async (m, { conn }) => {
     message: {
       locationMessage: {
         name: `𝗗𝗘𝗦𝗖𝗔𝗥𝗚𝗔 𝗗𝗘 𝗜𝗡𝗦𝗧𝗔𝗚𝗥𝗔𝗠`,
-        jpegThumbnail: thumb246
+        jpegThumbnail: thumb
       }
     },
     participant: "0@s.whatsapp.net"
   };
-
-  if (!m.quoted || !conn.igMenu) return
-  let msgId = m.quoted.id || m.quoted.key?.id
-  let data = conn.igMenu[msgId]
-  if (!data) return
-
-  let choice = m.text.trim()
-  if (!["1", "2", "3"].includes(choice)) return
 
   try {
     switch (choice) {
