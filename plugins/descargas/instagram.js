@@ -26,7 +26,7 @@ let handler = async (m, { conn, args }) => {
 
   const regexInstagram = /^(https?:\/\/)?(www\.)?(instagram\.com|instagr\.am)\/[^\s]+$/i
   if (!regexInstagram.test(args[0])) {
-    return conn.reply(m.chat, `${emoji} El enlace proporcionado no es válido o no pertenece a *Instagram*.`, m, rcanal)
+    return conn.reply(m.chat, `🚫 El enlace proporcionado no es válido o no pertenece a *Instagram*.`, m, rcanal)
   }
 
   try {
@@ -36,12 +36,13 @@ let handler = async (m, { conn, args }) => {
     const response = await fetch(apiUrl)
     const json = await response.json()
 
-    if (!json.estado || !json.resultados?.estado || !json.resultados.datos?.length) {
+    if (!json.estado || !json.resultados?.status || !json.resultados?.data?.length) {
       return conn.reply(m.chat, `❌ No se pudo obtener información del video.`, m, rcanal)
     }
 
-    const data = json.resultados.datos[0]
+    const data = json.resultados.data[0]
     const video = data.url
+    const miniatura = data.thumbnail
     const tipo = data.type || "video/mp4"
 
     const caption = `
@@ -60,7 +61,7 @@ let handler = async (m, { conn, args }) => {
 
     const sentMsg = await conn.sendMessage(
       m.chat,
-      { image: { url: data.miniatura }, caption, ...global.rcanal },
+      { image: { url: miniatura }, caption, ...global.rcanal },
       { quoted: fkontak }
     )
 
@@ -70,7 +71,7 @@ let handler = async (m, { conn, args }) => {
 
   } catch (e) {
     console.error(e)
-    conn.reply(m.chat, `⚠️ Ocurrió un error al procesar tu solicitud.\n\nDetalles: ${e.message}`, m, rcanal)
+    conn.reply(m.chat, `${emoji} Ocurrió un error al procesar tu solicitud.\n\nDetalles: ${e.message}`, m, rcanal)
   }
 }
 
@@ -78,7 +79,6 @@ handler.help = ['instagram <url>', 'ig <url>']
 handler.tags = ['descargas']
 handler.command = ['instagram', 'ig']
 
-// --- SECCIÓN BEFORE PARA RESPUESTA A OPCIONES ---
 let before = async (m, { conn }) => {
   if (!m.quoted || !conn.igMenu) return
 
