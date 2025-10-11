@@ -31,7 +31,6 @@
 "awesome-phonenumber": "^3.4.0",
 "axios": "^1.1.2",
 "boxen": "^7.1.1",
-"@StarlightsTeam/Scraper": "github:StarlightsTeam/StarlightsTeam-Scraper",
 "cfonts": "^3.3.0",
 "chalk": "^5.1.0",
 "sharp": "^0.34.4",
