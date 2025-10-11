@@ -1,46 +1,29 @@
-import { default as fetch } from "node-fetch"
-import * as cheerio from "cheerio"
+import Starlights from '@StarlightsTeam/Scraper'
+let limit = 300
+let handler = async (m, { conn, text, isPrems, isOwner, usedPrefix, command }) => {
+if (!m.quoted) return conn.reply(m.chat, `🚩 Etiqueta el mensaje que contenga el resultado de YouTube Play.`, m, rcanal).then(_ => m.react('✖️'))
+if (!m.quoted.text.includes("乂  Y O U T U B E  -  P L A Y")) return conn.reply(m.chat, `🚩 Etiqueta el mensaje que contenga el resultado de YouTube Play.`, m, rcanal).then(_ => m.react('✖️'))
+let urls = m.quoted.text.match(new RegExp(/(?:https?:\/\/)?(?:youtu\.be\/|(?:www\.|m\.)?youtube\.com\/(?:watch|v|embed|shorts)(?:\.php)?(?:\?.*v=|\/))([a-zA-Z0-9\_-]+)/, 'gi'))
+if (!urls) return conn.reply(m.chat, `Resultado no Encontrado.`, m, rcanal).then(_ => m.react('✖️'))
+if (urls.length < text) return conn.reply(m.chat, `Resultado no Encontrado.`, m, rcanal).then(_ => m.react('✖️'))
+let user = global.db.data.users[m.sender]
 
-let handler = async (m, { conn, args, usedPrefix, command }) => {
-  if (!args[0]) return conn.reply(m.chat, `❗ Uso: ${usedPrefix}${command} <consulta>`, m)
+await m.react('🕓')
+try {
+let v = urls[0]
+let { title, size, quality, thumbnail, dl_url } = await Starlights.ytmp4(v)
 
-  const query = args.join(" ")
-  const headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
-    "Accept-Language": "es-ES,es;q=0.9",
-    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-    "Referer": "https://www.google.com/",
-    "Cache-Control": "no-cache",
-  }
+if (size.split('MB')[0] >= limit) return m.reply(`El archivo pesa mas de ${limit} MB, se canceló la Descarga.`).then(_ => m.react('✖️'))
 
-  try {
-    const urlSearch = `https://www.google.com/search?q=${encodeURIComponent(query)}&hl=es`
-    const html = await fetch(urlSearch, { headers }).then(r => r.text())
-    const $ = cheerio.load(html)
-    const results = []
-
-    $("div.g").each((_, el) => {
-      const title = $(el).find("h3").text().trim()
-      const href = $(el).find("a").attr("href")
-      const desc = $(el).find("div.VwiC3b").text().trim()
-      if (href && href.startsWith("/url?q=") && title) {
-        const link = decodeURIComponent(href.split("/url?q=")[1].split("&")[0])
-        results.push(`• ${title}\n${desc || "Sin descripción"}\n${link}`)
-      }
-    })
-
-    if (!results.length) throw new Error("No se")
-
-    const text = `🔎 Resultados para: *${query}*\n\n${results.slice(0, 5).join("\n\n")}`
-
-    conn.reply(m.chat, text, m)
-  } catch (err) {
-    conn.reply(m.chat, `❌ Error real:\n${err.message}`, m)
-  }
-}
-
-handler.command = /^(search|buscar)$/i
-handler.help = ["search <consulta>"]
-handler.tags = ["internet"]
+await conn.sendFile(m.chat, dl_url, title + '.mp4', `*» Título* : ${title}\n*» Calidad* : ${quality}`, m, false, { asDocument: user.useDocument })
+await m.react('✅')
+} catch {
+await m.react('✖️')
+}}
+handler.help = ['Video']
+handler.tags = ['downloader']
+handler.customPrefix = /^(Video|video|vídeo|Vídeo)/
+handler.command = new RegExp
+//handler.limit = 1
 
 export default handler
