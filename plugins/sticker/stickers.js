@@ -16,35 +16,38 @@ let user = m.sender
 const fkontak = { key:{fromMe:false,participant:user},message:{imageMessage:{jpegThumbnail:thumb,caption:'✨ 𝗦𝗧𝗜𝗖𝗞𝗘𝗥 𝗚𝗘𝗡𝗘𝗥𝗔𝗗𝗢 𝗖𝗢𝗡 𝗘𝗫𝗜𝗧𝗢 ✨'}}}
 const fkontak2 = { key:{fromMe:false,participant:user},message:{imageMessage:{jpegThumbnail:thumb,caption:'⚠︎ 𝗘𝗥𝗥𝗢𝗥 ⚠︎'}}}
 
-const formasValidas = ['co', 'ci', 'sq', 'no', 'rd', 'di', 'tr', 'st', 'he', 'pe', 'el', 're', 'cr', 'ar', 'pl']
+const formasValidas = ['co', 'ci', 'sq', 'no', 'rd', 'di', 'tr', 'st', 'he', 'pe', 'el', 're', 'cr', 'ar', 'pl', 'ro', 'la']
 let texto = args.filter(a=>!formasValidas.includes(a.toLowerCase())).join(' ').trim()
 let forma = (args.find(a=>formasValidas.includes(a.toLowerCase()))||'').toLowerCase()
 let stiker = false
 let rcanal = global.rcanal || {}
 
-const mensajeUso = `✰ ᴘᴏʀ ғᴀᴠᴏʀ, ʀᴇsᴘᴏɴᴅᴇ ᴏ ᴇɴᴠÍᴀ ᴜɴᴀ **ɪᴍᴀɢᴇɴ, ᴠɪᴅᴇᴏ ᴏ ɢɪғ** ᴘᴀʀᴀ ᴄᴏɴᴠᴇʀᴛɪʀ ᴀ sᴛɪᴄᴋᴇʀ.
+const mensajeUso = `✰ ᴘᴏʀ ғᴀᴠᴏʀ, ʀᴇsᴘᴏɴᴅᴇ ᴏ ᴇɴᴠÍᴀ ᴜɴᴀ *ɪᴍᴀɢᴇɴ, ᴠɪᴅᴇᴏ ᴏ ɢɪғ* ᴘᴀʀᴀ ᴄᴏɴᴠᴇʀᴛɪʀ ᴀ sᴛɪᴄᴋᴇʀ.
 
-*==> 𝙵𝚘𝚛𝚖𝚊𝚜 𝚍𝚎 𝙸𝚖𝚊𝚐𝚎𝚗 (𝙾𝚙𝚌𝚒𝚘𝚗𝚊𝚕):*
+---
+*==> Formas de Imagen (Opcional):*
 - /${command} *ci* => Círculo
 - /${command} *co* => Corazón
-- /${command} *sq* => Cuadrado (Recortar)
-- /${command} *no* => Normalizar (Ajustar)
-- /${command} *rd* => Redondeado (Esquinas)
+- /${command} *st* => Estrella ⭐
 - /${command} *di* => Rombo
 - /${command} *tr* => Triángulo
-- /${command} *st* => Estrella
 - /${command} *he* => Hexágono
 - /${command} *pe* => Pentágono
 - /${command} *el* => Elipse
+- /${command} *ro* => Rosa / Trébol
+- /${command} *la* => Lágrima / Gota
+- /${command} *rd* => Redondeado (Esquinas)
 - /${command} *re* => Rectángulo Redondeado
 - /${command} *cr* => Cruz
-- /${command} *ar* => Arco Superior
 - /${command} *pl* => Plus (+)
+- /${command} *sq* => Cuadrado (Recortar a 1:1)
+- /${command} *no* => Normalizar (Ajustar al Cuadrado)
 
-*==> 𝙿𝚞𝚎𝚍𝚎𝚜 𝚊𝚐𝚛𝚎𝚐𝚊𝚛 𝚝𝚎𝚡𝚝𝚘:*
+---
+*==> Puedes agregar texto:*
 - /${command} [forma] [texto corto]
-- 𝙴𝚓: /${command} *co* ¡Hola!
-- 𝙴𝚓: /${command} ¡Animado!`
+- Ej: /${command} *ro* ¡Te Amo!
+- Ej: /${command} ¡Animado!`
 
 try {
 let q = m.quoted ? m.quoted : m
@@ -102,85 +105,91 @@ jimg.resize(size, size)
 width = jimg.bitmap.width
 height = jimg.bitmap.height
 
-if (formasValidas.includes(forma)) {
+if (formasValidas.includes(forma) && forma !== 'no' && forma !== 'sq') {
 const mask = new Jimp(width, height, '#00000000')
 mask.scan(0, 0, width, height, function (x, y, idx) {
 const dx = x - width / 2
 const dy = y - height / 2
-const r = Math.sqrt(dx * dx + dy * dy)
-const nx = (x - width / 2) / (width / 2)
-const ny = (height / 2 - y) / (height / 2)
+const r = Math.hypot(dx, dy)
+const radius = width / 2
+const nx = dx / radius
+const ny = dy / radius
 let pass = false
 
 switch (forma) {
-case 'ci': // Círculo
-pass = r < width / 2
+case 'ci':
+pass = r < radius
 break
-case 'el': // Elipse
-const a = width / 2
-const b = height / 2
+case 'el':
+const a = radius
+const b = radius 
 pass = (dx * dx) / (a * a) + (dy * dy) / (b * b) <= 1
 break
-case 'co': // Corazón
+case 'co':
 const scaleX = 1.25
 const scaleY = 1.35
 const offsetY = 0.05
-const nxx = (x - width / 2) / (width / 2) * scaleX
-const nyy = (height / 2 - y) / (height / 2) * scaleY - offsetY
+const nxx = dx / radius * scaleX
+const nyy = -dy / radius * scaleY - offsetY
 const eq = Math.pow(nxx * nxx + nyy * nyy - 1, 3) - nxx * nxx * nyy * nyy * nyy
 pass = eq <= 0
 break
-case 'di': // Rombo
+case 'di':
 pass = Math.abs(nx) + Math.abs(ny) < 1.0
 break
-case 'tr': // Triángulo (Corregido)
-pass = y > height - height * (1 - Math.abs(x - width / 2) / (width / 2))
+case 'tr':
+pass = y > height - height * (1 - Math.abs(dx) / radius)
 break
-case 'st': // Estrella (Simple 5 Puntas)
-const angle = Math.atan2(dy, dx)
-const distance = r / (width / 2)
+case 'st':
 const numPoints = 5
 const innerRadius = 0.4
-const outerRadius = 1.0
-const rot = -Math.PI / 2 
+const rot = -Math.PI / 2
+const angle = Math.atan2(dy, dx)
+const distance = r / radius
+const k = Math.PI * 2 / numPoints
 const starAngle = (angle - rot + Math.PI * 2) % (Math.PI * 2)
-const sector = Math.floor(starAngle * numPoints / (Math.PI * 2))
-const pointAngle = (sector * Math.PI * 2 / numPoints) + rot
-const nextPointAngle = ((sector + 1) * Math.PI * 2 / numPoints) + rot
-const midAngle = (pointAngle + nextPointAngle) / 2
-const radiusAtAngle = innerRadius + (outerRadius - innerRadius) * (1 - Math.cos((starAngle - midAngle) * numPoints)) / 2
-pass = distance <= radiusAtAngle
+const angleInSector = Math.abs(starAngle % k - k / 2)
+const starFactor = Math.cos(k / 2) / Math.cos(angleInSector)
+const currentRadius = innerRadius / starFactor
+pass = distance <= currentRadius
 break
-case 'he': // Hexágono
-const h = Math.abs(dy)
-const w = Math.abs(dx)
-const a_hex = height / 2 
+case 'he':
+const a_hex = radius
 const b_hex = a_hex * Math.sqrt(3) / 2
-pass = h <= a_hex && w <= b_hex && a_hex * w + b_hex * h <= a_hex * b_hex
+pass = Math.abs(dy) <= a_hex && Math.abs(dx) <= b_hex && a_hex * Math.abs(dx) + b_hex * Math.abs(dy) <= a_hex * b_hex
 break
-case 'pe': // Pentágono
+case 'pe':
 const sides = 5
-const radius_pe = width / 2
 const rot_pe = -Math.PI / 2
 const a_pe = Math.atan2(dy, dx) + rot_pe
 const dist_pe = r
-const k = 2 * Math.PI / sides
-const angle_pe = Math.min(Math.abs(a_pe % k), Math.abs((a_pe % k) - k))
-pass = dist_pe * Math.cos(angle_pe) <= radius_pe * Math.cos(Math.PI / sides)
+const k_pe = 2 * Math.PI / sides
+const angle_pe = Math.min(Math.abs(a_pe % k_pe), Math.abs((a_pe % k_pe) - k_pe))
+pass = dist_pe * Math.cos(angle_pe) <= radius * Math.cos(Math.PI / sides)
 break
-case 're': // Rectángulo Redondeado (2/3 de alto)
+case 'ro':
+const n = 5
+const k_ro = n 
+const angle_ro = Math.atan2(dy, dx)
+const r_ro = Math.cos(k_ro * angle_ro)
+pass = r / radius <= Math.pow(r_ro * r_ro, 1 / (2 * k_ro))
+break
+case 'la':
+const angle_la = Math.atan2(dy, dx)
+const r_la = 2 * Math.pow(Math.sin(angle_la / 2), 2)
+pass = r / radius <= r_la
+break
+case 're':
 const rectWidth = width
-const rectHeight = height * 0.66
+const rectHeight = height * 0.75
 const rectY = (height - rectHeight) / 2
 const rectX = 0
 const radius_re = 50
 const isInsideRect = x >= rectX && x <= rectX + rectWidth && y >= rectY && y <= rectY + rectHeight
-
 const checkCorner = (cx, cy) => {
 if (Math.hypot(x - cx, y - cy) <= radius_re) return true
 return false
 }
-
 if (isInsideRect) {
 if (x < rectX + radius_re && y < rectY + radius_re) pass = checkCorner(rectX + radius_re, rectY + radius_re)
 else if (x > rectX + rectWidth - radius_re && y < rectY + radius_re) pass = checkCorner(rectX + rectWidth - radius_re, rectY + radius_re)
@@ -189,25 +198,24 @@ else if (x > rectX + rectWidth - radius_re && y > rectY + rectHeight - radius_re
 else pass = true
 }
 break
-case 'cr': // Cruz
-const barWidth = width * 0.25
+case 'cr':
+const barWidth = width * 0.2
 pass = (Math.abs(dx) <= barWidth && Math.abs(dy) <= width / 2) || (Math.abs(dy) <= barWidth && Math.abs(dx) <= width / 2)
 break
-case 'pl': // Plus / Signo Más
-const plusWidth = width * 0.2
+case 'pl':
+const plusWidth = width * 0.15
 pass = (Math.abs(dx) <= plusWidth && Math.abs(dy) <= width / 2) || (Math.abs(dy) <= plusWidth && Math.abs(dx) <= width / 2)
 break
-case 'ar': // Arco Superior (Medio Círculo)
-pass = r < width / 2 && dy > 0
+case 'ar':
+pass = r < radius && dy > 0
 break
-case 'rd': // Esquinas Redondeadas
-const radius = 60
-const d = Math.min(radius, width / 2, height / 2)
+case 'rd':
+const cornerRadius = 60
+const d = Math.min(cornerRadius, radius)
 const x1 = d
 const x2 = width - d
 const y1 = d
 const y2 = height - d
-
 if (x < x1 && y < y1) pass = Math.hypot(x - x1, y - y1) <= d
 else if (x > x2 && y < y1) pass = Math.hypot(x - x2, y - y1) <= d
 else if (x < x1 && y > y2) pass = Math.hypot(x - x1, y - y2) <= d
@@ -226,7 +234,7 @@ this.bitmap.data[idx + 2] = 255
 this.bitmap.data[idx + 3] = 255
 }
 })
-if (forma !== 'no' && forma !== 'sq') jimg.mask(mask, 0, 0)
+jimg.mask(mask, 0, 0)
 }
 
 if (texto) {
