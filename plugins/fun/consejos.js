@@ -9,7 +9,7 @@ let mensajesUsados = []
 
 let handler = async (m, { conn }) => {
   try {
-    const mensajesPath = path.join(fs.readFileSync, './extras/motivation.json')
+    const mensajesPath = path.join(fs.readFileSync, '../extras/motivation.json')
     const rawData = fs.readFileSync(mensajesPath, 'utf-8')
     const data = JSON.parse(rawData)
     const mensajes = data.mensajes
