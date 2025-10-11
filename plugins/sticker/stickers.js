@@ -59,8 +59,8 @@ let handler = async (m, { conn, args, command }) => {
       }
 
       const jimg = await loadImage(img)
-      const canvas = createCanvas(512,512)
-      const ctx = canvas.getContext('2d')
+      const canvas = createCanvas(512, 512)
+      const ctx = canvas.getContext2d()  
       (shapes[forma]||shapes.no)(ctx,jimg)
 
       if(texto){
