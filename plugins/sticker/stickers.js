@@ -16,21 +16,43 @@ let user = m.sender
 const fkontak = { key:{fromMe:false,participant:user},message:{imageMessage:{jpegThumbnail:thumb,caption:'✨ 𝗦𝗧𝗜𝗖𝗞𝗘𝗥 𝗚𝗘𝗡𝗘𝗥𝗔𝗗𝗢 𝗖𝗢𝗡 𝗘𝗫𝗜𝗧𝗢 ✨'}}}
 const fkontak2 = { key:{fromMe:false,participant:user},message:{imageMessage:{jpegThumbnail:thumb,caption:'⚠︎ 𝗘𝗥𝗥𝗢𝗥 ⚠︎'}}}
 
-let texto = args.filter(a=>!/^(co|cc|cp|cr|st|ov|sq)$/i.test(a)).join(' ').trim()
-let forma = (args.find(a=>/^(co|cc|cp|cr|st|ov|sq)$/i.test(a))||'').toLowerCase()
+const formasValidas = ['co', 'cc', 'cp', 'ce', 'ca', 'cr', 'ct']
+let texto = args.filter(a=>!formasValidas.includes(a.toLowerCase())).join(' ').trim()
+let forma = (args.find(a=>formasValidas.includes(a.toLowerCase()))||'').toLowerCase()
 let stiker = false
+let rcanal = global.rcanal || {}
+
+const mensajeUso = `✰ ᴘᴏʀ ғᴀᴠᴏʀ, ʀᴇsᴘᴏɴᴅᴇ ᴏ ᴇɴᴠÍᴀ ᴜɴᴀ **ɪᴍᴀɢᴇɴ, ᴠɪᴅᴇᴏ ᴏ ɢɪғ** ᴘᴀʀᴀ ᴄᴏɴᴠᴇʀᴛɪʀ ᴀ sᴛɪᴄᴋᴇʀ.
+
+**==> 𝙵𝚘𝚛𝚖𝚊𝚜 𝚍𝚎 𝙸𝚖𝚊𝚐𝚎𝚗 (𝙾𝚙𝚌𝚒𝚘𝚗𝚊𝚕):**
+- /${command} **co** => Corazón
+- /${command} **cc** => Círculo
+- /${command} **cp** => Normalizar (Ajustar al cuadrado)
+- /${command} **ce** => Esquinas Redondeadas
+- /${command} **ca** => Cuadrado (Recortar)
+- /${command} **cr** => Rombo
+- /${command} **ct** => Triángulo
+
+**==> 𝙿𝚞𝚎𝚍𝚎𝚜 𝚊𝚐𝚛𝚎𝚐𝚊𝚛 𝚝𝚎𝚡𝚝𝚘:**
+- /${command} [forma] [texto corto]
+- 𝙴𝚓: /${command} **co** ¡Hola!
+- 𝙴𝚓: /${command} ¡Animado!`
 
 try {
 let q = m.quoted ? m.quoted : m
 let mime = q.mimetype || q.msg?.mimetype || q.message?.imageMessage?.mimetype || ''
 let media
 
+if (!/video|gif|webp|image/.test(mime)) return conn.reply(m.chat, mensajeUso, m, rcanal)
+
 if (/video|gif/.test(mime)) {
+if (q.seconds > 10) return conn.reply(m.chat, '⚠️ El video/gif es muy largo. Máximo 10 segundos para animado.', fkontak2)
 let vid = await q.download?.()
 if (!vid) return conn.reply(m.chat, '⚠️ No se pudo descargar el video o gif.', fkontak2)
 const tempIn = tmp('mp4')
 const tempOut = tmp('webp')
 fs.writeFileSync(tempIn, vid)
+
 await new Promise((resolve, reject) => {
 ffmpeg(tempIn)
 .inputFormat('mp4')
@@ -48,76 +70,111 @@ ffmpeg(tempIn)
 .on('end', resolve)
 .on('error', reject)
 })
-if (!fs.existsSync(tempOut)) throw new Error('No se generó el sticker')
+
+if (!fs.existsSync(tempOut)) throw new Error('No se generó el sticker animado.')
 stiker = fs.readFileSync(tempOut)
 fs.unlinkSync(tempIn)
 fs.unlinkSync(tempOut)
 } else if (/webp|image/.test(mime)) {
 let img = await q.download?.()
-if (!img) return conn.reply(m.chat, `✰ Envía una imagen válida para convertir a sticker.\nFormas:\n/${command} => normal\n/${command} co => corazón\n/${command} cc => círculo\n/${command} cp => normalizar\n/${command} cr => rombo\n/${command} st => estrella\n/${command} ov => óvalo\n/${command} sq => cuadrado redondeado\nPuedes usar /${command} forma y texto para añadir un texto corto.`, m)
+if (!img) return conn.reply(m.chat, `⚠️ No se pudo descargar la imagen/sticker.`, fkontak2)
 let jimg = await Jimp.read(img)
-jimg.resize(512, 512)
 let { width, height } = jimg.bitmap
+let size = 512
 
-if (forma === 'cp') jimg.contain(500, 500)
-
-if (forma === 'cc'){  
-const mask = new Jimp(width, height, '#00000000')  
-mask.scan(0,0,width,height,(x,y,idx)=>{const dx=x-width/2;const dy=y-height/2;const r=Math.sqrt(dx*dx+dy*dy);if(r<width/2){this.bitmap.data[idx+0]=255;this.bitmap.data[idx+1]=255;this.bitmap.data[idx+2]=255;this.bitmap.data[idx+3]=255}})  
-jimg.mask(mask,0,0)
+if (forma === 'ca') {
+let min = Math.min(width, height)
+jimg.crop(Math.floor((width - min) / 2), Math.floor((height - min) / 2), min, min).resize(size, size)
+} else if (forma === 'cp') {
+jimg.contain(size, size)
+} else {
+jimg.resize(size, size)
 }
 
-if (forma === 'co'){  
-const mask = new Jimp(width, height, '#00000000')  
-mask.scan(0,0,width,height,(x,y,idx)=>{const nx=(x-width/2)/(width/2)*1.25;const ny=(height/2-y)/(height/2)*1.35-0.05;const eq=Math.pow(nx*nx+ny*ny-1,3)-nx*nx*ny*ny*ny;if(eq<=0){this.bitmap.data[idx+0]=255;this.bitmap.data[idx+1]=255;this.bitmap.data[idx+2]=255;this.bitmap.data[idx+3]=255}})  
-jimg.mask(mask,0,0)
+width = jimg.bitmap.width
+height = jimg.bitmap.height
+
+if (formasValidas.includes(forma)) {
+const mask = new Jimp(width, height, '#00000000')
+mask.scan(0, 0, width, height, function (x, y, idx) {
+const dx = x - width / 2
+const dy = y - height / 2
+const r = Math.sqrt(dx * dx + dy * dy)
+const nx = (x - width / 2) / (width / 2)
+const ny = (height / 2 - y) / (height / 2)
+let pass = false
+
+switch (forma) {
+case 'cc': // Círculo
+pass = r < width / 2
+break
+case 'co': // Corazón
+const scaleX = 1.25
+const scaleY = 1.35
+const offsetY = 0.05
+const nxx = (x - width / 2) / (width / 2) * scaleX
+const nyy = (height / 2 - y) / (height / 2) * scaleY - offsetY
+const eq = Math.pow(nxx * nxx + nyy * nyy - 1, 3) - nxx * nxx * nyy * nyy * nyy
+pass = eq <= 0
+break
+case 'cr': // Rombo
+pass = Math.abs(nx) + Math.abs(ny) < 1.0
+break
+case 'ct': // Triángulo
+pass = y > height / 2 - (height / 2) * (1 - 2 * Math.abs(x - width / 2) / width)
+break
+case 'ce': // Esquinas Redondeadas (solo en Jimp - requiere más lógica de pixel)
+const radius = 60
+const d = Math.min(radius, width / 2, height / 2)
+const x1 = d
+const x2 = width - d
+const y1 = d
+const y2 = height - d
+
+if (x < x1 && y < y1) pass = Math.hypot(x - x1, y - y1) <= d
+else if (x > x2 && y < y1) pass = Math.hypot(x - x2, y - y1) <= d
+else if (x < x1 && y > y2) pass = Math.hypot(x - x1, y - y2) <= d
+else if (x > x2 && y > y2) pass = Math.hypot(x - x2, y - y2) <= d
+else if (x >= x1 && x <= x2 && y >= 0 && y <= height) pass = true // Centro
+else if (y >= y1 && y <= y2 && x >= 0 && x <= width) pass = true // Centro
+break
+default:
+pass = true
 }
 
-if (forma === 'cr'){  
-const mask = new Jimp(width,height,'#00000000')  
-mask.scan(0,0,width,height,(x,y,idx)=>{const nx=Math.abs(x-width/2)/(width/2);const ny=Math.abs(y-height/2)/(height/2);if(nx+ny<1){this.bitmap.data[idx+0]=255;this.bitmap.data[idx+1]=255;this.bitmap.data[idx+2]=255;this.bitmap.data[idx+3]=255}})  
-jimg.mask(mask,0,0)
+if (pass) {
+this.bitmap.data[idx + 0] = 255
+this.bitmap.data[idx + 1] = 255
+this.bitmap.data[idx + 2] = 255
+this.bitmap.data[idx + 3] = 255
+}
+})
+if (forma !== 'cp') jimg.mask(mask, 0, 0)
 }
 
-if (forma === 'st'){  
-const mask = new Jimp(width,height,'#00000000')  
-mask.scan(0,0,width,height,(x,y,idx)=>{const cx=width/2;const cy=height/2;const dx=(x-cx)/cx;const dy=(cy-y)/cy;const r=Math.sqrt(dx*dx+dy*dy);const angle=Math.atan2(dy,dx);const spikes=5;const distance=Math.cos(spikes*angle)*0.5+0.5; if(r<distance){this.bitmap.data[idx+0]=255;this.bitmap.data[idx+1]=255;this.bitmap.data[idx+2]=255;this.bitmap.data[idx+3]=255}})  
-jimg.mask(mask,0,0)
+if (texto) {
+const brillo = jimg.bitmap.data.reduce((a, _, i) => i % 4 !== 3 ? a + jimg.bitmap.data[i] : a, 0) / (width * height * 3)
+const color = brillo > 127 ? '#000000' : '#FFFFFF'
+const fuente = await Jimp.loadFont(color === '#000000' ? Jimp.FONT_SANS_64_BLACK : Jimp.FONT_SANS_64_WHITE)
+const sombra = await Jimp.loadFont(color === '#000000' ? Jimp.FONT_SANS_64_WHITE : Jimp.FONT_SANS_64_BLACK)
+jimg.print(sombra, 3, -3, { text: texto, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_BOTTOM }, width, height - 20)
+jimg.print(fuente, 0, 0, { text: texto, alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER, alignmentY: Jimp.VERTICAL_ALIGN_BOTTOM }, width, height - 20)
 }
 
-if (forma === 'ov'){  
-const mask = new Jimp(width,height,'#00000000')  
-mask.scan(0,0,width,height,(x,y,idx)=>{const nx=(x-width/2)/(width/2);const ny=(y-height/2)/(height/2);if(nx*nx+ny*ny<1){this.bitmap.data[idx+0]=255;this.bitmap.data[idx+1]=255;this.bitmap.data[idx+2]=255;this.bitmap.data[idx+3]=255}})  
-jimg.mask(mask,0,0)
+img = await jimg.getBufferAsync(Jimp.MIME_PNG)
+stiker = await sticker(img, false, global.packsticker, global.packsticker2)
 }
 
-if (forma === 'sq'){  
-const mask = new Jimp(width,height,'#00000000')  
-const r=50  
-mask.scan(0,0,width,height,(x,y,idx)=>{const insideX=x>r&&x<width-r;const insideY=y>r&&y<height-r;if(insideX&&insideY){this.bitmap.data[idx+0]=255;this.bitmap.data[idx+1]=255;this.bitmap.data[idx+2]=255;this.bitmap.data[idx+3]=255}})  
-jimg.mask(mask,0,0)
+if (stiker) await conn.sendMessage(m.chat, { sticker: stiker, ...rcanal }, { quoted: fkontak })
+else conn.reply(m.chat, mensajeUso, m, rcanal)
+} catch (e) {
+console.error(e)
+return conn.reply(m.chat, `⚠️ Ocurrió un error al procesar el sticker: ${e.message || 'Desconocido'}`, fkontak2)
+}
 }
 
-if(texto){  
-const brillo=jimg.bitmap.data.reduce((a,_,i)=>i%4!==3?a+jimg.bitmap.data[i]:a,0)/(width*height*3)  
-const color=brillo>127?'#000000':'#FFFFFF'  
-const fuente=await Jimp.loadFont(color==='black'?Jimp.FONT_SANS_64_BLACK:Jimp.FONT_SANS_64_WHITE)  
-const sombra=await Jimp.loadFont(color==='black'?Jimp.FONT_SANS_64_WHITE:Jimp.FONT_SANS_64_BLACK)  
-jimg.print(sombra,3,-3,{text:texto,alignmentX:Jimp.HORIZONTAL_ALIGN_CENTER,alignmentY:Jimp.VERTICAL_ALIGN_BOTTOM},width,height-20)  
-jimg.print(fuente,0,0,{text:texto,alignmentX:Jimp.HORIZONTAL_ALIGN_CENTER,alignmentY:Jimp.VERTICAL_ALIGN_BOTTOM},width,height-20)  
-}  
-
-img=await jimg.getBufferAsync(Jimp.MIME_PNG)
-stiker=await sticker(img,false,global.packsticker,global.packsticker2)
-} else return conn.reply(m.chat, `✰ Envía una imagen válida para convertir a sticker.\nFormas:\n/${command} => normal\n/${command} co => corazón\n/${command} cc => círculo\n/${command} cp => normalizar\n/${command} cr => rombo\n/${command} st => estrella\n/${command} ov => óvalo\n/${command} sq => cuadrado redondeado\nPuedes usar /${command} forma y texto para añadir un texto corto.`, m)
-} catch(e){console.error(e);return conn.reply(m.chat, `⚠️ Ocurrió un error al procesar el sticker. ${e.message}`, fkontak2)}
-
-if(stiker) await conn.sendMessage(m.chat,{sticker:stiker,...global.rcanal},{quoted:fkontak})
-else conn.reply(m.chat, `✰ Envía una imagen válida para convertir a sticker.\nFormas:\n/${command} => normal\n/${command} co => corazón\n/${command} cc => círculo\n/${command} cp => normalizar\n/${command} cr => rombo\n/${command} st => estrella\n/${command} ov => óvalo\n/${command} sq => cuadrado redondeado\nPuedes usar /${command} forma y texto para añadir un texto corto.`, m)
-}
-
-handler.help=['sticker <texto opcional>','s <texto opcional>']
-handler.tags=['sticker']
-handler.command=['s','sticker','stiker']
+handler.help = ['sticker <texto opcional>', 's <texto opcional>']
+handler.tags = ['sticker']
+handler.command = ['s', 'sticker', 'stiker']
 
 export default handler
