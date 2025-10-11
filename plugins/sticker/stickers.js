@@ -1,89 +1,119 @@
-import { createCanvas, loadImage } from '@napi-rs/canvas'
 import { sticker } from '../../lib/sticker.js'
-import { tmpdir } from 'os'
+import { webp2png, webp2mp4 } from '../../lib/webp2mp4.js'
+import Jimp from 'jimp'
+import fetch from 'node-fetch'
 import fs from 'fs'
 import path from 'path'
-import fetch from 'node-fetch'
+import { tmpdir } from 'os'
 import ffmpeg from 'fluent-ffmpeg'
 
 const tmp = ext => path.join(tmpdir(), `${Date.now()}.${ext}`)
-const rcanal = global.rcanal
-
-const shapes = {
-  no: (ctx, img) => ctx.drawImage(img, 0, 0, 512, 512),
-  cc: (ctx, img) => { ctx.beginPath(); ctx.arc(256,256,256,0,Math.PI*2); ctx.closePath(); ctx.clip(); ctx.drawImage(img,0,0,512,512) },
-  co: (ctx, img) => { ctx.beginPath(); ctx.moveTo(256,20); ctx.bezierCurveTo(470,20,470,480,256,500); ctx.bezierCurveTo(40,480,40,20,256,20); ctx.closePath(); ctx.clip(); ctx.drawImage(img,0,0,512,512) },
-  di: (ctx, img) => { ctx.beginPath(); ctx.moveTo(256,0); ctx.lineTo(512,256); ctx.lineTo(256,512); ctx.lineTo(0,256); ctx.closePath(); ctx.clip(); ctx.drawImage(img,0,0,512,512) },
-  st: (ctx, img) => { const spikes=5, outer=256, inner=100; let rot=Math.PI/2*3, x=256, y=256, step=Math.PI/spikes; ctx.beginPath(); ctx.moveTo(x,y-outer); for(let i=0;i<spikes;i++){ctx.lineTo(x+Math.cos(rot)*outer,y+Math.sin(rot)*outer); rot+=step; ctx.lineTo(x+Math.cos(rot)*inner,y+Math.sin(rot)*inner); rot+=step} ctx.closePath(); ctx.clip(); ctx.drawImage(img,0,0,512,512) },
-  he: (ctx,img)=>{ const r=256,cx=256,cy=256; ctx.beginPath(); for(let i=0;i<6;i++){ const a=Math.PI/3*i-Math.PI/6; const x=cx+r*Math.cos(a), y=cy+r*Math.sin(a); if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y)} ctx.closePath(); ctx.clip(); ctx.drawImage(img,0,0,512,512) },
-  ov: (ctx,img)=>{ ctx.beginPath(); ctx.ellipse(256,256,256,200,0,0,Math.PI*2); ctx.closePath(); ctx.clip(); ctx.drawImage(img,0,0,512,512) },
-  tr: (ctx,img)=>{ ctx.beginPath(); ctx.moveTo(256,0); ctx.lineTo(512,512); ctx.lineTo(0,512); ctx.closePath(); ctx.clip(); ctx.drawImage(img,0,0,512,512) },
-  rh: (ctx,img)=>{ ctx.beginPath(); ctx.moveTo(256,0); ctx.lineTo(512,256); ctx.lineTo(256,512); ctx.lineTo(0,256); ctx.closePath(); ctx.clip(); ctx.drawImage(img,0,0,512,512) }
-}
 
 let handler = async (m, { conn, args, command }) => {
-  const res = await fetch('https://files.catbox.moe/p87uei.jpg')
-  const thumb = Buffer.from(await res.arrayBuffer())
-  const fkontak = { key:{fromMe:false,participant:m.sender},message:{imageMessage:{jpegThumbnail:thumb,caption:'✨ STICKER GENERADO ✨'}}}
-  const fkontak2 = { key:{fromMe:false,participant:m.sender},message:{imageMessage:{jpegThumbnail:thumb,caption:'⚠ ERROR ⚠'}}}
+const res = await fetch('https://files.catbox.moe/p87uei.jpg')
+const thumb = Buffer.from(await res.arrayBuffer())
+let user = m.sender
+const fkontak = { key:{fromMe:false,participant:user},message:{imageMessage:{jpegThumbnail:thumb,caption:'✨ 𝗦𝗧𝗜𝗖𝗞𝗘𝗥 𝗚𝗘𝗡𝗘𝗥𝗔𝗗𝗢 𝗖𝗢𝗡 𝗘𝗫𝗜𝗧𝗢 ✨'}}}
+const fkontak2 = { key:{fromMe:false,participant:user},message:{imageMessage:{jpegThumbnail:thumb,caption:'⚠︎ 𝗘𝗥𝗥𝗢𝗥 ⚠︎'}}}
 
-  let texto = args.filter(a=>!/^(no|co|cc|cp|di|st|he|ov|tr|rh)$/i.test(a)).join(' ').trim()
-  let forma = (args.find(a=>/^(no|co|cc|cp|di|st|he|ov|tr|rh)$/i.test(a))||'no').toLowerCase()
-  let stiker = false
+let texto = args.filter(a=>!/^(co|cc|cp|cr|st|ov|sq)$/i.test(a)).join(' ').trim()
+let forma = (args.find(a=>/^(co|cc|cp|cr|st|ov|sq)$/i.test(a))||'').toLowerCase()
+let stiker = false
 
-  try {
-    let q = m.quoted ? m.quoted : m
-    let mime = q.mimetype || q.msg?.mimetype || q.message?.imageMessage?.mimetype || ''
+try {
+let q = m.quoted ? m.quoted : m
+let mime = q.mimetype || q.msg?.mimetype || q.message?.imageMessage?.mimetype || ''
+let media
 
-    if(/video|gif/.test(mime)){
-      let vid = await q.download?.()
-      if(!vid) return conn.reply(m.chat,'⚠️ No se pudo descargar el video o gif.',fkontak2)
-      const tempIn=tmp('mp4')
-      const tempOut=tmp('webp')
-      fs.writeFileSync(tempIn,vid)
-      await new Promise((r,e)=>ffmpeg(tempIn).inputFormat('mp4').outputOptions([
-        '-vcodec libwebp',
-        '-filter:v fps=15,scale=512:-1:force_original_aspect_ratio=decrease,pad=512:512:(ow-iw)/2:(oh-ih)/2:color=white,format=yuva420p',
-        '-loop 0','-preset default','-an','-vsync 0','-t 6'
-      ]).toFormat('webp').save(tempOut).on('end',r).on('error',e))
-      stiker = fs.readFileSync(tempOut)
-      fs.unlinkSync(tempIn)
-      fs.unlinkSync(tempOut)
-    } else if(/image|webp/.test(mime)){
-      let img = await q.download?.()
-      if(!img) return conn.reply(m.chat,'✰ Envía una imagen válida',m,fkontak2)
-      if(/webp/.test(mime)){
-        const tempP = tmp('png'); fs.writeFileSync(tempP,img)
-        await new Promise((r,e)=>ffmpeg(tempP).toFormat('png').save(tempP+'.png').on('end',r).on('error',e))
-        img = fs.readFileSync(tempP+'.png'); fs.unlinkSync(tempP); fs.unlinkSync(tempP+'.png')
-      }
+if (/video|gif/.test(mime)) {
+let vid = await q.download?.()
+if (!vid) return conn.reply(m.chat, '⚠️ No se pudo descargar el video o gif.', fkontak2)
+const tempIn = tmp('mp4')
+const tempOut = tmp('webp')
+fs.writeFileSync(tempIn, vid)
+await new Promise((resolve, reject) => {
+ffmpeg(tempIn)
+.inputFormat('mp4')
+.outputOptions([
+'-vcodec libwebp',
+'-filter:v fps=15,scale=512:-1:force_original_aspect_ratio=decrease,pad=512:512:(ow-iw)/2:(oh-ih)/2:color=white,format=yuva420p',
+'-loop 0',
+'-preset default',
+'-an',
+'-vsync 0',
+'-t 6'
+])
+.toFormat('webp')
+.save(tempOut)
+.on('end', resolve)
+.on('error', reject)
+})
+if (!fs.existsSync(tempOut)) throw new Error('No se generó el sticker')
+stiker = fs.readFileSync(tempOut)
+fs.unlinkSync(tempIn)
+fs.unlinkSync(tempOut)
+} else if (/webp|image/.test(mime)) {
+let img = await q.download?.()
+if (!img) return conn.reply(m.chat, `✰ Envía una imagen válida para convertir a sticker.\nFormas:\n/${command} => normal\n/${command} co => corazón\n/${command} cc => círculo\n/${command} cp => normalizar\n/${command} cr => rombo\n/${command} st => estrella\n/${command} ov => óvalo\n/${command} sq => cuadrado redondeado\nPuedes usar /${command} forma y texto para añadir un texto corto.`, m)
+let jimg = await Jimp.read(img)
+jimg.resize(512, 512)
+let { width, height } = jimg.bitmap
 
-      const jimg = await loadImage(img)
-      const canvas = createCanvas(512, 512)
-      const ctx = canvas.getContext2d()  
-      (shapes[forma]||shapes.no)(ctx,jimg)
+if (forma === 'cp') jimg.contain(500, 500)
 
-      if(texto){
-        const grad = ctx.createLinearGradient(0,0,512,512)
-        grad.addColorStop(0,'#00ffff'); grad.addColorStop(1,'#ff00ff')
-        ctx.fillStyle = grad
-        ctx.font='bold 40px Sans-serif'
-        ctx.textAlign='center'
-        ctx.shadowColor='#00ffff'
-        ctx.shadowBlur=15
-        ctx.fillText(texto,256,480)
-      }
+if (forma === 'cc'){  
+const mask = new Jimp(width, height, '#00000000')  
+mask.scan(0,0,width,height,(x,y,idx)=>{const dx=x-width/2;const dy=y-height/2;const r=Math.sqrt(dx*dx+dy*dy);if(r<width/2){this.bitmap.data[idx+0]=255;this.bitmap.data[idx+1]=255;this.bitmap.data[idx+2]=255;this.bitmap.data[idx+3]=255}})  
+jimg.mask(mask,0,0)
+}
 
-      const buffer = await canvas.encode('webp')
-      stiker = await sticker(buffer,false,global.packsticker,global.packsticker2)
-    } else return conn.reply(m.chat,'✰ Envía una imagen válida',m,fkontak2)
-  } catch(e){
-    console.error(e)
-    return conn.reply(m.chat,`⚠️ Error al procesar el sticker. ${e.message}`,fkontak2)
-  }
+if (forma === 'co'){  
+const mask = new Jimp(width, height, '#00000000')  
+mask.scan(0,0,width,height,(x,y,idx)=>{const nx=(x-width/2)/(width/2)*1.25;const ny=(height/2-y)/(height/2)*1.35-0.05;const eq=Math.pow(nx*nx+ny*ny-1,3)-nx*nx*ny*ny*ny;if(eq<=0){this.bitmap.data[idx+0]=255;this.bitmap.data[idx+1]=255;this.bitmap.data[idx+2]=255;this.bitmap.data[idx+3]=255}})  
+jimg.mask(mask,0,0)
+}
 
-  if(stiker) await conn.sendMessage(m.chat,{sticker:stiker,...rcanal},{quoted:fkontak})
-  else conn.reply(m.chat,'✰ Envía una imagen válida',m,fkontak2)
+if (forma === 'cr'){  
+const mask = new Jimp(width,height,'#00000000')  
+mask.scan(0,0,width,height,(x,y,idx)=>{const nx=Math.abs(x-width/2)/(width/2);const ny=Math.abs(y-height/2)/(height/2);if(nx+ny<1){this.bitmap.data[idx+0]=255;this.bitmap.data[idx+1]=255;this.bitmap.data[idx+2]=255;this.bitmap.data[idx+3]=255}})  
+jimg.mask(mask,0,0)
+}
+
+if (forma === 'st'){  
+const mask = new Jimp(width,height,'#00000000')  
+mask.scan(0,0,width,height,(x,y,idx)=>{const cx=width/2;const cy=height/2;const dx=(x-cx)/cx;const dy=(cy-y)/cy;const r=Math.sqrt(dx*dx+dy*dy);const angle=Math.atan2(dy,dx);const spikes=5;const distance=Math.cos(spikes*angle)*0.5+0.5; if(r<distance){this.bitmap.data[idx+0]=255;this.bitmap.data[idx+1]=255;this.bitmap.data[idx+2]=255;this.bitmap.data[idx+3]=255}})  
+jimg.mask(mask,0,0)
+}
+
+if (forma === 'ov'){  
+const mask = new Jimp(width,height,'#00000000')  
+mask.scan(0,0,width,height,(x,y,idx)=>{const nx=(x-width/2)/(width/2);const ny=(y-height/2)/(height/2);if(nx*nx+ny*ny<1){this.bitmap.data[idx+0]=255;this.bitmap.data[idx+1]=255;this.bitmap.data[idx+2]=255;this.bitmap.data[idx+3]=255}})  
+jimg.mask(mask,0,0)
+}
+
+if (forma === 'sq'){  
+const mask = new Jimp(width,height,'#00000000')  
+const r=50  
+mask.scan(0,0,width,height,(x,y,idx)=>{const insideX=x>r&&x<width-r;const insideY=y>r&&y<height-r;if(insideX&&insideY){this.bitmap.data[idx+0]=255;this.bitmap.data[idx+1]=255;this.bitmap.data[idx+2]=255;this.bitmap.data[idx+3]=255}})  
+jimg.mask(mask,0,0)
+}
+
+if(texto){  
+const brillo=jimg.bitmap.data.reduce((a,_,i)=>i%4!==3?a+jimg.bitmap.data[i]:a,0)/(width*height*3)  
+const color=brillo>127?'#000000':'#FFFFFF'  
+const fuente=await Jimp.loadFont(color==='black'?Jimp.FONT_SANS_64_BLACK:Jimp.FONT_SANS_64_WHITE)  
+const sombra=await Jimp.loadFont(color==='black'?Jimp.FONT_SANS_64_WHITE:Jimp.FONT_SANS_64_BLACK)  
+jimg.print(sombra,3,-3,{text:texto,alignmentX:Jimp.HORIZONTAL_ALIGN_CENTER,alignmentY:Jimp.VERTICAL_ALIGN_BOTTOM},width,height-20)  
+jimg.print(fuente,0,0,{text:texto,alignmentX:Jimp.HORIZONTAL_ALIGN_CENTER,alignmentY:Jimp.VERTICAL_ALIGN_BOTTOM},width,height-20)  
+}  
+
+img=await jimg.getBufferAsync(Jimp.MIME_PNG)
+stiker=await sticker(img,false,global.packsticker,global.packsticker2)
+} else return conn.reply(m.chat, `✰ Envía una imagen válida para convertir a sticker.\nFormas:\n/${command} => normal\n/${command} co => corazón\n/${command} cc => círculo\n/${command} cp => normalizar\n/${command} cr => rombo\n/${command} st => estrella\n/${command} ov => óvalo\n/${command} sq => cuadrado redondeado\nPuedes usar /${command} forma y texto para añadir un texto corto.`, m)
+} catch(e){console.error(e);return conn.reply(m.chat, `⚠️ Ocurrió un error al procesar el sticker. ${e.message}`, fkontak2)}
+
+if(stiker) await conn.sendMessage(m.chat,{sticker:stiker,...global.rcanal},{quoted:fkontak})
+else conn.reply(m.chat, `✰ Envía una imagen válida para convertir a sticker.\nFormas:\n/${command} => normal\n/${command} co => corazón\n/${command} cc => círculo\n/${command} cp => normalizar\n/${command} cr => rombo\n/${command} st => estrella\n/${command} ov => óvalo\n/${command} sq => cuadrado redondeado\nPuedes usar /${command} forma y texto para añadir un texto corto.`, m)
 }
 
 handler.help=['sticker <texto opcional>','s <texto opcional>']
