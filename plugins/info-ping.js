@@ -143,7 +143,7 @@ let handler = async (m, { conn }) => {
     caption: caption,
     title: 'Monitor de Ping y Rendimiento',
     subtitle: '',
-    footer: `Mode Systems Monitoring © 2025`,
+    footer: `${caption}\n\nMode Systems Monitoring © 2025`,
     mentions: []
   }
 
