@@ -10,7 +10,7 @@ import ffmpeg from 'fluent-ffmpeg'
 const tmp = ext => path.join(tmpdir(), `${Date.now()}.${ext}`)
 
 const shapes = {
-  normal: (ctx, img) => ctx.drawImage(img, 0, 0, 512, 512),
+  no: (ctx, img) => ctx.drawImage(img, 0, 0, 512, 512),
   cc: (ctx, img) => {
     ctx.beginPath()
     ctx.arc(256, 256, 256, 0, Math.PI * 2)
@@ -19,7 +19,7 @@ const shapes = {
     ctx.drawImage(img, 0, 0, 512, 512)
   },
   co: (ctx, img) => {
-    const mask = createCanvas(512, 512).getContext('2d')
+    const mask = createCanvas(512, 512).getContext2D()
     mask.beginPath()
     mask.moveTo(256, 20)
     mask.bezierCurveTo(470, 20, 470, 480, 256, 500)
@@ -30,8 +30,8 @@ const shapes = {
     ctx.globalCompositeOperation = 'destination-in'
     ctx.drawImage(mask.canvas, 0, 0)
   },
-  diamond: (ctx, img) => {
-    const mask = createCanvas(512, 512).getContext('2d')
+  di: (ctx, img) => {
+    const mask = createCanvas(512, 512).getContext2D()
     mask.beginPath()
     mask.moveTo(256, 0)
     mask.lineTo(512, 256)
@@ -43,8 +43,8 @@ const shapes = {
     ctx.globalCompositeOperation = 'destination-in'
     ctx.drawImage(mask.canvas, 0, 0)
   },
-  star: (ctx, img) => {
-    const mask = createCanvas(512, 512).getContext('2d')
+  st: (ctx, img) => {
+    const mask = createCanvas(512, 512).getContext2D()
     const spikes = 5
     const outerRadius = 256
     const innerRadius = 100
@@ -66,8 +66,8 @@ const shapes = {
     ctx.globalCompositeOperation = 'destination-in'
     ctx.drawImage(mask.canvas, 0, 0)
   },
-  hexagon: (ctx, img) => {
-    const mask = createCanvas(512, 512).getContext('2d')
+  he: (ctx, img) => {
+    const mask = createCanvas(512, 512).getContext2D()
     mask.beginPath()
     const r = 256
     const cx = 256
@@ -85,7 +85,7 @@ const shapes = {
     ctx.globalCompositeOperation = 'destination-in'
     ctx.drawImage(mask.canvas, 0, 0)
   },
-  oval: (ctx, img) => {
+  ov: (ctx, img) => {
     ctx.save()
     ctx.beginPath()
     ctx.ellipse(256, 256, 256, 200, 0, 0, Math.PI * 2)
@@ -94,8 +94,8 @@ const shapes = {
     ctx.drawImage(img, 0, 0, 512, 512)
     ctx.restore()
   },
-  triangle: (ctx, img) => {
-    const mask = createCanvas(512, 512).getContext('2d')
+  tr: (ctx, img) => {
+    const mask = createCanvas(512, 512).getContext2D()
     mask.beginPath()
     mask.moveTo(256, 0)
     mask.lineTo(512, 512)
@@ -106,8 +106,8 @@ const shapes = {
     ctx.globalCompositeOperation = 'destination-in'
     ctx.drawImage(mask.canvas, 0, 0)
   },
-  rhombus: (ctx, img) => {
-    const mask = createCanvas(512, 512).getContext('2d')
+  rh: (ctx, img) => {
+    const mask = createCanvas(512, 512).getContext2D()
     mask.beginPath()
     mask.moveTo(256, 0)
     mask.lineTo(512, 256)
@@ -128,8 +128,8 @@ let handler = async (m, { conn, args, command }) => {
   const fkontak = { key:{fromMe:false,participant:user},message:{imageMessage:{jpegThumbnail:thumb,caption:'✨ STICKER GENERADO ✨'}}}
   const fkontak2 = { key:{fromMe:false,participant:user},message:{imageMessage:{jpegThumbnail:thumb,caption:'⚠ ERROR ⚠'}}}
 
-  let texto = args.filter(a=>!/^(co|cc|cp|diamond|star|hexagon|oval|triangle|rhombus)$/i.test(a)).join(' ').trim()
-  let forma = (args.find(a=>/^(co|cc|cp|diamond|star|hexagon|oval|triangle|rhombus)$/i.test(a))||'normal').toLowerCase()
+  let texto = args.filter(a=>!/^(no|co|cc|cp|di|st|he|ov|tr|rh)$/i.test(a)).join(' ').trim()
+  let forma = (args.find(a=>/^(no|co|cc|cp|di|st|he|ov|tr|rh)$/i.test(a))||'no').toLowerCase()
   let stiker = false
 
   try {
@@ -165,11 +165,11 @@ let handler = async (m, { conn, args, command }) => {
       fs.unlinkSync(tempOut)
     } else if (/webp|image/.test(mime)) {
       let img = await q.download?.()
-      if (!img) return conn.reply(m.chat, `✰ Envía una imagen válida.\nFormas:\n/${command} normal\n/${command} co\n/${command} cc\n/${command} cp\n/${command} diamond\n/${command} star\n/${command} hexagon\n/${command} oval\n/${command} triangle\n/${command} rhombus`, m, rcanal)
+      if (!img) return conn.reply(m.chat, `✰ Envía una imagen válida.\nFormas:\nno, co, cc, cp, di, st, he, ov, tr, rh`, m, fkontak2)
       const jimg = await loadImage(img)
       const canvas = createCanvas(512, 512)
-      const ctx = canvas.getContext('2d')
-      (shapes[forma] || shapes.normal)(ctx, jimg)
+      const ctx = canvas.getContext2D()
+      (shapes[forma] || shapes.no)(ctx, jimg)
       if (texto) {
         ctx.font = 'bold 40px Sans-serif'
         ctx.fillStyle = '#00ffff'
@@ -181,7 +181,7 @@ let handler = async (m, { conn, args, command }) => {
       const buffer = canvas.toBuffer('image/png')
       stiker = await sticker(buffer, false, global.packsticker, global.packsticker2)
     } else {
-      return conn.reply(m.chat, `✰ Envía una imagen válida.\nFormas:\n/${command} normal\n/${command} co\n/${command} cc\n/${command} cp\n/${command} diamond\n/${command} star\n/${command} hexagon\n/${command} oval\n/${command} triangle\n/${command} rhombus`, m, rcanal)
+      return conn.reply(m.chat, `✰ Envía una imagen válida.\nFormas:\nno, co, cc, cp, di, st, he, ov, tr, rh`, m, fkontak2)
     }
   } catch (e) {
     console.error(e)
@@ -189,7 +189,7 @@ let handler = async (m, { conn, args, command }) => {
   }
 
   if (stiker) await conn.sendMessage(m.chat, { sticker: stiker, ...global.rcanal }, { quoted: fkontak })
-  else conn.reply(m.chat, `✰ Envía una imagen válida.\nFormas:\n/${command} normal\n/${command} co\n/${command} cc\n/${command} cp\n/${command} diamond\n/${command} star\n/${command} hexagon\n/${command} oval\n/${command} triangle\n/${command} rhombus`, m, rcanal)
+  else conn.reply(m.chat, `✰ Envía una imagen válida.\nFormas:\nno, co, cc, cp, di, st, he, ov, tr, rh`, m, fkontak2)
 }
 
 handler.help = ['sticker <texto opcional>', 's <texto opcional>']
