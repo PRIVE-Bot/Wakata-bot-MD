@@ -16,7 +16,7 @@ let user = m.sender
 const fkontak = { key:{fromMe:false,participant:user},message:{imageMessage:{jpegThumbnail:thumb,caption:'✨ 𝗦𝗧𝗜𝗖𝗞𝗘𝗥 𝗚𝗘𝗡𝗘𝗥𝗔𝗗𝗢 𝗖𝗢𝗡 𝗘𝗫𝗜𝗧𝗢 ✨'}}}
 const fkontak2 = { key:{fromMe:false,participant:user},message:{imageMessage:{jpegThumbnail:thumb,caption:'⚠︎ 𝗘𝗥𝗥𝗢𝗥 ⚠︎'}}}
 
-const formasValidas = ['co', 'cc', 'cp', 'ce', 'ca', 'cr', 'ct']
+const formasValidas = ['co', 'ci', 'sq', 'no', 'rd', 'di', 'tr', 'st', 'he', 'pe', 'el', 're', 'cr', 'ar', 'pl']
 let texto = args.filter(a=>!formasValidas.includes(a.toLowerCase())).join(' ').trim()
 let forma = (args.find(a=>formasValidas.includes(a.toLowerCase()))||'').toLowerCase()
 let stiker = false
@@ -24,18 +24,26 @@ let rcanal = global.rcanal || {}
 
 const mensajeUso = `✰ ᴘᴏʀ ғᴀᴠᴏʀ, ʀᴇsᴘᴏɴᴅᴇ ᴏ ᴇɴᴠÍᴀ ᴜɴᴀ **ɪᴍᴀɢᴇɴ, ᴠɪᴅᴇᴏ ᴏ ɢɪғ** ᴘᴀʀᴀ ᴄᴏɴᴠᴇʀᴛɪʀ ᴀ sᴛɪᴄᴋᴇʀ.
 
-**==> 𝙵𝚘𝚛𝚖𝚊𝚜 𝚍𝚎 𝙸𝚖𝚊𝚐𝚎𝚗 (𝙾𝚙𝚌𝚒𝚘𝚗𝚊𝚕):**
-- /${command} **co** => Corazón
-- /${command} **cc** => Círculo
-- /${command} **cp** => Normalizar (Ajustar al cuadrado)
-- /${command} **ce** => Esquinas Redondeadas
-- /${command} **ca** => Cuadrado (Recortar)
-- /${command} **cr** => Rombo
-- /${command} **ct** => Triángulo
+*==> 𝙵𝚘𝚛𝚖𝚊𝚜 𝚍𝚎 𝙸𝚖𝚊𝚐𝚎𝚗 (𝙾𝚙𝚌𝚒𝚘𝚗𝚊𝚕):*
+- /${command} *ci* => Círculo
+- /${command} *co* => Corazón
+- /${command} *sq* => Cuadrado (Recortar)
+- /${command} *no* => Normalizar (Ajustar)
+- /${command} *rd* => Redondeado (Esquinas)
+- /${command} *di* => Rombo
+- /${command} *tr* => Triángulo
+- /${command} *st* => Estrella
+- /${command} *he* => Hexágono
+- /${command} *pe* => Pentágono
+- /${command} *el* => Elipse
+- /${command} *re* => Rectángulo Redondeado
+- /${command} *cr* => Cruz
+- /${command} *ar* => Arco Superior
+- /${command} *pl* => Plus (+)
 
-**==> 𝙿𝚞𝚎𝚍𝚎𝚜 𝚊𝚐𝚛𝚎𝚐𝚊𝚛 𝚝𝚎𝚡𝚝𝚘:**
+*==> 𝙿𝚞𝚎𝚍𝚎𝚜 𝚊𝚐𝚛𝚎𝚐𝚊𝚛 𝚝𝚎𝚡𝚝𝚘:*
 - /${command} [forma] [texto corto]
-- 𝙴𝚓: /${command} **co** ¡Hola!
+- 𝙴𝚓: /${command} *co* ¡Hola!
 - 𝙴𝚓: /${command} ¡Animado!`
 
 try {
@@ -82,10 +90,10 @@ let jimg = await Jimp.read(img)
 let { width, height } = jimg.bitmap
 let size = 512
 
-if (forma === 'ca') {
+if (forma === 'sq') {
 let min = Math.min(width, height)
 jimg.crop(Math.floor((width - min) / 2), Math.floor((height - min) / 2), min, min).resize(size, size)
-} else if (forma === 'cp') {
+} else if (forma === 'no') {
 jimg.contain(size, size)
 } else {
 jimg.resize(size, size)
@@ -105,8 +113,13 @@ const ny = (height / 2 - y) / (height / 2)
 let pass = false
 
 switch (forma) {
-case 'cc': // Círculo
+case 'ci': // Círculo
 pass = r < width / 2
+break
+case 'el': // Elipse
+const a = width / 2
+const b = height / 2
+pass = (dx * dx) / (a * a) + (dy * dy) / (b * b) <= 1
 break
 case 'co': // Corazón
 const scaleX = 1.25
@@ -117,13 +130,77 @@ const nyy = (height / 2 - y) / (height / 2) * scaleY - offsetY
 const eq = Math.pow(nxx * nxx + nyy * nyy - 1, 3) - nxx * nxx * nyy * nyy * nyy
 pass = eq <= 0
 break
-case 'cr': // Rombo
+case 'di': // Rombo
 pass = Math.abs(nx) + Math.abs(ny) < 1.0
 break
-case 'ct': // Triángulo
-pass = y > height / 2 - (height / 2) * (1 - 2 * Math.abs(x - width / 2) / width)
+case 'tr': // Triángulo (Corregido)
+pass = y > height - height * (1 - Math.abs(x - width / 2) / (width / 2))
 break
-case 'ce': // Esquinas Redondeadas (solo en Jimp - requiere más lógica de pixel)
+case 'st': // Estrella (Simple 5 Puntas)
+const angle = Math.atan2(dy, dx)
+const distance = r / (width / 2)
+const numPoints = 5
+const innerRadius = 0.4
+const outerRadius = 1.0
+const rot = -Math.PI / 2 
+const starAngle = (angle - rot + Math.PI * 2) % (Math.PI * 2)
+const sector = Math.floor(starAngle * numPoints / (Math.PI * 2))
+const pointAngle = (sector * Math.PI * 2 / numPoints) + rot
+const nextPointAngle = ((sector + 1) * Math.PI * 2 / numPoints) + rot
+const midAngle = (pointAngle + nextPointAngle) / 2
+const radiusAtAngle = innerRadius + (outerRadius - innerRadius) * (1 - Math.cos((starAngle - midAngle) * numPoints)) / 2
+pass = distance <= radiusAtAngle
+break
+case 'he': // Hexágono
+const h = Math.abs(dy)
+const w = Math.abs(dx)
+const a_hex = height / 2 
+const b_hex = a_hex * Math.sqrt(3) / 2
+pass = h <= a_hex && w <= b_hex && a_hex * w + b_hex * h <= a_hex * b_hex
+break
+case 'pe': // Pentágono
+const sides = 5
+const radius_pe = width / 2
+const rot_pe = -Math.PI / 2
+const a_pe = Math.atan2(dy, dx) + rot_pe
+const dist_pe = r
+const k = 2 * Math.PI / sides
+const angle_pe = Math.min(Math.abs(a_pe % k), Math.abs((a_pe % k) - k))
+pass = dist_pe * Math.cos(angle_pe) <= radius_pe * Math.cos(Math.PI / sides)
+break
+case 're': // Rectángulo Redondeado (2/3 de alto)
+const rectWidth = width
+const rectHeight = height * 0.66
+const rectY = (height - rectHeight) / 2
+const rectX = 0
+const radius_re = 50
+const isInsideRect = x >= rectX && x <= rectX + rectWidth && y >= rectY && y <= rectY + rectHeight
+
+const checkCorner = (cx, cy) => {
+if (Math.hypot(x - cx, y - cy) <= radius_re) return true
+return false
+}
+
+if (isInsideRect) {
+if (x < rectX + radius_re && y < rectY + radius_re) pass = checkCorner(rectX + radius_re, rectY + radius_re)
+else if (x > rectX + rectWidth - radius_re && y < rectY + radius_re) pass = checkCorner(rectX + rectWidth - radius_re, rectY + radius_re)
+else if (x < rectX + radius_re && y > rectY + rectHeight - radius_re) pass = checkCorner(rectX + radius_re, rectY + rectHeight - radius_re)
+else if (x > rectX + rectWidth - radius_re && y > rectY + rectHeight - radius_re) pass = checkCorner(rectX + rectWidth - radius_re, rectY + rectHeight - radius_re)
+else pass = true
+}
+break
+case 'cr': // Cruz
+const barWidth = width * 0.25
+pass = (Math.abs(dx) <= barWidth && Math.abs(dy) <= width / 2) || (Math.abs(dy) <= barWidth && Math.abs(dx) <= width / 2)
+break
+case 'pl': // Plus / Signo Más
+const plusWidth = width * 0.2
+pass = (Math.abs(dx) <= plusWidth && Math.abs(dy) <= width / 2) || (Math.abs(dy) <= plusWidth && Math.abs(dx) <= width / 2)
+break
+case 'ar': // Arco Superior (Medio Círculo)
+pass = r < width / 2 && dy > 0
+break
+case 'rd': // Esquinas Redondeadas
 const radius = 60
 const d = Math.min(radius, width / 2, height / 2)
 const x1 = d
@@ -135,8 +212,8 @@ if (x < x1 && y < y1) pass = Math.hypot(x - x1, y - y1) <= d
 else if (x > x2 && y < y1) pass = Math.hypot(x - x2, y - y1) <= d
 else if (x < x1 && y > y2) pass = Math.hypot(x - x1, y - y2) <= d
 else if (x > x2 && y > y2) pass = Math.hypot(x - x2, y - y2) <= d
-else if (x >= x1 && x <= x2 && y >= 0 && y <= height) pass = true // Centro
-else if (y >= y1 && y <= y2 && x >= 0 && x <= width) pass = true // Centro
+else if (x >= x1 && x <= x2 && y >= 0 && y <= height) pass = true
+else if (y >= y1 && y <= y2 && x >= 0 && x <= width) pass = true
 break
 default:
 pass = true
@@ -149,7 +226,7 @@ this.bitmap.data[idx + 2] = 255
 this.bitmap.data[idx + 3] = 255
 }
 })
-if (forma !== 'cp') jimg.mask(mask, 0, 0)
+if (forma !== 'no' && forma !== 'sq') jimg.mask(mask, 0, 0)
 }
 
 if (texto) {
