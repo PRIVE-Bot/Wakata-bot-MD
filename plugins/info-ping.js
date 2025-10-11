@@ -2,7 +2,7 @@ import { createCanvas } from '@napi-rs/canvas'
 import os from 'os'
 import speed from 'performance-now'
 
- import uploadImage from '../../lib/uploadImage.js' 
+ import uploadImage from '../lib/uploadImage.js' 
 
 let handler = async (m, { conn }) => {
   const timestamp = speed()
