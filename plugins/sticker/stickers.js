@@ -1,4 +1,6 @@
 import { sticker } from '../../lib/sticker.js'
+import uploadFile from '../../lib/uploadFile.js'
+import uploadImage from '../../lib/uploadImage.js'
 import { webp2png, webp2mp4 } from '../../lib/webp2mp4.js'
 import Jimp from 'jimp'
 import fetch from 'node-fetch'
@@ -51,41 +53,30 @@ const mensajeUso = `✰ ᴘᴏʀ ғᴀᴠᴏʀ, ʀᴇsᴘᴏɴᴅᴇ ᴏ ᴇɴ�
 
 try {
 let q = m.quoted ? m.quoted : m
-let mime = q.mimetype || q.msg?.mimetype || q.message?.imageMessage?.mimetype || ''
+let mime = q.mimetype || q.msg?.mimetype || q.message?.imageMessage?.mimetype || q.message?.videoMessage?.mimetype || q.message?.stickerMessage?.mimetype || ''
 let media
 
 if (!/video|gif|webp|image/.test(mime)) return conn.reply(m.chat, mensajeUso, m, rcanal)
 
 if (/video|gif/.test(mime)) {
-if (q.seconds > 6) return conn.reply(m.chat, '⚠️ El video/gif es muy largo. Máximo 6 segundos para animado. (Anteriormente 10 segundos)', fkontak2)
-let vid = await q.download?.()
-if (!vid) return conn.reply(m.chat, '⚠️ No se pudo descargar el video o gif.', fkontak2)
-const tempIn = tmp('mp4')
-const tempOut = tmp('webp')
-fs.writeFileSync(tempIn, vid)
+if (q.seconds > 15) return conn.reply(m.chat, '⚠️ El video/gif es muy largo. Máximo 15 segundos para animado.', fkontak2)
+let img = await q.download?.()
+if (!img) return conn.reply(m.chat, '⚠️ No se pudo descargar el video o gif.', fkontak2)
 
-await new Promise((resolve, reject) => {
-ffmpeg(tempIn)
-.inputFormat('mp4')
-.outputOptions([
-'-vcodec libwebp',
-'-filter:v fps=15,scale=512:-1,pad=512:512:(ow-iw)/2:(oh-ih)/2:color=white,format=yuva420p',
-'-loop 0',
-'-preset default',
-'-an',
-'-vsync 0',
-'-t 6'
-])
-.toFormat('webp')
-.save(tempOut)
-.on('end', resolve)
-.on('error', reject)
-})
+// Intentar la conversión directa con sticker()
+try {
+stiker = await sticker(img, false, global.packsticker, global.packsticker2)
+} catch (e) {
+console.error('Error en conversión directa de video:', e)
+}
 
-if (!fs.existsSync(tempOut)) throw new Error('No se generó el sticker animado.')
-stiker = fs.readFileSync(tempOut)
-fs.unlinkSync(tempIn)
-fs.unlinkSync(tempOut)
+// Si falla la conversión directa, usar el método de uploadFile
+if (!stiker) {
+let out = await uploadFile(img)
+if (typeof out !== 'string') out = await uploadImage(img)
+stiker = await sticker(false, out, global.packsticker, global.packsticker2)
+}
+
 } else if (/webp|image/.test(mime)) {
 let img = await q.download?.()
 if (!img) return conn.reply(m.chat, `⚠️ No se pudo descargar la imagen/sticker.`, fkontak2)
