@@ -63,14 +63,12 @@ if (q.seconds > 15) return conn.reply(m.chat, '⚠️ El video/gif es muy largo.
 let img = await q.download?.()
 if (!img) return conn.reply(m.chat, '⚠️ No se pudo descargar el video o gif.', fkontak2)
 
-// Intentar la conversión directa con sticker()
 try {
 stiker = await sticker(img, false, global.packsticker, global.packsticker2)
 } catch (e) {
 console.error('Error en conversión directa de video:', e)
 }
 
-// Si falla la conversión directa, usar el método de uploadFile
 if (!stiker) {
 let out = await uploadFile(img)
 if (typeof out !== 'string') out = await uploadImage(img)
