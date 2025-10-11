@@ -57,7 +57,7 @@ let media
 if (!/video|gif|webp|image/.test(mime)) return conn.reply(m.chat, mensajeUso, m, rcanal)
 
 if (/video|gif/.test(mime)) {
-if (q.seconds > 10) return conn.reply(m.chat, '⚠️ El video/gif es muy largo. Máximo 10 segundos para animado.', fkontak2)
+if (q.seconds > 6) return conn.reply(m.chat, '⚠️ El video/gif es muy largo. Máximo 6 segundos para animado. (Anteriormente 10 segundos)', fkontak2)
 let vid = await q.download?.()
 if (!vid) return conn.reply(m.chat, '⚠️ No se pudo descargar el video o gif.', fkontak2)
 const tempIn = tmp('mp4')
