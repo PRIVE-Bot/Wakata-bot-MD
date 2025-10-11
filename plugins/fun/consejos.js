@@ -27,7 +27,7 @@ let handler = async (m, { conn }) => {
 
 
   } catch (e) {
-    await conn.reply(m.chat, '⚠️ Ocurrió un error al leer los mensajes.', m)
+    await conn.reply(m.chat, `⚠️ Ocurrió un error al leer los mensajes./n${e.message}`, m)
     console.error(e)
   }
 }
