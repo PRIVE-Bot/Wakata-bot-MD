@@ -19,32 +19,25 @@ const shapes = {
     ctx.drawImage(img, 0, 0, 512, 512)
   },
   co: (ctx, img) => {
-    const mask = createCanvas(512, 512).getContext2D()
-    mask.beginPath()
-    mask.moveTo(256, 20)
-    mask.bezierCurveTo(470, 20, 470, 480, 256, 500)
-    mask.bezierCurveTo(40, 480, 40, 20, 256, 20)
-    mask.closePath()
-    mask.fill()
+    ctx.beginPath()
+    ctx.moveTo(256, 20)
+    ctx.bezierCurveTo(470, 20, 470, 480, 256, 500)
+    ctx.bezierCurveTo(40, 480, 40, 20, 256, 20)
+    ctx.closePath()
+    ctx.clip()
     ctx.drawImage(img, 0, 0, 512, 512)
-    ctx.globalCompositeOperation = 'destination-in'
-    ctx.drawImage(mask.canvas, 0, 0)
   },
   di: (ctx, img) => {
-    const mask = createCanvas(512, 512).getContext2D()
-    mask.beginPath()
-    mask.moveTo(256, 0)
-    mask.lineTo(512, 256)
-    mask.lineTo(256, 512)
-    mask.lineTo(0, 256)
-    mask.closePath()
-    mask.fill()
+    ctx.beginPath()
+    ctx.moveTo(256, 0)
+    ctx.lineTo(512, 256)
+    ctx.lineTo(256, 512)
+    ctx.lineTo(0, 256)
+    ctx.closePath()
+    ctx.clip()
     ctx.drawImage(img, 0, 0, 512, 512)
-    ctx.globalCompositeOperation = 'destination-in'
-    ctx.drawImage(mask.canvas, 0, 0)
   },
   st: (ctx, img) => {
-    const mask = createCanvas(512, 512).getContext2D()
     const spikes = 5
     const outerRadius = 256
     const innerRadius = 100
@@ -52,72 +45,59 @@ const shapes = {
     let x = 256
     let y = 256
     let step = Math.PI / spikes
-    mask.beginPath()
-    mask.moveTo(x, y - outerRadius)
+    ctx.beginPath()
+    ctx.moveTo(x, y - outerRadius)
     for (let i = 0; i < spikes; i++) {
-      mask.lineTo(x + Math.cos(rot) * outerRadius, y + Math.sin(rot) * outerRadius)
+      ctx.lineTo(x + Math.cos(rot) * outerRadius, y + Math.sin(rot) * outerRadius)
       rot += step
-      mask.lineTo(x + Math.cos(rot) * innerRadius, y + Math.sin(rot) * innerRadius)
+      ctx.lineTo(x + Math.cos(rot) * innerRadius, y + Math.sin(rot) * innerRadius)
       rot += step
     }
-    mask.closePath()
-    mask.fill()
+    ctx.closePath()
+    ctx.clip()
     ctx.drawImage(img, 0, 0, 512, 512)
-    ctx.globalCompositeOperation = 'destination-in'
-    ctx.drawImage(mask.canvas, 0, 0)
   },
   he: (ctx, img) => {
-    const mask = createCanvas(512, 512).getContext2D()
-    mask.beginPath()
     const r = 256
     const cx = 256
     const cy = 256
+    ctx.beginPath()
     for (let i = 0; i < 6; i++) {
       const angle = Math.PI / 3 * i - Math.PI / 6
       const x = cx + r * Math.cos(angle)
       const y = cy + r * Math.sin(angle)
-      if (i === 0) mask.moveTo(x, y)
-      else mask.lineTo(x, y)
+      if (i === 0) ctx.moveTo(x, y)
+      else ctx.lineTo(x, y)
     }
-    mask.closePath()
-    mask.fill()
+    ctx.closePath()
+    ctx.clip()
     ctx.drawImage(img, 0, 0, 512, 512)
-    ctx.globalCompositeOperation = 'destination-in'
-    ctx.drawImage(mask.canvas, 0, 0)
   },
   ov: (ctx, img) => {
-    ctx.save()
     ctx.beginPath()
     ctx.ellipse(256, 256, 256, 200, 0, 0, Math.PI * 2)
     ctx.closePath()
     ctx.clip()
     ctx.drawImage(img, 0, 0, 512, 512)
-    ctx.restore()
   },
   tr: (ctx, img) => {
-    const mask = createCanvas(512, 512).getContext2D()
-    mask.beginPath()
-    mask.moveTo(256, 0)
-    mask.lineTo(512, 512)
-    mask.lineTo(0, 512)
-    mask.closePath()
-    mask.fill()
+    ctx.beginPath()
+    ctx.moveTo(256, 0)
+    ctx.lineTo(512, 512)
+    ctx.lineTo(0, 512)
+    ctx.closePath()
+    ctx.clip()
     ctx.drawImage(img, 0, 0, 512, 512)
-    ctx.globalCompositeOperation = 'destination-in'
-    ctx.drawImage(mask.canvas, 0, 0)
   },
   rh: (ctx, img) => {
-    const mask = createCanvas(512, 512).getContext2D()
-    mask.beginPath()
-    mask.moveTo(256, 0)
-    mask.lineTo(512, 256)
-    mask.lineTo(256, 512)
-    mask.lineTo(0, 256)
-    mask.closePath()
-    mask.fill()
+    ctx.beginPath()
+    ctx.moveTo(256, 0)
+    ctx.lineTo(512, 256)
+    ctx.lineTo(256, 512)
+    ctx.lineTo(0, 256)
+    ctx.closePath()
+    ctx.clip()
     ctx.drawImage(img, 0, 0, 512, 512)
-    ctx.globalCompositeOperation = 'destination-in'
-    ctx.drawImage(mask.canvas, 0, 0)
   }
 }
 
@@ -165,10 +145,10 @@ let handler = async (m, { conn, args, command }) => {
       fs.unlinkSync(tempOut)
     } else if (/webp|image/.test(mime)) {
       let img = await q.download?.()
-      if (!img) return conn.reply(m.chat, `✰ Envía una imagen válida.\nFormas:\nno, co, cc, cp, di, st, he, ov, tr, rh`, m, fkontak2)
+      if (!img) return conn.reply(m.chat, `✰ Envía una imagen válida.\nFormas:\nno, co, cc, cp, di, st, he, ov, tr, rh`, m, rcanal)
       const jimg = await loadImage(img)
       const canvas = createCanvas(512, 512)
-      const ctx = canvas.getContext2D()
+      const ctx = canvas.getContext()
       (shapes[forma] || shapes.no)(ctx, jimg)
       if (texto) {
         ctx.font = 'bold 40px Sans-serif'
@@ -181,7 +161,7 @@ let handler = async (m, { conn, args, command }) => {
       const buffer = canvas.toBuffer('image/png')
       stiker = await sticker(buffer, false, global.packsticker, global.packsticker2)
     } else {
-      return conn.reply(m.chat, `✰ Envía una imagen válida.\nFormas:\nno, co, cc, cp, di, st, he, ov, tr, rh`, m, fkontak2)
+      return conn.reply(m.chat, `✰ Envía una imagen válida.\nFormas:\nno, co, cc, cp, di, st, he, ov, tr, rh`, m, rcanal)
     }
   } catch (e) {
     console.error(e)
@@ -189,7 +169,7 @@ let handler = async (m, { conn, args, command }) => {
   }
 
   if (stiker) await conn.sendMessage(m.chat, { sticker: stiker, ...global.rcanal }, { quoted: fkontak })
-  else conn.reply(m.chat, `✰ Envía una imagen válida.\nFormas:\nno, co, cc, cp, di, st, he, ov, tr, rh`, m, fkontak2)
+  else conn.reply(m.chat, `✰ Envía una imagen válida.\nFormas:\nno, co, cc, cp, di, st, he, ov, tr, rh`, m, rcanal)
 }
 
 handler.help = ['sticker <texto opcional>', 's <texto opcional>']
