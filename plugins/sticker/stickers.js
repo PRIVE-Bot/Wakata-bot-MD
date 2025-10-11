@@ -1,10 +1,9 @@
 import { createCanvas, loadImage } from '@napi-rs/canvas'
 import { sticker } from '../../lib/sticker.js'
-import { webp2png, webp2mp4 } from '../../lib/webp2mp4.js'
-import fetch from 'node-fetch'
+import { tmpdir } from 'os'
 import fs from 'fs'
 import path from 'path'
-import { tmpdir } from 'os'
+import fetch from 'node-fetch'
 import ffmpeg from 'fluent-ffmpeg'
 
 const tmp = ext => path.join(tmpdir(), `${Date.now()}.${ext}`)
@@ -104,9 +103,8 @@ const shapes = {
 let handler = async (m, { conn, args, command }) => {
   const res = await fetch('https://files.catbox.moe/p87uei.jpg')
   const thumb = Buffer.from(await res.arrayBuffer())
-  let user = m.sender
-  const fkontak = { key:{fromMe:false,participant:user},message:{imageMessage:{jpegThumbnail:thumb,caption:'✨ STICKER GENERADO ✨'}}}
-  const fkontak2 = { key:{fromMe:false,participant:user},message:{imageMessage:{jpegThumbnail:thumb,caption:'⚠ ERROR ⚠'}}}
+  const fkontak = { key:{fromMe:false,participant:m.sender},message:{imageMessage:{jpegThumbnail:thumb,caption:'✨ STICKER GENERADO ✨'}}}
+  const fkontak2 = { key:{fromMe:false,participant:m.sender},message:{imageMessage:{jpegThumbnail:thumb,caption:'⚠ ERROR ⚠'}}}
 
   let texto = args.filter(a=>!/^(no|co|cc|cp|di|st|he|ov|tr|rh)$/i.test(a)).join(' ').trim()
   let forma = (args.find(a=>/^(no|co|cc|cp|di|st|he|ov|tr|rh)$/i.test(a))||'no').toLowerCase()
@@ -115,7 +113,7 @@ let handler = async (m, { conn, args, command }) => {
   try {
     let q = m.quoted ? m.quoted : m
     let mime = q.mimetype || q.msg?.mimetype || q.message?.imageMessage?.mimetype || ''
-
+    
     if (/video|gif/.test(mime)) {
       let vid = await q.download?.()
       if (!vid) return conn.reply(m.chat, '⚠️ No se pudo descargar el video o gif.', fkontak2)
@@ -139,29 +137,45 @@ let handler = async (m, { conn, args, command }) => {
           .on('end', resolve)
           .on('error', reject)
       })
-      if (!fs.existsSync(tempOut)) throw new Error('No se generó el sticker')
       stiker = fs.readFileSync(tempOut)
       fs.unlinkSync(tempIn)
       fs.unlinkSync(tempOut)
     } else if (/webp|image/.test(mime)) {
       let img = await q.download?.()
-      if (!img) return conn.reply(m.chat, `✰ Envía una imagen válida.\nFormas:\nno, co, cc, cp, di, st, he, ov, tr, rh`, m, rcanal)
+      if (!img) return conn.reply(m.chat, `✰ Envía una imagen válida.\nFormas: no, co, cc, cp, di, st, he, ov, tr, rh`, m, rcanal)
+
+      if (/webp/.test(mime)) {
+        const tempPng = tmp('png')
+        fs.writeFileSync(tempPng, img)
+        await new Promise((resolve, reject) => {
+          ffmpeg(tempPng).toFormat('png').save(tempPng + '.png').on('end', resolve).on('error', reject)
+        })
+        img = fs.readFileSync(tempPng + '.png')
+        fs.unlinkSync(tempPng)
+        fs.unlinkSync(tempPng + '.png')
+      }
+
       const jimg = await loadImage(img)
       const canvas = createCanvas(512, 512)
       const ctx = canvas.getContext()
       (shapes[forma] || shapes.no)(ctx, jimg)
+
       if (texto) {
+        const gradient = ctx.createLinearGradient(0, 0, 512, 512)
+        gradient.addColorStop(0, '#00ffff')
+        gradient.addColorStop(1, '#ff00ff')
+        ctx.fillStyle = gradient
         ctx.font = 'bold 40px Sans-serif'
-        ctx.fillStyle = '#00ffff'
         ctx.textAlign = 'center'
         ctx.shadowColor = '#00ffff'
-        ctx.shadowBlur = 10
+        ctx.shadowBlur = 15
         ctx.fillText(texto, 256, 480)
       }
+
       const buffer = canvas.toBuffer('image/png')
       stiker = await sticker(buffer, false, global.packsticker, global.packsticker2)
     } else {
-      return conn.reply(m.chat, `✰ Envía una imagen válida.\nFormas:\nno, co, cc, cp, di, st, he, ov, tr, rh`, m, rcanal)
+      return conn.reply(m.chat, `✰ Envía una imagen válida.\nFormas: no, co, cc, cp, di, st, he, ov, tr, rh`, m, fkontak2)
     }
   } catch (e) {
     console.error(e)
@@ -169,7 +183,7 @@ let handler = async (m, { conn, args, command }) => {
   }
 
   if (stiker) await conn.sendMessage(m.chat, { sticker: stiker, ...global.rcanal }, { quoted: fkontak })
-  else conn.reply(m.chat, `✰ Envía una imagen válida.\nFormas:\nno, co, cc, cp, di, st, he, ov, tr, rh`, m, rcanal)
+  else conn.reply(m.chat, `✰ Envía una imagen válida.\nFormas: no, co, cc, cp, di, st, he, ov, tr, rh`, m, rcanal)
 }
 
 handler.help = ['sticker <texto opcional>', 's <texto opcional>']
