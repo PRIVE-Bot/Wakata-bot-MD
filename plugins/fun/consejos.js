@@ -9,7 +9,7 @@ let mensajesUsados = []
 
 let handler = async (m, { conn }) => {
   try {
-    const mensajesPath = path.join(fs.readFileSync, '../extras/motivation.json')
+    const mensajesPath = path.join(__dirname, '../extras/motivation.json')
     const rawData = fs.readFileSync(mensajesPath, 'utf-8')
     const data = JSON.parse(rawData)
     const mensajes = data.mensajes
@@ -18,16 +18,14 @@ let handler = async (m, { conn }) => {
       mensajesUsados = []
     }
 
-    const mensajesDisponibles = mensajes.filter(m => !mensajesUsados.includes(m))
+    const mensajesDisponibles = mensajes.filter(msg => !mensajesUsados.includes(msg))
     const mensaje = mensajesDisponibles[Math.floor(Math.random() * mensajesDisponibles.length)]
 
     mensajesUsados.push(mensaje)
 
-    await conn.reply(m.chat, `🌟 *Mensaje para ti:*\n\n"${mensaje}"`, m, fake)
-
-
+    await conn.reply(m.chat, `🌟 *Mensaje para ti:*\n\n"${mensaje}"`, m)
   } catch (e) {
-    await conn.reply(m.chat, `⚠️ Ocurrió un error al leer los mensajes./n${e.message}`, m)
+    await conn.reply(m.chat, `⚠️ Ocurrió un error al leer los mensajes.\n${e.message}`, m)
     console.error(e)
   }
 }
