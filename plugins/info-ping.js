@@ -2,6 +2,8 @@ import { createCanvas } from '@napi-rs/canvas'
 import os from 'os'
 import speed from 'performance-now'
 
+ import uploadImage from '../../lib/uploadImage.js' 
+
 let handler = async (m, { conn }) => {
   const timestamp = speed()
 
@@ -46,12 +48,11 @@ let handler = async (m, { conn }) => {
   ctx.fillStyle = 'rgba(0,20,40,0.6)'
   ctx.fillRect(60, 150, width - 120, 380)
 
-  // Configuraciones para textos de datos (Título y Valores)
   ctx.textAlign = 'left'
   ctx.fillStyle = '#ffffff'
   ctx.font = '26px Sans-serif'
   
-  ctx.fillText('LATENCIA', 80, 190) // Título de la Latencia
+  ctx.fillText('LATENCIA', 80, 190)
 
   ctx.fillText('CPU', 80, 240)
   ctx.fillStyle = '#00ffff'
@@ -92,31 +93,61 @@ let handler = async (m, { conn }) => {
   ctx.fillRect(80, 460, cpuBarWidth * cpuPercent, 25)
   ctx.shadowBlur = 0
 
-  
   ctx.textAlign = 'center'
   ctx.fillStyle = 'rgba(255,255,255,0.4)'
   ctx.font = '14px Sans-serif'
   ctx.fillText('Mode Systems Monitoring © 2025', width / 2, height - 40)
 
-  
   const latensi = speed() - timestamp
 
-  
   ctx.textAlign = 'left'
   ctx.font = '26px Sans-serif'
   ctx.fillStyle = '#00ffff'
   ctx.fillText(`${latensi.toFixed(2)} ms`, 320, 190) 
+
+  const imageBuffer = await canvas.encode('png')
   
-  const image = await canvas.encode('png')
+  
 
-  const caption = `SISTEMA ONLINE
-Latencia: ${latensi.toFixed(2)} ms
-CPU: ${cpu}
-Núcleos: ${cores}
-RAM: ${usedMem.toFixed(2)} GB / ${totalMem.toFixed(2)} GB
-Uptime: ${uptime} hrs`
+  let imageUrl = ''
+  try {
+      
+      
+      imageUrl = await uploadImage(imageBuffer) 
+  } catch (e) {
+      console.error('Error al subir la imagen para la URL del producto:', e)
+      imageUrl = 'https://i.imgur.com/vHq1v3Q.png' 
+  }
 
-  await conn.sendMessage(m.chat, { image, caption }, { quoted: m })
+
+  const caption = `*SISTEMA ONLINE*\n\n` + 
+                  `*Latencia:* ${latensi.toFixed(2)} ms\n` +
+                  `*CPU:* ${cpu}\n` +
+                  `*Núcleos:* ${cores}\n` +
+                  `*RAM:* ${usedMem.toFixed(2)} GB / ${totalMem.toFixed(2)} GB\n` +
+                  `*Uptime:* ${uptime} hrs`
+
+  const productMessage = {
+    product: {
+      productImage: { url: imageUrl },
+      productId: '99999999',
+      title: 'Sistema de Monitoreo',
+      description: `Tiempo de respuesta: ${latensi.toFixed(2)} ms`,
+      currencyCode: 'USD',
+      priceAmount1000: '0',
+      retailerId: 1677,
+      url: `https://wa.me/${conn.user.jid.split('@')[0]}`,
+      productImageCount: 1
+    },
+    businessOwnerJid: conn.user.jid,
+    caption: caption,
+    title: 'Monitor de Ping y Rendimiento',
+    subtitle: '',
+    footer: `Mode Systems Monitoring © 2025`,
+    mentions: []
+  }
+
+  await conn.sendMessage(m.chat, productMessage, { quoted: m })
 }
 
 handler.help = ['ping']
