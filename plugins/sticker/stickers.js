@@ -49,7 +49,7 @@ const mensajeUso = `✰ ᴘᴏʀ ғᴀᴠᴏʀ, ʀᴇsᴘᴏɴᴅᴇ ᴏ ᴇɴ�
 *==> Puedes agregar texto:*
 - /${command} [forma] [texto corto]
 - Ej: /${command} *ro* ¡Te Amo!
-- Ej: /${command} ¡Animado! *(Máx. 6 segundos)*`
+- Ej: /${command} ¡Animado!`
 
 try {
 let q = m.quoted ? m.quoted : m
@@ -59,26 +59,22 @@ let media
 if (!/video|gif|webp|image/.test(mime)) return conn.reply(m.chat, mensajeUso, m, rcanal)
 
 if (/video|gif/.test(mime)) {
-// 1. Reducir el límite de tiempo a 6 segundos para mayor velocidad
-if (q.seconds > 6) return conn.reply(m.chat, '⚠️ El video/gif es muy largo. Máximo **6 segundos** para animado, para que sea más rápido.', fkontak2)
+if (q.seconds > 15) return conn.reply(m.chat, '⚠️ El video/gif es muy largo. Máximo 15 segundos para animado.', fkontak2)
 let img = await q.download?.()
 if (!img) return conn.reply(m.chat, '⚠️ No se pudo descargar el video o gif.', fkontak2)
 
-// 2. Priorizar el método de subida (uploadFile) para la velocidad
-let out
-try {
-out = await uploadFile(img)
-if (typeof out !== 'string') out = await uploadImage(img)
-stiker = await sticker(false, out, global.packsticker, global.packsticker2)
-} catch (e) {
-// 3. Si la subida falla, intentar la conversión directa como respaldo
-console.error('Error en método de subida, intentando conversión directa:', e)
 try {
 stiker = await sticker(img, false, global.packsticker, global.packsticker2)
-} catch (e2) {
-console.error('Error en conversión directa de video:', e2)
+} catch (e) {
+console.error('Error en conversión directa de video:', e)
 }
+
+if (!stiker) {
+let out = await uploadFile(img)
+if (typeof out !== 'string') out = await uploadImage(img)
+stiker = await sticker(false, out, global.packsticker, global.packsticker2)
 }
+
 } else if (/webp|image/.test(mime)) {
 let img = await q.download?.()
 if (!img) return conn.reply(m.chat, `⚠️ No se pudo descargar la imagen/sticker.`, fkontak2)
