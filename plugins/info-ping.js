@@ -44,34 +44,38 @@ let handler = async (m, { conn }) => {
   ctx.textAlign = 'center'
   ctx.fillText('SISTEMA ONLINE', width / 2, 100)
 
+  // Panel izquierdo fondo semitransparente
+  ctx.fillStyle = 'rgba(0,20,40,0.6)'
+  ctx.fillRect(60, 150, 460, 330)
+
   ctx.textAlign = 'left'
   ctx.fillStyle = '#ffffff'
   ctx.font = '24px Sans-serif'
-  ctx.fillText('LATENCIA', 80, 180)
+  ctx.fillText('LATENCIA', 80, 190)
   ctx.fillStyle = '#00ffff'
-  ctx.fillText(`${latensi.toFixed(2)} ms`, 320, 180)
+  ctx.fillText(`${latensi.toFixed(2)} ms`, 260, 190)
 
   ctx.fillStyle = '#ffffff'
-  ctx.fillText('CPU', 80, 230)
+  ctx.fillText('CPU', 80, 240)
   ctx.fillStyle = '#00ffff'
-  ctx.fillText(cpu, 320, 230)
+  ctx.fillText(cpu, 260, 240)
 
   ctx.fillStyle = '#ffffff'
-  ctx.fillText('NÚCLEOS', 80, 280)
+  ctx.fillText('NÚCLEOS', 80, 290)
   ctx.fillStyle = '#00ffff'
-  ctx.fillText(cores.toString(), 320, 280)
+  ctx.fillText(cores.toString(), 260, 290)
 
   ctx.fillStyle = '#ffffff'
-  ctx.fillText('MEMORIA', 80, 330)
+  ctx.fillText('MEMORIA', 80, 340)
   ctx.fillStyle = '#00ffff'
-  ctx.fillText(`${usedMem.toFixed(2)} GB / ${totalMem.toFixed(2)} GB`, 320, 330)
+  ctx.fillText(`${usedMem.toFixed(2)} GB / ${totalMem.toFixed(2)} GB`, 260, 340)
 
   ctx.fillStyle = '#ffffff'
-  ctx.fillText('UPTIME', 80, 380)
+  ctx.fillText('UPTIME', 80, 390)
   ctx.fillStyle = '#00ffff'
-  ctx.fillText(`${uptime} hrs`, 320, 380)
+  ctx.fillText(`${uptime} hrs`, 260, 390)
 
-  const ramBarWidth = 400
+  const ramBarWidth = 360
   const ramPercent = usedMem / totalMem
   ctx.fillStyle = 'rgba(8,45,51,0.8)'
   ctx.fillRect(80, 420, ramBarWidth, 20)
@@ -81,7 +85,7 @@ let handler = async (m, { conn }) => {
   ctx.fillRect(80, 420, ramBarWidth * ramPercent, 20)
   ctx.shadowBlur = 0
 
-  const cpuBarWidth = 400
+  const cpuBarWidth = 360
   const cpuPercent = Math.min(0.6 + Math.random() * 0.3, 1)
   ctx.fillStyle = 'rgba(8,45,51,0.8)'
   ctx.fillRect(80, 460, cpuBarWidth, 20)
@@ -93,23 +97,29 @@ let handler = async (m, { conn }) => {
 
   ctx.beginPath()
   ctx.moveTo(550, 150)
-  ctx.lineTo(550, 500)
+  ctx.lineTo(550, 480)
   ctx.strokeStyle = 'rgba(0,255,255,0.3)'
   ctx.lineWidth = 1
   ctx.stroke()
 
+  ctx.fillStyle = 'rgba(0,20,40,0.6)'
+  ctx.fillRect(570, 160, 360, 250)
+
   ctx.textAlign = 'left'
   ctx.fillStyle = '#ffffff'
   ctx.font = '22px Sans-serif'
-  ctx.fillText('ESTADO DEL SISTEMA', 560, 190)
+  ctx.fillText('ESTADO DEL SISTEMA', 580, 190)
   ctx.font = '18px Sans-serif'
   ctx.fillStyle = '#00ffff'
-  ctx.fillText('SERVICIOS OPERATIVOS', 560, 220)
-  ctx.fillText('Conexión estable y monitoreada', 560, 245)
-  ctx.fillText('Módulos activos: Kernel, Net, Core', 560, 270)
+  ctx.fillText('SERVICIOS OPERATIVOS', 580, 220)
+  ctx.fillText('Conexión estable y monitoreada', 580, 245)
+  ctx.fillText('Módulos activos: Kernel, Net, Core', 580, 270)
+  ctx.fillText('Monitoreo en tiempo real', 580, 295)
+  ctx.fillText('Todo seguro y optimizado', 580, 320)
+
   ctx.strokeStyle = '#00ffff'
   ctx.lineWidth = 1.5
-  ctx.strokeRect(550, 160, 380, 150)
+  ctx.strokeRect(570, 160, 360, 250)
 
   ctx.textAlign = 'center'
   ctx.fillStyle = 'rgba(255,255,255,0.4)'
