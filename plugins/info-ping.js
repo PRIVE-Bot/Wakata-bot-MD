@@ -46,12 +46,13 @@ let handler = async (m, { conn }) => {
   ctx.fillStyle = 'rgba(0,20,40,0.6)'
   ctx.fillRect(60, 150, width - 120, 380)
 
+  // Configuraciones para textos de datos (Título y Valores)
   ctx.textAlign = 'left'
   ctx.fillStyle = '#ffffff'
   ctx.font = '26px Sans-serif'
+  
   ctx.fillText('LATENCIA', 80, 190) // Título de la Latencia
 
-  ctx.fillStyle = '#ffffff'
   ctx.fillText('CPU', 80, 240)
   ctx.fillStyle = '#00ffff'
   ctx.fillText(cpu, 320, 240)
@@ -91,6 +92,7 @@ let handler = async (m, { conn }) => {
   ctx.fillRect(80, 460, cpuBarWidth * cpuPercent, 25)
   ctx.shadowBlur = 0
 
+  
   ctx.textAlign = 'center'
   ctx.fillStyle = 'rgba(255,255,255,0.4)'
   ctx.font = '14px Sans-serif'
@@ -99,19 +101,20 @@ let handler = async (m, { conn }) => {
   
   const latensi = speed() - timestamp
 
+  
+  ctx.textAlign = 'left'
+  ctx.font = '26px Sans-serif'
   ctx.fillStyle = '#00ffff'
   ctx.fillText(`${latensi.toFixed(2)} ms`, 320, 190) 
   
-
   const image = await canvas.encode('png')
 
-  const caption = `
-*SISTEMA ONLINE*
-*Latencia:* ${latensi.toFixed(2)} ms
-*CPU:* ${cpu}
-*Núcleos:* ${cores}
-*RAM:* ${usedMem.toFixed(2)} GB / ${totalMem.toFixed(2)} GB
-*Uptime:* ${uptime} hrs`
+  const caption = `SISTEMA ONLINE
+Latencia: ${latensi.toFixed(2)} ms
+CPU: ${cpu}
+Núcleos: ${cores}
+RAM: ${usedMem.toFixed(2)} GB / ${totalMem.toFixed(2)} GB
+Uptime: ${uptime} hrs`
 
   await conn.sendMessage(m.chat, { image, caption }, { quoted: m })
 }
