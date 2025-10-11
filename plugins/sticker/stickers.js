@@ -58,6 +58,7 @@ let media
 
 if (!/video|gif|webp|image/.test(mime)) return conn.reply(m.chat, mensajeUso, m, rcanal)
 
+    await m.react('⌛')
 if (/video|gif/.test(mime)) {
 if (q.seconds > 15) return conn.reply(m.chat, '⚠️ El video/gif es muy largo. Máximo 15 segundos para animado.', fkontak2)
 let img = await q.download?.()
@@ -244,6 +245,7 @@ else conn.reply(m.chat, mensajeUso, m, rcanal)
 } catch (e) {
 console.error(e)
 return conn.reply(m.chat, `⚠️ Ocurrió un error al procesar el sticker: ${e.message || 'Desconocido'}`, fkontak2)
+    await m.react('👑')
 }
 }
 
