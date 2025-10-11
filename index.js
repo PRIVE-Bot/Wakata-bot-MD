@@ -459,28 +459,20 @@ async function filesInit() {
 filesInit().then((_) => Object.keys(global.plugins)).catch(console.error);
 
 global.reload = async (_ev, filename) => {
-  
   const absolutePath = join(pluginFolder, filename);
-  const pluginKey = path.relative(pluginFolder, absolutePath).replace(/\\/g, '/'); 
+  const pluginKey = path.relative(pluginFolder, absolutePath).replace(/\\/g, '/');
 
-  if (pluginFilter(filename)) {
-    const dir = global.__filename(absolutePath);
-    
-    if (pluginKey in global.plugins) {
-      if (existsSync(dir)) conn.logger.info(` updated plugin - '${pluginKey}'`);
-      else {
-        conn.logger.warn(`deleted plugin - '${pluginKey}'`);
-        return delete global.plugins[pluginKey];
-      }
-    } else conn.logger.info(`new plugin - '${pluginKey}'`);
-    
-    
-    const err = syntaxerror(readFileSync(dir), pluginKey, {
-      sourceType: 'module',
-      allowAwaitOutsideFunction: true,
-    });
-    
-    if (err) conn.logger.error(`syntax error while loading '${pluginKey}'\n${format(err)}`);
+  if (!pluginFilter(filename)) return;
+
+  try {
+    if (global.plugins[pluginKey]) delete global.plugins[pluginKey];
+    const module = await import(`${global.__filename(absolutePath)}?update=${Date.now()}`);
+    global.plugins[pluginKey] = module.default || module;
+    conn.logger.info(`Plugin recargado: ${pluginKey}`);
+  } catch (e) {
+    conn.logger.error(`Error recargando plugin '${pluginKey}': ${e}`);
+  }
+};
     else {
       try {
         const module = (await import(`${dir}?update=${Date.now()}`));
