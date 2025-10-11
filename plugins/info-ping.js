@@ -4,7 +4,6 @@ import speed from 'performance-now'
 
 let handler = async (m, { conn }) => {
   const timestamp = speed()
-  const latensi = speed() - timestamp
 
   const cpu = os.cpus()[0].model
   const cores = os.cpus().length
@@ -51,9 +50,7 @@ let handler = async (m, { conn }) => {
   ctx.fillStyle = '#ffffff'
   ctx.font = '26px Sans-serif'
   ctx.fillText('LATENCIA', 80, 190)
-  ctx.fillStyle = '#00ffff'
-  ctx.fillText(`${latensi.toFixed(2)} ms`, 320, 190)
-
+  
   ctx.fillStyle = '#ffffff'
   ctx.fillText('CPU', 80, 240)
   ctx.fillStyle = '#00ffff'
@@ -100,6 +97,11 @@ let handler = async (m, { conn }) => {
   ctx.fillText('Mode Systems Monitoring © 2025', width / 2, height - 40)
 
   const image = await canvas.encode('png')
+  
+  const latensi = speed() - timestamp
+  
+  ctx.fillStyle = '#00ffff'
+  ctx.fillText(`${latensi.toFixed(2)} ms`, 320, 190)
 
   const caption = `SISTEMA ONLINE
 Latencia: ${latensi.toFixed(2)} ms
@@ -111,5 +113,8 @@ Uptime: ${uptime} hrs`
   await conn.sendMessage(m.chat, { image, caption }, { quoted: m })
 }
 
+handler.help = ['ping']
+handler.tags = ['info']
 handler.command = ['ping', 'p']
+
 export default handler
