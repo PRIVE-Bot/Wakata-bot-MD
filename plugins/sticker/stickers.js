@@ -69,7 +69,7 @@ ffmpeg(tempIn)
 .inputFormat('mp4')
 .outputOptions([
 '-vcodec libwebp',
-'-filter:v fps=15,scale=512:-1:force_original_aspect_ratio=decrease,pad=512:512:(ow-iw)/2:(oh-ih)/2:color=white,format=yuva420p',
+'-filter:v fps=15,scale=512:-1,pad=512:512:(ow-iw)/2:(oh-ih)/2:color=white,format=yuva420p',
 '-loop 0',
 '-preset default',
 '-an',
