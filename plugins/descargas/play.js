@@ -47,19 +47,21 @@ const handler = async (m, { conn, text, command }) => {
 ┗⌼ ᴅᴇsᴄᴀʀɢᴀɴᴅᴏ...`;
 
     await conn.sendMessage(m.chat, { image: thumbRes, caption: infoMessage }, { quoted: fkontak });
+
     if (command === "play") {
       await m.react('🎧');
-      const res = await fetch(`https://api.yupra.my.id/api/downloader/ytmp3?url=${encodeURIComponent(url)}`);
+      
+      const res = await fetch(`https://api.kirito.my/api/ytmp3?url=${encodeURIComponent(url)}`);
       const json = await res.json();
 
-      if (!json?.status || !json.result?.link) return m.reply("❌ No se pudo descargar el audio desde Yupra.");
+      if (!json?.url) return m.reply("❌ No se pudo descargar el audio desde Kirito API.");
 
       await conn.sendMessage(
         m.chat,
         {
-          audio: { url: json.result.link },
+          audio: { url: json.url },
           mimetype: "audio/mpeg",
-          fileName: `${json.result.title}.mp3`
+          fileName: `${title}.mp3`
         },
         { quoted: fkontak }
       );
