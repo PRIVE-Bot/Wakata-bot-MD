@@ -71,8 +71,7 @@ const savetube = {
 
 const handler = async (m, { conn, text, command, global, botname, channelRD }) => {
   if (!text?.trim()) return conn.reply(m.chat, "❀ Dime el nombre de la canción o video que buscas", m);
-
-  await m.react('🔎');
+  try { await m.react('🔎'); } catch{}
 
   let url, title, thumbnail, author, timestamp, views, ago, seconds;
   if (savetube.isUrl(text)) {
@@ -100,8 +99,11 @@ const handler = async (m, { conn, text, command, global, botname, channelRD }) =
 
   if (seconds > 1800) return m.reply('⚠ El video supera el límite de 30 minutos.');
 
-  const thumbFileRes = await conn.getFile(thumbnail);
-  const thumb = await resizeImage(thumbFileRes.data, 300);
+  let thumb;
+  try {
+    const thumbFileRes = await conn.getFile(thumbnail);
+    thumb = await resizeImage(thumbFileRes.data, 300);
+  } catch { thumb = null; }
 
   const res3 = await fetch('https://files.catbox.moe/wfd0ze.jpg');
   const thumb3 = Buffer.from(await res3.arrayBuffer());
@@ -148,33 +150,26 @@ const handler = async (m, { conn, text, command, global, botname, channelRD }) =
     {
       image: thumb,
       caption: infoMessage,
-      contextInfo: {
-        isForwarded: true,
-        forwardedNewsletterMessageInfo: {
-          newsletterJid: channelRD.id,
-          newsletterName: channelRD.name,
-          serverMessageId: -1
-        }
-      }
+      ...global.rcanal,
     },
     { quoted: fkontak2 }
   );
 
   if (["play","yta","ytmp3","playaudio"].includes(command)) {
-    await m.react('🎧');
+    try { await m.react('🎧'); } catch{}
     const dl = await savetube.download(url,"audio");
     if (!dl.status) return m.reply(`❌ Error: ${dl.error}`);
     await conn.sendMessage(m.chat,{ audio:{ url:dl.result.download }, mimetype:"audio/mpeg", fileName:`${dl.result.title}.mp3` }, { quoted:fkontak });
   }
 
   if (["play2","ytv","ytmp4","mp4"].includes(command)) {
-    await m.react('📽️');
+    try { await m.react('📽️'); } catch{}
     const dl = await savetube.download(url,"video");
     if (!dl.status) return m.reply(`❌ Error: ${dl.error}`);
     await conn.sendMessage(m.chat,{ video:{ url:dl.result.download }, fileName:`${dl.result.title}.mp4`, mimetype:"video/mp4", thumbnail:thumb }, { quoted:fkontak });
   }
 
-  await m.react('✔️');
+  try { await m.react('✔️'); } catch{}
 };
 
 handler.command = handler.help = ["play","play2","yta","ytv","ytmp3","ytmp4","playaudio","mp4"];
