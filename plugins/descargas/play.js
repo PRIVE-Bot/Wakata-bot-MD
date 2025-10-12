@@ -62,7 +62,7 @@ const handler = async (m, { conn, text, command }) => {
 
     if (["play"].includes(command)) {
       try {
-        const apiURL = `https://api.yupra.my.id/api/downloader/ytmp4?url=${encodeURIComponent(url)}`;
+        const apiURL = `https://api.yupra.my.id/api/downloader/ytmp3?url=${encodeURIComponent(url)}`;
         const res = await fetch(apiURL, {
           headers: {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
@@ -71,12 +71,9 @@ const handler = async (m, { conn, text, command }) => {
         });
         const json = await res.json();
 
-        if (!json?.status || !json.result?.formats?.length) return m.reply("❌ No se pudo descargar el audio.");
+        if (!json?.status || !json.result?.link) return m.reply("❌ No se pudo descargar el audio.");
 
-        const audioFormat = json.result.formats.find(f => f.mimeType.includes("audio") || f.itag == 18);
-        if (!audioFormat) return m.reply("❌ No se encontró formato de audio disponible.");
-
-        const audioURL = audioFormat.url;
+        const audioURL = json.result.link;
         const audioTitle = json.result.title || title;
 
         await m.react('🎧');
