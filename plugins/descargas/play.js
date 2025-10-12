@@ -12,23 +12,14 @@ const handler = async (m, { conn, text }) => {
     const video = search.videos[0];
     const { title, url } = video;
 
-    // Obtener link directo de audio desde la API de Kirito
-    const res = await fetch(`https://api.kirito.my/api/ytmp3?url=${encodeURIComponent(url)}`, {
-      headers: { "User-Agent": "Mozilla/5.0" } // Evita errores 404
-    });
-
-    if (!res.ok) return m.reply(`❌ Error al conectarse con la API: ${res.status}`);
-
-    const json = await res.json();
-    const audioUrl = json?.url;
-
-    if (!audioUrl) return m.reply("❌ No se pudo obtener el audio desde la API.");
+    // Usar la API de Kirito que sirve audio directamente
+    const audioApiUrl = `https://api.kirito.my/api/ytmp3?url=${encodeURIComponent(url)}`;
 
     // Enviar audio directamente con Baileys
     await conn.sendMessage(
       m.chat,
       {
-        audio: { url: audioUrl },
+        audio: { url: audioApiUrl },
         mimetype: "audio/mpeg",
         fileName: `${title}.mp3`
       },
