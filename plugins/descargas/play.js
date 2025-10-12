@@ -1,4 +1,3 @@
-import fetch from "node-fetch";
 import yts from "yt-search";
 
 const handler = async (m, { conn, text }) => {
@@ -12,10 +11,10 @@ const handler = async (m, { conn, text }) => {
     const video = search.videos[0];
     const { title, url } = video;
 
-    // Usar la API de Kirito que sirve audio directamente
+    // URL de la API de Kirito que sirve el audio directamente
     const audioApiUrl = `https://api.kirito.my/api/ytmp3?url=${encodeURIComponent(url)}`;
 
-    // Enviar audio directamente con Baileys
+    // Enviar audio directamente con Baileys (no usar fetch)
     await conn.sendMessage(
       m.chat,
       {
@@ -27,7 +26,7 @@ const handler = async (m, { conn, text }) => {
     );
 
   } catch (err) {
-    console.error("❌ Error:", err.message);
+    console.error("❌ Error:", err);
     return m.reply(`⚠️ Ocurrió un error: ${err.message}`);
   }
 };
