@@ -8,7 +8,7 @@ async function resizeImage(buffer, size = 300) {
 }
 
 const handler = async (m, { conn, text, command }) => {
-  if (!text?.trim()) return conn.reply(m.chat, `${emoji} Dime el nombre de la canción o video que buscas`, m);
+  if (!text?.trim()) return conn.reply(m.chat, "❀ Dime el nombre de la canción o video que buscas", m);
 
   await m.react('🔎');
 
@@ -21,7 +21,7 @@ const handler = async (m, { conn, text, command }) => {
 
     if (seconds > 1800) return m.reply('⚠ El video supera el límite de 30 minutos.');
 
-    const thumbFileRes = await conn.getFile(img);
+    const thumbFileRes = await conn.getFile(thumbnail);
     const thumbResized = await resizeImage(thumbFileRes.data, 300);
 
     const fkontak = {
@@ -51,25 +51,22 @@ const handler = async (m, { conn, text, command }) => {
     await conn.sendMessage(m.chat, { image: thumbFileRes.data, caption: infoMessage }, { quoted: fkontak });
 
     if (["play", "yta", "ytmp3", "playaudio"].includes(command)) {
-      const apiURL = `https://api.yupra.my.id/api/downloader/ytmp3?url=${encodeURIComponent(url)}`;
-      const res = await fetch(apiURL);
+      const res = await fetch(`https://api.yupra.my.id/api/downloader/ytmp3?url=${encodeURIComponent(url)}`);
       const json = await res.json();
-
-      if (!json?.result?.link) return m.reply("❌ No se pudo descargar el audio.");
+      const audioURL = json?.result?.link;
+      if (!audioURL) return m.reply("❌ No se pudo descargar el audio.");
 
       await m.react('🎧');
       await conn.sendMessage(
         m.chat,
-        { audio: { url: json.result.link }, mimetype: "audio/mpeg", fileName: `${json.result.title || title}.mp3` },
+        { audio: { url: audioURL }, mimetype: "audio/mpeg", fileName: `${json.result.title || title}.mp3` },
         { quoted: fkontak }
       );
     }
 
     if (["play2", "ytv", "ytmp4", "mp4"].includes(command)) {
-      const apiURL = `https://api.yupra.my.id/api/downloader/ytmp4?url=${encodeURIComponent(url)}`;
-      const res = await fetch(apiURL);
+      const res = await fetch(`https://api.yupra.my.id/api/downloader/ytmp4?url=${encodeURIComponent(url)}`);
       const json = await res.json();
-
       const videoURL = json?.result?.formats?.[0]?.url;
       if (!videoURL) return m.reply("❌ No se pudo descargar el video.");
 
