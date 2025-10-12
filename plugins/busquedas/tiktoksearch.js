@@ -90,7 +90,7 @@ let handler = async (m, { conn, text }) => {
 
   } catch (error) {
     console.error(error);
-    conn.reply(m.chat, 'Error al descargar videos de TikTok.', m);
+    conn.reply(m.chat, `Error al descargar videos de TikTok.${error.message}`, m);
   }
 };
 
