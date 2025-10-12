@@ -93,32 +93,38 @@ await m.react('🌟');
     );
 
     if (["play"].includes(command)) {
-      try {
-        const apiURL = `https://api.yupra.my.id/api/downloader/ytmp4?url=${encodeURIComponent(url)}`;
-        const res = await fetch(apiURL);
-        const json = await res.json();
+  try {
+    const apiURL = `https://api.yupra.my.id/api/downloader/ytmp4?url=${encodeURIComponent(url)}`;
+    const res = await fetch(apiURL);
+    const json = await res.json();
 
-        if (!json?.status || !json.res?.url) {
-          return m.reply("❌ No se pudo descargar el audio desde Sylphy.");
-        }
-await m.react('🎧');
-
-        await conn.sendMessage(
-          m.chat,
-          {
-            audio: { url: json.res.url },
-            mimetype: "audio/mpeg",
-            fileName: `${json.res.title || title}.mp3`
-           // ptt: true
-          },
-          { quoted: fkontak }
-        );
-
-      } catch (err) {
-        console.error("❌ Error en play:", err.message);
-        return m.reply(`⚠️ Ocurrió un error: ${err.message}`);
-      }
+    if (!json?.status || !json.result?.formats?.length) {
+      return m.reply("❌ No se pudo descargar el audio.");
     }
+
+    const audioFormat = json.result.formats.find(f => f.mimeType.includes("audio") || f.itag == 18);
+    if (!audioFormat) return m.reply("❌ No se encontró formato de audio disponible.");
+
+    const audioURL = audioFormat.url;
+    const audioTitle = json.result.title || title;
+
+    await m.react('🎧');
+
+    await conn.sendMessage(
+      m.chat,
+      {
+        audio: { url: audioURL },
+        mimetype: "audio/mpeg",
+        fileName: `${audioTitle}.mp3`
+      },
+      { quoted: fkontak }
+    );
+
+  } catch (err) {
+    console.error("❌ Error en play:", err.message);
+    return m.reply(`⚠️ Ocurrió un error: ${err.message}`);
+  }
+}
 
     if (["play2"].includes(command)) {
       try {
