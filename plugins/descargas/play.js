@@ -13,10 +13,17 @@ const handler = async (m, { conn, text }) => {
     const { title, url } = video;
 
     // Obtener link directo de audio desde la API de Kirito
-    const res = await fetch(`https://api.kirito.my/api/ytmp3?url=${encodeURIComponent(url)}`);
+    const res = await fetch(`https://api.kirito.my/api/ytmp3?url=${encodeURIComponent(url)}`, {
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+      }
+    });
+
+    if (!res.ok) return m.reply(`❌ Error al conectarse con la API: ${res.status}`);
+
     const json = await res.json();
 
-    if (!json?.url) return m.reply("❌ No se pudo descargar el audio.");
+    if (!json?.url) return m.reply("❌ No se pudo descargar el audio desde Kirito API.");
 
     // Enviar el audio
     await conn.sendMessage(
