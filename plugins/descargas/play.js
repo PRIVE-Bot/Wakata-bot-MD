@@ -8,41 +8,34 @@ async function resizeImage(buffer, size = 300) {
 }
 
 const handler = async (m, { conn, text, command }) => {
+  if (!text?.trim()) return conn.reply(m.chat, `❌ Dime el nombre de la canción o video que buscas`, m);
+
   await m.react('🔎');
   await m.react('🔍');
   await m.react('🌟');
-
-  if (!text?.trim()) return conn.reply(m.chat, `${emoji} Dime el nombre de la canción o video que buscas`, m, rcanal);
 
   try {
     const search = await yts.search({ query: text, pages: 1 });
     if (!search.videos.length) return m.reply("❌ No se encontró nada con ese nombre.");
 
-    const videoInfo = search.videos[0];
-    const { title, thumbnail, timestamp, views, ago, url, author } = videoInfo;
+    const video = search.videos[0];
+    const { title, thumbnail, timestamp, views, ago, url, author } = video;
+    const vistas = formatViews(views);
 
-    const [thumbFileRes, thumb2Res, res3] = await Promise.all([
-      conn.getFile(thumbnail),
-      fetch('https://files.catbox.moe/f8qrut.png'),
-      fetch('https://files.catbox.moe/wfd0ze.jpg')
-    ]);
-
-    const thumb = thumbFileRes.data;
-    const thumbResized = await resizeImage(thumb, 300);
-    const thumb2 = Buffer.from(await thumb2Res.arrayBuffer());
-    const thumb3 = Buffer.from(await res3.arrayBuffer());
-
-    const fkontak2 = {
-      key: { fromMe: false, participant: "0@s.whatsapp.net" },
-      message: { documentMessage: { title: "𝗗𝗘𝗦𝗖𝗔𝗥𝗚𝗔𝗡𝗗𝗢", fileName: botname, jpegThumbnail: thumb3 } }
-    };
-
+    const thumbRes = await resizeImage((await conn.getFile(thumbnail)).data, 300);
     const fkontak = {
       key: { fromMe: false, participant: "0@s.whatsapp.net" },
-      message: { orderMessage: { itemCount: 1, status: 1, surface: 1, message: `「 ${title} 」`, orderTitle: "Mejor Bot", thumbnail: thumbResized } }
+      message: {
+        orderMessage: {
+          itemCount: 1,
+          status: 1,
+          surface: 1,
+          message: `「 ${title} 」`,
+          orderTitle: "Mejor Bot",
+          thumbnail: thumbRes
+        }
+      }
     };
-
-    const vistas = formatViews(views);
 
     const infoMessage = `★ ${global.botname || 'Bot'} ★
 
@@ -51,70 +44,54 @@ const handler = async (m, { conn, text, command }) => {
 ┃✎ *Vistas:* ${vistas} 
 ┃✎ *Duración:* ${timestamp}
 ┃✎ *Publicado:* ${ago}
-┃
 ┗⌼ ᴅᴇsᴄᴀʀɢᴀɴᴅᴏ...`;
 
-    await conn.sendMessage(
-      m.chat,
-      { image: thumb, caption: infoMessage, contextInfo: { isForwarded: true, forwardedNewsletterMessageInfo: { newsletterJid: channelRD.id, newsletterName: channelRD.name, serverMessageId: -1 } } },
-      { quoted: fkontak2 }
-    );
+    await conn.sendMessage(m.chat, { image: thumbRes, caption: infoMessage }, { quoted: fkontak });
+    if (command === "play") {
+      await m.react('🎧');
+      const res = await fetch(`https://api.yupra.my.id/api/downloader/ytmp3?url=${encodeURIComponent(url)}`);
+      const json = await res.json();
 
-    if (["play"].includes(command)) {
-      try {
-        const apiURL = `https://api.yupra.my.id/api/downloader/ytmp3?url=${encodeURIComponent(url)}`;
-        const res = await fetch(apiURL, {
-          headers: {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
-            "Accept": "application/json"
-          }
-        });
-        const json = await res.json();
+      if (!json?.status || !json.result?.link) return m.reply("❌ No se pudo descargar el audio desde Yupra.");
 
-        if (!json?.status || !json.result?.link) return m.reply("❌ No se pudo descargar el audio.");
-
-        const audioURL = json.result.link;
-        const audioTitle = json.result.title || title;
-
-        await m.react('🎧');
-
-        await conn.sendMessage(
-          m.chat,
-          { audio: { url: audioURL }, mimetype: "audio/mpeg", fileName: `${audioTitle}.mp3` },
-          { quoted: fkontak }
-        );
-
-      } catch (err) {
-        console.error("❌ Error en play:", err.message);
-        return m.reply(`⚠️ Ocurrió un error: ${err.message}`);
-      }
+      await conn.sendMessage(
+        m.chat,
+        {
+          audio: { url: json.result.link },
+          mimetype: "audio/mpeg",
+          fileName: `${json.result.title}.mp3`
+        },
+        { quoted: fkontak }
+      );
     }
 
-    if (["play2"].includes(command)) {
+    if (command === "play2") {
+      await m.react('📽️');
       try {
         const apiURL = `https://api.sylphy.xyz/download/ytmp4?url=${encodeURIComponent(url)}&apikey=sylphy-fbb9`;
         const res = await fetch(apiURL);
         const json = await res.json();
-
         if (!json?.status || !json.res?.url) return m.reply("❌ No se pudo descargar el video desde Sylphy.");
-
-        await m.react('📽️');
 
         await conn.sendMessage(
           m.chat,
-          { video: { url: json.res.url }, fileName: `${json.res.title || title}.mp4`, mimetype: "video/mp4", thumbnail: thumb },
+          {
+            video: { url: json.res.url },
+            fileName: `${json.res.title || title}.mp4`,
+            mimetype: "video/mp4",
+            thumbnail: thumbRes
+          },
           { quoted: fkontak }
         );
-
       } catch (err) {
         console.error("❌ Error en play2:", err.message);
         return m.reply(`⚠️ Ocurrió un error: ${err.message}`);
       }
     }
 
-  } catch (error) {
-    console.error("❌ Error:", error);
-    return m.reply(`⚠️ Ocurrió un error: ${error.message}`);
+  } catch (err) {
+    console.error("❌ Error:", err.message);
+    return m.reply(`⚠️ Ocurrió un error: ${err.message}`);
   }
 };
 
@@ -124,5 +101,7 @@ export default handler;
 
 function formatViews(views) {
   if (typeof views !== "number" || isNaN(views)) return "Desconocido";
-  return views >= 1000 ? (views / 1000).toFixed(1) + "k (" + views.toLocaleString() + ")" : views.toString();
+  return views >= 1000
+    ? (views / 1000).toFixed(1) + "k (" + views.toLocaleString() + ")"
+    : views.toString();
 }
