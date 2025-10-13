@@ -1,5 +1,10 @@
-import pkg from '@whiskeysockets/baileys'
-const { proto, generateWAMessage, prepareWAMessageMedia, relayMessage } = pkg
+import * as baileys from '@whiskeysockets/baileys';
+
+const { 
+  proto, 
+  generateWAMessage, 
+  relayMessage 
+} = baileys;
 
 let handler = async (m, { conn }) => {
   const owner = {
@@ -16,7 +21,6 @@ let handler = async (m, { conn }) => {
     ]
   }
 
-  // --- 1. Enviar contacto (vCard) ---
   const vcard = `
 BEGIN:VCARD
 VERSION:3.0
@@ -34,9 +38,6 @@ END:VCARD
     { quoted: m }
   )
 
-  // --- 2. Enviar mensaje de plantilla con botones de URL ---
-  
-  // Mapear los botones al formato de TemplateMessage
   const urlButtons = owner.buttons.map(b => ({
     urlButton: { displayText: b.displayText, url: b.url }
   }))
@@ -44,17 +45,13 @@ END:VCARD
   const templateMessage = proto.Message.fromObject({
       templateMessage: {
           hydratedTemplate: {
-              // El cuerpo del mensaje (texto principal)
               hydratedContentText: `👤 ${owner.name}\n📱 +${owner.number}\n🏢 ${owner.org}\n\n${owner.desc}`,
-              // El texto del pie de página (footer)
               hydratedFooterText: owner.footer,
-              // Agregar los botones
               hydratedButtons: urlButtons
           }
       }
   })
 
-  // Enviar el mensaje de plantilla
   const msg = await generateWAMessage(m.chat, templateMessage, {
       userJid: conn.user.id,
       quoted: m 
