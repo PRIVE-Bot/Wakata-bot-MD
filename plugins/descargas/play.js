@@ -179,7 +179,7 @@ const handler = async (m, { conn, text, command }) => {
         documentMessage: {
           title: `「 ${title} 」`,
           fileName: botname,
-          jpegThumbnail: thumbResized
+          jpegThumbnail: thumb3
         }
       }
     }
@@ -220,8 +220,8 @@ const handler = async (m, { conn, text, command }) => {
         {
           audio: { url: dl.result.download },
           mimetype: "audio/mpeg",
-          fileName: `${dl.result.title}.mp3`,
-          ptt: true
+          fileName: `${dl.result.title}.mp3`
+         // ptt: true
         },
         { quoted: fkontak }
       );
