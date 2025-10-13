@@ -139,7 +139,7 @@ const handler = async (m, { conn, text, command }) => {
       title = search.title || "Desconocido";
       thumbnail = search.thumbnail;
       author = search.author;
-      vistas = search.views.toLocaleString();
+      vistas = search.views?.toLocaleString?.() || "Desconocido";
       timestamp = search.timestamp;
       ago = search.ago;
     } else {
@@ -150,28 +150,14 @@ const handler = async (m, { conn, text, command }) => {
       title = videoInfo.title;
       thumbnail = videoInfo.thumbnail;
       author = videoInfo.author;
-      vistas = videoInfo.views.toLocaleString();
+      vistas = videoInfo.views?.toLocaleString?.() || "Desconocido";
       timestamp = videoInfo.timestamp;
       ago = videoInfo.ago;
     }
 
     const thumbResized = await resizeImage(await (await fetch(thumbnail)).buffer(), 300);
 
-    const fkontak2 = {
-      key: { fromMe: false, participant: "0@s.whatsapp.net" },
-      message: {
-        orderMessage: {
-          itemCount: 1,
-          status: 1,
-          surface: 1,
-          message: `「 ${title} 」`,
-          orderTitle: "Descarga",
-          thumbnail: thumbResized
-        }
-      }
-    };
-
-    const res3 = await fetch('https://files.catbox.moe/wfd0ze.jpg');
+    const res3 = await fetch("https://files.catbox.moe/wfd0ze.jpg");
     const thumb3 = Buffer.from(await res3.arrayBuffer());
 
     const fkontak2 = {
@@ -179,15 +165,20 @@ const handler = async (m, { conn, text, command }) => {
       message: {
         documentMessage: {
           title: "𝗗𝗘𝗦𝗖𝗔𝗥𝗚𝗔𝗡𝗗𝗢",
-          fileName: botname,
+          fileName: global.botname || "Bot",
           jpegThumbnail: thumb3
         }
       }
-    }
+    };
+
+    const channelRD = {
+      id: "120363366301023908@newsletter",
+      name: "Canal Oficial Kirito-Bot"
+    };
 
     const infoMessage = `★ ${global.botname || 'Bot'} ★
 
-  ┏☾ *Título:* 「 ${title} 」
+┏☾ *Título:* 「 ${title} 」
 ┏┛ *Canal:* ${author?.name || 'Desconocido'}
 ┃✎ *Vistas:* ${vistas}
 ┃✎ *Duración:* ${timestamp}
@@ -209,10 +200,10 @@ const handler = async (m, { conn, text, command }) => {
           }
         }
       },
-      { quoted: fkontak }
+      { quoted: fkontak2 }
     );
 
-    if (command === "mp3", "play") {
+    if (["mp3", "play"].includes(command)) {
       await m.react("🎧");
       const dl = await savetube.download(url, "audio");
       if (!dl.status) return m.reply(`❌ Error: ${dl.error}`);
@@ -228,7 +219,7 @@ const handler = async (m, { conn, text, command }) => {
       );
     }
 
-    if (command === "mp4", "play2") {
+    if (["mp4", "play2"].includes(command)) {
       await m.react("🎬");
       const dl = await savetube.download(url, "video");
       if (!dl.status) return m.reply(`❌ Error: ${dl.error}`);
@@ -251,7 +242,7 @@ const handler = async (m, { conn, text, command }) => {
   }
 };
 
-handler.command = handler.help = ["mp3", "play", "play2", "mp4"];
+handler.command = handler.help = ["mp3", "mp4", "play", "play2"];
 handler.tags = ["downloader"];
 
 export default handler;
