@@ -1,59 +1,159 @@
-import fetch from "node-fetch"
-import yts from "yt-search"
-import fs from "fs"
-import { tmpdir } from "os"
-import path from "path"
+import fetch from "node-fetch";
+import yts from "yt-search";
+import Jimp from "jimp";
 
-let handler = async (m, { conn, text, usedPrefix, command }) => {
-  if (!text) return conn.reply(m.chat, `⚠️ Ingresa el nombre o enlace de un video de YouTube.\n\nEjemplo:\n${usedPrefix + command} despacito`, m)
+const FORMAT_VIDEO = ["360", "480", "720", "1080", "1440", "4k"];
+
+async function resizeImage(buffer, size = 300) {
+  const image = await Jimp.read(buffer);
+  return image.resize(size, size).getBufferAsync(Jimp.MIME_JPEG);
+}
+
+const handler = async (m, { conn, text, command }) => {
+  await m.react('🔎');
+  await m.react('🔍');
+  await m.react('🌟');
+
+  if (!text?.trim()) {
+    return conn.reply(m.chat, "❌ Dime el nombre de la canción o video que buscas", m);
+  }
 
   try {
-    const search = await yts(text)
-    const video = search.videos && search.videos.length > 0 ? search.videos[0] : null
-    if (!video) return conn.reply(m.chat, "❌ No se encontró ningún resultado.", m)
+    const search = await yts.search({ query: text, pages: 1 });
+    if (!search.videos.length) return m.reply("❌ No se encontró nada con ese nombre.");
 
-    const api = `https://api.kirito.my/api/ytmp3?url=${encodeURIComponent(video.url)}&apikey=by_deylin`
-    const res = await fetch(api)
-    const data = await res.json()
-    if (!data?.resultado?.link_descarga) return conn.reply(m.chat, "❌ No se pudo obtener el enlace de descarga.", m)
+    const videoInfo = search.videos[0];
+    const { title, thumbnail, timestamp, views, ago, url, author } = videoInfo;
 
-    const infoMessage = `
-🎶 *TÍTULO:* ${video.title}
-📺 *CANAL:* ${video.author?.name || "Desconocido"}
-⏳ *DURACIÓN:* ${video.timestamp}
-👁️ *VISTAS:* ${video.views.toLocaleString()}
-📅 *PUBLICADO:* ${video.ago}
-🔗 *ENLACE:* ${video.url}
-`.trim()
+    const [thumbFileRes, thumb2Res] = await Promise.all([
+      conn.getFile(thumbnail),
+      fetch('https://files.catbox.moe/f8qrut.png')
+    ]);
 
-    await conn.sendMessage(m.chat, { image: { url: video.thumbnail }, caption: infoMessage }, { quoted: m })
+    const thumb = thumbFileRes.data;
+    const thumbResized = await resizeImage(thumb, 300);   
+    const thumb2 = Buffer.from(await thumb2Res.arrayBuffer());
 
-    const audioUrl = data.resultado.link_descarga
-    const tempPath = path.join(tmpdir(), `${video.videoId}.mp3`)
+    const res3 = await fetch('https://files.catbox.moe/wfd0ze.jpg');
+    const thumb3 = Buffer.from(await res3.arrayBuffer());
 
-    const audioRes = await fetch(audioUrl)
-    const arrayBuffer = await audioRes.arrayBuffer()
-    fs.writeFileSync(tempPath, Buffer.from(arrayBuffer))
+    const fkontak2 = {
+      key: { fromMe: false, participant: "0@s.whatsapp.net" },
+      message: {
+        documentMessage: {
+          title: "𝗗𝗘𝗦𝗖𝗔𝗥𝗚𝗔𝗡𝗗𝗢",
+          fileName: title,
+          jpegThumbnail: thumb3
+        }
+      }
+    }
+
+    const fkontak = {
+      key: { fromMe: false, participant: "0@s.whatsapp.net" },
+      message: {
+        orderMessage: {
+          itemCount: 1,
+          status: 1,
+          surface: 1,
+          message: `「 ${title} 」`,
+          orderTitle: "Mejor Bot",
+          thumbnail: thumbResized
+        }
+      }
+    };
+
+    const vistas = formatViews(views);
+
+    const infoMessage = `★ ${global.botname || 'Bot'} ★
+
+┏☾ *Titulo:* 「 ${title} 」 
+┏┛  *Canal:* ${author?.name || 'Desconocido'} 
+┃✎ *Vistas:* ${vistas} 
+┃✎ *Duración:* ${timestamp}
+┃✎ *Publicado:* ${ago}
+┃
+┗⌼ ᴅᴇsᴄᴀʀɢᴀɴᴅᴏ...`;
 
     await conn.sendMessage(
       m.chat,
       {
-        audio: fs.readFileSync(tempPath),
-        mimetype: "audio/mpeg",
-        fileName: `${video.title}.mp3`
+        image: thumb,
+        caption: infoMessage,
+        contextInfo: { isForwarded: true }
       },
-      { quoted: m }
-    )
+      { quoted: fkontak2 }
+    );
 
-    fs.unlinkSync(tempPath)
-  } catch (err) {
-    console.error(err)
-    conn.reply(m.chat, "⚠️ Ocurrió un error al procesar la descarga.", m)
+    if (["play"].includes(command)) {
+      try {
+        const apiURL = `https://delirius-apiofc.vercel.app/download/ytmp3?url=${encodeURIComponent(url)}`;
+        const res = await fetch(apiURL);
+        const json = await res.json();
+
+        if (!json?.status || !json.data?.download?.url) {
+          return m.reply("❌ No se pudo descargar el audio desde Delirius.");
+        }
+
+        await m.react('🎧');
+
+        await conn.sendMessage(
+          m.chat,
+          {
+            audio: { url: json.data.download.url },
+            mimetype: "audio/mpeg",
+            fileName: json.data.download.filename
+          },
+          { quoted: fkontak }
+        );
+
+      } catch (err) {
+        console.error("❌ Error en play:", err.message);
+        return m.reply(`⚠️ Ocurrió un error: ${err.message}`);
+      }
+    }
+
+    if (["play2"].includes(command)) {
+      try {
+        const apiURL = `https://delirius-apiofc.vercel.app/download/ytmp4?url=${encodeURIComponent(url)}`;
+        const res = await fetch(apiURL);
+        const json = await res.json();
+
+        if (!json?.status || !json.data?.download?.url) {
+          return m.reply("❌ No se pudo descargar el video desde Delirius.");
+        }
+
+        await m.react('📽️');
+
+        await conn.sendMessage(
+          m.chat,
+          {
+            video: { url: json.data.download.url },
+            fileName: json.data.download.filename,
+            mimetype: "video/mp4",
+            thumbnail: thumb
+          },
+          { quoted: fkontak }
+        );
+
+      } catch (err) {
+        console.error("❌ Error en play2:", err.message);
+        return m.reply(`⚠️ Ocurrió un error: ${err.message}`);
+      }
+    }
+
+  } catch (error) {
+    console.error("❌ Error:", error);
+    return m.reply(`⚠️ Ocurrió un error: ${error.message}`);
   }
+};
+
+handler.command = handler.help = ["play", "play2"];
+handler.tags = ["downloader"];
+
+export default handler;
+
+function formatViews(views) {
+  if (!views) return "Desconocido";
+  const n = Number(views.replace(/,/g, ''));
+  return n >= 1000 ? (n / 1000).toFixed(1) + "k (" + n.toLocaleString() + ")" : views;
 }
-
-handler.help = ["play", "mp3"]
-handler.tags = ["descargas"]
-handler.command = /^(play|mp3)$/i
-
-export default handler
