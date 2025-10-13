@@ -114,7 +114,7 @@ const fkontak4 = {
     contactMessage: {
       displayName: botname,
       vcard: `BEGIN:VCARD\nVERSION:3.0\nFN:${botname}\nTEL;waid=0:0\nEND:VCARD`,
-      jpegThumbnail: thumb,
+      jpegThumbnail: thumb4,
       contextInfo: {
         externalAdReply: {
           title: botname,
