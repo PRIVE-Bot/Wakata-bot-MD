@@ -221,30 +221,49 @@ async function connectionUpdate(update) {
         let secret = await sock.requestPairingCode((m.sender.split`@`[0]))
         secret = secret.match(/.{1,4}/g)?.join("-")
 
-        txtCode = await conn.sendMessage(m.chat, {
+       /* txtCode = await conn.sendMessage(m.chat, {
             image: { url: global.img },
             caption: rtx2,
             ...global.fake,
             quoted: m,
-        });
+        });*/
 
-        const msg = generateWAMessageFromContent(m.chat, baileys.proto.Message.fromObject({ 
-            interactiveMessage: {
-                body: { text: `𝗧𝘂 𝗰𝗼𝗱𝗶𝗴𝗼 𝗽𝗮𝗿𝗮 𝘃𝗶𝗻𝗰𝘂𝗹𝗮𝗿 𝗲𝘀:\n⇶ ${chalk.bold(secret)}` }, 
-                footer: { text: `${dev}` },
-                nativeFlowMessage: {
-                    buttons: [
-                        {
-                            name: 'cta_copy',
-                            buttonParamsJson: JSON.stringify({
-                                display_text: `*COPIAR CÓDIGO*`,
-                                copy_code: secret
-                            })
-                        }
-                    ]
-                }
+        const thumb = await (await fetch(imgurl)).buffer()
+
+const msg = generateWAMessageFromContent(
+    m.chat,
+    proto.Message.fromObject({ 
+        interactiveMessage: {
+            body: { text: rtx2 }, 
+            footer: { text: `${dev}` },
+            nativeFlowMessage: {
+                buttons: [
+                    {
+                        name: 'cta_copy',
+                        buttonParamsJson: JSON.stringify({
+                            display_text: `*COPIAR CÓDIGO*`,
+                            copy_code: secret
+                        })
+                    }
+                ]
             }
-        }), { quoted: m })
+        },
+        contextInfo: {
+            externalAdReply: {
+                title: 'SUBBOT - By Deylin',
+                body: textbot,
+                mediaType: 1,
+                mediaUrl: redes,
+                sourceUrl: redes,
+                thumbnail: thumb,
+                showAdAttribution: false,
+                containsAutoReply: true,
+                renderLargerThumbnail: true
+            }
+        }
+    }),
+    { quoted: fkontak }
+)
 
         const codeBot = await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
 
