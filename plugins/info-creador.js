@@ -1,10 +1,5 @@
-// Código creado por Deylin
-// https://github.com/Deylin-eliac 
-// código creado para https://github.com/Deylin-eliac
-// No quites créditos
-
 import pkg from '@whiskeysockets/baileys'
-const { generateWAMessageFromContent, proto } = pkg
+const { proto } = pkg
 
 let handler = async (m, { conn }) => {
   const owner = {
@@ -12,16 +7,16 @@ let handler = async (m, { conn }) => {
     number: '50432955554',
     org: 'Mode / Kirito-Bot',
     desc: 'Creador Principal de Kirito-Bot',
-    image: 'https://i.postimg.cc/nzt0Jht5/1756185471053.jpg',
     footer: '✨ Apóyame en mis proyectos y descubre más en mis redes.',
     buttons: [
-      { name: '💬 WhatsApp', url: 'https://wa.me/50432955554' },
-      { name: '📢 Canal Oficial', url: 'https://whatsapp.com/channel/0029VbAzn9GGU3BQw830eA0F' },
-      { name: '💰 Paypal', url: 'https://www.paypal.me/DeylinB' },
-      { name: '🌐 Website', url: 'https://Deylin.vercel.app/' }
+      { displayText: '💬 WhatsApp', url: 'https://wa.me/50432955554' },
+      { displayText: '📢 Canal Oficial', url: 'https://whatsapp.com/channel/0029VbAzn9GGU3BQw830eA0F' },
+      { displayText: '💰 Paypal', url: 'https://www.paypal.me/DeylinB' },
+      { displayText: '🌐 Website', url: 'https://Deylin.vercel.app/' }
     ]
   }
 
+  // vCard
   const vcard = `
 BEGIN:VCARD
 VERSION:3.0
@@ -30,59 +25,30 @@ ORG:${owner.org};
 TITLE:Creador Principal
 TEL;type=CELL;type=VOICE;waid=${owner.number}:${owner.number}
 EMAIL;type=INTERNET:soporte@mode.com
-URL:${owner.buttons[3].url}
 END:VCARD
 `.trim()
 
-  // Crear botones
-  const buttons = owner.buttons.map(btn => ({
-    name: 'cta_url',
-    buttonParamsJson: JSON.stringify({
-      display_text: btn.name,
-      url: btn.url
-    })
-  }))
-
-  // Crear el mensaje interactivo con la vCard y los botones
-  const msg = generateWAMessageFromContent(
+  // Enviar contacto
+  await conn.sendMessage(
     m.chat,
-    {
-      viewOnceMessage: {
-        message: {
-          messageContextInfo: { deviceListMetadata: {}, deviceListMetadataVersion: 2 },
-          interactiveMessage: proto.Message.InteractiveMessage.fromObject({
-            header: proto.Message.InteractiveMessage.Header.fromObject({
-              title: owner.name,
-              subtitle: owner.desc,
-              hasMediaAttachment: false
-            }),
-            body: proto.Message.InteractiveMessage.Body.fromObject({
-              text: `📞 *Contacto del creador*\n\n👤 ${owner.name}\n📱 +${owner.number}\n🏢 ${owner.org}\n\n📇 Se adjunta la tarjeta de contacto.`
-            }),
-            footer: proto.Message.InteractiveMessage.Footer.fromObject({
-              text: owner.footer
-            }),
-            nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.fromObject({
-              buttons
-            })
-          })
-        }
-      }
-    },
-    {}
+    { contacts: { displayName: owner.name, contacts: [{ vcard }] } },
+    { quoted: m }
   )
 
-  // Enviar mensaje con vCard adjunta y botones en el mismo envío
-  await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
+  // Enviar mensaje de botones
+  const templateButtons = owner.buttons.map((b, i) => ({
+    index: i,
+    urlButton: { displayText: b.displayText, url: b.url }
+  }))
+
   await conn.sendMessage(
     m.chat,
     {
-      contacts: {
-        displayName: owner.name,
-        contacts: [{ vcard }]
-      }
+      text: `👤 ${owner.name}\n📱 +${owner.number}\n🏢 ${owner.org}\n\n${owner.desc}`,
+      footer: owner.footer,
+      templateButtons
     },
-    { quoted: msg }
+    { quoted: m }
   )
 }
 
