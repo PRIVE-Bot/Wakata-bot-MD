@@ -69,7 +69,7 @@ let crm4 = "IF9hdXRvcmVzcG9uZGVyLmpzIGluZm8tYm90Lmpz"
 
 const res = await fetch('https://i.postimg.cc/vHqc5x17/1756169140993.jpg'); 
 const thumb2 = Buffer.from(await res.arrayBuffer());
-const fkontak = {global.img
+const fkontak = {
     key: {
         participants: "0@s.whatsapp.net",
         remoteJid: "status@broadcast",
