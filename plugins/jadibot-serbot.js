@@ -34,9 +34,6 @@ let emoji = emoji1[Math.floor(Math.random() * emoji1.length)];
 let botname = global.botname
 let dev = global.dev
 let jadi = global.jadi
-
-
-let img = imgs[Math.floor(Math.random() * imgs.length)];
 let rtx = `
 *${emoji}「 ${botname} 」${emoji}*
 
