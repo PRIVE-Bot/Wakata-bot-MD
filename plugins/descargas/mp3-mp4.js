@@ -59,8 +59,14 @@ const handler = async (m, { conn, text, command }) => {
 
     if (command === "play") {
       const apiURL = `https://delirius-apiofc.vercel.app/download/ytmp3?url=${encodeURIComponent(url)}`;
-      const res = await fetch(apiURL);
-      const json = await res.json();
+      const res = await fetch(apiURL, {
+  headers: {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "Accept": "application/json"
+  }
+});
+const json = await res.json();
+      
       if (!json?.status || !json.data?.download?.url) return m.reply("❌ No se pudo descargar el audio desde Delirius.");
 
       await m.react('🎧');
