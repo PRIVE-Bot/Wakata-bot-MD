@@ -34,6 +34,7 @@ let emoji = emoji1[Math.floor(Math.random() * emoji1.length)];
 let botname = global.botname
 let dev = global.dev
 let jadi = global.jadi
+let img = global.img
 
 let rtx = `
 *${emoji}「 ${botname} 」${emoji}*
@@ -88,7 +89,7 @@ const fkontak = {
 
 
 
-const res4 = await fetch(global.img);
+const res4 = await fetch(img);
 const thumb4 = Buffer.from(await res4.arrayBuffer());
 
 
