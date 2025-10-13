@@ -34,8 +34,18 @@ let emoji = emoji1[Math.floor(Math.random() * emoji1.length)];
 let botname = global.botname
 let dev = global.dev
 let jadi = global.jadi
-let img = global.img
+let imgs = [
+  'https://files.catbox.moe/y4mpyw.jpg',
+  'https://files.catbox.moe/0aixm3.jpg',
+  'https://files.catbox.moe/5bb4oj.jpg',
+  'https://files.catbox.moe/kbhfug.jpg',
+  'https://files.catbox.moe/0wia8n.jpg',
+  'https://files.catbox.moe/xz90gm.jpg',
+  'https://files.catbox.moe/2ev8qb.jpg',
+  'https://files.catbox.moe/oxwyvo.jpg'
+];
 
+let img = imgs[Math.floor(Math.random() * imgs.length)];
 let rtx = `
 *${emoji}「 ${botname} 」${emoji}*
 
