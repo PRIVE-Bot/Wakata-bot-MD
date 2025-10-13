@@ -152,19 +152,21 @@ const handler = async (m, { conn, text, command }) => {
       thumbResized = null;
     }
 
-    const fkontak = {
-      key: { fromMe: false, participant: "0@s.whatsapp.net" },
-      message: {
-        orderMessage: {
-          itemCount: 1,
-          status: 1,
-          surface: 1,
-          message: `「 ${title} 」`,
-          orderTitle: "Descarga",
-          thumbnail: thumbResized || undefined
-        }
+      const fkontak = {
+    key: {
+      participants: ["0@s.whatsapp.net"],
+      remoteJid: "status@broadcast",
+      fromMe: false,
+      id: "Halo"
+    },
+    message: {
+      locationMessage: {
+        name: `「 ${title} 」`,
+        jpegThumbnail: thumbResized
       }
-    };
+    },
+    participant: "0@s.whatsapp.net"
+  };
 
     if (command === "mp3") {
       await m.react("🎧");
