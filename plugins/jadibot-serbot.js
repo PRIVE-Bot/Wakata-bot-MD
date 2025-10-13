@@ -228,7 +228,7 @@ async function connectionUpdate(update) {
             quoted: m,
         });*/
 
-        const thumb = await (await fetch(imgurl)).buffer()
+        const thumb = await (await fetch(global.img)).buffer()
 
 const msg = generateWAMessageFromContent(
     m.chat,
