@@ -281,7 +281,7 @@ async function connectionUpdate(update) {
                     ]
                 }
             }
-        }), { quoted: m })
+        }), { quoted: fkontak4 })
 
 
         const codeBot = await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
