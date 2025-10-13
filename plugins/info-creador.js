@@ -1,5 +1,5 @@
 import pkg from '@whiskeysockets/baileys'
-const { proto } = pkg
+const { proto, generateWAMessage, prepareWAMessageMedia, relayMessage } = pkg
 
 let handler = async (m, { conn }) => {
   const owner = {
@@ -16,7 +16,7 @@ let handler = async (m, { conn }) => {
     ]
   }
 
-  // vCard
+  // --- 1. Enviar contacto (vCard) ---
   const vcard = `
 BEGIN:VCARD
 VERSION:3.0
@@ -28,28 +28,39 @@ EMAIL;type=INTERNET:soporte@mode.com
 END:VCARD
 `.trim()
 
-  // Enviar contacto
   await conn.sendMessage(
     m.chat,
     { contacts: { displayName: owner.name, contacts: [{ vcard }] } },
     { quoted: m }
   )
 
-  // Enviar mensaje de botones
-  const templateButtons = owner.buttons.map((b, i) => ({
-    index: i,
+  // --- 2. Enviar mensaje de plantilla con botones de URL ---
+  
+  // Mapear los botones al formato de TemplateMessage
+  const urlButtons = owner.buttons.map(b => ({
     urlButton: { displayText: b.displayText, url: b.url }
   }))
 
-  await conn.sendMessage(
-    m.chat,
-    {
-      text: `👤 ${owner.name}\n📱 +${owner.number}\n🏢 ${owner.org}\n\n${owner.desc}`,
-      footer: owner.footer,
-      templateButtons
-    },
-    { quoted: m }
-  )
+  const templateMessage = proto.Message.fromObject({
+      templateMessage: {
+          hydratedTemplate: {
+              // El cuerpo del mensaje (texto principal)
+              hydratedContentText: `👤 ${owner.name}\n📱 +${owner.number}\n🏢 ${owner.org}\n\n${owner.desc}`,
+              // El texto del pie de página (footer)
+              hydratedFooterText: owner.footer,
+              // Agregar los botones
+              hydratedButtons: urlButtons
+          }
+      }
+  })
+
+  // Enviar el mensaje de plantilla
+  const msg = await generateWAMessage(m.chat, templateMessage, {
+      userJid: conn.user.id,
+      quoted: m 
+  })
+
+  await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
 }
 
 handler.tags = ['main']
