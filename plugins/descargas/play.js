@@ -154,6 +154,7 @@ export default handler;
 
 function formatViews(views) {
   if (!views) return "Desconocido";
-  const n = Number(views.replace(/,/g, ''));
-  return n >= 1000 ? (n / 1000).toFixed(1) + "k (" + n.toLocaleString() + ")" : views;
+  let n = typeof views === "string" ? Number(views.replace(/,/g, '')) : Number(views);
+  if (isNaN(n)) return "Desconocido";
+  return n >= 1000 ? (n / 1000).toFixed(1) + "k (" + n.toLocaleString() + ")" : n.toString();
 }
