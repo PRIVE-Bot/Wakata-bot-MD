@@ -171,6 +171,20 @@ const handler = async (m, { conn, text, command }) => {
       }
     };
 
+    const res3 = await fetch('https://files.catbox.moe/wfd0ze.jpg');
+    const thumb3 = Buffer.from(await res3.arrayBuffer());
+
+    const fkontak2 = {
+      key: { fromMe: false, participant: "0@s.whatsapp.net" },
+      message: {
+        documentMessage: {
+          title: "𝗗𝗘𝗦𝗖𝗔𝗥𝗚𝗔𝗡𝗗𝗢",
+          fileName: botname,
+          jpegThumbnail: thumb3
+        }
+      }
+    }
+
     const infoMessage = `★ ${global.botname || 'Bot'} ★
 
   ┏☾ *Título:* 「 ${title} 」
