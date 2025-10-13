@@ -171,14 +171,22 @@ const handler = async (m, { conn, text, command }) => {
       }
     };
 
-    const channelRD = {
-      id: "120363366301023908@newsletter",
-      name: "Canal Oficial Kirito-Bot"
-    };
+        
+
+    const fkontak2 = {
+      key: { fromMe: false, participant: "0@s.whatsapp.net" },
+      message: {
+        documentMessage: {
+          title: "𝗗𝗘𝗦𝗖𝗔𝗥𝗚𝗔𝗡𝗗𝗢",
+          fileName: botname,
+          jpegThumbnail: thumbResized
+        }
+      }
+    }
 
     const infoMessage = `★ ${global.botname || 'Bot'} ★
 
-┏☾ *Título:* 「 ${title} 」
+  ┏☾ *Título:* 「 ${title} 」
 ┏┛ *Canal:* ${author?.name || 'Desconocido'}
 ┃✎ *Vistas:* ${vistas}
 ┃✎ *Duración:* ${timestamp}
@@ -215,7 +223,7 @@ const handler = async (m, { conn, text, command }) => {
           fileName: `${dl.result.title}.mp3`,
           ptt: true
         },
-        { quoted: fkontak2 }
+        { quoted: fkontak }
       );
     }
 
@@ -233,7 +241,7 @@ const handler = async (m, { conn, text, command }) => {
           mimetype: "video/mp4",
           caption: `🎬 ${dl.result.title}`
         },
-        { quoted: fkontak2 }
+        { quoted: fkontak }
       );
     }
   } catch (error) {
