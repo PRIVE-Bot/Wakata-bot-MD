@@ -173,11 +173,11 @@ const handler = async (m, { conn, text, command }) => {
 
         
 
-    const fkontak2 = {
+    const fkontak = {
       key: { fromMe: false, participant: "0@s.whatsapp.net" },
       message: {
         documentMessage: {
-          title: "𝗗𝗘𝗦𝗖𝗔𝗥𝗚𝗔𝗡𝗗𝗢",
+          title: `「 ${title} 」`,
           fileName: botname,
           jpegThumbnail: thumbResized
         }
