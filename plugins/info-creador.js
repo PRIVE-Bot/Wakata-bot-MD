@@ -1,107 +1,69 @@
 // Código creado por Deylin
 // https://github.com/Deylin-eliac 
-// codigo creado para https://github.com/Deylin-eliac
+// código creado para https://github.com/Deylin-eliac
 // No quites créditos
 
 import pkg from '@whiskeysockets/baileys'
-const { generateWAMessageContent, generateWAMessageFromContent, proto } = pkg
+const { generateWAMessageFromContent, proto } = pkg
 
 let handler = async (m, { conn }) => {
-  const proses = `✨\n *Obteniendo información de mis creadores...*`
-  await conn.sendMessage(m.chat, { text: proses }, { quoted: m })
-
-  async function createImage(url) {
-    const { imageMessage } = await generateWAMessageContent(
-      { image: { url } },
-      { upload: conn.waUploadToServer }
-    )
-    return imageMessage
+  const owner = {
+    name: '👑 Deylin',
+    number: '50432955554',
+    org: 'Mode / Kirito-Bot',
+    desc: 'Creador Principal de Kirito-Bot',
+    image: 'https://i.postimg.cc/nzt0Jht5/1756185471053.jpg',
+    footer: '✨ Apóyame en mis proyectos y descubre más en mis redes.',
+    buttons: [
+      { name: '💬 WhatsApp', url: 'https://wa.me/50432955554' },
+      { name: '📢 Canal Oficial', url: 'https://whatsapp.com/channel/0029VbAzn9GGU3BQw830eA0F' },
+      { name: '💰 Paypal', url: 'https://www.paypal.me/DeylinB' },
+      { name: '🌐 Website', url: 'https://Deylin.vercel.app/' }
+    ]
   }
 
-  const owners = [
-    {
-      name: 'Deylin',
-      desc: `👑 Creador Principal de ${botname}`,
-      image: 'https://i.postimg.cc/nzt0Jht5/1756185471053.jpg',
-      footer: '✨ Apóyame en mis proyectos y descubre más en mis redes.',
-      buttons: [
-        { name: 'WhatsApp', url: 'https://wa.me/50432955554' },
-        { name: 'Canal', url: 'https://whatsapp.com/channel/0029VbAzn9GGU3BQw830eA0F' },
-        { name: 'Paypal', url: 'https://www.paypal.me/DeylinB' },
-        { name: 'website', url: 'https://Deylin.vercel.app/' }
-      ]
-    },
-     {
-      name: 'davi zuni 17',
-      desc: '⚡ Colaborador y desarrollador base',
-      image: 'https://iili.io/FmXQQ07.jpg',
-      footer: '🔥 Aporta mejoras en el código y estabilidad del bot.',
-      buttons: [
-        { name: 'WhatsApp', url: 'https://wa.me/15614809253' },
-        { name: 'Github', url: 'https://github.com/Davizuni17' }
-      ]
-    },
-    {
-      name: '𝑪𝒉𝒐𝒍𝒊𝒕𝒐-𝑿𝒚𝒛',
-      desc: '🌀 Co-creador y tester oficial',
-      image: 'https://files.catbox.moe/29tejb.jpg',
-      footer: '💡 Gracias a él, este bot evoluciona con cada prueba.',
-      buttons: [
-        { name: 'WhatsApp', url: 'https://wa.me/50493374445' },
-        { name: 'Github', url: 'https://github.com/Elder504' },
-        { name: 'Canal', url: 'https://whatsapp.com/channel/0029VbABQOU77qVUUPiUek2W' },
-        { name: 'website', url: 'https://killua-bot.vercel.app/' }
-      ]
-    }
-  ]
+  const vcard = `
+BEGIN:VCARD
+VERSION:3.0
+FN:${owner.name}
+ORG:${owner.org};
+TITLE:Creador Principal
+TEL;type=CELL;type=VOICE;waid=${owner.number}:${owner.number}
+EMAIL;type=INTERNET:soporte@mode.com
+URL:${owner.buttons[3].url}
+END:VCARD
+`.trim()
 
-  let cards = []
-  for (let owner of owners) {
-    const imageMsg = await createImage(owner.image)
-
-    let formattedButtons = owner.buttons.map(btn => ({
-      name: 'cta_url',
-      buttonParamsJson: JSON.stringify({
-        display_text: btn.name,
-        url: btn.url
-      })
-    }))
-
-    cards.push({
-      body: proto.Message.InteractiveMessage.Body.fromObject({
-        text: `*${owner.name}*\n${owner.desc}`
-      }),
-      footer: proto.Message.InteractiveMessage.Footer.fromObject({
-        text: owner.footer
-      }),
-      header: proto.Message.InteractiveMessage.Header.fromObject({
-        hasMediaAttachment: true,
-        imageMessage: imageMsg
-      }),
-      nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.fromObject({
-        buttons: formattedButtons
-      })
+  // Crear botones
+  const buttons = owner.buttons.map(btn => ({
+    name: 'cta_url',
+    buttonParamsJson: JSON.stringify({
+      display_text: btn.name,
+      url: btn.url
     })
-  }
+  }))
 
-  const slideMessage = generateWAMessageFromContent(
+  // Crear el mensaje interactivo con la vCard y los botones
+  const msg = generateWAMessageFromContent(
     m.chat,
     {
       viewOnceMessage: {
         message: {
-          messageContextInfo: {
-            deviceListMetadata: {},
-            deviceListMetadataVersion: 2
-          },
+          messageContextInfo: { deviceListMetadata: {}, deviceListMetadataVersion: 2 },
           interactiveMessage: proto.Message.InteractiveMessage.fromObject({
-            body: proto.Message.InteractiveMessage.Body.create({
-              text: `👑 Creadores de ${botname}`
+            header: proto.Message.InteractiveMessage.Header.fromObject({
+              title: owner.name,
+              subtitle: owner.desc,
+              hasMediaAttachment: false
             }),
-            footer: proto.Message.InteractiveMessage.Footer.create({
-              text: 'Conoce a los desarrolladores del bot'
+            body: proto.Message.InteractiveMessage.Body.fromObject({
+              text: `📞 *Contacto del creador*\n\n👤 ${owner.name}\n📱 +${owner.number}\n🏢 ${owner.org}\n\n📇 Se adjunta la tarjeta de contacto.`
             }),
-            carouselMessage: proto.Message.InteractiveMessage.CarouselMessage.fromObject({
-              cards
+            footer: proto.Message.InteractiveMessage.Footer.fromObject({
+              text: owner.footer
+            }),
+            nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.fromObject({
+              buttons
             })
           })
         }
@@ -110,10 +72,21 @@ let handler = async (m, { conn }) => {
     {}
   )
 
-  await conn.relayMessage(m.chat, slideMessage.message, { messageId: slideMessage.key.id })
+  // Enviar mensaje con vCard adjunta y botones en el mismo envío
+  await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
+  await conn.sendMessage(
+    m.chat,
+    {
+      contacts: {
+        displayName: owner.name,
+        contacts: [{ vcard }]
+      }
+    },
+    { quoted: msg }
+  )
 }
 
 handler.tags = ['main']
-handler.command = handler.help = ['donar', 'owner', 'cuentasoficiales', 'creador', 'cuentas']
+handler.command = handler.help = ['creador', 'owner', 'contacto', 'deylin']
 
 export default handler
