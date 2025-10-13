@@ -2,7 +2,7 @@ import fetch from "node-fetch"
 import yts from "yt-search"
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
-  if (!text) return conn.reply(m.chat, `⚠️ Ingresa el nombre o enlace de un video de YouTube.\n\nEjemplo:\n${usedPrefix + command} set fire to the rain`, m)
+  if (!text) return conn.reply(m.chat, `⚠️ Ingresa el nombre o enlace de un video de YouTube.\n\nEjemplo:\n${usedPrefix + command} despacito`, m)
 
   try {
     const search = await yts(text)
@@ -22,11 +22,23 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 👁️ *VISTAS:* ${video.views.toLocaleString()}
 📅 *PUBLICADO:* ${video.ago}
 🔗 *ENLACE:* ${video.url}
-    `.trim()
+`.trim()
 
     await conn.sendMessage(m.chat, { image: { url: video.thumbnail }, caption: infoMessage }, { quoted: m })
-    await conn.sendMessage(m.chat, { audio: { url: data.resultado.link_descarga }, mimetype: "audio/mpeg" }, { quoted: m })
 
+    const audioResponse = await fetch(data.resultado.link_descarga)
+    const audioBuffer = await audioResponse.arrayBuffer()
+
+    await conn.sendMessage(
+      m.chat,
+      {
+        audio: Buffer.from(audioBuffer),
+        mimetype: "audio/mpeg",
+        fileName: `${video.title}.mp3`,
+        ptt: false
+      },
+      { quoted: m }
+    )
   } catch (err) {
     console.error(err)
     conn.reply(m.chat, "⚠️ Ocurrió un error al procesar la descarga.", m)
