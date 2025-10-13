@@ -69,7 +69,7 @@ let crm4 = "IF9hdXRvcmVzcG9uZGVyLmpzIGluZm8tYm90Lmpz"
 
 const res = await fetch('https://i.postimg.cc/vHqc5x17/1756169140993.jpg'); 
 const thumb2 = Buffer.from(await res.arrayBuffer());
-const fkontak = {
+const fkontak = {global.img
     key: {
         participants: "0@s.whatsapp.net",
         remoteJid: "status@broadcast",
@@ -83,6 +83,43 @@ const fkontak = {
         }
     },
     participant: "0@s.whatsapp.net"
+};
+
+
+
+
+const res4 = await fetch(global.img);
+const thumb4 = Buffer.from(await res4.arrayBuffer());
+
+
+const fkontak4 = {
+  key: {
+    fromMe: false,
+    participant: "0@s.whatsapp.net",
+    remoteJid: "status@broadcast",
+    id: "Halo"
+  },
+  message: {
+    contactMessage: {
+      displayName: botname,
+      vcard: `BEGIN:VCARD\nVERSION:3.0\nFN:${botname}\nTEL;waid=0:0\nEND:VCARD`,
+      jpegThumbnail: thumb,
+      contextInfo: {
+        externalAdReply: {
+          title: botname,
+          body: textbot,
+          mediaType: 1,
+          mediaUrl: redes,
+          sourceUrl: redes,
+          thumbnail: thumb4,
+          showAdAttribution: false,
+          containsAutoReply: true,
+          renderLargerThumbnail: true
+        }
+      }
+    }
+  },
+  participant: "0@s.whatsapp.net"
 };
 
 const res1 = await fetch('https://files.catbox.moe/dz34fo.jpg');
@@ -228,42 +265,24 @@ async function connectionUpdate(update) {
             quoted: m,
         });*/
 
-        const thumb = await (await fetch(global.img)).buffer()
+                const msg = generateWAMessageFromContent(m.chat, baileys.proto.Message.fromObject({ 
+            interactiveMessage: {
+                body: { text: rtx2 }, 
+                footer: { text: `${dev}` },
+                nativeFlowMessage: {
+                    buttons: [
+                        {
+                            name: 'cta_copy',
+                            buttonParamsJson: JSON.stringify({
+                                display_text: `*COPIAR CÓDIGO*`,
+                                copy_code: secret
+                            })
+                        }
+                    ]
+                }
+            }
+        }), { quoted: m })
 
-const msg = generateWAMessageFromContent(
-    m.chat,
-    proto.Message.fromObject({ 
-        interactiveMessage: {
-            body: { text: rtx2 }, 
-            footer: { text: `${dev}` },
-            nativeFlowMessage: {
-                buttons: [
-                    {
-                        name: 'cta_copy',
-                        buttonParamsJson: JSON.stringify({
-                            display_text: `*COPIAR CÓDIGO*`,
-                            copy_code: secret
-                        })
-                    }
-                ]
-            }
-        },
-        contextInfo: {
-            externalAdReply: {
-                title: 'SUBBOT - By Deylin',
-                body: textbot,
-                mediaType: 1,
-                mediaUrl: redes,
-                sourceUrl: redes,
-                thumbnail: thumb,
-                showAdAttribution: false,
-                containsAutoReply: true,
-                renderLargerThumbnail: true
-            }
-        }
-    }),
-    { quoted: fkontak }
-)
 
         const codeBot = await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
 
