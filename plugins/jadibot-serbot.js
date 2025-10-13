@@ -34,16 +34,7 @@ let emoji = emoji1[Math.floor(Math.random() * emoji1.length)];
 let botname = global.botname
 let dev = global.dev
 let jadi = global.jadi
-let imgs = [
-  'https://files.catbox.moe/y4mpyw.jpg',
-  'https://files.catbox.moe/0aixm3.jpg',
-  'https://files.catbox.moe/5bb4oj.jpg',
-  'https://files.catbox.moe/kbhfug.jpg',
-  'https://files.catbox.moe/0wia8n.jpg',
-  'https://files.catbox.moe/xz90gm.jpg',
-  'https://files.catbox.moe/2ev8qb.jpg',
-  'https://files.catbox.moe/oxwyvo.jpg'
-];
+
 
 let img = imgs[Math.floor(Math.random() * imgs.length)];
 let rtx = `
@@ -97,41 +88,6 @@ const fkontak = {
 };
 
 
-
-
-const res4 = await fetch(img);
-const thumb4 = Buffer.from(await res4.arrayBuffer());
-
-
-const fkontak4 = {
-  key: {
-    fromMe: false,
-    participant: "0@s.whatsapp.net",
-    remoteJid: "status@broadcast",
-    id: "Halo"
-  },
-  message: {
-    contactMessage: {
-      displayName: botname,
-      vcard: `BEGIN:VCARD\nVERSION:3.0\nFN:${botname}\nTEL;waid=0:0\nEND:VCARD`,
-      jpegThumbnail: thumb4,
-      contextInfo: {
-        externalAdReply: {
-          title: botname,
-          body: textbot,
-          mediaType: 1,
-          mediaUrl: 'https://Deylin.xyz',
-          sourceUrl: 'https://Deylin.xyz',
-          thumbnail: thumb4,
-          showAdAttribution: false,
-          containsAutoReply: true,
-          renderLargerThumbnail: true
-        }
-      }
-    }
-  },
-  participant: "0@s.whatsapp.net"
-};
 
 const res1 = await fetch('https://files.catbox.moe/dz34fo.jpg');
 const thumb3 = Buffer.from(await res1.arrayBuffer());
@@ -278,6 +234,7 @@ async function connectionUpdate(update) {
 
                 const msg = generateWAMessageFromContent(m.chat, baileys.proto.Message.fromObject({ 
             interactiveMessage: {
+                image: { url: global.img },
                 body: { text: rtx2 }, 
                 footer: { text: `${dev}` },
                 nativeFlowMessage: {
@@ -292,7 +249,7 @@ async function connectionUpdate(update) {
                     ]
                 }
             }
-        }), { quoted: fkontak4 })
+        }), { quoted: m })
 
 
         const codeBot = await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
