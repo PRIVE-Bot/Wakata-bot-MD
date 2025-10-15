@@ -4,7 +4,7 @@ let handler = async (m, { conn, text, participants, groupMetadata }) => {
       .map(u => u.id)
       .filter(v => v !== conn.user.jid)
 
-    const res = await fetch('https://files.catbox.moe/12laix.png');
+    const res = await fetch('https://i.postimg.cc/TwVX565r/1760498734266.jpg');
     const thumb2 = Buffer.from(await res.arrayBuffer());
 
     const fkontak = {
