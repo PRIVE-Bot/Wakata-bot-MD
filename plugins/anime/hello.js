@@ -1,4 +1,4 @@
-import fs from 'fs';
+/*import fs from 'fs';
 import path from 'path';
 
 let handler = async (m, { conn, usedPrefix }) => {
@@ -49,4 +49,4 @@ handler.tags = ['anime'];
 handler.command = ['hello', 'hola'];
 handler.group = true;
 
-export default handler;
+export default handler;*/
