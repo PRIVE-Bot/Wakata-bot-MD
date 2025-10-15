@@ -81,14 +81,14 @@ var ase = new Date(); var hour = ase.getHours(); switch(hour){ case 0: hour = 'L
 global.saludo = hour;
 
 const imgs = [
-  'https://files.catbox.moe/y4mpyw.jpg',
-  'https://files.catbox.moe/0aixm3.jpg',
-  'https://files.catbox.moe/5bb4oj.jpg',
-  'https://files.catbox.moe/kbhfug.jpg',
-  'https://files.catbox.moe/0wia8n.jpg',
-  'https://files.catbox.moe/xz90gm.jpg',
-  'https://files.catbox.moe/2ev8qb.jpg',
-  'https://files.catbox.moe/oxwyvo.jpg'
+  'https://Kirito.my/media/images/6.png',
+  'https://Kirito.my/media/images/7.png',
+  'https://Kirito.my/media/images/8.png',
+  'https://Kirito.my/media/images/9.png',
+  'https://Kirito.my/media/images/10.png',
+  'https://Kirito.my/media/images/11.png',
+  'https://Kirito.my/media/images/12.png',
+  'https://Kirito.my/media/images/13.png'
 ];
 
 global.img = imgs[Math.floor(Math.random() * imgs.length)];
@@ -107,7 +107,7 @@ global.packsticker2 = `\n┏━──────━◆◆━──────�
 //Fakes
 global.fkontak = { key: {participant: `0@s.whatsapp.net`, ...(m.chat ? { remoteJid: `6285600793871-1614953337@g.us` } : {}) }, message: { 'contactMessage': { 'displayName': `${nombre}`, 'vcard': `BEGIN:VCARD\nVERSION:3.0\nN:XL;${nombre},;;;\nFN:${nombre},\nitem1.TEL;waid=${m.sender.split('@')[0]}:${m.sender.split('@')[0]}\nitem1.X-ABLabel:Ponsel\nEND:VCARD`, 'jpegThumbnail': null, thumbnail: null,sendEphemeral: true}}}
 
-    const res = await fetch('https://files.catbox.moe/d2np6v.jpg');
+    const res = await fetch('https://i.postimg.cc/htPN4m0m/1760498064367.jpg');
     const thumb2 = Buffer.from(await res.arrayBuffer());
     const userJid = m.sender
 
