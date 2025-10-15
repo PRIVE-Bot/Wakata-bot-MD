@@ -1,49 +1,46 @@
-import fs from 'fs'
-import path from 'path'
-
 let handler = async (m, { conn }) => {
-    let who
-    let mentionedJid = m.message?.extendedTextMessage?.contextInfo?.mentionedJid?.[0]
-    let userId = m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.sender
+  let who
+  const mentionedJid = m.message?.extendedTextMessage?.contextInfo?.mentionedJid?.[0]
 
-    if (mentionedJid) {
-        who = mentionedJid
-    } else if (m.quoted) {
-        who = m.quoted.sender
-    } else {
-        who = m.sender
-    }
+  if (mentionedJid) {
+    who = mentionedJid
+  } else if (m.quoted) {
+    who = m.quoted.sender
+  } else {
+    who = m.sender
+  }
 
-    let name2 = m.sender.split('@')[0]
-    let name = who.split('@')[0]
+  const name2 = m.sender.split('@')[0]
+  const name = who.split('@')[0]
 
-    m.react('😔')
+  await m.react('😔')
 
-    let str
-    if (who !== m.sender) {
-        str = `😔 *@${name2}* está triste por *@${name}*`
-    } else {
-        str = `😔 *@${name2}* está muy triste... necesita apoyo`
-    }
+  let str
+  if (who !== m.sender) {
+    str = `😔 *@${name2}* está triste por *@${name}*`
+  } else {
+    str = `😔 *@${name2}* está muy triste... necesita apoyo`
+  }
 
-    if (m.isGroup) {
-        const videos = [
-            'https://tenor.com/b12jl.gif',
-            'https://tenor.com/dUwxDSx2xTV.gif',
-            'https://tenor.com/t3anM5GB7Yk.gif',
-            'https://tenor.com/qkmyQGclPgU.gif',
-            'https://tenor.com/p9OWwGadd1f.gif'
-        ]
+  const gifs = [
+    'https://tenor.com/b12jl.gif',
+    'https://tenor.com/dUwxDSx2xTV.gif',
+    'https://tenor.com/t3anM5GB7Yk.gif',
+    'https://tenor.com/qkmyQGclPgU.gif',
+    'https://tenor.com/p9OWwGadd1f.gif'
+  ]
 
-        const video = videos[Math.floor(Math.random() * videos.length)]
+  const gif = gifs[Math.floor(Math.random() * gifs.length)]
 
-        conn.sendMessage(m.chat, {
-            video: { url: video },
-            gifPlayback: true,
-            caption: str,
-            mentions: [who, m.sender]
-        }, { quoted: m })
-    }
+  await conn.sendMessage(
+    m.chat,
+    {
+      image: { url: gif },
+      caption: str,
+      mentions: [who, m.sender]
+    },
+    { quoted: m }
+  )
 }
 
 handler.help = ['sad @tag', 'triste @tag']
