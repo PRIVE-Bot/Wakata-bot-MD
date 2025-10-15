@@ -30,7 +30,7 @@ let handler = async (m, { conn, usedPrefix }) => {
         const videos = [
             'https://tenor.com/bMOmn.gif',
             'https://tenor.com/bn04K.gif',
-            'https://tenor.com/gaB3OJgO1TR.gif'
+            'https://tenor.com/gaB3OJgO1TR.gif',
             'https://tenor.com/bjKhU.gif',
             'https://tenor.com/bsYVR.gif'
         ];
