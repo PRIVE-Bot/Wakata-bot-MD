@@ -86,7 +86,7 @@ const fkontak = {
 
 
 
-const res1 = await fetch('https://files.catbox.moe/dz34fo.jpg');
+const res1 = await fetch('https://i.postimg.cc/vHqc5x17/1756169140993.jpg');
 const thumb3 = Buffer.from(await res1.arrayBuffer());
 
 const fkontak1 = {
