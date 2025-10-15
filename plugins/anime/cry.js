@@ -29,7 +29,6 @@ let handler = async (m, { conn }) => {
     if (m.isGroup) {
         const videos = [
             'https://tenor.com/bnvXcnHO843.gif',
-            'https://files.catbox.moe/l1uibj.mp4',
             'https://tenor.com/nn0YjazkgaI.gif',
             'https://tenor.com/iRcD6J1H1lz.gif',
             'https://tenor.com/ckkl7QnHtg2.gif'
