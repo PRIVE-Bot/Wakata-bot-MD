@@ -1,5 +1,3 @@
-
-
 import { getContentType, generateForwardMessageContent, generateWAMessageFromContent } from '@whiskeysockets/baileys';
 
 global.delete = global.delete || [];
