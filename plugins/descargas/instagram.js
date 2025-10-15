@@ -5,7 +5,7 @@ let handler = async (m, { conn, args }) => {
     return conn.reply(m.chat, `${emoji} Necesitas enviar un enlace de *Instagram* para descargar.`, m, rcanal)
   }
 
-  const resThumb = await fetch('https://files.catbox.moe/pgomk1.jpg')
+  const resThumb = await fetch('https://i.postimg.cc/RV6xwKt9/1760499473884.jpg')
   const thumb = Buffer.from(await resThumb.arrayBuffer())
 
   const fkontak = {
@@ -89,7 +89,7 @@ let before = async (m, { conn }) => {
   const choice = m.text.trim()
   if (!["1", "2", "3"].includes(choice)) return
 
-  const resThumb = await fetch('https://files.catbox.moe/pgomk1.jpg')
+  const resThumb = await fetch('https://i.postimg.cc/RV6xwKt9/1760499473884.jpg')
   const thumb = Buffer.from(await resThumb.arrayBuffer())
 
   const fkontak = {
