@@ -7,7 +7,7 @@ export async function before(m, { conn, isAdmin }) {
     if (isAdmin) return; 
     if (!m.isGroup) return; 
     if (m.key.fromMe) return; 
-    const res = await fetch('https://files.catbox.moe/nuu7tj.jpg')
+    const res = await fetch('https://files.catbox.moe/d2np6v.jpg')
     const thumb3 = Buffer.from(await res.arrayBuffer())
 
     let chat = global.db.data.chats[m.chat];
