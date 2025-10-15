@@ -1,4 +1,4 @@
-/*import fs from 'fs';
+import fs from 'fs';
 import path from 'path';
 
 let handler = async (m, { conn }) => {
@@ -28,10 +28,11 @@ let handler = async (m, { conn }) => {
 
     if (m.isGroup) {
         const videos = [
-            'https://files.catbox.moe/7blmee.mp4',
-            'https://files.catbox.moe/atcpvb.mp4',
-            'https://files.catbox.moe/gnoark.mp4',
-            'https://files.catbox.moe/pudeqm.mp4'
+            'https://tenor.com/bEm6t.gif',
+            'https://tenor.com/ckkl7QnHtg2.gif',
+            'https://tenor.com/bLusbUcOQS2.gif',
+            'https://tenor.com/ihGOGqmJEN6.gif',
+            'https://tenor.com/bndZV.gif'
         ];
 
         const video = videos[Math.floor(Math.random() * videos.length)];
@@ -40,7 +41,7 @@ let handler = async (m, { conn }) => {
             video: { url: video },
             gifPlayback: true,
             caption: str,
-            mentions: [who, m.sender]  // ¡Aquí está el cambio! Ahora incluye ambos IDs.
+            mentions: [who, m.sender]  
         }, { quoted: m });
     }
 };
@@ -50,4 +51,4 @@ handler.tags = ['anime'];
 handler.command = ['hug', 'abrazar'];
 handler.group = true;
 
-export default handler;*/
+export default handler;
