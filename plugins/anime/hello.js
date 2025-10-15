@@ -1,4 +1,4 @@
-/*import fs from 'fs';
+import fs from 'fs';
 import path from 'path';
 
 let handler = async (m, { conn, usedPrefix }) => {
@@ -28,9 +28,11 @@ let handler = async (m, { conn, usedPrefix }) => {
 
     if (m.isGroup) {
         const videos = [
-            'https://files.catbox.moe/v05c03.mp4',
-            'https://files.catbox.moe/s6vqf2.mp4',
-            'https://files.catbox.moe/til83t.mp4'
+            'https://tenor.com/bMOmn.gif',
+            'https://tenor.com/bn04K.gif',
+            'https://tenor.com/gaB3OJgO1TR.gif'
+            'https://tenor.com/bjKhU.gif',
+            'https://tenor.com/bsYVR.gif'
         ];
 
         const video = videos[Math.floor(Math.random() * videos.length)];
@@ -49,4 +51,4 @@ handler.tags = ['anime'];
 handler.command = ['hello', 'hola'];
 handler.group = true;
 
-export default handler;*/
+export default handler;
