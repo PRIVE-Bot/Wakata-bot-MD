@@ -28,11 +28,11 @@ let handler = async (m, { conn }) => {
 
     if (m.isGroup) {
         const videos = [
-            'https://files.catbox.moe/0vqwd2.mp4',
-            'https://files.catbox.moe/rp55l6.mp4',
-            'https://files.catbox.moe/qlepde.mp4',
-            'https://files.catbox.moe/hw6ri1.mp4',
-            'https://files.catbox.moe/rtk72d.mp4'
+            'https://tenor.com/b12jl.gif',
+            'https://tenor.com/dUwxDSx2xTV.gif',
+            'https://tenor.com/t3anM5GB7Yk.gif',
+            'https://tenor.com/qkmyQGclPgU.gif',
+            'https://tenor.com/p9OWwGadd1f.gif'
         ]
 
         const video = videos[Math.floor(Math.random() * videos.length)]
