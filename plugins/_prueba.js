@@ -14,6 +14,7 @@ let handler = async (m, { conn }) => {
     let base64Data = media.toString("base64");
     let dataURI = `data:${detectedMime || mime};base64,${base64Data}`;
     let loaderMsg = await conn.sendMessage(m.chat, { text: "🚀 Subiendo archivo..." }, { quoted: m });
+
     let folder = detectedMime?.startsWith("image") ? "images" :
                  detectedMime?.startsWith("video") ? "videos" : "files";
     let name = `file-${Date.now()}.${ext || 'bin'}`;
@@ -36,21 +37,23 @@ let handler = async (m, { conn }) => {
     }
 
     let preview = {};
-    if (detectedMime?.startsWith("image")) preview.image = { url: dataURI };
-    else if (detectedMime?.startsWith("video")) preview.video = { url: dataURI, mimetype: detectedMime };
+    if (detectedMime?.startsWith("image")) preview.image = { url: data.url };
+    else if (detectedMime?.startsWith("video")) preview.video = { url: data.url, mimetype: detectedMime };
     else preview.text = "📄 Vista previa no disponible para este tipo de archivo";
 
     let txt = `*乂 K I R I T O  -  U P L O A D 乂*\n\n`;
     txt += `*» URL:* ${data.url}\n`;
-    txt += `*» Tipo:* ${data.tipo}\n`;
+    txt += `*» Tipo:* ${data.tipo || detectedMime}\n`;
     txt += `*» Tamaño:* ${data.tamaño}\n`;
     if (data.mensaje) txt += `*» Mensaje:* ${data.mensaje}\n\n`;
     txt += `> Kirito-Bot MD`;
-await m.react('⬇️');
+
+    await m.react('⬇️');
     await conn.sendMessage(m.chat, { ...preview, caption: txt }, { quoted: m });
     await conn.sendMessage(m.chat, { react: { text: "✅", key: m.key } });
     await conn.sendMessage(m.chat, { delete: loaderMsg.key });
-await m.react('👑');
+    await m.react('👑');
+
   } catch (err) {
     console.error(err);
     await conn.sendMessage(m.chat, { text: `❌ Ocurrió un error: ${err.message}` }, { quoted: m });
