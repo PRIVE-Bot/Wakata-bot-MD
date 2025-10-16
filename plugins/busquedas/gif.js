@@ -1,5 +1,4 @@
 import axios from 'axios'
-import baileys from '@whiskeysockets/baileys'
 
 let handler = async (m, { conn, text }) => {
   if (!text) return conn.reply(m.chat, `⚠️ Ingresa un texto para buscar GIFs.`, m)
@@ -15,16 +14,14 @@ let handler = async (m, { conn, text }) => {
     for (let gif of data.results) {
       const mediaObj = gif.media[0]
       const url = mediaObj?.mp4?.url || mediaObj?.gif?.url || mediaObj?.tinygif?.url
-      const gifUrl = gif.url 
-
       if (!url) continue
 
       await conn.sendMessage(m.chat, {
         video: { url },
         mimetype: 'video/mp4',
         gifPlayback: true,
-        caption: `🔗 Enlace: ${gifUrl}`
-      })
+        caption: `${url}`
+      }, { quoted: m })
     }
   } catch (err) {
     console.error('Error Tenor:', err.message)
