@@ -35,7 +35,7 @@ let handler = async (m, { conn }) => {
   await conn.sendMessage(
     m.chat,
     {
-      video: { url: gif },
+      gif: { url: gif },
       caption: str,
       mentions: [who, m.sender]
     },
