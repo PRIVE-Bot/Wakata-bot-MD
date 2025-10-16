@@ -83,13 +83,13 @@ let handler = async (m, { conn, usedPrefix, command }) => {
       mensaje: result.mensaje || '',
       status: result.status || 'OK'
     }
-
+await m.react(👑);
     let txt = `*乂 K I R I T O - U P L O A D 乂*\n\n`
     txt += `*» URL:* ${data.url}\n`
     txt += `*» Tipo:* ${data.tipo}\n`
     txt += `*» Tamaño:* ${data.tamaño}\n`
     if (data.mensaje) txt += `*» Mensaje:* ${data.mensaje}\n\n> *ESPERA \`20\` SEGUNDOS PARA QUE EL ENLACE ESTÉ DISPONIBLE.*`
-  await m.react(👑);
+  
     await conn.reply(m.chat, txt, m, rcanal)
   } else {
     const status = result?.status ? `${result.status} ${result.statusText || ''}`.trim() : 'desconocido'
