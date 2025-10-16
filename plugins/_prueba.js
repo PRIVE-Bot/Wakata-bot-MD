@@ -10,29 +10,39 @@ let handler = async (m, { conn }) => {
 
   try {
     let media = await q.download();
-    
+
     let { mime: detectedMime } = (await fileTypeFromBuffer(media)) || {};
     let base64Data = media.toString("base64");
-    
+
     let dataURI = `data:${detectedMime || mime};base64,${base64Data}`;
-    
+
     let loaderMsg = await conn.sendMessage(m.chat, { text: "🚀 Subiendo archivo..." }, { quoted: m });
 
-    
-const API_URL = "https://api.kirito.my/api/upload"; 
+
+    const API_URL = "https://api.kirito.my/api/upload"; 
+
+
+    let res = await fetch(API_URL, {
+      method: "POST", 
+      headers: { 
+        "Content-Type": "application/json",
+        
+        "User-Agent": "WhatsAppBot/KiritoUploader"
+      },
+      body: JSON.stringify({ file: dataURI }) 
+    });
 
     
+    if (!res.ok) {
+        const errorText = await res.text().catch(() => `Estado ${res.status}`);
+        throw new Error(`Error en la petición API: ${res.status} - ${errorText.substring(0, 100)}`);
+    }
     
-let res = await fetch(API_URL, {
-  method: "POST", 
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ file: dataURI }) 
-});
 
 
     let data = await res.json().catch(async () => {
       const txt = await res.text().catch(() => "");
-      return { status: false, error: "Respuesta no JSON", raw: txt };
+      return { status: false, error: `Respuesta no JSON: ${txt.substring(0, 100)}`, raw: txt };
     });
 
     if (!data.status) {
@@ -58,13 +68,14 @@ let res = await fetch(API_URL, {
     txt += `> Kirito-Bot MD`;
 
     await conn.sendMessage(m.chat, { ...preview, caption: txt }, { quoted: m });
-    
+
     await m.react('✅'); 
     await conn.sendMessage(m.chat, { delete: loaderMsg.key });
     await m.react('👑');
 
   } catch (err) {
     console.error(err);
+    
     await conn.sendMessage(m.chat, { text: `❌ Ocurrió un error general durante la subida: ${err.message}` }, { quoted: m });
   }
 };
