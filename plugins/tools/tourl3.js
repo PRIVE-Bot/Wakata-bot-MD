@@ -16,8 +16,7 @@ async function uploadToKirito(buffer, opts = {}) {
   const ext = (opts.ext || typeInfo.ext || 'bin').toLowerCase()
   const mime = (opts.mime || typeInfo.mime || 'application/octet-stream').toLowerCase()
   const fileName = opts.name || `${crypto.randomBytes(6).toString('hex')}.${ext}`
-  const folder = (mime.startsWith('image/') ? 'images' : 'files')
-
+  const folder = mime.startsWith('image/') ? 'images' : 'files'
   const base64Data = `data:${mime};base64,${Buffer.from(buffer).toString('base64')}`
 
   const res = await fetch(UPLOAD_ENDPOINT, {
@@ -45,11 +44,13 @@ async function uploadToKirito(buffer, opts = {}) {
 let handler = async (m, { conn, usedPrefix, command }) => {
   const q = m.quoted ? (m.quoted.msg || m.quoted) : m
   const mimeInfo = (q.mimetype || q.mediaType || q.mtype || '').toString().toLowerCase()
+
   if (!/image|video|audio|sticker|document/.test(mimeInfo)) {
-    await conn.reply(m.chat, `${emoji} Responde a una imagen, video, audio para subirlo.`, m, rcanal)
+    await conn.reply(m.chat, `⚠️ Responde a una imagen, video o audio para subirlo.`, m)
     return
   }
-  await m.react(rwait);
+
+  await m.react('⏳')
   const buffer = await q.download().catch(() => null)
   if (!buffer || !buffer.length) {
     await conn.reply(m.chat, 'No se pudo descargar el archivo. Reenvíalo y prueba de nuevo.', m)
@@ -58,7 +59,7 @@ let handler = async (m, { conn, usedPrefix, command }) => {
 
   const MAX_BYTES = 20 * 1024 * 1024
   if (buffer.length > MAX_BYTES) {
-    await conn.reply(m.chat, `Archivo demasiado grande (${formatBytes(buffer.length)}). Máximo: ${formatBytes(MAX_BYTES)}.`, m, rcanal)
+    await conn.reply(m.chat, `Archivo demasiado grande (${formatBytes(buffer.length)}). Máximo: ${formatBytes(MAX_BYTES)}.`, m)
     return
   }
 
@@ -71,7 +72,7 @@ let handler = async (m, { conn, usedPrefix, command }) => {
   try {
     result = await uploadToKirito(buffer, { name: fileName, ext, mime })
   } catch (e) {
-    await conn.reply(m.chat, `Error al subir: ${e.message}`, m, rcanal)
+    await conn.reply(m.chat, `❌ Error al subir: ${e.message}`, m)
     return
   }
 
@@ -83,14 +84,16 @@ let handler = async (m, { conn, usedPrefix, command }) => {
       mensaje: result.mensaje || '',
       status: result.status || 'OK'
     }
-await m.react(👑);
+
+    await m.react('👑')
+
     let txt = `*乂 K I R I T O - U P L O A D 乂*\n\n`
     txt += `*» URL:* ${data.url}\n`
     txt += `*» Tipo:* ${data.tipo}\n`
     txt += `*» Tamaño:* ${data.tamaño}\n`
     if (data.mensaje) txt += `*» Mensaje:* ${data.mensaje}\n\n> *ESPERA \`20\` SEGUNDOS PARA QUE EL ENLACE ESTÉ DISPONIBLE.*`
-  
-    await conn.reply(m.chat, txt, m, rcanal)
+
+    await conn.reply(m.chat, txt, m)
   } else {
     const status = result?.status ? `${result.status} ${result.statusText || ''}`.trim() : 'desconocido'
     const body = result?.data ? JSON.stringify(result.data).slice(0, 300) : (result?.raw || '').slice(0, 300)
