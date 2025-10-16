@@ -46,20 +46,20 @@ let handler = async (m, { conn, usedPrefix, command }) => {
   const mimeInfo = (q.mimetype || q.mediaType || q.mtype || '').toString().toLowerCase()
 
   if (!/image|video|audio|sticker|document/.test(mimeInfo)) {
-    await conn.reply(m.chat, `⚠️ Responde a una imagen, video o audio para subirlo.`, m)
+    await conn.reply(m.chat, `${emoji} Responde a una imagen, video o audio para subirlo.`, m, rcanal)
     return
   }
 
   await m.react('⏳')
   const buffer = await q.download().catch(() => null)
   if (!buffer || !buffer.length) {
-    await conn.reply(m.chat, 'No se pudo descargar el archivo. Reenvíalo y prueba de nuevo.', m)
+    await conn.reply(m.chat, 'No se pudo descargar el archivo. Reenvíalo y prueba de nuevo.', m, rcanal)
     return
   }
 
   const MAX_BYTES = 20 * 1024 * 1024
   if (buffer.length > MAX_BYTES) {
-    await conn.reply(m.chat, `Archivo demasiado grande (${formatBytes(buffer.length)}). Máximo: ${formatBytes(MAX_BYTES)}.`, m)
+    await conn.reply(m.chat, `Archivo demasiado grande (${formatBytes(buffer.length)}). Máximo: ${formatBytes(MAX_BYTES)}.`, m, rcanal)
     return
   }
 
@@ -93,7 +93,7 @@ let handler = async (m, { conn, usedPrefix, command }) => {
     txt += `*» Tamaño:* ${data.tamaño}\n`
     if (data.mensaje) txt += `*» Mensaje:* ${data.mensaje}\n\n> *ESPERA \`20\` SEGUNDOS PARA QUE EL ENLACE ESTÉ DISPONIBLE.*`
 
-    await conn.reply(m.chat, txt, m)
+    await conn.reply(m.chat, txt, m, rcanal)
   } else {
     const status = result?.status ? `${result.status} ${result.statusText || ''}`.trim() : 'desconocido'
     const body = result?.data ? JSON.stringify(result.data).slice(0, 300) : (result?.raw || '').slice(0, 300)
