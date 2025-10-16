@@ -18,7 +18,9 @@ let handler = async (m, { conn }) => {
     
     let loaderMsg = await conn.sendMessage(m.chat, { text: "🚀 Subiendo archivo..." }, { quoted: m });
 
-    const API_URL = "https://api.kirito.my/api/upload"; 
+    
+const API_URL = "https://api.kirito.my/api/upload"; 
+
     
     let res = await fetch(API_URL, {
       method: "POST",
