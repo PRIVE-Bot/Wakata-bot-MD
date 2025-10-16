@@ -2,7 +2,7 @@ import fetch from "node-fetch";
 import { fileTypeFromBuffer } from "file-type";
 import crypto from "crypto";
 
-const API_URL = "https://api.kirito.my/api/upload"; 
+const API_URL = "https://api-log-fun.vercel.app/api/upload"; 
 
 async function kiritoUploader(buffer) {
     let { mime: detectedMime } = (await fileTypeFromBuffer(buffer)) || {};
