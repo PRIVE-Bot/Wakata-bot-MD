@@ -49,7 +49,7 @@ let handler = async (m, { conn, usedPrefix, command }) => {
     await conn.reply(m.chat, `${emoji} Responde a una imagen, video, audio para subirlo.`, m, rcanal)
     return
   }
-
+  await m.react(rwait);
   const buffer = await q.download().catch(() => null)
   if (!buffer || !buffer.length) {
     await conn.reply(m.chat, 'No se pudo descargar el archivo. Reenvíalo y prueba de nuevo.', m)
@@ -89,7 +89,7 @@ let handler = async (m, { conn, usedPrefix, command }) => {
     txt += `*» Tipo:* ${data.tipo}\n`
     txt += `*» Tamaño:* ${data.tamaño}\n`
     if (data.mensaje) txt += `*» Mensaje:* ${data.mensaje}\n\n> *ESPERA \`20\` SEGUNDOS PARA QUE EL ENLACE ESTÉ DISPONIBLE.*`
-
+  await m.react(👑);
     await conn.reply(m.chat, txt, m, rcanal)
   } else {
     const status = result?.status ? `${result.status} ${result.statusText || ''}`.trim() : 'desconocido'
