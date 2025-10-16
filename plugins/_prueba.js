@@ -1,7 +1,6 @@
 import fetch from "node-fetch";
 import { fileTypeFromBuffer } from "file-type";
 import crypto from "crypto";
-import { URLSearchParams } from "url"; // Importamos URLSearchParams si se usa node-fetch
 
 const API_URL = "https://api.kirito.my/api/upload"; 
 
@@ -16,25 +15,21 @@ async function kiritoUploader(buffer) {
         body: JSON.stringify({ file: dataURI }) 
     });
 
-    // Siempre intenta obtener la data JSON, incluso si el estado no es OK
     const data = await res.json().catch(async () => {
         const txt = await res.text().catch(() => "");
         return { status: false, error: "Respuesta no JSON", raw: txt };
     });
 
     if (!res.ok) {
-        // Lanza un error con el mensaje y el JSON de la API si no es 2xx
         const apiError = JSON.stringify(data, null, 2);
         throw new Error(`Error HTTP ${res.status}. Respuesta API: ${apiError}`);
     }
 
     if (!data.status) {
-        // Lanza un error si la API devuelve status: false
         const apiError = JSON.stringify(data, null, 2);
         throw new Error(`Subida fallida (status: false). Respuesta API: ${apiError}`);
     }
 
-    // Devuelve el objeto de datos completo tal como lo envió la API
     return { data, detectedMime };
 }
 
@@ -42,7 +37,7 @@ async function kiritoUploader(buffer) {
 let handler = async (m, { conn, command }) => {
     let q = m.quoted ? m.quoted : m;
     let mime = (q.msg || q).mimetype || '';
-    if (!mime) return conn.reply(m.chat, `📎 Por favor, responde a un archivo válido (imagen, video, audio, etc.)`, m, rcanal);
+    if (!mime) return conn.reply(m.chat, `📎 Por favor, responde a un archivo válido.`, m, rcanal);
 
     await m.react('⬆️');
 
@@ -52,7 +47,6 @@ let handler = async (m, { conn, command }) => {
         let media = await q.download();
         loaderMsg = await conn.sendMessage(m.chat, { text: `🚀 Subiendo archivo...` }, { quoted: m });
         
-        // La función devuelve el objeto 'data' completo de la API
         const { data, detectedMime } = await kiritoUploader(media);
         
         let preview = {};
@@ -64,8 +58,7 @@ let handler = async (m, { conn, command }) => {
             preview.text = `📄 Archivo subido con éxito.`; 
         }
 
-        // Usamos los campos de 'data' directamente
-        let txt = `*乂 K I R I T O  -  U P L O A D 乂*\n\n`;
+        let txt = `*乂 K I R I T O - U P L O A D 乂*\n\n`;
         txt += `*» URL:* ${data.url}\n`;
         txt += `*» Tipo:* ${data.tipo || detectedMime}\n`;
         txt += `*» Tamaño:* ${data.tamaño}\n`;
@@ -80,7 +73,6 @@ let handler = async (m, { conn, command }) => {
 
     } catch (err) {
         if (loaderMsg) await conn.sendMessage(m.chat, { delete: loaderMsg.key });
-        // Muestra el JSON de error de la API si está disponible
         const errorMessage = err.message.includes('Respuesta API') ? 
                              `❌ Falló la subida. Verifique el JSON de error:\n\n\`\`\`json\n${err.message}\n\`\`\`` :
                              `❌ Ocurrió un error general: ${err.message}`;
