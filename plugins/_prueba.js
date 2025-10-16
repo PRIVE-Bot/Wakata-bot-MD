@@ -89,8 +89,6 @@ let handler = async (m, { conn, usedPrefix, command }) => {
     txt += `*» Tipo:* ${data.tipo}\n`
     txt += `*» Tamaño:* ${data.tamaño}\n`
     if (data.mensaje) txt += `*» Mensaje:* ${data.mensaje}\n\n> *ESPERA \`20\` SEGUNDOS PARA QUE EL ENLACE ESTÉ DISPONIBLE.*`
-    txt += `*» Status:* ${data.status}\n\n`
-    txt += `> Kirito-Bot MD`
 
     await conn.reply(m.chat, txt, m, rcanal)
   } else {
