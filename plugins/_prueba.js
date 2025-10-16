@@ -1,55 +1,57 @@
-import fs from "fs"
-import fetch from "node-fetch"
+import fetch from "node-fetch";
+import { fileTypeFromBuffer } from "file-type";
 
-const GITHUB_TOKEN = 'TOKEN' 
-const GITHUB_OWNER = 'Deylin-Eliac'
-const GITHUB_REPO = 'API-log-fun'
-const GITHUB_BRANCH = 'main'
-const BASE_URL = 'https://Kirito.my' 
+let handler = async (m, { conn }) => {
+  let q = m.quoted ? m.quoted : m;
+  let mime = (q.msg || q).mimetype || '';
+  if (!mime) return conn.reply(m.chat, `${emoji} Por favor, responde a un archivo válido (imagen, video, audio, etc.)`, m, rcanal);
 
-const handler = async (m, { conn, usedPrefix, command }) => {
-  const q = m.quoted ? m.quoted : m
-  const mime = (q.msg || q).mimetype || ''
-  if (!mime) return conn.reply(m.chat, `📸 Responde a una imagen o video con *${usedPrefix + command}*`, m)
-
-  const buffer = await q.download()
-  const sizeKB = (buffer.length / 1024).toFixed(2)
-  const type = mime.split('/')[0]
-  const ext = mime.split('/')[1]
-  const folder = type === 'video' ? 'media/videos' : 'media/images'
-  const fileName = `${Date.now()}.${ext}`
-  const filePath = `${folder}/${fileName}`
+  await m.react('⏳');
 
   try {
-    const githubApiUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${filePath}`
-    const base64Content = buffer.toString('base64')
+    let media = await q.download();
+    let { mime: detectedMime, ext } = (await fileTypeFromBuffer(media)) || {};
+    let base64 = media.toString("base64");
 
-    const response = await fetch(githubApiUrl, {
-      method: 'PUT',
-      headers: {
-        Authorization: `token ${GITHUB_TOKEN}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        message: `Upload from WhatsApp Bot: ${fileName}`,
-        content: base64Content,
-        branch: GITHUB_BRANCH,
-      }),
-    })
+    let loaderMsg = await conn.sendMessage(m.chat, { text: "🚀 Subiendo archivo..." }, { quoted: m });
 
-    const data = await response.json()
-    if (!response.ok) throw new Error(data.message || 'Error subiendo a GitHub.')
+    let res = await fetch("https://api.kirito.my/api/upload", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ file: base64 })
+    });
 
-    const fileUrl = `${BASE_URL}/${folder}/${fileName}`
-    const msg = `✅ ${type === 'video' ? 'Video' : 'Imagen'} subida con éxito\n📦 Tamaño: ${sizeKB} KB\n📄 Tipo: ${mime}\n🔗 URL: ${fileUrl}`
+    let data = await res.json();
 
-    await conn.reply(m.chat, msg, m)
+    if (!data.status) {
+      await conn.sendMessage(m.chat, { text: `❌ Error al subir el archivo: ${data.error || 'Desconocido'}` }, { quoted: m });
+      return;
+    }
 
-  } catch (e) {
-    console.error(e)
-    await conn.reply(m.chat, `⚠️ Error al subir el archivo:\n${e.message}`, m)
+    let preview = {};
+    if (detectedMime?.startsWith("image")) preview.image = { url: `data:${detectedMime};base64,${base64}` };
+    else if (detectedMime?.startsWith("video")) preview.video = { url: `data:${detectedMime};base64,${base64}`, mimetype: detectedMime };
+    else preview.text = "📄 Vista previa no disponible para este tipo de archivo";
+
+    let txt = `*乂 K I R I T O  -  U P L O A D 乂*\n\n`;
+    txt += `*» URL:* ${data.url}\n`;
+    txt += `*» Tipo:* ${data.tipo}\n`;
+    txt += `*» Tamaño:* ${data.tamaño}\n`;
+    if (data.mensaje) txt += `*» Mensaje:* ${data.mensaje}\n\n`;
+    txt += `> Kirito-Bot MD`;
+
+    await conn.sendMessage(m.chat, { ...preview, caption: txt }, { quoted: m });
+
+    await conn.sendMessage(m.chat, { react: { text: "✅", key: m.key } });
+    await conn.sendMessage(m.chat, { delete: loaderMsg.key });
+
+  } catch (err) {
+    console.error(err);
+    await conn.sendMessage(m.chat, { text: `❌ Ocurrió un error: ${err.message}` }, { quoted: m });
   }
-}
+};
 
-handler.command = /^(url|gifurl|mediaurl)$/i
-export default handler
+handler.help = ['tourl3', 'kiritofile', 'Kiritourl'];
+handler.tags = ['transformador'];
+handler.command = ['tourl3', 'kiritofile', 'kiritourl'];
+export default handler;
