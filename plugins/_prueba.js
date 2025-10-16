@@ -22,11 +22,13 @@ let handler = async (m, { conn }) => {
 const API_URL = "https://api.kirito.my/api/upload"; 
 
     
-    let res = await fetch(API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ file: dataURI }) 
-    });
+    
+let res = await fetch(API_URL, {
+  method: "POST", 
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ file: dataURI }) 
+});
+
 
     let data = await res.json().catch(async () => {
       const txt = await res.text().catch(() => "");
