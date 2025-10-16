@@ -22,7 +22,7 @@ let handler = async (m, { conn }) => {
     str = `😔 *@${name2}* está muy triste... necesita apoyo`
   }
 
-  const video = [
+  const videos = [
     'https://tenor.com/b12jl.gif',
     'https://tenor.com/dUwxDSx2xTV.gif',
     'https://tenor.com/t3anM5GB7Yk.gif',
@@ -30,14 +30,17 @@ let handler = async (m, { conn }) => {
     'https://tenor.com/p9OWwGadd1f.gif'
   ]
 
-          const video = videos[Math.floor(Math.random() * videos.length)];
+  const videoUrl = videos[Math.floor(Math.random() * videos.length)]
 
-          conn.sendMessage(m.chat, {
-            video: { url: video },
-            gifPlayback: true,
-            caption: str,
-            mentions: [who, m.sender]  
-        }, { quoted: m });
+  await conn.sendMessage(
+    m.chat,
+    {
+      video: { url: videoUrl },
+      gifPlayback: true,
+      caption: str,
+      mentions: [who, m.sender]
+    },
+    { quoted: m }
   )
 }
 
