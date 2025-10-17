@@ -48,7 +48,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
     product: {
       productImage: { url: pp },
       productId: '2452968910',
-      title: `${tipo}, ahora somos ${totalMembers}`,
+      title: `${tipo}`,
       description: '',
       currencyCode: 'USD',
       priceAmount1000: '0',
