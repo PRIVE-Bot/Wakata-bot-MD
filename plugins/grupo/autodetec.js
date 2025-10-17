@@ -46,7 +46,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
   const date = new Date().toLocaleString('es-ES', { timeZone: 'America/Mexico_City' })
   const productMessage = {
     product: {
-      productImage: { url: urlapi },
+      productImage: { url: pp },
       productId: '2452968910',
       title: `${tipo}, ahora somos ${totalMembers}`,
       description: '',
