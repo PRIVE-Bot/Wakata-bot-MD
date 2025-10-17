@@ -28,6 +28,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
   const fkontak = makeFkontak(thumb, `𝗔𝗖𝗖𝗜𝗢́𝗡 𝗘𝗡 𝗘𝗟 𝗚𝗥𝗨𝗣𝗢`, botname)
   let chat = global.db.data.chats[m.chat]
   let usuario = `@${m.sender.split`@`[0]}`
+  let id = m.sender
   let pp = await conn.profilePictureUrl(m.chat, 'image').catch(_ => null) || urlapi
   let tipo, mensaje
   if (m.messageStubType == 21) tipo = 'Nombre actualizado', mensaje = `📛 El nombre del grupo fue cambiado a: *${m.messageStubParameters[0]}*\n👤 Por: ${usuario}`
@@ -55,10 +56,10 @@ export async function before(m, { conn, participants, groupMetadata }) {
       url: `https://deylin.xyz/#sitio_web_del_creador`,
       productImageCount: 1
     },
-    businessOwnerJid: '0@s.whatsapp.net',
-    caption: `${mensaje}\n\n✰𝙐𝙨𝙚𝙧: ${taguser}\n✎𝙂𝙧𝙪𝙥𝙤: ${groupSubject}\n✎𝙈𝙞𝙚𝙢𝙗𝙧𝙤𝙨: ${totalMembers}\n✰ 𝙁𝙚𝙘𝙝𝙖: ${date}`.trim(),
+    businessOwnerJid: id,
+    caption: `${mensaje}`.trim(),
     title: 'Acción de grupo',
-    footer: `✰𝙐𝙨𝙚𝙧: ${taguser}\n✎𝙂𝙧𝙪𝙥𝙤: ${groupSubject}\n✎𝙈𝙞𝙚𝙢𝙗𝙧𝙤𝙨: ${totalMembers}\n✰ 𝙁𝙚𝙘𝙝𝙖: ${date}`,
+    footer: `${mensaje}`,
     mentions: [m.sender, ...(m.messageStubParameters || [])]
   }
   await conn.sendMessage(m.chat, productMessage, { quoted: fkontak, contextInfo: { mentionedJid: [m.sender, ...(m.messageStubParameters || [])] } })
