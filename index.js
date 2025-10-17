@@ -456,32 +456,46 @@ async function filesInit() {
 
 filesInit().then((_) => Object.keys(global.plugins)).catch(console.error);
 
+
 global.reload = async (_ev, filename) => {
-  const absolutePath = join(pluginFolder, filename);
-  const pluginKey = path.relative(pluginFolder, absolutePath).replace(/\\/g, '/');
-  if (!pluginFilter(filename)) return;
-  const dir = global.__filename(absolutePath);
+    
+const absolutePath = join(pluginFolder, filename);
 
-  if (global.plugins[pluginKey]) delete global.plugins[pluginKey];
-  if (!existsSync(dir)) return;
+const pluginKey = path.relative(pluginFolder, absolutePath).replace(/\\/g, '/'); 
 
-  const err = syntaxerror(readFileSync(dir), pluginKey, {
-    sourceType: 'module',
-    allowAwaitOutsideFunction: true,
-  });
+if (pluginFilter(filename)) {
+    const dir = global.__filename(absolutePath);
 
-  if (err) conn.logger.error(`syntax error while loading '${pluginKey}'\n${format(err)}`);
-  else {
-    try {
-      const module = await import(`${dir}?update=${Date.now()}`);
-      global.plugins[pluginKey] = module.default || module;
-    } catch (e) {
-      conn.logger.error(`error require plugin '${pluginKey}\n${format(e)}`);
-    } finally {
-      global.plugins = Object.fromEntries(Object.entries(global.plugins).sort(([a], [b]) => a.localeCompare(b)));
+    if (pluginKey in global.plugins) {  
+        if (existsSync(dir)) conn.logger.info(` updated plugin - '${pluginKey}'`);  
+        else {  
+            conn.logger.warn(`deleted plugin - '${pluginKey}'`);  
+            return delete global.plugins[pluginKey];  
+        }  
+    } else conn.logger.info(`new plugin - '${pluginKey}'`);  
+
+    
+    const err = syntaxerror(readFileSync(dir), pluginKey, {  
+        sourceType: 'module',  
+        allowAwaitOutsideFunction: true,  
+    });  
+
+    if (err) conn.logger.error(`syntax error while loading '${pluginKey}'\n${format(err)}`);  
+    else {  
+        try {  
+            
+            const module = (await import(`${dir}?update=${Date.now()}`));  
+            global.plugins[pluginKey] = module.default || module;  
+        } catch (e) {  
+            conn.logger.error(`error require plugin '${pluginKey}\n${format(e)}'`);  
+        } finally {  
+            global.plugins = Object.fromEntries(Object.entries(global.plugins).sort(([a], [b]) => a.localeCompare(b)));  
+        }  
     }
-  }
+
+}
 };
+
 
 Object.freeze(global.reload);
 watch(pluginFolder, { recursive: true }, global.reload);
