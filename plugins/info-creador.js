@@ -1,39 +1,72 @@
-import { generateWAMessageFromContent, proto } from '@whiskeysockets/baileys'
+import PhoneNumber from 'awesome-phonenumber';
+import { generateWAMessageFromContent, proto } from '@whiskeysockets/baileys';
 
-let handler = async (m, { conn }) => {
-    const contactNumber = '1234567890' // Número del contacto con código internacional
-    const contactUrl = `https://wa.me/${contactNumber}`
+async function handler(m, { conn }) {
+  m.react('👑');
 
-    // Mensaje tipo "tarjeta profesional" sin imágenes
-    const template = {
-        templateMessage: {
-            hydratedTemplate: {
-                hydratedContentText: `
+  const numCreador = '50433191934';
+  const ownerJid = numCreador + '@s.whatsapp.net';
+  const name = await conn.getName(ownerJid) || 'Deylin';
+  const about = (await conn.fetchStatus(ownerJid).catch(() => {}))?.status || 'Servicios técnicos de software para WhatsApp';
+  const empresa = 'Servicios Tecnológicos';
 
-║ ✦ WhatsApp: +${contactNumber}
-`,
-                hydratedFooterText: '📌 Presiona esta tarjeta para abrir el contacto en WhatsApp',
-                hydratedButtons: [],
-                contextInfo: {
-                    externalAdReply: {
-                        showAdAttribution: true,
-                        mediaType: 1, // tipo texto/link sin imagen
-                        title: 'Mode - Servicios Digitales',
-                        body: 'Creador / Contacto Oficial',
-                        sourceUrl: contactUrl // abre directamente el chat de WhatsApp
-                    }
-                }
+  const vcard = `
+BEGIN:VCARD
+VERSION:3.0
+N:;${name};;;
+FN:${name}
+ORG:${empresa};
+TITLE:CEO & Fundador
+TEL;waid=${numCreador}:${new PhoneNumber('+' + numCreador).getNumber('international')}
+EMAIL:correo@empresa.com
+URL:https://www.tuempresa.com
+NOTE:${about}
+END:VCARD
+  `.trim();
+
+  // Mensaje con botones + vCard
+  const template = generateWAMessageFromContent(m.chat, {
+    templateMessage: {
+      hydratedTemplate: {
+        hydratedContentText: `📇 Contacto del Creador\n\n${name}\n${about}`,
+        locationMessage: { jpegThumbnail: Buffer.from(await (await fetch('https://files.catbox.moe/cduhlw.jpg')).arrayBuffer()) },
+        hydratedFooterText: 'Guarda el contacto o visita la web',
+        hydratedButtons: [
+          {
+            callButton: {
+              displayText: '📞 Llamar',
+              phoneNumber: numCreador
             }
+          },
+          {
+            urlButton: {
+              displayText: '🌐 Visitar Web',
+              url: 'https://www.tuempresa.com'
+            }
+          },
+          {
+            quickReplyButton: {
+              displayText: '💾 Guardar Contacto',
+              id: 'guardar_contacto'
+            }
+          }
+        ],
+        // Aquí incluimos la vCard dentro del template
+        hydratedContentMessage: {
+          contactsMessage: {
+            displayName: name,
+            contacts: [{ vcard }]
+          }
         }
+      }
     }
+  }, { quoted: m });
 
-    // Enviamos el mensaje
-    const waMessage = generateWAMessageFromContent(m.chat, template, { quoted: m })
-    await conn.relayMessage(m.chat, waMessage.message, { messageId: waMessage.key.id })
+  await conn.relayMessage(m.chat, template.message, { messageId: template.key.id });
 }
 
-handler.help = ['creador']
-handler.tags = ['info']
-handler.command = /^creador$/i
+handler.help = ['owner'];
+handler.tags = ['main'];
+handler.command = ['owner', 'creator', 'creador', 'dueño'];
 
-export default handler
+export default handler;
