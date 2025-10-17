@@ -31,13 +31,45 @@ export async function before(m, { conn, participants, groupMetadata }) {
   let id = m.sender
   let pp = await conn.profilePictureUrl(m.chat, 'image').catch(_ => null) || urlapi
   let tipo, mensaje
-  if (m.messageStubType == 21) tipo = 'Nombre actualizado', mensaje = `📛 El nombre del grupo fue cambiado a: *${m.messageStubParameters[0]}*\n👤 Por: ${usuario}`
-  else if (m.messageStubType == 22) tipo = 'Imagen actualizada', mensaje = `🖼️ La foto del grupo ha sido actualizada.\n👤 Por: ${usuario}`
-  else if (m.messageStubType == 23) tipo = 'Enlace actualizado', mensaje = `🔗 El enlace del grupo ha sido restablecido.\n👤 Por: ${usuario}`
-  else if (m.messageStubType == 25) tipo = 'Configuración editada', mensaje = `🔧 La configuración del grupo ha sido modificada.\n👤 Por: ${usuario}\n📋 Permisos: ${m.messageStubParameters[0] == 'on' ? 'Solo administradores' : 'Todos los miembros'}`
-  else if (m.messageStubType == 26) tipo = 'Estado del grupo', mensaje = `🔒 El grupo ahora está ${m.messageStubParameters[0] == 'on' ? '*cerrado*' : '*abierto*'}.\n👤 Por: ${usuario}`
-  else if (m.messageStubType == 29) tipo = 'Nuevo admin', mensaje = `🆙 *@${m.messageStubParameters[0].split`@`[0]}* ha sido ascendido a administrador.\n👤 Acción realizada por: ${usuario}`
-  else if (m.messageStubType == 30) tipo = 'Admin removido', mensaje = `⬇️ *@${m.messageStubParameters[0].split`@`[0]}* ha sido removido como administrador.\n👤 Acción realizada por: ${usuario}`
+  if (m.messageStubType == 21) tipo = '✦ Nombre actualizado ✦', mensaje = `
+╭───〔 ɴᴏᴍʙʀᴇ ᴅᴇʟ ɢʀᴜᴘᴏ ᴍᴏᴅɪғɪᴄᴀᴅᴏ 〕───╮
+┃  ➤ Nuevo nombre: *${m.messageStubParameters[0]}*
+┃  ➤ Cambiado por: ${usuario}
+╰──────────────────────────────╯`
+
+else if (m.messageStubType == 22) tipo = '✦ Imagen actualizada ✦', mensaje = `
+╭───〔 ɪᴍᴀɢᴇɴ ᴅᴇʟ ɢʀᴜᴘᴏ ᴀᴄᴛᴜᴀʟɪᴢᴀᴅᴀ 〕───╮
+┃  ➤ Modificada por: ${usuario}
+╰──────────────────────────────╯`
+
+else if (m.messageStubType == 23) tipo = '✦ Enlace actualizado ✦', mensaje = `
+╭───〔 ᴇɴʟᴀᴄᴇ ʀᴇsᴛᴀʙʟᴇᴄɪᴅᴏ 〕───╮
+┃  ➤ Restablecido por: ${usuario}
+╰───────────────────────╯`
+
+else if (m.messageStubType == 25) tipo = '✦ Configuración editada ✦', mensaje = `
+╭───〔 ᴄᴏɴғɪɢᴜʀᴀᴄɪᴏ́ɴ ᴍᴏᴅɪғɪᴄᴀᴅᴀ 〕───╮
+┃  ➤ Editado por: ${usuario}
+┃  ➤ Permisos: ${m.messageStubParameters[0] == 'on' ? 'Solo administradores' : 'Todos los miembros'}
+╰───────────────────────────╯`
+
+else if (m.messageStubType == 26) tipo = '✦ Estado del grupo ✦', mensaje = `
+╭───〔 ᴇsᴛᴀᴅᴏ ᴅᴇʟ ɢʀᴜᴘᴏ 〕───╮
+┃  ➤ Ahora está ${m.messageStubParameters[0] == 'on' ? '*CERRADO*' : '*ABIERTO*'}
+┃  ➤ Cambiado por: ${usuario}
+╰──────────────────────╯`
+
+else if (m.messageStubType == 29) tipo = '✦ Nuevo administrador ✦', mensaje = `
+╭───〔 ɴᴜᴇᴠᴏ ᴀᴅᴍɪɴ ᴀsɪɢɴᴀᴅᴏ 〕───╮
+┃  ➤ *@${m.messageStubParameters[0].split`@`[0]}* fue ascendido.
+┃  ➤ Acción por: ${usuario}
+╰─────────────────────────╯`
+
+else if (m.messageStubType == 30) tipo = '✦ Administrador removido ✦', mensaje = `
+╭───〔 ᴀᴅᴍɪɴ ʀᴇᴍᴏᴠɪᴅᴏ 〕───╮
+┃  ➤ *@${m.messageStubParameters[0].split`@`[0]}* fue degradado.
+┃  ➤ Acción por: ${usuario}
+╰────────────────────╯`
   else return
   if (!chat.detect) return
   const taguser = usuario
