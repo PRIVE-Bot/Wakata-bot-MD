@@ -1,66 +1,48 @@
-import * as baileys from '@whiskeysockets/baileys';
+import { generateWAMessageFromContent, proto } from '@whiskeysockets/baileys'
 
-const { 
-  proto, 
-  generateWAMessage, 
-  relayMessage 
-} = baileys;
+let handler = async (m, { conn, usedPrefix, command }) => {
+    // Solo se ejecuta si el comando es 'creador'
+    if (command !== 'creador') return
 
-let handler = async (m, { conn }) => {
-  const owner = {
-    name: '👑 Deylin',
-    number: '50432955554',
-    org: 'Mode / Kirito-Bot',
-    desc: 'Creador Principal de Kirito-Bot',
-    footer: '✨ Apóyame en mis proyectos y descubre más en mis redes.',
-    buttons: [
-      { displayText: '💬 WhatsApp', url: 'https://wa.me/50432955554' },
-      { displayText: '📢 Canal Oficial', url: 'https://whatsapp.com/channel/0029VbAzn9GGU3BQw830eA0F' },
-      { displayText: '💰 Paypal', url: 'https://www.paypal.me/DeylinB' },
-      { displayText: '🌐 Website', url: 'https://Deylin.vercel.app/' }
-    ]
-  }
+    const contactName = "Mode - Servicios Digitales"
+    const contactNumber = "50432955554" // sin '+' ni espacios
+    const contactEmail = "contacto@mode.com"
+    const website = "https://mode.com"
 
-  const vcard = `
+    // vCard del contacto
+    const vcard = `
 BEGIN:VCARD
 VERSION:3.0
-FN:${owner.name}
-ORG:${owner.org};
-TITLE:Creador Principal
-TEL;type=CELL;type=VOICE;waid=${owner.number}:${owner.number}
-EMAIL;type=INTERNET:soporte@mode.com
+FN:${contactName}
+ORG:${contactName};
+TEL;type=CELL;type=VOICE;waid=${contactNumber}:${contactNumber}
+EMAIL;type=INTERNET:${contactEmail}
+URL:${website}
 END:VCARD
-`.trim()
+`
 
-  await conn.sendMessage(
-    m.chat,
-    { contacts: { displayName: owner.name, contacts: [{ vcard }] } },
-    { quoted: m }
-  )
+    // Creamos el mensaje interactivo tipo “buttonsMessage”
+    const message = {
+        contactsArray: [{ displayName: contactName, vcard }],
+        contentText: `📌 Información de contacto:\n\nNombre: ${contactName}\nWhatsApp: +${contactNumber}\nCorreo: ${contactEmail}\nWeb: ${website}`,
+        footerText: '¡Guarda nuestro contacto para mantenerte en conexión!',
+        buttons: [
+            { buttonId: 'save_contact', buttonText: { displayText: 'Guardar contacto' }, type: 1 },
+            { buttonId: 'visit_web', buttonText: { displayText: 'Visitar web' }, type: 1 }
+        ],
+        headerType: 6 // Indica que es un mensaje con contacto
+    }
 
-  const urlButtons = owner.buttons.map(b => ({
-    urlButton: { displayText: b.displayText, url: b.url }
-  }))
+    // Enviamos el mensaje
+    const waMessage = generateWAMessageFromContent(m.chat, { 
+        buttonsMessage: message 
+    }, { quoted: m })
 
-  const templateMessage = proto.Message.fromObject({
-      templateMessage: {
-          hydratedTemplate: {
-              hydratedContentText: `👤 ${owner.name}\n📱 +${owner.number}\n🏢 ${owner.org}\n\n${owner.desc}`,
-              hydratedFooterText: owner.footer,
-              hydratedButtons: urlButtons
-          }
-      }
-  })
-
-  const msg = await generateWAMessage(m.chat, templateMessage, {
-      userJid: conn.user.id,
-      quoted: m 
-  })
-
-  await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
+    await conn.relayMessage(m.chat, waMessage.message, { messageId: waMessage.key.id })
 }
 
-handler.tags = ['main']
-handler.command = handler.help = ['creador', 'owner', 'contacto', 'deylin']
+handler.help = ['creador']
+handler.tags = ['info']
+handler.command = /^creador$/i // Regex para activar con "creador"
 
 export default handler
