@@ -20,7 +20,9 @@ const handler = async (m, { conn }) => {
     
     const processedImageUrl = `https://canvas-8zhi.onrender.com/api/gay?profile=${encodeURIComponent(avatarUrl)}`;
 
-    
+        await m.react('🏳️‍🌈')
+    await m.react('🌈')
+await m.react('🏳️‍🌈')
     const frases = [
       "🏳️‍🌈 La ciencia lo confirma: un verdadero icono del orgullo ha nacido.",
       "🌈 El universo ha hablado… y dijo: *Gay Supreme detected*.",
