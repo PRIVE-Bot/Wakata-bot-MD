@@ -30,7 +30,6 @@ conn.reply(m.chat, `⚠︎ Se ha producido un problema.\n> Usa *${usedPrefix}rep
 
 handler.help = ['ver']
 handler.tags = ['tools']
-handler.command = ['readviewonce', 'read', 'readvo']
-handler.premium = true
+handler.command = ['readviewonce', 'read', 'ver']
 
 export default handler
