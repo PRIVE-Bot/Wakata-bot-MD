@@ -32,44 +32,44 @@ export async function before(m, { conn, participants, groupMetadata }) {
   let pp = await conn.profilePictureUrl(m.chat, 'image').catch(_ => null) || urlapi
   let tipo, mensaje
   if (m.messageStubType == 21) tipo = '✦ Nombre actualizado ✦', mensaje = `
-╭───〔 ɴᴏᴍʙʀᴇ ᴅᴇʟ ɢʀᴜᴘᴏ ᴍᴏᴅɪғɪᴄᴀᴅᴏ 〕───╮
+╭╮
 ┃  ➤ Nuevo nombre: *${m.messageStubParameters[0]}*
 ┃  ➤ Cambiado por: ${usuario}
-╰──────────────────────────────╯`
+╰╯`
 
 else if (m.messageStubType == 22) tipo = '✦ Imagen actualizada ✦', mensaje = `
-╭───〔 ɪᴍᴀɢᴇɴ ᴅᴇʟ ɢʀᴜᴘᴏ ᴀᴄᴛᴜᴀʟɪᴢᴀᴅᴀ 〕───╮
+╭╮
 ┃  ➤ Modificada por: ${usuario}
-╰──────────────────────────────╯`
+╰╯`
 
 else if (m.messageStubType == 23) tipo = '✦ Enlace actualizado ✦', mensaje = `
-╭───〔 ᴇɴʟᴀᴄᴇ ʀᴇsᴛᴀʙʟᴇᴄɪᴅᴏ 〕───╮
+╭╮
 ┃  ➤ Restablecido por: ${usuario}
-╰───────────────────────╯`
+╰╯`
 
 else if (m.messageStubType == 25) tipo = '✦ Configuración editada ✦', mensaje = `
-╭───〔 ᴄᴏɴғɪɢᴜʀᴀᴄɪᴏ́ɴ ᴍᴏᴅɪғɪᴄᴀᴅᴀ 〕───╮
+╭╮
 ┃  ➤ Editado por: ${usuario}
 ┃  ➤ Permisos: ${m.messageStubParameters[0] == 'on' ? 'Solo administradores' : 'Todos los miembros'}
-╰───────────────────────────╯`
+╰╯`
 
 else if (m.messageStubType == 26) tipo = '✦ Estado del grupo ✦', mensaje = `
-╭───〔 ᴇsᴛᴀᴅᴏ ᴅᴇʟ ɢʀᴜᴘᴏ 〕───╮
+╭╮
 ┃  ➤ Ahora está ${m.messageStubParameters[0] == 'on' ? '*CERRADO*' : '*ABIERTO*'}
 ┃  ➤ Cambiado por: ${usuario}
-╰──────────────────────╯`
+╰╯`
 
 else if (m.messageStubType == 29) tipo = '✦ Nuevo administrador ✦', mensaje = `
-╭───〔 ɴᴜᴇᴠᴏ ᴀᴅᴍɪɴ ᴀsɪɢɴᴀᴅᴏ 〕───╮
+╭╮
 ┃  ➤ *@${m.messageStubParameters[0].split`@`[0]}* fue ascendido.
 ┃  ➤ Acción por: ${usuario}
-╰─────────────────────────╯`
+╰╯`
 
 else if (m.messageStubType == 30) tipo = '✦ Administrador removido ✦', mensaje = `
-╭───〔 ᴀᴅᴍɪɴ ʀᴇᴍᴏᴠɪᴅᴏ 〕───╮
+╭╮
 ┃  ➤ *@${m.messageStubParameters[0].split`@`[0]}* fue degradado.
 ┃  ➤ Acción por: ${usuario}
-╰────────────────────╯`
+╰╯`
   else return
   if (!chat.detect) return
   const taguser = usuario
