@@ -1,97 +1,103 @@
 import { readdirSync, statSync, unlinkSync, existsSync, readFileSync, watch, rmSync, promises as fsPromises } from "fs";
 const fs = { ...fsPromises, existsSync };
-import path, { join } from 'path' 
+import path, { join } from 'path';
 import ws from 'ws';
+import { exec } from 'child_process';
+import { promisify } from 'util';
+
+const execPromise = promisify(exec);
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 let handler = async (m, { conn: _envio, command, usedPrefix, args, text, isOwner}) => {
-const isCommand1 = /^(deletesesion|deletebot|deletesession|deletesesaion)$/i.test(command)  
-const isCommand2 = /^(stop|pausarai|pausarbot)$/i.test(command)  
-const isCommand3 = /^(bots|sockets|socket)$/i.test(command)   
+const isCommand1 = /^(deletesesion|deletebot|deletesession|deletesesaion)$/i.test(command);
+const isCommand2 = /^(stop|pausarai|pausarbot)$/i.test(command);
+const isCommand3 = /^(bots|sockets|socket)$/i.test(command);
+const isCommand4 = /^(setofcbot|setmainbot)$/i.test(command);
 
 async function reportError(e) {
-await m.reply(`⚠️  [SYS-ERR] ${emoji} ${botname} detectó un error interno...`)
-console.log(e)
+await m.reply(`⚠️  [SYS-ERR] ${emoji} ${botname} detectó un error interno...`);
+console.log(e);
 }
 
 switch (true) {       
 
 case isCommand1:
-let who = m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.fromMe ? conn.user.jid : m.sender
-let uniqid = `${who.split`@`[0]}`
-const path = `./${jadi}/${uniqid}`
+let who = m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.fromMe ? _envio.user.jid : m.sender;
+let uniqid = `${who.split`@`[0]}`;
+const path = `./${global.jadi}/${uniqid}`;
 
 if (!await fs.existsSync(path)) {
-await conn.sendMessage(m.chat, { 
+await _envio.sendMessage(m.chat, { 
   text: `
 ╭─╼━━━━━━━━━━╾─╮
-┃ ${emoji} Sesión no encontrada  
+┃ ${global.emoji} Sesión no encontrada  
 ┃ ➜ Usa: ${usedPrefix}serbot
 ┃ ➜ O vincula con: ${usedPrefix}serbot (ID)
 ╰─╼━━━━━━━━━━╾─╯
-${emoji} ${botname}
-`.trim() }, { quoted: m })
-return
+${global.emoji} ${global.botname}
+`.trim() }, { quoted: m });
+return;
 }
 
-if (global.conn.user.jid !== conn.user.jid) {
-await conn.sendMessage(m.chat, { 
+if (global.conn.user.jid !== _envio.user.jid) {
+await _envio.sendMessage(m.chat, { 
   text: `
 ╭─╼━━━━━━━━━━╾─╮
-┃ ${emoji} Este comando solo funciona  
+┃ ${global.emoji} Este comando solo funciona  
 ┃ en el *Bot Principal*.  
 ┃  
 ┃ 🔗 [Conectar al Principal]  
 ┃ https://api.whatsapp.com/send/?phone=${global.conn.user.jid.split`@`[0]}&text=${usedPrefix + command}
 ╰─╼━━━━━━━━━━╾─╯
-${emoji} ${botname}
-`.trim() }, { quoted: m })
+${global.emoji} ${global.botname}
+`.trim() }, { quoted: m });
 } else {
-await conn.sendMessage(m.chat, { 
+await _envio.sendMessage(m.chat, { 
   text: `
 ╭─╼━━━━━━━━━━╾─╮
-┃ ${emoji} Sub-Bot desconectado  
+┃ ${global.emoji} Sub-Bot desconectado  
 ┃ Tu sesión fue eliminada  
 ╰─╼━━━━━━━━━━╾─╯
-${emoji} ${botname}
-`.trim() }, { quoted: m })
+${global.emoji} ${global.botname}
+`.trim() }, { quoted: m });
 }
 
 try {
-fs.rmdir(`./${jadi}/` + uniqid, { recursive: true, force: true })
-await conn.sendMessage(m.chat, { text : `
+rmSync(`./${global.jadi}/` + uniqid, { recursive: true, force: true });
+await _envio.sendMessage(m.chat, { text : `
 ╭─╼━━━━━━━━━━╾─╮
-┃ ${emoji} Limpieza completa  
+┃ ${global.emoji} Limpieza completa  
 ┃ Rastros de sesión eliminados  
 ╰─╼━━━━━━━━━━╾─╯
-${emoji} ${botname}
-`.trim() }, { quoted: m })
+${global.emoji} ${global.botname}
+`.trim() }, { quoted: m });
 } catch (e) {
-reportError(e)
+reportError(e);
 }  
-break
+break;
 
 
 case isCommand2:
-if (global.conn.user.jid == conn.user.jid) {
-conn.reply(m.chat, `
+if (global.conn.user.jid == _envio.user.jid) {
+_envio.reply(m.chat, `
 ╭─╼━━━━━━━━━━╾─╮
-┃ ${emoji} No eres SubBot  
+┃ ${global.emoji} No eres SubBot  
 ┃ Conéctate desde el  
 ┃ Bot Principal para pausar  
 ╰─╼━━━━━━━━━━╾─╯
-${emoji} ${botname}
-`.trim(), m)
+${global.emoji} ${global.botname}
+`.trim(), m);
 } else {
-await conn.reply(m.chat, `
+await _envio.reply(m.chat, `
 ╭─╼━━━━━━━━━━╾─╮
-┃ ${emoji} Sub-Bot detenido  
+┃ ${global.emoji} Sub-Bot detenido  
 ┃ Conexión finalizada  
 ╰─╼━━━━━━━━━━╾─╯
-${emoji} ${botname}
-`.trim(), m)
-conn.ws.close()
+${global.emoji} ${global.botname}
+`.trim(), m);
+_envio.ws.close();
 }  
-break
+break;
 
 
 case isCommand3:
@@ -118,21 +124,87 @@ const message = users.map((v, index) => `
 
 const responseMessage = `
 ╭─╼━━━━━━━━━━━━━━━━━━━━╾─╮
-┃ ${emoji} PANEL DE SUB-BOTS ${emoji} 
+┃ ${global.emoji} PANEL DE SUB-BOTS ${global.emoji} 
 ┃ Conectados: ${users.length || '0'}  
 ╰─╼━━━━━━━━━━━━━━━━━━━━╾─╯
 
 ${message || '🚫 No hay SubBots activos'}
 
-${emoji} ${botname}
+${global.emoji} ${global.botname}
 `.trim();
 
-await _envio.sendMessage(m.chat, {text: responseMessage, mentions: _envio.parseMention(responseMessage)}, {quoted: m})
-break   
+await _envio.sendMessage(m.chat, {text: responseMessage, mentions: _envio.parseMention(responseMessage)}, {quoted: m});
+break;
+
+case isCommand4:
+if (!isOwner) {
+return m.reply('⛔ *Acceso denegado*. Solo el *desarrollador principal* puede usar este comando.');
+}
+
+if (!args[0]) {
+return m.reply(`💡 Uso: ${usedPrefix + command} <número_de_teléfono_del_subbot>\n\nEjemplo: ${usedPrefix + command} 521999888777`);
+}
+
+const targetNumberRaw = args[0].replace(/\D/g, '');
+const targetSubBotConn = global.conns.find(c => c.user?.jid && c.user.jid.startsWith(targetNumberRaw));
+
+if (!targetSubBotConn) {
+return m.reply(`❌ No se encontró ningún subbot activo con el número *+${targetNumberRaw}*. Asegúrate de que esté conectado.`);
+}
+
+const subBotSessionPath = join(global.rutaJadiBot || `./${global.jadi}`, targetNumberRaw);
+const mainSessionPath = `./${global.sessions}`;
+
+if (!existsSync(subBotSessionPath)) {
+return m.reply(`❌ La sesión del subbot *+${targetNumberRaw}* no existe en ${subBotSessionPath}.`);
+}
+
+await m.reply(`⚙️ Iniciando transferencia de sesión para *+${targetNumberRaw}*...\n\n1. Eliminando credenciales antiguas del bot principal.`);
+
+try {
+if (existsSync(mainSessionPath)) {
+rmSync(mainSessionPath, { recursive: true, force: true });
+await delay(1000);
+}
+await m.reply('✅ Credenciales principales eliminadas.');
+} catch (e) {
+console.error('Error al borrar sesión principal:', e);
+return m.reply('❌ Error al intentar borrar las credenciales principales.');
+}
+
+await m.reply('2. Copiando credenciales del subbot a la sesión principal...');
+
+try {
+mkdirSync(mainSessionPath, { recursive: true });
+
+await execPromise(`cp -r ${subBotSessionPath}/* ${mainSessionPath}/`);
+await delay(1000);
+
+if (!existsSync(join(mainSessionPath, 'creds.json'))) {
+throw new Error("La copia de creds.json falló.");
+}
+
+await m.reply('3. Eliminando la sesión del subbot original...');
+
+rmSync(subBotSessionPath, { recursive: true, force: true });
+
+await m.reply('✅ Transferencia completa. Reiniciando el Bot...');
+
+} catch (e) {
+console.error('Error durante la copia/eliminación:', e);
+return m.reply(`❌ Error crítico durante la transferencia de sesión:\n${e.message}`);
+}
+
+setTimeout(() => {
+process.exit(0);
+}, 3000);
+break;
+
 }}
 
-handler.tags = ['serbot']
-handler.help = ['sockets', 'deletesesion', 'pausarai']
-handler.command = ['deletesesion', 'deletebot', 'deletesession', 'deletesession', 'stop', 'pausarai', 'pausarbot', 'bots', 'sockets', 'socket']
+handler.tags = ['serbot', 'owner']
+handler.help = ['sockets', 'deletesesion', 'pausarai', 'setofcbot']
+handler.command = ['deletesesion', 'deletebot', 'deletesession', 'deletesession', 'stop', 'pausarai', 'pausarbot', 'bots', 'sockets', 'socket', 'setofcbot', 'setmainbot']
+handler.owner = true;
 
-export default handler
+export default handler;
