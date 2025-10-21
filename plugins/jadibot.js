@@ -1,4 +1,4 @@
-import { readdirSync, statSync, unlinkSync, existsSync, readFileSync, watch, rmSync, promises as fsPromises } from "fs";
+import { readdirSync, statSync, unlinkSync, existsSync, readFileSync, watch, rmSync, mkdirSync, promises as fsPromises } from "fs";
 const fs = { ...fsPromises, existsSync };
 import path, { join } from 'path';
 import ws from 'ws';
@@ -174,6 +174,7 @@ return m.reply('❌ Error al intentar borrar las credenciales principales.');
 await m.reply('2. Copiando credenciales del subbot a la sesión principal...');
 
 try {
+// Corregido: Llamando a mkdirSync importada
 mkdirSync(mainSessionPath, { recursive: true });
 
 await execPromise(`cp -r ${subBotSessionPath}/* ${mainSessionPath}/`);
