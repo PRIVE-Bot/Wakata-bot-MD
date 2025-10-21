@@ -15,18 +15,21 @@ const isCommand3 = /^(bots|sockets|socket)$/i.test(command);
 const isCommand4 = /^(setofcbot|setmainbot)$/i.test(command);
 
 async function reportError(e) {
-await m.reply(`⚠️  [SYS-ERR] ${emoji} ${botname} detectó un error interno...`);
+await m.reply(`⚠️  [SYS-ERR] ${global.emoji} ${global.botname} detectó un error interno...`);
 console.log(e);
 }
+
+// Obtener la lista de subbots activos una sola vez
+const activeSubBots = [...new Set([...global.conns.filter((conn) => conn.user && conn.ws.socket && conn.ws.socket.readyState !== ws.CLOSED).map((conn) => conn)])];
 
 switch (true) {       
 
 case isCommand1:
 let who = m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.fromMe ? _envio.user.jid : m.sender;
 let uniqid = `${who.split`@`[0]}`;
-const path = `./${global.jadi}/${uniqid}`;
+const pathDelete = `./${global.jadi}/${uniqid}`;
 
-if (!await fs.existsSync(path)) {
+if (!await fs.existsSync(pathDelete)) {
 await _envio.sendMessage(m.chat, { 
   text: `
 ╭─╼━━━━━━━━━━╾─╮
@@ -101,8 +104,6 @@ break;
 
 
 case isCommand3:
-const users = [...new Set([...global.conns.filter((conn) => conn.user && conn.ws.socket && conn.ws.socket.readyState !== ws.CLOSED).map((conn) => conn)])];
-
 function convertirMsADiasHorasMinutosSegundos(ms) {
 var segundos = Math.floor(ms / 1000);
 var minutos = Math.floor(segundos / 60);
@@ -114,7 +115,7 @@ horas %= 24;
 return `${días ? días+"d " : ""}${horas ? horas+"h " : ""}${minutos ? minutos+"m " : ""}${segundos ? segundos+"s" : ""}`;
 }
 
-const message = users.map((v, index) => `
+const message = activeSubBots.map((v, index) => `
 ╭─[ SubBot #${index + 1} ]─╮
 ┃ 📎 wa.me/${v.user.jid.replace(/[^0-9]/g, '')}?text=${usedPrefix}estado
 ┃ 👤 Usuario: ${v.user.name || 'Sub-Bot'}
@@ -125,7 +126,7 @@ const message = users.map((v, index) => `
 const responseMessage = `
 ╭─╼━━━━━━━━━━━━━━━━━━━━╾─╮
 ┃ ${global.emoji} PANEL DE SUB-BOTS ${global.emoji} 
-┃ Conectados: ${users.length || '0'}  
+┃ Conectados: ${activeSubBots.length || '0'}  
 ╰─╼━━━━━━━━━━━━━━━━━━━━╾─╯
 
 ${message || '🚫 No hay SubBots activos'}
@@ -141,16 +142,14 @@ if (!isOwner) {
 return m.reply('⛔ *Acceso denegado*. Solo el *desarrollador principal* puede usar este comando.');
 }
 
-if (!args[0]) {
-return m.reply(`💡 Uso: ${usedPrefix + command} <número_de_teléfono_del_subbot>\n\nEjemplo: ${usedPrefix + command} 521999888777`);
+const botIndex = parseInt(args[0]);
+
+if (isNaN(botIndex) || botIndex < 1 || botIndex > activeSubBots.length) {
+return m.reply(`💡 Uso: ${usedPrefix + command} <número_de_la_lista>\n\nEjemplo: ${usedPrefix + command} 1\n\n> Usa *${usedPrefix}bots* para ver la lista de números.`);
 }
 
-const targetNumberRaw = args[0].replace(/\D/g, '');
-const targetSubBotConn = global.conns.find(c => c.user?.jid && c.user.jid.startsWith(targetNumberRaw));
-
-if (!targetSubBotConn) {
-return m.reply(`❌ No se encontró ningún subbot activo con el número *+${targetNumberRaw}*. Asegúrate de que esté conectado.`);
-}
+const targetSubBotConn = activeSubBots[botIndex - 1]; // Obtener la conexión por el índice
+const targetNumberRaw = targetSubBotConn.user.jid.replace(/[^0-9]/g, '');
 
 const subBotSessionPath = join(global.rutaJadiBot || `./${global.jadi}`, targetNumberRaw);
 const mainSessionPath = `./${global.sessions}`;
@@ -159,7 +158,7 @@ if (!existsSync(subBotSessionPath)) {
 return m.reply(`❌ La sesión del subbot *+${targetNumberRaw}* no existe en ${subBotSessionPath}.`);
 }
 
-await m.reply(`⚙️ Iniciando transferencia de sesión para *+${targetNumberRaw}*...\n\n1. Eliminando credenciales antiguas del bot principal.`);
+await m.reply(`⚙️ Iniciando transferencia de sesión para *SubBot #${botIndex} (+${targetNumberRaw})*...\n\n1. Eliminando credenciales antiguas del bot principal.`);
 
 try {
 if (existsSync(mainSessionPath)) {
