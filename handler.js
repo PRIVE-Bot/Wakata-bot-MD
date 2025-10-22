@@ -20,14 +20,14 @@ export async function handler(chatUpdate) {
         return;
     }
 
-        // aqui corrigo mi error
+    /*    // aqui corrigo mi error
     let m = chatUpdate.messages[chatUpdate.messages.length - 1];
     if (!m) return;
 
     m = smsg(this, m) || m;
     if (!m) return;
 
-    if (!m.isGroup) return;
+    if (!m.isGroup) return;*/
 
     this.processedMessages = this.processedMessages || new Map();
     const now = Date.now();
