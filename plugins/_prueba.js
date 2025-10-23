@@ -6,24 +6,21 @@ let handler = async (m, { conn, text }) => {
   await m.react('⏳')
 
   try {
-    const url = encodeURIComponent(text)
-    const apiUrl = `https://youtube-to-mp4.p.rapidapi.com/url=&title?url=${url}&title=video`
+    // Codificar URL
+    const videoUrl = encodeURIComponent(text)
     
-    const response = await fetch(apiUrl, {
-      method: 'GET',
-      headers: {
-        'x-rapidapi-host': 'youtube-to-mp4.p.rapidapi.com',
-        'x-rapidapi-key': 'e403269c94mshd286676f129f5bap1e37f2jsn6275ce1a6f58'
-      }
-    })
+    // Endpoint de SaveFrom.net (no oficial)
+    const apiUrl = `https://savefrom.net/api/convert?url=${videoUrl}&format=json`
 
-    if (!response.ok) throw new Error(`Error en la API (${response.status})`)
+    const response = await fetch(apiUrl)
+    if (!response.ok) throw new Error('No se pudo obtener el video.')
 
     const data = await response.json()
-    if (!data.link) throw new Error('No se encontró el enlace del video.')
+    if (!data.url) throw new Error('No se encontró el enlace del video.')
 
-    await conn.sendMessage(m.chat, { 
-      video: { url: data.link }, 
+    // Enviar video como video normal
+    await conn.sendMessage(m.chat, {
+      video: { url: data.url },
       caption: `🎬 *Título:* ${data.title || 'Video de YouTube'}`
     }, { quoted: m })
 
