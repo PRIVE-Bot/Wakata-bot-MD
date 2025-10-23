@@ -110,7 +110,7 @@ export async function handler(chatUpdate) {
                 detect: true,
                 antiBot: false,
                 modoadmin: false,
-                antiLink: true,
+                antiLink: false,
                 nsfw: false,
                 expired: 0, 
                 autoresponder2: false,
