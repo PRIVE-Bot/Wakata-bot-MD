@@ -1,21 +1,30 @@
 import fetch from 'node-fetch'
-import { writeFileSync } from 'fs'
 
 let handler = async (m, { conn, text }) => {
-  if (!text) return m.reply('⚠️ Ingresa una URL de video válida.')
+  if (!text) return m.reply('⚠️ Ingresa la URL de un video de YouTube.')
 
   await m.react('⏳')
 
   try {
-    const res = await fetch(text)
-    if (!res.ok) throw new Error(`No se pudo descargar el video (${res.status})`)
-    const buffer = Buffer.from(await res.arrayBuffer())
+    const url = encodeURIComponent(text)
+    const apiUrl = `https://youtube-to-mp4.p.rapidapi.com/url=&title?url=${url}&title=video`
+    
+    const response = await fetch(apiUrl, {
+      method: 'GET',
+      headers: {
+        'x-rapidapi-host': 'youtube-to-mp4.p.rapidapi.com',
+        'x-rapidapi-key': 'e403269c94mshd286676f129f5bap1e37f2jsn6275ce1a6f58'
+      }
+    })
 
-    // Enviar como video normal (no archivo)
+    if (!response.ok) throw new Error(`Error en la API (${response.status})`)
+
+    const data = await response.json()
+    if (!data.link) throw new Error('No se encontró el enlace del video.')
+
     await conn.sendMessage(m.chat, { 
-      video: buffer, 
-      caption: '🎬 Aquí tienes tu video 👇', 
-      mimetype: 'video/mp4'
+      video: { url: data.link }, 
+      caption: `🎬 *Título:* ${data.title || 'Video de YouTube'}`
     }, { quoted: m })
 
     await m.react('✅')
@@ -23,9 +32,9 @@ let handler = async (m, { conn, text }) => {
   } catch (err) {
     console.error(err)
     await m.react('❌')
-    m.reply('❌ No se pudo enviar el video.')
+    m.reply('❌ No se pudo descargar el video. Intenta con otro enlace.')
   }
 }
 
-handler.command = /^video$/i
+handler.command = /^ytmp4|ytv|youtube$/i
 export default handler
