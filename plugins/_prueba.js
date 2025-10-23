@@ -3,7 +3,7 @@ import { basename } from 'path'
 import mime from 'mime-types'
 
 let handler = async (m, { conn, text, args, command }) => {
-  if (!text || !text.startsWith('https://files.catbox.moe/')) {
+  if (!text || !text.startsWith('https://')) {
     return m.reply(`✳️ Usa el comando con un enlace válido de catbox.\n\n📌 Ejemplo:\n${command} https://files.catbox.moe/abcd12.mp4`)
   }
 
