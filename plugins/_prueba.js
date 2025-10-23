@@ -1,43 +1,38 @@
-const handler = async (m, { conn, text, usedPrefix, command }) => {
-  try {
-    if (command === 'prefix') {
-      if (!text.trim()) {
-        return conn.reply(
-          m.chat,
-          `⚙️ *Ejemplo:* ${usedPrefix + command} !`,
-          m,
-          rcanal
-        );
-      }
+import fetch from 'node-fetch'
+import { basename } from 'path'
+import mime from 'mime-types'
 
-      global.prefix = new RegExp(
-        '^[' +
-          (text || global.opts['prefix'] || '‎xzXZ/i!#$%+£¢€¥^°=¶∆×÷π√✓©®:;?&.\\-')
-            .replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&') +
-          ']'
-      );
-
-      return conn.reply(m.chat, `${emoji} *Prefijo actualizado con éxito! Nuevo prefijo:* ${text}`, m, rcanal);
-    }
-
-    if (command === 'resetprefix') {
-      const nuevoPrefijo = './#';
-
-      global.prefix = new RegExp(
-        '^[' + nuevoPrefijo.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&') + ']'
-      );
-
-      return conn.reply(m.chat, `${emoji} *Prefijo restablecido con éxito a:* ${nuevoPrefijo}`, m, rcanal);
-    }
-  } catch (err) {
-    console.error(err);
-    conn.reply(m.chat, '❌ Error al ejecutar el comando.', m, rcanal);
+let handler = async (m, { conn, text, args, command }) => {
+  if (!text || !text.startsWith('https://files.catbox.moe/')) {
+    return m.reply(`✳️ Usa el comando con un enlace válido de catbox.\n\n📌 Ejemplo:\n${command} https://files.catbox.moe/abcd12.mp4`)
   }
-};
 
-handler.help = ['prefix', 'resetprefix'];
-handler.tags = ['owner'];
-handler.command = ['prefix', 'resetprefix'];
-handler.rowner = true;
+  await m.reply('Buscando el contenido...');
+  try {
+    const res = await fetch(text)
+    if (!res.ok) throw new Error('❌ Error al descargar el archivo')
 
-export default handler;
+    const buffer = await res.buffer()
+    const filename = basename(text)
+    const mimetype = mime.lookup(filename) || 'application/octet-stream'
+
+    if (mimetype.startsWith('image/')) {
+      await conn.sendFile(m.chat, buffer, filename, '', m, false, { mimetype })
+    } else if (mimetype.startsWith('video/')) {
+      await conn.sendFile(m.chat, buffer, filename, '', m, false, { mimetype })
+    } else if (mimetype.startsWith('audio/')) {
+      await conn.sendFile(m.chat, buffer, filename, '', m, false, { mimetype, ptt: true })
+    } else {
+      await conn.sendFile(m.chat, buffer, filename, '', m, false, { mimetype, asDocument: true })
+    }
+  } catch (e) {
+    console.error(e)
+    m.reply(`❌ Error al descargar desde Catbox:\n${e.message}`)
+  }
+}
+
+handler.help = ['dcatbox <url>']
+handler.tags = ['downloader']
+handler.command = /^dcatbox$/i
+
+export default handler
