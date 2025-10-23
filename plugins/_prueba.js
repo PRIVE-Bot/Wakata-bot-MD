@@ -1,38 +1,31 @@
 import fetch from 'node-fetch'
-import { basename } from 'path'
-import mime from 'mime-types'
+import { writeFileSync } from 'fs'
 
-let handler = async (m, { conn, text, args, command }) => {
-  if (!text || !text.startsWith('https://')) {
-    return m.reply(`✳️ Usa el comando con un enlace válido de catbox.\n\n📌 Ejemplo:\n${command} https://files.catbox.moe/abcd12.mp4`)
-  }
+let handler = async (m, { conn, text }) => {
+  if (!text) return m.reply('⚠️ Ingresa una URL de video válida.')
 
-  await m.reply('Buscando el contenido...');
+  await m.react('⏳')
+
   try {
     const res = await fetch(text)
-    if (!res.ok) throw new Error('❌ Error al descargar el archivo')
+    if (!res.ok) throw new Error(`No se pudo descargar el video (${res.status})`)
+    const buffer = Buffer.from(await res.arrayBuffer())
 
-    const buffer = await res.buffer()
-    const filename = basename(text)
-    const mimetype = mime.lookup(filename) || 'application/octet-stream'
+    // Enviar como video normal (no archivo)
+    await conn.sendMessage(m.chat, { 
+      video: buffer, 
+      caption: '🎬 Aquí tienes tu video 👇', 
+      mimetype: 'video/mp4'
+    }, { quoted: m })
 
-    if (mimetype.startsWith('image/')) {
-      await conn.sendFile(m.chat, buffer, filename, '', m, false, { mimetype })
-    } else if (mimetype.startsWith('video/')) {
-      await conn.sendFile(m.chat, buffer, filename, '', m, false, { mimetype })
-    } else if (mimetype.startsWith('audio/')) {
-      await conn.sendFile(m.chat, buffer, filename, '', m, false, { mimetype, ptt: true })
-    } else {
-      await conn.sendFile(m.chat, buffer, filename, '', m, false, { mimetype, asDocument: true })
-    }
-  } catch (e) {
-    console.error(e)
-    m.reply(`❌ Error al descargar desde Catbox:\n${e.message}`)
+    await m.react('✅')
+
+  } catch (err) {
+    console.error(err)
+    await m.react('❌')
+    m.reply('❌ No se pudo enviar el video.')
   }
 }
 
-handler.help = ['dcatbox <url>']
-handler.tags = ['downloader']
-handler.command = /^dcatbox$/i
-
+handler.command = /^video$/i
 export default handler
