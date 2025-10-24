@@ -1,27 +1,21 @@
 import fetch from 'node-fetch'
+import { writeFileSync } from 'fs'
 
 let handler = async (m, { conn, text }) => {
-  if (!text) return m.reply('⚠️ Ingresa la URL de un video de YouTube.')
+  if (!text) return m.reply('⚠️ Ingresa una URL de video válida.')
 
   await m.react('⏳')
 
   try {
-    // Codificar URL
-    const videoUrl = encodeURIComponent(text)
-    
-    // Endpoint de SaveFrom.net (no oficial)
-    const apiUrl = `https://savefrom.net/api/convert?url=${videoUrl}&format=json`
+    const res = await fetch(text)
+    if (!res.ok) throw new Error(`No se pudo descargar el video (${res.status})`)
+    const buffer = Buffer.from(await res.arrayBuffer())
 
-    const response = await fetch(apiUrl)
-    if (!response.ok) throw new Error('No se pudo obtener el video.')
-
-    const data = await response.json()
-    if (!data.url) throw new Error('No se encontró el enlace del video.')
-
-    // Enviar video como video normal
-    await conn.sendMessage(m.chat, {
-      video: { url: data.url },
-      caption: `🎬 *Título:* ${data.title || 'Video de YouTube'}`
+    // Enviar como video normal (no archivo)
+    await conn.sendMessage(m.chat, { 
+      video: buffer, 
+      caption: '🎬 Aquí tienes tu video 👇', 
+      mimetype: 'video/mp4'
     }, { quoted: m })
 
     await m.react('✅')
@@ -29,9 +23,9 @@ let handler = async (m, { conn, text }) => {
   } catch (err) {
     console.error(err)
     await m.react('❌')
-    m.reply('❌ No se pudo descargar el video. Intenta con otro enlace.')
+    m.reply('❌ No se pudo enviar el video.')
   }
 }
 
-handler.command = /^ytmp4|ytv|youtube$/i
+handler.command = /^video$/i
 export default handler
