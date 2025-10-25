@@ -60,7 +60,7 @@ global.dfail = (type, m, conn) => {
 ┗━━━━━━━━━━━━━━╯`
     };
     if (messages[type]) {
-        conn.reply(m.chat, messages[type], m);
+        conn.reply(m.chat, messages[type], fkontak1, rcanal);
     }
 };
 
