@@ -41,7 +41,7 @@ let handler = async (m, { text, usedPrefix, command, conn }) => {
       temperature: 0.7
     }
 
-    const res = await fetch('https://api-log-fun.vercel.app/api/gemini', {
+    const res = await fetch('https://kirito.my/api/gemini?apikey=by_deylin', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
