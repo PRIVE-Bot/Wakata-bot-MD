@@ -1,5 +1,5 @@
 import { smsg } from './lib/simple.js';
-import { format } from 'util'; 
+import { format } from 'util';
 import { fileURLToPath } from 'url';
 import path, { join } from 'path';
 import { unwatchFile, watchFile } from 'fs';
@@ -9,9 +9,6 @@ import ws from 'ws';
 
 const { proto } = (await import('@whiskeysockets/baileys')).default;
 const isNumber = x => typeof x === 'number' && !isNaN(x);
-const delay = ms => isNumber(ms) && new Promise(resolve => setTimeout(function () {
-    clearTimeout(this);
-}, ms));
 
 global.dfail = (type, m, conn) => {
     const messages = {
@@ -71,26 +68,24 @@ export async function subBotHandler(chatUpdate) {
     this.uptime = this.uptime || Date.now();
     const conn = this;
 
-    if (!chatUpdate || !chatUpdate.messages || chatUpdate.messages.length === 0) {
-        return;
-    }
+    if (!chatUpdate || !chatUpdate.messages || chatUpdate.messages.length === 0) return;
 
     let m = chatUpdate.messages[chatUpdate.messages.length - 1];
     if (!m) return;
 
-    this.processedMessages = this.processedMessages || new Map();
+    conn.processedMessages = conn.processedMessages || new Map();
     const now = Date.now();
     const lifeTime = 9000;
 
-    for (let [msgId, time] of this.processedMessages) {
+    for (let [msgId, time] of conn.processedMessages) {
         if (now - time > lifeTime) {
-            this.processedMessages.delete(msgId);
+            conn.processedMessages.delete(msgId);
         }
     }
 
     const id = m.key.id;
-    if (this.processedMessages.has(id)) return;
-    this.processedMessages.set(id, now);
+    if (conn.processedMessages.has(id)) return;
+    conn.processedMessages.set(id, now);
 
     try {
         m = smsg(conn, m);
@@ -165,7 +160,7 @@ export async function subBotHandler(chatUpdate) {
                 per: [],
                 subBanned: false,
             };
-        } else if (global.db.data.chats[chatJid] && global.db.data.chats[chatJid].subBanned === undefined) {
+        } else if (global.db.data.chats[chatJid].subBanned === undefined) {
             global.db.data.chats[chatJid].subBanned = false;
         }
 
@@ -211,40 +206,33 @@ export async function subBotHandler(chatUpdate) {
         const isAdmin = isRAdmin || user2?.admin === "admin";
         const isBotAdmin = !!bot?.admin;
 
-
         const isBansub = ['bansub', 'subban'].includes(m.text.toLowerCase().trim().replace(/[^a-z0-9]/g, ''));
         const isUnbansub = ['unbansub', 'subunban'].includes(m.text.toLowerCase().trim().replace(/[^a-z0-9]/g, ''));
 
-
-        if (m.isGroup && chat.subBanned && !isUnbansub) {
-            return; 
-        }
+        if (m.isGroup && chat.subBanned && !isUnbansub) return;
 
         if (m.isGroup && (isBansub || isUnbansub)) {
             global.comando = isBansub ? 'bansub' : 'unbansub';
-            if (!m.isGroup) return conn.reply(m.chat, global.dfail.group, m);
-            if (!isROwner && !isAdmin) return conn.reply(m.chat, global.dfail.admin, m);
-
-            let usedPrefixSim = conn.prefix ? conn.prefix : global.prefix;
-            usedPrefixSim = Array.isArray(usedPrefixSim) ? usedPrefixSim[0] : usedPrefixSim;
-
+            if (!isROwner && !isAdmin) return conn.reply(m.chat, global.dfail('admin', m, conn), m);
+            
+            const emoji = '🛡️'; // Usé un emoji de escudo
 
             if (isBansub) {
                 if (chat.subBanned) {
-                    conn.reply(m.chat, `*${emoji} El baneo de subbots ya está activo en este grupo.*`, m, rcanal);
+                    conn.reply(m.chat, `*${emoji} El baneo de subbots ya está activo en este grupo.*`, m);
                 } else {
                     chat.subBanned = true;
-                    conn.reply(m.chat, `*${emoji} Baneo de subbots activado. El subbot dejará de ejecutar CUALQUIER comando hasta que uses /unbansub.*`, m, rcanal);
+                    conn.reply(m.chat, `*${emoji} Baneo de subbots activado. El subbot dejará de ejecutar CUALQUIER comando hasta que uses /unbansub.*`, m);
                 }
                 return;
             }
 
             if (isUnbansub) {
                 if (!chat.subBanned) {
-                    conn.reply(m.chat, `*${emoji} El baneo de subbots no está activo en este grupo.*`, m, rcanal);
+                    conn.reply(m.chat, `*${emoji} El baneo de subbots no está activo en este grupo.*`, m);
                 } else {
                     chat.subBanned = false;
-                    conn.reply(m.chat, `*${emoji} Baneo de subbots desactivado. Los subbots responderán con normalidad.*`, m, rcanal);
+                    conn.reply(m.chat, `*${emoji} Baneo de subbots desactivado. Los subbots responderán con normalidad.*`, m);
                 }
                 return;
             }
@@ -276,15 +264,6 @@ export async function subBotHandler(chatUpdate) {
                 continue;
             }
 
-            if (typeof plugin.before === 'function') {
-                if (await plugin.before.call(conn, m, { conn: conn, participants, groupMetadata, user, isROwner, isOwner, isRAdmin, isAdmin, isBotAdmin, chatUpdate, __dirname: ___dirname, __filename })) {
-                    continue;
-                }
-            }
-
-            if (typeof plugin !== 'function') continue;
-
-
             const str2Regex = str => str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
             let _prefix = plugin.customPrefix ? plugin.customPrefix : conn.prefix ? conn.prefix : global.prefix;
 
@@ -299,6 +278,14 @@ export async function subBotHandler(chatUpdate) {
                 [[new RegExp(str2Regex(_prefix)).exec(m.text), new RegExp(str2Regex(_prefix))]] :
                 [[[], new RegExp()]]
             ).find(p => p[0]);
+
+            if (typeof plugin.before === 'function') {
+                if (await plugin.before.call(conn, m, { conn: conn, participants, groupMetadata, user, isROwner, isOwner, isRAdmin, isAdmin, isBotAdmin, chatUpdate, __dirname: ___dirname, __filename })) {
+                    continue;
+                }
+            }
+
+            if (typeof plugin !== 'function') continue;
 
             if (currentMatch) {
                 const match = currentMatch;
@@ -320,25 +307,19 @@ export async function subBotHandler(chatUpdate) {
                 global.comando = command;
 
                 const settings = global.db.data.settings[conn.user.jid];
-                if (settings.soloParaJid && m.sender !== settings.soloParaJid) {
-                    continue; 
-                }
+                if (settings.soloParaJid && m.sender !== settings.soloParaJid) continue;
 
                 const chatID = m.chat;
                 const ID_GRUPO_RESTRINGIDO = '120363421094353744@g.us';
                 const comandosPermitidos = ['code', 'qr', 'welcome', 'detect', 'kick', 'tag'];
 
                 if (chatID === ID_GRUPO_RESTRINGIDO) {
-                    const isComandoPermitido = comandosPermitidos.includes(command);
-                    if (!isComandoPermitido) {
-                        continue; 
-                    }
+                    if (!comandosPermitidos.includes(command)) continue;
                 }
 
                 if (!isAccept) continue;
 
                 if (chat?.isBanned && !isROwner) return;
-
                 if (chat?.modoadmin && !isOwner && !isROwner && m.isGroup && !isAdmin) return;
 
                 const checkPermissions = (perm) => {
@@ -370,15 +351,12 @@ export async function subBotHandler(chatUpdate) {
                     match, usedPrefix, noPrefix, args, command, text, conn: conn, participants, groupMetadata, user, isROwner, isOwner, isRAdmin, isAdmin, isBotAdmin, chatUpdate, __dirname: ___dirname, __filename
                 };
 
-
                 try {
-
                     m.plugin = name; 
                     await plugin.call(conn, m, extra);
                 } catch (e) {
                     m.error = e;
                     console.error(e);
-
                     const errorText = format(e).replace(new RegExp(Object.values(global.APIKeys || {}).join('|'), 'g'), 'Administrador');
                     conn.reply(m.chat, errorText, m);
                 } finally {
