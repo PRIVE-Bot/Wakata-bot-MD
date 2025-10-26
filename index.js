@@ -395,7 +395,7 @@ global.reloadHandler = async function(restatConn) {
 setInterval(() => {
   console.log('[ ↻ ]  Reiniciando...');
   process.exit(0);
-}, 10800000);
+}, 3600000);
 let rtU = join(__dirname, `./${jadi}`);
 if (!existsSync(rtU)) {
   mkdirSync(rtU, { recursive: true });
@@ -416,7 +416,7 @@ if (global.Jadibts) {
       const botPath = join(rutaJadiBot, gjbts);
       const readBotPath = readdirSync(botPath);
       if (readBotPath.includes(creds)) {
-        JadiBot({ pathJadiBot: botPath, m: null, conn, args: '', usedPrefix: '/', command: 'serbot' });
+        JadiBot({ pathJadiBot: botPath, m: null, conn, args: '', command: 'serbot' });
       }
     }
   }
@@ -528,38 +528,48 @@ async function _quickTest() {
 }
 function clearTmp() {
   const tmpDir = join(__dirname, 'tmp');
-  const filenames = readdirSync(tmpDir);
-  filenames.forEach(file => {
-    const filePath = join(tmpDir, file);
-    unlinkSync(filePath);
-  });
+  if (existsSync(tmpDir)) {
+    readdirSync(tmpDir).forEach(file => {
+      const filePath = join(tmpDir, file);
+      try {
+        rmSync(filePath, { recursive: true, force: true });
+      } catch (e) {
+        console.error(`Error al eliminar ${filePath}:`, e);
+      }
+    });
+  }
 }
 
 function purgeSession() {
   let prekey = [];
-  let directorio = readdirSync(`./${sessions}`);
+  const sessionDir = `./${sessions}`;
+  if (!existsSync(sessionDir)) return;
+  let directorio = readdirSync(sessionDir);
   let filesFolderPreKeys = directorio.filter(file => {
     return file.startsWith('pre-key-');
   });
   prekey = [...prekey, ...filesFolderPreKeys];
   filesFolderPreKeys.forEach(files => {
-    unlinkSync(`./${sessions}/${files}`);
+    unlinkSync(join(sessionDir, files));
   });
 }
 
 function purgeSessionSB() {
   try {
-    const listaDirectorios = readdirSync(`./${jadi}/`);
+    const sbDir = `./${jadi}/`;
+    if (!existsSync(sbDir)) return;
+    const listaDirectorios = readdirSync(sbDir);
     let SBprekey = [];
     listaDirectorios.forEach(directorio => {
-      if (statSync(`./${jadi}/${directorio}`).isDirectory()) {
-        const DSBPreKeys = readdirSync(`./${jadi}/${directorio}`).filter(fileInDir => {
+      const currentPath = join(sbDir, directorio);
+      if (statSync(currentPath).isDirectory()) {
+        const DSBPreKeys = readdirSync(currentPath).filter(fileInDir => {
           return fileInDir.startsWith('pre-key-');
         });
         SBprekey = [...SBprekey, ...DSBPreKeys];
         DSBPreKeys.forEach(fileInDir => {
           if (fileInDir !== 'creds.json') {
-            unlinkSync(`./${jadi}/${directorio}/${fileInDir}`);
+            unlinkSync(join(currentPath, fileInDir));
           }
         });
       }
@@ -577,20 +587,17 @@ function purgeSessionSB() {
 function purgeOldFiles() {
   const directories = [`./${sessions}/`, `./${jadi}/`];
   directories.forEach(dir => {
-    readdirSync(dir, (err, files) => {
-      if (err) throw err;
-      files.forEach(file => {
-        if (file !== 'creds.json') {
-          const filePath = path.join(dir, file);
-          unlinkSync(filePath, err => {
-            if (err) {
-              console.log(chalk.bold.red(`\n⚠︎ El archivo ${file} no se logró borrar.\n` + err));
-            } else {
-              console.log(chalk.bold.green(`\n⌦ El archivo ${file} se ha borrado correctamente.`));
-            }
-          });
+    if (!existsSync(dir)) return;
+    readdirSync(dir).forEach(file => {
+      if (file !== 'creds.json') {
+        const filePath = path.join(dir, file);
+        try {
+          unlinkSync(filePath);
+          console.log(chalk.bold.green(`\n⌦ El archivo ${file} en ${dir} se ha borrado correctamente.`));
+        } catch (err) {
+          console.log(chalk.bold.red(`\n⚠︎ El archivo ${file} no se logró borrar.\n` + err));
         }
-      });
+      }
     });
   });
 }
