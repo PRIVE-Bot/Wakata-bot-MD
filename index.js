@@ -395,7 +395,7 @@ global.reloadHandler = async function(restatConn) {
 setInterval(() => {
   console.log('[ ↻ ]  Reiniciando...');
   process.exit(0);
-}, 3600000);
+}, 10800000);
 let rtU = join(__dirname, `./${jadi}`);
 if (!existsSync(rtU)) {
   mkdirSync(rtU, { recursive: true });
