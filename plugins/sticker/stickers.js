@@ -15,7 +15,7 @@ let handler = async (m, { conn, args, command }) => {
     const fkontak = { key: { fromMe: false, participant: user }, message: { imageMessage: { jpegThumbnail: thumb, caption: '✨ 𝗦𝗧𝗜𝗖𝗞𝗘𝗥 𝗚𝗘𝗡𝗘𝗥𝗔𝗗𝗢 𝗖𝗢𝗡 𝗘𝗫𝗜𝗧𝗢 ✨' } } };
     const fkontak2 = { key: { fromMe: false, participant: user }, message: { imageMessage: { jpegThumbnail: thumb, caption: '⚠︎ 𝗘𝗥𝗥𝗢𝗥 ⚠︎' } } };
     const rcanal = global.rcanal || {};
-    
+
     const formasValidas = ['co', 'ci', 'sq', 'no', 'rd', 'di', 'tr', 'st', 'he', 'pe', 'el', 're', 'cr', 'ar', 'pl', 'ro', 'la'];
     let texto = args.filter(a => !formasValidas.includes(a.toLowerCase())).join(' ').trim();
     let forma = (args.find(a => formasValidas.includes(a.toLowerCase())) || '').toLowerCase();
@@ -51,7 +51,7 @@ let handler = async (m, { conn, args, command }) => {
     try {
         let q = m.quoted ? m.quoted : m;
         let mime = (q.msg || q).mimetype || q.mediaType || '';
-        
+
         if (!/video|gif|webp|image/.test(mime)) return conn.reply(m.chat, mensajeUso, m, rcanal);
 
         await m.react('⌛');
@@ -60,7 +60,7 @@ let handler = async (m, { conn, args, command }) => {
 
         if (/video|gif/.test(mime)) {
             if (q.seconds > 15) return conn.reply(m.chat, '⚠️ El video/gif es muy largo. Máximo 15 segundos para animado.', fkontak2);
-            
+
             try {
                 stiker = await sticker(img, false, global.packsticker, global.packsticker2);
             } catch (e) {
@@ -92,7 +92,7 @@ let handler = async (m, { conn, args, command }) => {
 
             if (formasValidas.includes(forma) && forma !== 'no' && forma !== 'sq') {
                 const radius = width / 2;
-                
+
                 jimg.scan(0, 0, width, height, function (x, y, idx) {
                     const dx = x - width / 2;
                     const dy = y - height / 2;
@@ -167,20 +167,20 @@ let handler = async (m, { conn, args, command }) => {
                         case 're':
                             const rectWidth = width * 0.9;
                             const rectHeight = height * 0.9;
-                            const cornerRadius = 60;
+                            const cornerRadiusRect = 60;
                             const cx = width / 2;
                             const cy = height / 2;
                             const rectX = cx - rectWidth / 2;
                             const rectY = cy - rectHeight / 2;
-                            
+
                             const isInsideRect = x >= rectX && x <= rectX + rectWidth && y >= rectY && y <= rectY + rectHeight;
-                            
+
                             let inCorner = false;
-                            if (x < rectX + cornerRadius && y < rectY + cornerRadius) inCorner = Math.hypot(x - (rectX + cornerRadius), y - (rectY + cornerRadius)) <= cornerRadius;
-                            else if (x > rectX + rectWidth - cornerRadius && y < rectY + cornerRadius) inCorner = Math.hypot(x - (rectX + rectWidth - cornerRadius), y - (rectY + cornerRadius)) <= cornerRadius;
-                            else if (x < rectX + cornerRadius && y > rectY + rectHeight - cornerRadius) inCorner = Math.hypot(x - (rectX + cornerRadius), y - (rectY + rectHeight - cornerRadius)) <= cornerRadius;
-                            else if (x > rectX + rectWidth - cornerRadius && y > rectY + rectHeight - cornerRadius) inCorner = Math.hypot(x - (rectX + rectWidth - cornerRadius), y - (rectY + rectHeight - cornerRadius)) <= cornerRadius;
-                            
+                            if (x < rectX + cornerRadiusRect && y < rectY + cornerRadiusRect) inCorner = Math.hypot(x - (rectX + cornerRadiusRect), y - (rectY + cornerRadiusRect)) <= cornerRadiusRect;
+                            else if (x > rectX + rectWidth - cornerRadiusRect && y < rectY + cornerRadiusRect) inCorner = Math.hypot(x - (rectX + rectWidth - cornerRadiusRect), y - (rectY + cornerRadiusRect)) <= cornerRadiusRect;
+                            else if (x < rectX + cornerRadiusRect && y > rectY + rectHeight - cornerRadiusRect) inCorner = Math.hypot(x - (rectX + cornerRadiusRect), y - (rectY + rectHeight - cornerRadiusRect)) <= cornerRadiusRect;
+                            else if (x > rectX + rectWidth - cornerRadiusRect && y > rectY + rectHeight - cornerRadiusRect) inCorner = Math.hypot(x - (rectX + rectWidth - cornerRadiusRect), y - (rectY + rectHeight - cornerRadiusRect)) <= cornerRadiusRect;
+
                             pass = isInsideRect || inCorner;
                             break;
                         case 'cr':
@@ -195,20 +195,20 @@ let handler = async (m, { conn, args, command }) => {
                             pass = r < radius && dy < 0;
                             break;
                         case 'rd':
-                            const cornerRadius = 60;
-                            const d = Math.min(cornerRadius, radius);
+                            const cornerRadiusRounded = 60;
+                            const d = Math.min(cornerRadiusRounded, radius);
                             const x1 = d;
                             const x2 = width - d;
                             const y1 = d;
                             const y2 = height - d;
-                            
+
                             let inRect = (x >= x1 && x <= x2) || (y >= y1 && y <= y2);
                             let inCornerArea = false;
                             if (x < x1 && y < y1) inCornerArea = Math.hypot(x - x1, y - y1) <= d;
                             else if (x > x2 && y < y1) inCornerArea = Math.hypot(x - x2, y - y1) <= d;
                             else if (x < x1 && y > y2) inCornerArea = Math.hypot(x - x1, y - y2) <= d;
                             else if (x > x2 && y > y2) inCornerArea = Math.hypot(x - x2, y - y2) <= d;
-                            
+
                             pass = inRect || inCornerArea;
                             break;
                         default:
@@ -226,7 +226,7 @@ let handler = async (m, { conn, args, command }) => {
                 const color = brillo > 127 ? '#000000' : '#FFFFFF';
                 const fuente = await Jimp.loadFont(color === '#000000' ? Jimp.FONT_SANS_64_BLACK : Jimp.FONT_SANS_64_WHITE);
                 const sombra = await Jimp.loadFont(color === '#000000' ? Jimp.FONT_SANS_64_WHITE : Jimp.FONT_SANS_64_BLACK);
-                
+
                 jimg.print(sombra, 3, height - 83, width - 6, 80, texto, Jimp.HORIZONTAL_ALIGN_CENTER);
                 jimg.print(fuente, 0, height - 80, width, 80, texto, Jimp.HORIZONTAL_ALIGN_CENTER);
             }
