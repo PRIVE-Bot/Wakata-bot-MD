@@ -1,35 +1,32 @@
-/* Código creado por Deylin y API también
-https://github.com/deylin-eliac 
-  no quites créditos 
- Atte: Deylin-eliac*/
+import { aiLabs } from '../../lib/ailabs.js'
 
-let handler = async (m, { text, conn }) => {
-  if (!text) {
-    return await conn.reply(m.chat, `${emojis} Escribe el prompt de la imagen. Ejemplo:\n.imagina un dragón azul volando en el espacio`, m, rcanal)
+let handler = async (m, { conn, text, command, usedPrefix }) => {
+  if (!text) return conn.reply(m.chat, `🧠 *Uso correcto:*
+${usedPrefix + command} <prompt>
+
+📸 *Ejemplo:*
+${usedPrefix + command} gato samurái con armadura futurista`, m, rcanal)
+
+  await conn.reply(m.chat, `${emoji} Generando imagen...`, m, rcanal)
+  const res = await aiLabs.generate({ prompt: text, type: 'image' })
+
+  if (!res.success) {
+    return conn.reply(m.chat, `❌ Error (${res.code}): ${res.result?.error || 'No se pudo generar la imagen'}`, m, rcanal)
   }
 
-  await conn.reply(m.chat, `${emojis} Generando imagen de: "${text}", espera un momento...`, m, rcanal)
-
-  try {
-    const prompt = encodeURIComponent(text.trim())
-    const imageUrl = `https://api.kirito.my/api/iaimg?prompt=${prompt}&apikey=by_deylin`
-
-
-    await conn.sendFile(
-      m.chat,
-      imageUrl,
-      'imagen.jpg',
-      `\n${emoji} Imagen generada:\n${imageUrl}`,
-      m
-    )
-  } catch (e) {
-    console.error(e)
-    m.reply(`❌ Ocurrió un error al generar la imagen:\n${e.message}`)
-  }
+  return conn.sendMessage(
+    m.chat,
+    {
+      image: { url: res.result.url },
+      caption: `${emoji} *Imagen generada con IA*`
+    },
+    { quoted: m }
+  )
 }
 
-handler.help = ['imagina <prompt>']
-handler.tags = ['ia']
-handler.command = ['imgia', 'imagina', 'imgg']
+handler.help = ['iaimg <prompt>', 'imgg <prompt>', 'aimg <prompt>', 'genimg <prompt>']
+handler.tags = ['ai']
+handler.command = ['iaimg', 'imgg', 'aimg', 'genimg']
+handler.limit = true
 
 export default handler
