@@ -416,7 +416,7 @@ if (global.Jadibts) {
       const botPath = join(rutaJadiBot, gjbts);
       const readBotPath = readdirSync(botPath);
       if (readBotPath.includes(creds)) {
-        JadiBot({ pathJadiBot: botPath, m: null, conn, args: '', command: 'serbot' });
+        JadiBot({ pathJadiBot: botPath, m: null, conn, args: '', usedPrefix: '/', command: 'serbot' });
       }
     }
   }
@@ -458,7 +458,7 @@ filesInit().then((_) => Object.keys(global.plugins)).catch(console.error);
 
 
 global.reload = async (_ev, filename) => {
-    
+
 const absolutePath = join(pluginFolder, filename);
 
 const pluginKey = path.relative(pluginFolder, absolutePath).replace(/\\/g, '/'); 
@@ -474,7 +474,7 @@ if (pluginFilter(filename)) {
         }  
     } else conn.logger.info(`new plugin - '${pluginKey}'`);  
 
-    
+
     const err = syntaxerror(readFileSync(dir), pluginKey, {  
         sourceType: 'module',  
         allowAwaitOutsideFunction: true,  
@@ -483,7 +483,7 @@ if (pluginFilter(filename)) {
     if (err) conn.logger.error(`syntax error while loading '${pluginKey}'\n${format(err)}`);  
     else {  
         try {  
-            
+
             const module = (await import(`${dir}?update=${Date.now()}`));  
             global.plugins[pluginKey] = module.default || module;  
         } catch (e) {  
@@ -528,48 +528,38 @@ async function _quickTest() {
 }
 function clearTmp() {
   const tmpDir = join(__dirname, 'tmp');
-  if (existsSync(tmpDir)) {
-    readdirSync(tmpDir).forEach(file => {
-      const filePath = join(tmpDir, file);
-      try {
-        rmSync(filePath, { recursive: true, force: true });
-      } catch (e) {
-        console.error(`Error al eliminar ${filePath}:`, e);
-      }
-    });
-  }
+  const filenames = readdirSync(tmpDir);
+  filenames.forEach(file => {
+    const filePath = join(tmpDir, file);
+    unlinkSync(filePath);
+  });
 }
 
 function purgeSession() {
   let prekey = [];
-  const sessionDir = `./${sessions}`;
-  if (!existsSync(sessionDir)) return;
-  let directorio = readdirSync(sessionDir);
+  let directorio = readdirSync(`./${sessions}`);
   let filesFolderPreKeys = directorio.filter(file => {
     return file.startsWith('pre-key-');
   });
   prekey = [...prekey, ...filesFolderPreKeys];
   filesFolderPreKeys.forEach(files => {
-    unlinkSync(join(sessionDir, files));
+    unlinkSync(`./${sessions}/${files}`);
   });
 }
 
 function purgeSessionSB() {
   try {
-    const sbDir = `./${jadi}/`;
-    if (!existsSync(sbDir)) return;
-    const listaDirectorios = readdirSync(sbDir);
+    const listaDirectorios = readdirSync(`./${jadi}/`);
     let SBprekey = [];
     listaDirectorios.forEach(directorio => {
-      const currentPath = join(sbDir, directorio);
-      if (statSync(currentPath).isDirectory()) {
-        const DSBPreKeys = readdirSync(currentPath).filter(fileInDir => {
+      if (statSync(`./${jadi}/${directorio}`).isDirectory()) {
+        const DSBPreKeys = readdirSync(`./${jadi}/${directorio}`).filter(fileInDir => {
           return fileInDir.startsWith('pre-key-');
         });
         SBprekey = [...SBprekey, ...DSBPreKeys];
         DSBPreKeys.forEach(fileInDir => {
           if (fileInDir !== 'creds.json') {
-            unlinkSync(join(currentPath, fileInDir));
+            unlinkSync(`./${jadi}/${directorio}/${fileInDir}`);
           }
         });
       }
@@ -587,17 +577,20 @@ function purgeSessionSB() {
 function purgeOldFiles() {
   const directories = [`./${sessions}/`, `./${jadi}/`];
   directories.forEach(dir => {
-    if (!existsSync(dir)) return;
-    readdirSync(dir).forEach(file => {
-      if (file !== 'creds.json') {
-        const filePath = path.join(dir, file);
-        try {
-          unlinkSync(filePath);
-          console.log(chalk.bold.green(`\n⌦ El archivo ${file} en ${dir} se ha borrado correctamente.`));
-        } catch (err) {
-          console.log(chalk.bold.red(`\n⚠︎ El archivo ${file} no se logró borrar.\n` + err));
+    readdirSync(dir, (err, files) => {
+      if (err) throw err;
+      files.forEach(file => {
+        if (file !== 'creds.json') {
+          const filePath = path.join(dir, file);
+          unlinkSync(filePath, err => {
+            if (err) {
+              console.log(chalk.bold.red(`\n⚠︎ El archivo ${file} no se logró borrar.\n` + err));
+            } else {
+              console.log(chalk.bold.green(`\n⌦ El archivo ${file} se ha borrado correctamente.`));
+            }
+          });
         }
-      }
+      });
     });
   });
 }
