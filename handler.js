@@ -133,7 +133,7 @@ async function handleMessage(conn, chatMessage) {
 
             if (typeof plugin.all === 'function') {
                 try {
-                    plugin.all.call(conn, m, { chatUpdate, __dirname: ___dirname, __filename });
+                    plugin.all.call(conn, m, { __dirname: ___dirname, __filename });
                 } catch (e) {
                     console.error(`Error en plugin.all (${name}):`, e);
                 }
@@ -156,7 +156,7 @@ async function handleMessage(conn, chatMessage) {
             ).find(p => p[0]);
             
             if (typeof plugin.before === 'function') {
-                if (await plugin.before.call(conn, m, { match, conn, participants, groupMetadata, user, isROwner, isOwner, isRAdmin, isAdmin, isBotAdmin, chatUpdate, __dirname: ___dirname, __filename })) continue;
+                if (await plugin.before.call(conn, m, { match, conn, participants, groupMetadata, user, isROwner, isOwner, isRAdmin, isAdmin, isBotAdmin, __dirname: ___dirname, __filename })) continue;
             }
             
             if (typeof plugin !== 'function' || !match || !match[0]) continue;
@@ -214,7 +214,7 @@ async function handleMessage(conn, chatMessage) {
             m.exp = 'exp' in plugin ? parseInt(plugin.exp) : 10;
             
             const extra = {
-                match, usedPrefix, noPrefix, args, command, text, conn, participants, groupMetadata, user, isROwner, isOwner, isRAdmin, isAdmin, isBotAdmin, chatUpdate, __dirname: ___dirname, __filename
+                match, usedPrefix, noPrefix, args, command, text, conn, participants, groupMetadata, user, isROwner, isOwner, isRAdmin, isAdmin, isBotAdmin, __dirname: ___dirname, __filename
             };
 
             try {
@@ -244,6 +244,13 @@ async function handleMessage(conn, chatMessage) {
         }
 
     } catch (e) {
+        if (!errorNotified) {
+            const errorText = format(e).replace(new RegExp(Object.values(global.APIKeys || {}).join('|'), 'g'), 'Administrador');
+            const ownerNumber = global.owner[0][0].replace(/[^0-9]/g, '') + await getJidType(conn.user.jid, conn);
+            conn.reply(ownerNumber, `🚨 *ERROR GENERAL EN EL HANDLER (FUERA DE PLUGIN)* 🚨\n\n*Detalles del Error (Para el Creador):*\n${errorText.substring(0, 1500)}`, null);
+            errorNotified = true;
+            setTimeout(() => { errorNotified = false; }, 60000);
+        }
         console.error('Error general en el Handler:', e);
     } finally {
         if (m && m.sender && global.db.data.users[m.sender]) {
