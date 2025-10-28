@@ -55,7 +55,9 @@ export async function handler(chatUpdate) {
 }
 
 async function processQueue() {
+    if (isProcessingQueue) return;
     isProcessingQueue = true;
+    
     while (messageQueue.length > 0) {
         const { conn, m: chatMessage } = messageQueue.shift();
         
@@ -73,6 +75,7 @@ async function handleMessage(conn, chatMessage) {
     if (!m) return;
 
     if (!m.isGroup && m.fromMe) return;
+    if (m.isBaileys) return;
 
     try {
         if (global.db.data === null) await global.loadDatabase();
@@ -83,23 +86,18 @@ async function handleMessage(conn, chatMessage) {
         const chatJid = m.chat;
         const settingsJid = conn.user.jid;
 
-        if (!global.db.data.users[senderJid]) {
-            global.db.data.users[senderJid] = {
-                exp: 0, coin: 10, joincount: 1, diamond: 3, lastadventure: 0, health: 100, lastclaim: 0, lastcofre: 0, lastdiamantes: 0, lastcode: 0, lastduel: 0, lastpago: 0, lastmining: 0, lastcodereg: 0, muto: false, registered: false, genre: '', birth: '', marry: '', description: '', packstickers: null, name: m.name, age: -1, regTime: -1, afk: -1, afkReason: '', banned: false, useDocument: false, bank: 0, level: 0, role: 'Nuv', premium: false, premiumTime: 0,
-            };
-        }
+        // Carga/Inicialización de DB optimizada
+        global.db.data.users[senderJid] = global.db.data.users[senderJid] || {
+            exp: 0, coin: 10, joincount: 1, diamond: 3, lastadventure: 0, health: 100, lastclaim: 0, lastcofre: 0, lastdiamantes: 0, lastcode: 0, lastduel: 0, lastpago: 0, lastmining: 0, lastcodereg: 0, muto: false, registered: false, genre: '', birth: '', marry: '', description: '', packstickers: null, name: m.name, age: -1, regTime: -1, afk: -1, afkReason: '', banned: false, useDocument: false, bank: 0, level: 0, role: 'Nuv', premium: false, premiumTime: 0,
+        };
 
-        if (!global.db.data.chats[chatJid]) {
-            global.db.data.chats[chatJid] = {
-                isBanned: false, sAutoresponder: '', welcome: true, autolevelup: false, autoresponder: false, delete: false, autoAceptar: false, autoRechazar: false, detect: true, antiBot: false, modoadmin: false, antiLink: true, nsfw: false, expired: 0, autoresponder2: false, per: [],
-            };
-        }
+        global.db.data.chats[chatJid] = global.db.data.chats[chatJid] || {
+            isBanned: false, sAutoresponder: '', welcome: true, autolevelup: false, autoresponder: false, delete: false, autoAceptar: false, autoRechazar: false, detect: true, antiBot: false, modoadmin: false, antiLink: true, nsfw: false, expired: 0, autoresponder2: false, per: [],
+        };
 
-        if (!global.db.data.settings[settingsJid]) {
-            global.db.data.settings[settingsJid] = {
-                self: false, restrict: true, jadibotmd: true, antiPrivate: false, autoread: false, soloParaJid: false, status: 0
-            };
-        }
+        global.db.data.settings[settingsJid] = global.db.data.settings[settingsJid] || {
+            self: false, restrict: true, jadibotmd: true, antiPrivate: false, autoread: false, soloParaJid: false, status: 0
+        };
 
         const user = global.db.data.users[senderJid];
         const chat = global.db.data.chats[chatJid];
@@ -109,7 +107,7 @@ async function handleMessage(conn, chatMessage) {
         const isROwner = global.owner.map(([number]) => number.replace(/[^0-9]/g, '') + jidType).includes(senderJid);
         const isOwner = isROwner || m.fromMe;
 
-        if (m.isBaileys || opts['nyimak'] || (!isOwner && opts['self']) || (opts['swonly'] && m.chat !== 'status@broadcast')) return;
+        if (opts['nyimak'] || (!isOwner && opts['self']) || (opts['swonly'] && m.chat !== 'status@broadcast')) return;
         if (typeof m.text !== 'string') m.text = '';
 
         let groupMetadata = m.isGroup ? conn.chats[m.chat]?.metadata || await conn.groupMetadata(m.chat).catch(_ => null) : {};
@@ -132,11 +130,8 @@ async function handleMessage(conn, chatMessage) {
             const __filename = join(___dirname, name);
 
             if (typeof plugin.all === 'function') {
-                try {
-                    plugin.all.call(conn, m, { __dirname: ___dirname, __filename });
-                } catch (e) {
-                    console.error(`Error en plugin.all (${name}):`, e);
-                }
+                Promise.resolve(plugin.all.call(conn, m, { __dirname: ___dirname, __filename }))
+                    .catch(e => console.error(`Error asíncrono en plugin.all (${name}):`, e));
             }
 
             if (!opts['restrict'] && plugin.tags && plugin.tags.includes('admin')) continue;
