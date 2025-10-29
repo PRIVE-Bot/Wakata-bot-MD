@@ -111,7 +111,7 @@ Ejemplo:
 
 handler.command = ['tts2'];
 handler.help = ['tts2 <texto>|<modelo>'];
-handler.tags = ['herramientas'];
+handler.tags = ['transformador'];
 handler.group = false;
 handler.register = true;
 
