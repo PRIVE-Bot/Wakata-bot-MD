@@ -4,7 +4,6 @@ import { fileURLToPath } from 'url';
 import path, { join } from 'path';
 import { unwatchFile, watchFile } from 'fs';
 import chalk from 'chalk';
-import fetch from 'node-fetch';
 import ws from 'ws';
 
 const { proto } = (await import('@whiskeysockets/baileys')).default;
@@ -13,14 +12,13 @@ const delay = ms => isNumber(ms) && new Promise(resolve => setTimeout(function (
     clearTimeout(this);
 }, ms));
 
-export async function handler(chatUpdate) {
+export async function handler(chatUpdate, opts) {
     this.uptime = this.uptime || Date.now();
 
     if (!chatUpdate || !chatUpdate.messages || chatUpdate.messages.length === 0) {
         return;
     }
 
-        // aqui corrigo mi error
     let m = chatUpdate.messages[chatUpdate.messages.length - 1];
     if (!m) return;
 
@@ -33,7 +31,6 @@ export async function handler(chatUpdate) {
     const now = Date.now();
     const lifeTime = 9000;
 
-    // Limpiar mensajes procesados antiguos
     for (let [msgId, time] of this.processedMessages) {
         if (now - time > lifeTime) {
             this.processedMessages.delete(msgId);
@@ -58,82 +55,81 @@ export async function handler(chatUpdate) {
         m.coin = false;
 
         const senderJid = m.sender;
-        if (!global.db.data.users[senderJid]) {
-            global.db.data.users[senderJid] = {
-                exp: 0,
-                coin: 10,
-                joincount: 1,
-                diamond: 3,
-                lastadventure: 0,
-                health: 100,
-                lastclaim: 0,
-                lastcofre: 0,
-                lastdiamantes: 0,
-                lastcode: 0,
-                lastduel: 0,
-                lastpago: 0,
-                lastmining: 0,
-                lastcodereg: 0,
-                muto: false,
-                registered: false,
-                genre: '',
-                birth: '',
-                marry: '',
-                description: '',
-                packstickers: null,
-                name: m.name,
-                age: -1,
-                regTime: -1,
-                afk: -1,
-                afkReason: '',
-                banned: false,
-                useDocument: false,
-                bank: 0,
-                level: 0,
-                role: 'Nuv',
-                premium: false,
-                premiumTime: 0,
-            };
-        }
-
         const chatJid = m.chat;
-        if (!global.db.data.chats[chatJid]) {
-            global.db.data.chats[chatJid] = {
-                isBanned: false,
-                sAutoresponder: '',
-                welcome: true,
-                autolevelup: false,
-                autoresponder: false,
-                delete: false,
-                autoAceptar: false,
-                autoRechazar: false,
-                detect: true,
-                antiBot: false,
-                modoadmin: false,
-                antiLink: true,
-                nsfw: false,
-                expired: 0, 
-                autoresponder2: false,
-                per: [],
-            };
-        }
-
         const settingsJid = this.user.jid;
-        if (!global.db.data.settings[settingsJid]) {
-            global.db.data.settings[settingsJid] = {
-                self: false,
-                restrict: true,
-                jadibotmd: true,
-                antiPrivate: false,
-                autoread: false,
-                soloParaJid: false, 
-                status: 0
-            };
-        }
 
-        const user = global.db.data.users[senderJid];
-        const chat = global.db.data.chats[chatJid];
-        const settings = global.db.data.settings[settingsJid];
+        let user = global.db.data.users[senderJid];
+        if (typeof user !== "object") {
+            global.db.data.users[senderJid] = user = {};
+        }
+        if (!user.name) user.name = m.name || '';
+        if (!isNumber(user.exp)) user.exp = 0;
+        if (!isNumber(user.coin)) user.coin = 10;
+        if (!isNumber(user.bank)) user.bank = 0;
+        if (!isNumber(user.level)) user.level = 0;
+        if (!isNumber(user.health)) user.health = 100;
+        if (!user.genre) user.genre = '';
+        if (!user.birth) user.birth = '';
+        if (!user.marry) user.marry = '';
+        if (!user.description) user.description = '';
+        if (user.packstickers === undefined || user.packstickers === null) user.packstickers = null;
+        if (user.premium === undefined) user.premium = false;
+        if (!isNumber(user.premiumTime)) user.premiumTime = 0;
+        if (user.banned === undefined) user.banned = false;
+        if (!user.bannedReason) user.bannedReason = '';
+        if (!isNumber(user.commands)) user.commands = 0;
+        if (!isNumber(user.afk)) user.afk = -1;
+        if (!user.afkReason) user.afkReason = '';
+        if (user.muto === undefined) user.muto = false;
+        if (user.registered === undefined) user.registered = false;
+        if (user.age === undefined) user.age = -1;
+        if (!isNumber(user.regTime)) user.regTime = -1;
+        if (user.useDocument === undefined) user.useDocument = false;
+        if (!user.role) user.role = 'Nuv';
+        if (user.joincount === undefined) user.joincount = 1;
+        if (user.lastadventure === undefined) user.lastadventure = 0;
+        if (user.lastclaim === undefined) user.lastclaim = 0;
+        if (user.lastcofre === undefined) user.lastcofre = 0;
+        if (user.lastdiamantes === undefined) user.lastdiamantes = 0;
+        if (user.lastcode === undefined) user.lastcode = 0;
+        if (user.lastduel === undefined) user.lastduel = 0;
+        if (user.lastpago === undefined) user.lastpago = 0;
+        if (user.lastmining === undefined) user.lastmining = 0;
+        if (user.lastcodereg === undefined) user.lastcodereg = 0;
+        if (user.diamond === undefined) user.diamond = 3;
+
+        let chat = global.db.data.chats[chatJid];
+        if (typeof chat !== "object") {
+            global.db.data.chats[chatJid] = chat = {};
+        }
+        if (chat.isBanned === undefined) chat.isBanned = false;
+        if (!chat.sAutoresponder) chat.sAutoresponder = '';
+        if (chat.welcome === undefined) chat.welcome = true;
+        if (chat.autolevelup === undefined) chat.autolevelup = false;
+        if (chat.autoresponder === undefined) chat.autoresponder = false;
+        if (chat.delete === undefined) chat.delete = false;
+        if (chat.autoAceptar === undefined) chat.autoAceptar = false;
+        if (chat.autoRechazar === undefined) chat.autoRechazar = false;
+        if (chat.detect === undefined) chat.detect = true;
+        if (chat.antiBot === undefined) chat.antiBot = false;
+        if (chat.modoadmin === undefined) chat.modoadmin = false;
+        if (chat.antiLink === undefined) chat.antiLink = true;
+        if (chat.nsfw === undefined) chat.nsfw = false;
+        if (!isNumber(chat.expired)) chat.expired = 0;
+        if (chat.autoresponder2 === undefined) chat.autoresponder2 = false;
+        if (!Array.isArray(chat.per)) chat.per = [];
+
+        let settings = global.db.data.settings[settingsJid];
+        if (typeof settings !== "object") {
+            global.db.data.settings[settingsJid] = settings = {};
+        }
+        if (settings.self === undefined) settings.self = false;
+        if (settings.restrict === undefined) settings.restrict = true;
+        if (settings.jadibotmd === undefined) settings.jadibotmd = true;
+        if (settings.antiPrivate === undefined) settings.antiPrivate = false;
+        if (settings.autoread === undefined) settings.autoread = false;
+        if (settings.soloParaJid === undefined || settings.soloParaJid === null) settings.soloParaJid = false;
+        if (!isNumber(settings.status)) settings.status = 0;
 
         const detectwhat = m.sender.includes('@lid') ? '@lid' : '@s.whatsapp.net';
         const isROwner = global.owner.map(([number]) => number.replace(/[^0-9]/g, '') + detectwhat).includes(senderJid);
@@ -144,7 +140,7 @@ export async function handler(chatUpdate) {
         if (opts['swonly'] && m.chat !== 'status@broadcast') return;
         if (typeof m.text !== 'string') m.text = '';
 
-                async function getLidFromJid(id, conn) {
+        async function getLidFromJid(id, conn) {
             if (id.endsWith('@lid')) return id;
             const res = await conn.onWhatsApp(id).catch(() => []);
             return res[0]?.lid || id;
@@ -226,7 +222,6 @@ export async function handler(chatUpdate) {
 
                 global.comando = command;
 
-                const settings = global.db.data.settings[this.user.jid];
                 if (settings.soloParaJid && m.sender !== settings.soloParaJid) {
                     continue; 
                 }
