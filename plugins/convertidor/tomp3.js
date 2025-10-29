@@ -80,6 +80,7 @@ const handler = async (m, { conn, usedPrefix, command }) => {
 };
 
 handler.help = ['tomp3', 'toaudio'];
+handler.tags = ['transformador'];
 handler.command = ['tomp3', 'toaudio'];
 handler.group = true;
 
