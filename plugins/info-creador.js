@@ -2,7 +2,7 @@ import PhoneNumber from 'awesome-phonenumber';
 
 async function handler(m, { conn }) {
   m.react('👑');
-  const numCreador = '50432955554';
+  const numCreador = '8296839832';
   const ownerJid = numCreador + '@s.whatsapp.net';
 
     const res = await fetch('https://files.catbox.moe/cduhlw.jpg');
