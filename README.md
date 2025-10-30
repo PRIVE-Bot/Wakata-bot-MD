@@ -1,7 +1,4 @@
-<h1 align="center">
-  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=40&pause=500&color=00F7FF&center=true&vCenter=true&width=500&lines=👑+¡HOLA,+SOY+golfito-BOT!+🔥" alt="Typing SVG">
-</h1>
-
+[![wakata-typing](https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=40&pause=500&color=00F7FF&center=true&vCenter=true&width=500&lines=👑+¡HOLA,+SOY+wakata-BOT!+🔥)](https://tudestino.com)
 ---
 
 
@@ -10,8 +7,7 @@
 ---
 
 > [!CAUTION]  
-> **📜 Este repositorio está protegido por una [licencia propietaria](LICENSE).**  
-> ⚠︎ Queda prohibido distribuir el código sin autorización del autor [wakata](https://wa.me/8292461377).
+> **📜 Este repositorio está protegido por una [licencia propietaria](LICENSE).**
 
 ---
 
