@@ -1,4 +1,4 @@
-// © Deylin
+// © wakata
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
   if (!text) {
