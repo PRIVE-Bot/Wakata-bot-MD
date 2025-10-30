@@ -6,26 +6,18 @@ import cheerio from 'cheerio'
 import fetch from 'node-fetch'
 import axios from 'axios'
 import moment from 'moment-timezone' 
+ 
 
-global.owner = [
-  [ '50432955554', 'Deylin', true ],
-  [ '50488198573', 'Deylin', true ],
-  [ '15614809253', 'David', true ],
-  [ '50497371321', 'JoseC', true ],
-  ['155968113483985@lid'],
-  ['155968113483985'],
-]; 
-
-global.suittag = ['50432955554'] 
+global.suittag = ['8498802313'] 
 global.sessions = 'Sessions'
 global.jadi = 'JadiBots' 
 global.Jadibts = true
-global.packname = '𝙺𝚒𝚛𝚒𝚝𝚘-𝙱𝚘𝚝 𝙼𝙳';
-global.botname = '𝐾𝑖𝑟𝑖𝑡𝑜-𝐵𝑜𝑡 𝑀𝐷'
-global.author = 'Made By 𝐃𝐞𝐲𝐥𝐢𝐧 -`ღ´-'
-global.dev = '© ρσɯҽɾҽԃ Ⴆყ 𝑫ҽყʅιɳ'
-global.textbot = 'ᴋɪʀɪᴛᴏ-ʙᴏᴛ ᴍᴅ • ꉣꄲꅐꏂꋪꏂ꒯ ꃳꌦ 𝑫𝒆𝒚𝒍𝒊𝒏'
-global.etiqueta = '𝑫𝒆𝒚𝒍𝒊𝒏'
+global.packname = 'wakata-𝙱𝚘𝚝 𝙼𝙳';
+global.botname = 'wakata-𝐵𝑜𝑡 𝑀𝐷'
+global.author = 'Made By wakata -`ღ´-'
+global.dev = '© ρσɯҽɾҽԃ Ⴆყ ɢᴏʟꜰɪᴛᴏ'
+global.textbot = 'wakata-ʙᴏᴛ ᴍᴅ • ꉣꄲꅐꏂꋪꏂ꒯ ꃳꌦ ɢᴏʟꜰɪᴛᴏ'
+global.etiqueta = 'ɢᴏʟꜰɪᴛᴏ'
 global.ch = {
 ch1: '120363403593951965@newsletter',
 ch2: '120363403593951965@newsletter',
@@ -37,9 +29,9 @@ global.axios = axios
 global.moment = moment   
 
 let icono1 = [
-  'https://i.postimg.cc/c4t9wwCw/1756162596829.jpg',
-  'https://i.postimg.cc/c4MvC5Wz/1756167144046.jpg',
-  'https://i.postimg.cc/qMdtkHPn/1756167135980.jpg',
+  'https://i.postimg.cc/c4t9wwCw/8498802313.jpg',
+  'https://i.postimg.cc/c4MvC5Wz/8498802313.jpg',
+  'https://i.postimg.cc/qMdtkHPn/8296839832.jpg',
 ]
 
 global.inc = icono1[Math.floor(Math.random() * icono1.length)];
