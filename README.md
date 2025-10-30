@@ -1,5 +1,13 @@
-<!-- Banner superior -->
-<img src="https://capsule-render.vercel.app/api?type=waving&height=260&section=header&text=Kirito-bot+MD&fontSize=60&fontAlign=50&fontAlignY=35&color=0:F68512,50:1B2A49,100:000000&stroke=000000&strokeWidth=1&fontColor=FFFFFF&textBg=true" width="100%"/>
+<h1 align="center">
+  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=40&pause=500&color=00F7FF&center=true&vCenter=true&width=500&lines=👑+¡HOLA,+SOY+golfito-BOT!+🔥" alt="Typing SVG">
+</h1>
+
+---
+<p align="center">
+  <img src="https://files.catbox.moe/mll277.jpg" alt="Menú Principal" 
+width="200" height="200" alt="
+avaricia"/></a>
+</p>
 
 
 ---
