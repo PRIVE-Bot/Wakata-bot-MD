@@ -13,19 +13,19 @@
 },
 "repository": {
 "type": "git",
-"url": "git+https://github.com/Deylin-Eliac/obito-b.git"
+"url": "git+https://github.com/PRIVE-Bot/obito-b.git"
 },  
 "author": "Deylin",
 "license": "MIT-License",
 "bugs": {
-"url": "https://github.com/Deylin-Eliac/obito-b/issues"
+"url": "https://github.com/PRIVE-Bot/obito-b/issues"
 },
-"homepage": "https://github.com/Deylin-Eliac/obito-b#readme",
+"homepage": "https://github.com/PRIVE-Bot/obito-b#readme",
 "dependencies": {
 "@bochilteam/scraper": "^4.2.4",
 "@hapi/boom": "^10.0.1",
 "@vitalets/google-translate-api": "^8.0.0",
-"@whiskeysockets/baileys": "github:deylin-eliac/bails",
+"@whiskeysockets/baileys": "github: PRIVE-Bot/bails",
 "acrcloud": "^1.4.0",
 "aptoide-scraper": "github:DIEGO-OFC/dv-aptoide-scraper",
 "awesome-phonenumber": "^3.4.0",
