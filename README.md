@@ -1,10 +1,15 @@
-[![wakata-typing](https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=40&pause=500&color=00F7FF&center=true&vCenter=true&width=500&lines=👑+¡HOLA,+SOY+wakata-BOT!+🔥)](https://tudestino.com)
----
-
-
----
+<h1 align="center">
+  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=40&pause=500&color=00F7FF&center=true&vCenter=true&width=500&lines=👑+¡HOLA,+SOY+golfito-BOT!+🔥[![wakata-typing](https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=40&pause=500&color=00F7FF&center=true&vCenter=true&width=500&lines=👑+¡HOLA,+SOY+wakata-BOT!+🔥" alt="Typing SVG">
+</h1>
 
 ---
+<p align="center">
+  <img src="https://files.catbox.moe/mll277.jpg" alt="Menú Principal" 
+width="200" height="200" alt="
+avaricia"/></a>
+</p>
+---
+
 
 > [!CAUTION]  
 > **📜 Este repositorio está protegido por una [licencia propietaria](LICENSE).**
